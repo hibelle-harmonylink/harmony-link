@@ -60,6 +60,15 @@ const observer = new IntersectionObserver(entries => {
 
 document.querySelectorAll('.reveal').forEach(element => observer.observe(element));
 
+document.querySelectorAll('[data-program]').forEach(link => {
+  link.addEventListener('click', () => {
+    const select = document.getElementById('program');
+    const wanted = link.dataset.program;
+    const option = [...select.options].find(item => item.dataset.ko === wanted || item.textContent.trim() === wanted);
+    if (option) select.value = option.value || option.textContent;
+  });
+});
+
 document.getElementById('applyForm').addEventListener('submit', event => {
   event.preventDefault();
   const status = event.currentTarget.querySelector('.form-status');
