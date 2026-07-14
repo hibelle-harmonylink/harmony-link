@@ -3,7 +3,159 @@ const menuButton = document.querySelector('.menu-toggle');
 const nav = document.querySelector('.primary-nav');
 const langButton = document.querySelector('.lang-toggle');
 const toTop = document.querySelector('.to-top');
+const requestFormUrl = 'https://docs.google.com/forms/d/1LfKkCnsfGLgsvs9ptLluwZkkGupY6iJYBzBbA7jMEK8/viewform';
+const partnerFormUrl = 'https://docs.google.com/forms/d/14CqT8WtIl8Fj2h-M08tNpY0lsXh-GgsBNq5p2tnNjzk/viewform';
+const digitalFormUrl = 'https://docs.google.com/forms/d/1DWtn1FQD86E4EHzABxeoEpHDuVeoFH_Smak4_C1RU7M/viewform';
+const englishFormUrl = 'https://docs.google.com/forms/d/1kN5-d09smqU_UO9rUO91SdQqco7ABYDzWTgpv74EUsc/viewform';
 let currentLanguage = localStorage.getItem('harmonyLanguage') || 'ko';
+
+const digitalKicker = document.querySelector('.digital-why .digital-why-copy .eyebrow');
+if (digitalKicker) {
+  digitalKicker.dataset.ko = 'HIBELLE DIGITAL';
+  digitalKicker.dataset.en = 'HIBELLE DIGITAL';
+  digitalKicker.textContent = 'HIBELLE DIGITAL';
+}
+
+const choirApplyLabel = document.querySelector('.choir-request-btn span');
+if (choirApplyLabel) {
+  choirApplyLabel.dataset.ko = '합창 신청하기';
+  choirApplyLabel.dataset.en = 'Apply for Choir';
+  choirApplyLabel.textContent = '합창 신청하기';
+}
+
+const learningCategories = [
+  {emoji:'💻', ko:'디지털 교육', en:'Digital Education', kicker:'DIGITAL', tags:[['스마트폰','Smartphone'],['AI 활용','AI'],['컴퓨터','Computer']]},
+  {emoji:'🌍', ko:'언어 교육', en:'Language Education', kicker:'LANGUAGE', tags:[['영어','English'],['일본어','Japanese'],['생활 회화','Conversation']]},
+  {emoji:'🎵', ko:'음악 교육', en:'Music Education', kicker:'MUSIC', tags:[['합창','Choir'],['발성','Voice'],['악기','Instruments']]},
+  {emoji:'💃', ko:'댄스 교육', en:'Dance Education', kicker:'DANCE', tags:[['라인댄스','Line dance'],['생활 댄스','Social dance'],['리듬','Rhythm']]},
+  {emoji:'💰', ko:'금융 교육', en:'Financial Education', kicker:'FINANCE', tags:[['재무 기초','Finance basics'],['세무','Tax'],['부동산','Real estate']]},
+  {emoji:'🎨', ko:'미술·공예', en:'Art & Crafts', kicker:'ART & CRAFT', tags:[['미술','Art'],['캘리그라피','Calligraphy'],['공예','Crafts']]},
+  {emoji:'🧘', ko:'건강·운동', en:'Health & Fitness', kicker:'WELLNESS', tags:[['요가','Yoga'],['필라테스','Pilates'],['스트레칭','Stretching']]},
+  {emoji:'📚', ko:'문화·교양', en:'Culture & Enrichment', kicker:'CULTURE', tags:[['인문학','Humanities'],['독서','Reading'],['문화 이해','Culture']]},
+  {emoji:'💬', ko:'상담·심리', en:'Counseling & Psychology', kicker:'COUNSELING', tags:[['마음 건강','Well-being'],['소통','Communication'],['관계','Relationships']]},
+  {emoji:'🧠', ko:'치매예방·인지', en:'Cognitive Wellness', kicker:'COGNITIVE', tags:[['두뇌 건강','Brain health'],['인지 활동','Cognitive activity'],['웃음치료','Laughter']]},
+  {emoji:'🗺️', ko:'여행·체험', en:'Travel & Experiences', kicker:'TRAVEL', tags:[['뉴욕 체험','New York'],['문화 탐방','Culture trips'],['맞춤 여행','Custom trips']]},
+  {emoji:'💼', ko:'자격증·직업교육', en:'Career & Certification', kicker:'CAREER', tags:[['자격증','Certificates'],['취업','Employment'],['창업','Business']]}
+];
+
+const programGrid = document.querySelector('.program-grid');
+if (programGrid) {
+  programGrid.innerHTML = learningCategories.map((category, index) => `
+    <article class="program-card category-card ${index === 0 ? 'digital-gallery-card' : ''} ${index > 2 ? 'coming-soon' : ''} reveal" ${index === 0 ? 'role="button" tabindex="0" aria-label="디지털 교육안 보기"' : ''}>
+      <div class="program-art category-art" style="--category-hue:${205 + index * 17}"><span>${String(index + 1).padStart(2, '0')}</span><b>${category.emoji}</b></div>
+      <div class="program-info"><p>${category.kicker}</p><h3 data-ko="${category.ko}" data-en="${category.en}">${category.ko}</h3><div class="tags">${category.tags.map(tag => `<span data-ko="${tag[0]}" data-en="${tag[1]}">${tag[0]}</span>`).join('')}</div></div>
+    </article>`).join('');
+}
+
+const heroTopics = document.querySelector('.hero-topics');
+if (heroTopics) {
+  heroTopics.innerHTML = learningCategories.map((category, index) => `<span style="--i:${index}">${category.emoji} <b data-ko="${category.ko}" data-en="${category.en}">${category.ko}</b></span>`).join('');
+}
+
+document.body.insertAdjacentHTML('beforeend', `
+  <div class="digital-gallery-modal" id="digitalGallery" hidden role="dialog" aria-modal="true" aria-labelledby="digitalGalleryTitle">
+    <div class="digital-gallery-backdrop" data-gallery-close></div>
+    <div class="digital-gallery-panel">
+      <div class="digital-gallery-head"><div><p>HIBELLE DIGITAL</p><h2 id="digitalGalleryTitle" data-ko="시니어 디지털 교육 프로그램" data-en="Senior Digital Education Program">시니어 디지털 교육 프로그램</h2></div><button type="button" class="gallery-close" data-gallery-close aria-label="닫기">×</button></div>
+      <div class="gallery-stage"><button type="button" class="gallery-nav gallery-prev" aria-label="이전 자료">‹</button><div class="gallery-image-clip"><img src="assets/digital-program/slide-1.png" alt="디지털 교육안 1"></div><button type="button" class="gallery-nav gallery-next" aria-label="다음 자료">›</button></div>
+      <div class="gallery-footer"><span class="gallery-counter">1 / 10</span><div class="gallery-thumbs">${Array.from({length:10}, (_, index) => `<button type="button" data-slide="${index}" aria-label="${index + 1}번 교육안"><img src="assets/digital-program/slide-${index + 1}.png" alt=""></button>`).join('')}</div></div>
+    </div>
+  </div>`);
+
+const digitalGallery = document.getElementById('digitalGallery');
+const galleryImage = digitalGallery.querySelector('.gallery-stage img');
+const galleryCounter = digitalGallery.querySelector('.gallery-counter');
+const galleryThumbs = [...digitalGallery.querySelectorAll('[data-slide]')];
+let currentDigitalSlide = 0;
+
+function showDigitalSlide(index) {
+  currentDigitalSlide = (index + 10) % 10;
+  galleryImage.src = `assets/digital-program/slide-${currentDigitalSlide + 1}.png`;
+  galleryImage.alt = `디지털 교육안 ${currentDigitalSlide + 1}`;
+  galleryCounter.textContent = `${currentDigitalSlide + 1} / 10`;
+  galleryThumbs.forEach((thumb, thumbIndex) => thumb.classList.toggle('active', thumbIndex === currentDigitalSlide));
+}
+
+function openDigitalGallery() {
+  digitalGallery.hidden = false;
+  document.body.classList.add('modal-open');
+  showDigitalSlide(0);
+  digitalGallery.querySelector('.gallery-close').focus();
+}
+
+function closeDigitalGallery() {
+  digitalGallery.hidden = true;
+  document.body.classList.remove('modal-open');
+}
+
+const digitalGalleryCard = document.querySelector('.digital-gallery-card');
+digitalGalleryCard?.addEventListener('click', openDigitalGallery);
+digitalGalleryCard?.addEventListener('keydown', event => {
+  if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openDigitalGallery(); }
+});
+digitalGallery.querySelector('.gallery-prev').addEventListener('click', () => showDigitalSlide(currentDigitalSlide - 1));
+digitalGallery.querySelector('.gallery-next').addEventListener('click', () => showDigitalSlide(currentDigitalSlide + 1));
+galleryThumbs.forEach(thumb => thumb.addEventListener('click', () => showDigitalSlide(Number(thumb.dataset.slide))));
+digitalGallery.querySelectorAll('[data-gallery-close]').forEach(button => button.addEventListener('click', closeDigitalGallery));
+
+const eventsSection = document.getElementById('events');
+const contactSection = document.getElementById('contact');
+if (eventsSection && contactSection) contactSection.before(eventsSection);
+document.querySelectorAll('.instructors, .instructor-fields').forEach(section => section.remove());
+
+const primaryNav = document.getElementById('primary-nav');
+if (primaryNav) {
+  primaryNav.querySelector('a[href="#membership"]:not(.nav-cta)')?.remove();
+  const freeEventsLink = primaryNav.querySelector('a[href="#events"]');
+  if (freeEventsLink) {
+    const communityNavLink = document.createElement('a');
+    communityNavLink.href = '#community';
+    communityNavLink.dataset.ko = '전문성과 배움';
+    communityNavLink.dataset.en = 'Community';
+    communityNavLink.textContent = '전문성과 배움';
+    freeEventsLink.before(communityNavLink);
+    const storeNavLink = document.createElement('a');
+    storeNavLink.href = '#digital-store';
+    storeNavLink.dataset.ko = '디지털 스토어';
+    storeNavLink.dataset.en = 'Digital Store';
+    storeNavLink.textContent = '디지털 스토어';
+    freeEventsLink.after(storeNavLink);
+  }
+}
+
+const aboutSection = document.getElementById('about');
+aboutSection?.insertAdjacentHTML('afterend', `
+  <section class="intro-video section" id="intro-video">
+    <div class="container intro-video-grid reveal">
+      <div class="intro-video-copy"><p class="eyebrow">HARMONY LINK ON YOUTUBE</p><h2 data-ko="영상으로 만나는<br>Harmony Link" data-en="Meet Harmony Link<br>through video">영상으로 만나는<br>Harmony Link</h2><p data-ko="배움과 문화를 지역사회에 연결하는 Harmony Link의 비전과 이야기를 소개영상으로 만나보세요." data-en="Discover the vision and story of Harmony Link, connecting learning and culture with local communities.">배움과 문화를 지역사회에 연결하는 Harmony Link의 비전과 이야기를 소개영상으로 만나보세요.</p><a class="btn youtube-channel-btn" href="https://www.youtube.com/@hibelleconsulting" target="_blank" rel="noopener noreferrer"><span data-ko="하이벨컨설팅 유튜브 채널" data-en="Hibelle Consulting YouTube">하이벨컨설팅 유튜브 채널</span><b>↗</b></a></div>
+      <a class="intro-video-frame video-watch-link" href="https://www.youtube.com/watch?v=7jo7Ovnq7Ew" target="_blank" rel="noopener noreferrer" aria-label="Harmony Link 소개영상 유튜브에서 보기"><img src="https://i.ytimg.com/vi/7jo7Ovnq7Ew/maxresdefault.jpg" alt="Harmony Link 소개영상 미리보기"><span class="video-play"><b>▶</b><em data-ko="소개영상 재생" data-en="Play introduction video">소개영상 재생</em></span></a>
+    </div>
+  </section>`);
+
+const digitalStoreSection = document.createElement('section');
+digitalStoreSection.className = 'digital-store section';
+digitalStoreSection.id = 'digital-store';
+digitalStoreSection.innerHTML = `<div class="container digital-store-wrap reveal"><div class="store-icon" aria-hidden="true">🎨</div><div><p class="eyebrow">HARMONY LINK DIGITAL STORE</p><h2 data-ko="배움에서 탄생한 작품을<br>새로운 가치로 연결합니다" data-en="Connecting creations from learning<br>with new value">배움에서 탄생한 작품을<br>새로운 가치로 연결합니다</h2><p data-ko="그림과 공예 작품, 디지털 창작물을 소개하고 판매하는 온라인 스토어를 준비하고 있습니다." data-en="An online store for artwork, crafts, and digital creations is coming soon.">그림과 공예 작품, 디지털 창작물을 소개하고 판매하는 온라인 스토어를 준비하고 있습니다.</p></div><span class="store-status" data-ko="오픈 준비 중" data-en="COMING SOON">오픈 준비 중</span></div>`;
+const eventsForStore = document.getElementById('events');
+if (eventsForStore) eventsForStore.before(digitalStoreSection);
+
+function connectForm(link, url) {
+  link.href = url;
+  link.target = '_blank';
+  link.rel = 'noopener noreferrer';
+}
+
+document.querySelectorAll('.request-form-link').forEach(link => connectForm(link, requestFormUrl));
+document.querySelectorAll('.partner-form-link').forEach(link => connectForm(link, partnerFormUrl));
+document.querySelectorAll('[data-program]').forEach(link => {
+  const formUrl = link.dataset.program === '디지털 교육'
+    ? digitalFormUrl
+    : link.dataset.program === '언어 교육'
+      ? englishFormUrl
+      : requestFormUrl;
+  connectForm(link, formUrl);
+});
+document.querySelectorAll('.digital-request-btn').forEach(link => connectForm(link, digitalFormUrl));
 
 function closeMenu() {
   menuButton.classList.remove('open');
@@ -63,21 +215,62 @@ document.querySelectorAll('.reveal').forEach(element => observer.observe(element
 document.querySelectorAll('[data-program]').forEach(link => {
   link.addEventListener('click', () => {
     const select = document.getElementById('program');
+    if (!select) return;
     const wanted = link.dataset.program;
     const option = [...select.options].find(item => item.dataset.ko === wanted || item.textContent.trim() === wanted);
     if (option) select.value = option.value || option.textContent;
   });
 });
 
-document.getElementById('applyForm').addEventListener('submit', event => {
+document.querySelectorAll('[data-role]').forEach(link => {
+  link.addEventListener('click', () => {
+    const select = document.getElementById('role');
+    if (!select) return;
+    const option = [...select.options].find(item => item.dataset.ko === link.dataset.role || item.textContent.trim() === link.dataset.role);
+    if (option) select.value = option.value || option.textContent;
+  });
+});
+
+document.querySelectorAll('[data-membership]').forEach(link => {
+  link.addEventListener('click', () => {
+    const select = document.getElementById('membershipType');
+    if (!select) return;
+    const option = [...select.options].find(item => item.dataset.ko === link.dataset.membership || item.textContent.trim() === link.dataset.membership);
+    if (option) select.value = option.value || option.textContent;
+  });
+});
+
+const applyForm = document.getElementById('applyForm');
+applyForm?.addEventListener('submit', event => {
   event.preventDefault();
   const status = event.currentTarget.querySelector('.form-status');
-  status.textContent = currentLanguage === 'ko' ? '신청이 접수되었습니다. 빠르게 연락드리겠습니다.' : 'Your request has been received. We will be in touch shortly.';
-  event.currentTarget.reset();
+  status.textContent = currentLanguage === 'ko' ? '수업 의뢰 신청서를 새 창에서 열고 있습니다.' : 'Opening the class request form in a new tab.';
+  window.open(requestFormUrl, '_blank', 'noopener,noreferrer');
+});
+
+const upgradeToggle = document.querySelector('.upgrade-toggle');
+const paidPlans = document.getElementById('paidPlans');
+upgradeToggle?.addEventListener('click', () => {
+  const willOpen = paidPlans.hidden;
+  paidPlans.hidden = !willOpen;
+  upgradeToggle.setAttribute('aria-expanded', String(willOpen));
+  upgradeToggle.querySelector('b').textContent = willOpen ? '−' : '＋';
+  if (willOpen) paidPlans.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+});
+
+const signupForm = document.getElementById('signupForm');
+signupForm?.addEventListener('submit', event => {
+  event.preventDefault();
+  const status = signupForm.querySelector('.signup-status');
+  status.textContent = currentLanguage === 'ko'
+    ? '무료회원 가입 신청이 완료되었습니다.'
+    : 'Your free membership registration is complete.';
+  signupForm.reset();
 });
 
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') closeMenu();
+  if (event.key === 'Escape' && !digitalGallery.hidden) closeDigitalGallery();
 });
 
 setLanguage(currentLanguage);
