@@ -507,3 +507,47 @@ document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && !partnerModal.hidden) closePartnerModal();
 });
 setLanguage(currentLanguage);
+
+// Temporary locked Partner Center. Replace with server-side authentication when member login launches.
+const partnerCenterHash = '1409de759e8cec9f93bbf2b7da0bbbe348e69c4751165690f7f8629cfc413b77';
+const contactNavLink = document.querySelector('#primary-nav a[href="#contact"]');
+if (contactNavLink) {
+  const partnerCenterNav = document.createElement('a');
+  partnerCenterNav.href = '#partner-center';
+  partnerCenterNav.dataset.ko = '파트너센터 🔒';
+  partnerCenterNav.dataset.en = 'Partner Center 🔒';
+  partnerCenterNav.textContent = currentLanguage === 'ko' ? partnerCenterNav.dataset.ko : partnerCenterNav.dataset.en;
+  contactNavLink.before(partnerCenterNav);
+}
+
+const partnerCenter = document.createElement('section');
+partnerCenter.className = 'partner-center section';
+partnerCenter.id = 'partner-center';
+partnerCenter.innerHTML = `<div class="container partner-center-shell"><div class="partner-center-copy"><p class="eyebrow">PARTNER CENTER</p><span class="partner-lock" aria-hidden="true">🔒</span><h2 data-ko="입점 파트너 전용 자료실" data-en="Partner Resource Center">입점 파트너 전용 자료실</h2><p data-ko="HarmonyLink 입점 강사와 교육업체를 위한 운영 정책 및 파트너 자료를 제공합니다." data-en="Policies and resources for approved HarmonyLink instructors and education providers.">HarmonyLink 입점 강사와 교육업체를 위한 운영 정책 및 파트너 자료를 제공합니다.</p><div class="partner-security-note"><b data-ko="파트너 전용" data-en="PARTNERS ONLY">파트너 전용</b><span data-ko="승인된 입점 파트너에게 전달된 접근코드를 입력해 주세요." data-en="Enter the access code provided to approved partners.">승인된 입점 파트너에게 전달된 접근코드를 입력해 주세요.</span></div></div><div class="partner-access-card"><form id="partnerAccessForm"><label for="partnerAccessCode" data-ko="파트너 접근코드" data-en="Partner Access Code">파트너 접근코드</label><div><input id="partnerAccessCode" type="password" autocomplete="current-password" required data-placeholder-ko="접근코드를 입력하세요" data-placeholder-en="Enter access code" placeholder="접근코드를 입력하세요"><button class="btn btn-primary" type="submit"><span data-ko="잠금 해제" data-en="Unlock">잠금 해제</span><b>→</b></button></div><p class="partner-access-status" role="status"></p></form><div class="partner-downloads" hidden><span class="unlocked-badge" data-ko="접근 승인됨" data-en="ACCESS GRANTED">접근 승인됨</span><article><div><b>DOCX</b></div><section><h3 data-ko="입점 파트너 플랫폼 이용 및 운영 정책" data-en="Partner Platform Use & Operations Policy">입점 파트너 플랫폼 이용 및 운영 정책</h3><p>Version 1.0 · Hibelle Consulting Inc.</p><small data-ko="멤버십, 15% 이용수수료, 수업 절차와 운영 원칙" data-en="Memberships, 15% platform fee, class process, and operating principles">멤버십, 15% 이용수수료, 수업 절차와 운영 원칙</small></section><a class="btn btn-primary" href="downloads/HarmonyLink_Partner_Policy_v1.0.docx" download><span data-ko="문서 다운로드" data-en="Download Policy">문서 다운로드</span><b>↓</b></a></article><p class="partner-download-warning" data-ko="이 자료는 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다." data-en="This resource is for approved partners only. External sharing or unauthorized distribution is prohibited.">이 자료는 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다.</p></div></div></div>`;
+const advertisingSection = document.getElementById('advertising');
+const contactForPartnerCenter = document.getElementById('contact');
+(advertisingSection || contactForPartnerCenter)?.before(partnerCenter);
+
+const accessForm = partnerCenter.querySelector('#partnerAccessForm');
+const downloads = partnerCenter.querySelector('.partner-downloads');
+const unlockPartnerCenter = () => {
+  accessForm.hidden = true;
+  downloads.hidden = false;
+  sessionStorage.setItem('harmonyPartnerAccess', 'granted');
+};
+if (sessionStorage.getItem('harmonyPartnerAccess') === 'granted') unlockPartnerCenter();
+accessForm.addEventListener('submit', async event => {
+  event.preventDefault();
+  const status = accessForm.querySelector('.partner-access-status');
+  const code = accessForm.querySelector('input').value.trim();
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(code));
+  const hash = [...new Uint8Array(digest)].map(value => value.toString(16).padStart(2,'0')).join('');
+  if (hash === partnerCenterHash) {
+    status.textContent = '';
+    unlockPartnerCenter();
+  } else {
+    status.textContent = currentLanguage === 'ko' ? '접근코드가 올바르지 않습니다.' : 'The access code is incorrect.';
+    accessForm.querySelector('input').select();
+  }
+});
+setLanguage(currentLanguage);
