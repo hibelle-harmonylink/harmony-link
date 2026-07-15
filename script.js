@@ -341,6 +341,110 @@ if(eventGrid){
 }
 setLanguage(currentLanguage);
 
+// 2026-07-15: scalable program directory, teachers, memberships, events, and ad spaces.
+const serviceExpansion = document.querySelector('.service-note em');
+if (serviceExpansion) {
+  serviceExpansion.dataset.ko = '향후 미동부 지역 및 온라인 서비스로 확장 예정';
+  serviceExpansion.dataset.en = 'Expansion to the U.S. East Coast and online services is planned';
+  serviceExpansion.textContent = currentLanguage === 'ko' ? serviceExpansion.dataset.ko : serviceExpansion.dataset.en;
+}
+
+const specialtyScroll = document.querySelector('.specialty-modal-scroll');
+if (specialtyScroll) {
+  specialtyScroll.insertAdjacentHTML('beforeend', `<section class="english-teachers" hidden>
+    <p class="eyebrow">HIBELLE ONLINE ENGLISH TEACHERS</p>
+    <h3 data-ko="함께 수업하는 영어 강사" data-en="Meet Our English Teachers">함께 수업하는 영어 강사</h3>
+    <p data-ko="수강자가 강사를 선택하는 방식이 아닌, 수업 목표와 일정에 맞춰 배정되는 강사진입니다." data-en="Teachers are assigned according to learning goals and schedules rather than selected by learners.">수강자가 강사를 선택하는 방식이 아닌, 수업 목표와 일정에 맞춰 배정되는 강사진입니다.</p>
+    <div class="teacher-grid">
+      <figure><img src="assets/teachers/nicky.png" alt="영어 강사 니키"><figcaption>니키 <small>Nicky</small></figcaption></figure>
+      <figure><img src="assets/teachers/rachel.png" alt="영어 강사 레이셀"><figcaption>레이셀 <small>Rachel</small></figcaption></figure>
+      <figure><img src="assets/teachers/ara.png" alt="영어 강사 아라"><figcaption>아라 <small>Ara</small></figcaption></figure>
+    </div>
+  </section>`);
+  document.querySelectorAll('.specialty-open').forEach(button => button.addEventListener('click', () => {
+    specialtyScroll.querySelector('.english-teachers').hidden = button.dataset.specialty !== 'english';
+  }));
+}
+
+const categoryProviders = {
+  0: [{name:'하이벨 디지털',type:'직영 디지털 교육',status:'운영 중'}],
+  1: [{name:'하이벨 화상영어',type:'1:1 맞춤 화상영어',status:'운영 중'}],
+  2: [{name:'미란멜로디',type:'합창·음악 교육',status:'공동 운영'}]
+};
+const providerDirectoryModal = document.createElement('div');
+providerDirectoryModal.className = 'directory-modal';
+providerDirectoryModal.hidden = true;
+providerDirectoryModal.innerHTML = `<div class="directory-backdrop" data-directory-close></div><div class="directory-panel" role="dialog" aria-modal="true" aria-labelledby="directoryTitle"><div class="directory-head"><div><p>HARMONY LINK DIRECTORY</p><h2 id="directoryTitle"></h2></div><button type="button" data-directory-close aria-label="닫기">×</button></div><div class="directory-list"></div><div class="directory-foot"><p data-ko="새로운 입점 업체와 강사가 등록되면 이 목록에 계속 추가됩니다." data-en="New partner providers and instructors will continue to be added here.">새로운 입점 업체와 강사가 등록되면 이 목록에 계속 추가됩니다.</p><a href="#community" class="btn btn-primary" data-directory-close><span data-ko="입점·교육 신청 보기" data-en="View Applications">입점·교육 신청 보기</span><b>→</b></a></div></div>`;
+document.body.appendChild(providerDirectoryModal);
+const categoryCards = [...document.querySelectorAll('.program-grid .category-card')];
+categoryCards.forEach((card,index) => {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'directory-open';
+  button.innerHTML = `<span data-ko="관련 업체·강사 보기" data-en="View Providers">관련 업체·강사 보기</span><b>＋</b>`;
+  button.addEventListener('click', event => {
+    event.stopPropagation();
+    const title = learningCategories[index];
+    providerDirectoryModal.querySelector('#directoryTitle').textContent = currentLanguage === 'en' ? title.en : title.ko;
+    const providers = categoryProviders[index] || [];
+    providerDirectoryModal.querySelector('.directory-list').innerHTML = providers.length
+      ? providers.map(provider => `<article><span>${provider.status}</span><h3>${provider.name}</h3><p>${provider.type}</p></article>`).join('')
+      : `<div class="directory-empty"><b>＋</b><h3 data-ko="입점 파트너 등록 예정" data-en="Partner listings coming soon">입점 파트너 등록 예정</h3><p data-ko="검증된 업체와 강사가 등록되는 순서대로 소개됩니다." data-en="Verified providers and instructors will appear here as they join.">검증된 업체와 강사가 등록되는 순서대로 소개됩니다.</p></div>`;
+    providerDirectoryModal.hidden = false;
+    document.body.classList.add('modal-open');
+    setLanguage(currentLanguage);
+  });
+  card.querySelector('.program-info')?.appendChild(button);
+});
+const closeDirectory = () => {providerDirectoryModal.hidden = true;document.body.classList.remove('modal-open');};
+providerDirectoryModal.querySelectorAll('[data-directory-close]').forEach(item => item.addEventListener('click', closeDirectory));
+
+const membershipSection = document.getElementById('membership');
+if (membershipSection) {
+  const heading = membershipSection.querySelector('.section-heading h2');
+  const headingCopy = membershipSection.querySelector('.section-heading>p:last-child');
+  if (heading) {heading.dataset.ko='수강자는 무료, 파트너는 성장 단계에 맞게';heading.dataset.en='Free for learners, growth plans for partners';}
+  if (headingCopy) {headingCopy.dataset.ko='수강자는 회비 없이 무료회원으로 가입합니다. 월 $20·$50 요금제는 강사와 교육업체를 위한 입점 파트너 전용입니다.';headingCopy.dataset.en='Learners join free. The $20 and $50 plans are exclusively for instructor and education-provider partners.';}
+  const promptTitle = membershipSection.querySelector('.upgrade-prompt span');
+  const promptCopy = membershipSection.querySelector('.upgrade-prompt strong');
+  const promptButton = membershipSection.querySelector('.upgrade-toggle span');
+  if(promptTitle){promptTitle.dataset.ko='강사·교육업체 입점 파트너 요금제';promptTitle.dataset.en='Plans for instructor and education partners';}
+  if(promptCopy){promptCopy.dataset.ko='수강자에게는 회비가 없습니다. 파트너만 홍보와 운영 지원 범위에 따라 선택합니다.';promptCopy.dataset.en='Learners pay no membership fee. Partners choose based on promotion and operational support.';}
+  if(promptButton){promptButton.dataset.ko='파트너 요금제 비교';promptButton.dataset.en='Compare Partner Plans';}
+  const plans = membershipSection.querySelectorAll('.paid-plan');
+  if(plans[0]) plans[0].innerHTML = `<span data-ko="BASIC 파트너" data-en="BASIC PARTNER">BASIC 파트너</span><h3><b>$20</b><small data-ko="/ 월" data-en="/ month">/ 월</small></h3><ul><li data-ko="업체·강사 기본 프로필 등록" data-en="Basic provider profile listing">업체·강사 기본 프로필 등록</li><li data-ko="관련 교육 카테고리에 노출" data-en="Listing in relevant education categories">관련 교육 카테고리에 노출</li><li data-ko="기관·수강 의뢰 매칭 안내" data-en="Organization and learner inquiry matching">기관·수강 의뢰 매칭 안내</li><li data-ko="프로그램 정보 월 1회 수정" data-en="One program information update per month">프로그램 정보 월 1회 수정</li><li data-ko="기본 심사 및 운영 상담" data-en="Standard review and support">기본 심사 및 운영 상담</li></ul><a href="#contact" class="btn btn-outline"><span data-ko="BASIC 입점 상담" data-en="Ask about BASIC">BASIC 입점 상담</span><b>→</b></a>`;
+  if(plans[1]) plans[1].innerHTML = `<span data-ko="PREMIUM 파트너" data-en="PREMIUM PARTNER">PREMIUM 파트너</span><h3><b>$50</b><small data-ko="/ 월" data-en="/ month">/ 월</small></h3><ul><li data-ko="BASIC 파트너의 모든 혜택" data-en="Everything in BASIC">BASIC 파트너의 모든 혜택</li><li data-ko="하이벨의 홍보 전단·배너 디자인 지원" data-en="Promotional flyer and banner design by Hibelle">하이벨의 홍보 전단·배너 디자인 지원</li><li data-ko="전문교육 섹션 프리미엄 배너 노출" data-en="Premium specialty-section placement">전문교육 섹션 프리미엄 배너 노출</li><li data-ko="입점·프로그램 심사 우선 처리" data-en="Priority provider and program review">입점·프로그램 심사 우선 처리</li><li data-ko="디지털 스토어 판매 수수료 할인" data-en="Reduced digital-store commission">디지털 스토어 판매 수수료 할인</li><li data-ko="메인·카테고리 추천 영역 우선 노출" data-en="Priority featured placement">메인·카테고리 추천 영역 우선 노출</li></ul><a href="#contact" class="btn btn-primary"><span data-ko="PREMIUM 입점 상담" data-en="Ask about PREMIUM">PREMIUM 입점 상담</span><b>→</b></a>`;
+  membershipSection.insertAdjacentHTML('beforeend', `<div class="container member-portal-preview reveal"><div><p class="eyebrow">MEMBER COMMUNITY</p><h3 data-ko="회원 로그인과 커뮤니티 공간" data-en="Member Login & Community">회원 로그인과 커뮤니티 공간</h3><p data-ko="로그인 후 희망 프로그램을 남기고 공지와 게시판을 이용하는 회원 공간을 준비하고 있습니다. 안전한 계정 시스템 연결 후 오픈됩니다." data-en="A secure member area for program requests, notices, and community boards is being prepared.">로그인 후 희망 프로그램을 남기고 공지와 게시판을 이용하는 회원 공간을 준비하고 있습니다. 안전한 계정 시스템 연결 후 오픈됩니다.</p></div><button type="button" disabled><span data-ko="로그인·게시판 준비 중" data-en="Login & Board Coming Soon">로그인·게시판 준비 중</span></button></div>`);
+}
+
+const currentEventGrid = document.querySelector('.event-grid');
+if (currentEventGrid) {
+  const datedCards = currentEventGrid.querySelectorAll('.event-card:not(.event-coming)');
+  const endDates = ['2026-07-24','2026-08-01'];
+  datedCards.forEach((card,index) => card.dataset.eventEnd = endDates[index]);
+  currentEventGrid.insertAdjacentHTML('afterend', `<section class="past-events"><div class="past-events-head"><div><p class="eyebrow">PAST EVENTS</p><h3 data-ko="지난 무료강좌" data-en="Past Free Events">지난 무료강좌</h3></div><button class="past-events-toggle" type="button" aria-expanded="false"><span data-ko="지난 강좌 보기" data-en="View Past Events">지난 강좌 보기</span><b>＋</b></button></div><div class="past-event-grid" hidden></div><p class="past-events-empty" data-ko="아직 지난 강좌가 없습니다." data-en="There are no past events yet.">아직 지난 강좌가 없습니다.</p></section>`);
+  const pastSection = currentEventGrid.nextElementSibling;
+  const pastGrid = pastSection.querySelector('.past-event-grid');
+  const today = new Date();
+  datedCards.forEach(card => {
+    if (today > new Date(`${card.dataset.eventEnd}T23:59:59`)) pastGrid.appendChild(card);
+  });
+  pastSection.querySelector('.past-events-empty').hidden = pastGrid.children.length > 0;
+  const toggle = pastSection.querySelector('.past-events-toggle');
+  toggle.addEventListener('click', () => {
+    const open = pastGrid.hidden;
+    pastGrid.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.querySelector('b').textContent = open ? '−' : '＋';
+  });
+}
+
+const contactSectionForAds = document.getElementById('contact');
+if (contactSectionForAds) {
+  contactSectionForAds.insertAdjacentHTML('beforebegin', `<section class="advertising section" id="advertising"><div class="container"><div class="section-heading centered reveal"><p class="eyebrow">COMMUNITY PARTNERS</p><h2 data-ko="지역 업체 광고·제휴 공간" data-en="Local Business Advertising">지역 업체 광고·제휴 공간</h2><p data-ko="지역사회와 함께 성장할 광고 파트너를 위한 배너 자리입니다." data-en="Banner placements for local partners growing with our community.">지역사회와 함께 성장할 광고 파트너를 위한 배너 자리입니다.</p></div><div class="ad-grid"><a href="#contact"><span>AD 01</span><b data-ko="프리미엄 광고 배너" data-en="Premium Ad Banner">프리미엄 광고 배너</b><small data-ko="광고 문의" data-en="Advertising inquiry">광고 문의</small></a><a href="#contact"><span>AD 02</span><b data-ko="지역 업체 소개" data-en="Local Business Feature">지역 업체 소개</b><small data-ko="광고 문의" data-en="Advertising inquiry">광고 문의</small></a><a href="#contact"><span>AD 03</span><b data-ko="문화·교육 제휴" data-en="Culture & Education Partner">문화·교육 제휴</b><small data-ko="제휴 문의" data-en="Partnership inquiry">제휴 문의</small></a></div></div></section>`);
+}
+setLanguage(currentLanguage);
+
 // Partner recruitment flyer: show the program details before opening the application form.
 const partnerModal = document.createElement('div');
 partnerModal.className = 'partner-modal';
