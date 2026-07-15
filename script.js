@@ -351,13 +351,13 @@ if (serviceExpansion) {
 
 const specialtyScroll = document.querySelector('.specialty-modal-scroll');
 if (specialtyScroll) {
-  specialtyScroll.insertAdjacentHTML('beforeend', `<section class="english-teachers" hidden>
+  specialtyScroll.insertAdjacentHTML('afterbegin', `<section class="english-teachers" hidden>
     <p class="eyebrow">HIBELLE ONLINE ENGLISH TEACHERS</p>
     <h3 data-ko="함께 수업하는 영어 강사" data-en="Meet Our English Teachers">함께 수업하는 영어 강사</h3>
     <p data-ko="수강자가 강사를 선택하는 방식이 아닌, 수업 목표와 일정에 맞춰 배정되는 강사진입니다." data-en="Teachers are assigned according to learning goals and schedules rather than selected by learners.">수강자가 강사를 선택하는 방식이 아닌, 수업 목표와 일정에 맞춰 배정되는 강사진입니다.</p>
     <div class="teacher-grid">
-      <figure><img src="assets/teachers/nicky.png" alt="영어 강사 니키"><figcaption>니키 <small>Nicky</small></figcaption></figure>
-      <figure><img src="assets/teachers/rachel.png" alt="영어 강사 레이셀"><figcaption>레이셀 <small>Rachel</small></figcaption></figure>
+      <figure><img src="assets/teachers/nicky.png" alt="영어 강사 니키"><figcaption>니키 <small>Nikki</small></figcaption></figure>
+      <figure><img src="assets/teachers/rachel.png" alt="영어 강사 레이셀"><figcaption>레이셀 <small>Reshel</small></figcaption></figure>
       <figure><img src="assets/teachers/ara.png" alt="영어 강사 아라"><figcaption>아라 <small>Ara</small></figcaption></figure>
     </div>
   </section>`);
@@ -419,6 +419,21 @@ if (membershipSection) {
 
 const currentEventGrid = document.querySelector('.event-grid');
 if (currentEventGrid) {
+  const originalEventCards = [...currentEventGrid.querySelectorAll('.event-card:not(.event-coming)')];
+  const originalComingCard = currentEventGrid.querySelector('.event-coming');
+  currentEventGrid.classList.add('event-type-layout');
+  currentEventGrid.innerHTML = `<section class="event-type-block seminar-type"><div class="event-type-head"><span>01</span><div><p data-ko="무료 세미나" data-en="FREE SEMINARS">무료 세미나</p><small data-ko="지식과 정보를 나누는 무료 교육" data-en="Free educational seminars">지식과 정보를 나누는 무료 교육</small></div></div><div class="event-type-grid seminar-grid"></div></section><section class="event-type-block trial-type"><div class="event-type-head"><span>02</span><div><p data-ko="무료 체험" data-en="FREE TRIAL CLASSES">무료 체험</p><small data-ko="처음 경험하는 분을 위한 체험 수업" data-en="Trial sessions for first-time learners">처음 경험하는 분을 위한 체험 수업</small></div></div><div class="event-type-grid trial-grid"></div></section><section class="event-type-block paid-type"><div class="event-type-head"><span>03</span><div><p data-ko="유료 1회 수업" data-en="PAID ONE-TIME CLASSES">유료 1회 수업</p><small data-ko="정규과정 부담 없이 참여하는 단회 수업" data-en="Single paid sessions without a full-course commitment">정규과정 부담 없이 참여하는 단회 수업</small></div></div><div class="event-type-grid paid-grid"></div></section>`;
+  if(originalEventCards[0]) currentEventGrid.querySelector('.seminar-grid').appendChild(originalEventCards[0]);
+  if(originalEventCards[1]) currentEventGrid.querySelector('.trial-grid').appendChild(originalEventCards[1]);
+  if(originalComingCard){
+    originalComingCard.querySelector('.event-badge').dataset.ko='유료 수업 준비 중';
+    originalComingCard.querySelector('.event-badge').dataset.en='PAID CLASS COMING SOON';
+    originalComingCard.querySelector('h3').dataset.ko='새로운 유료 1회 수업을 준비하고 있습니다';
+    originalComingCard.querySelector('h3').dataset.en='A new paid one-time class is coming soon';
+    originalComingCard.querySelector('p').dataset.ko='관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다.';
+    originalComingCard.querySelector('p').dataset.en='Try a topic in a single paid session without committing to a regular course.';
+    currentEventGrid.querySelector('.paid-grid').appendChild(originalComingCard);
+  }
   const datedCards = currentEventGrid.querySelectorAll('.event-card:not(.event-coming)');
   const endDates = ['2026-07-24','2026-08-01'];
   datedCards.forEach((card,index) => card.dataset.eventEnd = endDates[index]);
