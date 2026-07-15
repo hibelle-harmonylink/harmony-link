@@ -110,9 +110,9 @@ if (primaryNav) {
   if (freeEventsLink) {
     const communityNavLink = document.createElement('a');
     communityNavLink.href = '#community';
-    communityNavLink.dataset.ko = '전문성과 배움';
-    communityNavLink.dataset.en = 'Community';
-    communityNavLink.textContent = '전문성과 배움';
+    communityNavLink.dataset.ko = '함께하기';
+    communityNavLink.dataset.en = 'Join Us';
+    communityNavLink.textContent = '함께하기';
     freeEventsLink.before(communityNavLink);
     const storeNavLink = document.createElement('a');
     storeNavLink.href = '#digital-store';
@@ -137,7 +137,7 @@ digitalStoreSection.className = 'digital-store section';
 digitalStoreSection.id = 'digital-store';
 digitalStoreSection.innerHTML = `<div class="container digital-store-wrap reveal"><div class="store-icon" aria-hidden="true">🎨</div><div><p class="eyebrow">HARMONY LINK DIGITAL STORE</p><h2 data-ko="배움에서 탄생한 작품을<br>새로운 가치로 연결합니다" data-en="Connecting creations from learning<br>with new value">배움에서 탄생한 작품을<br>새로운 가치로 연결합니다</h2><p data-ko="그림과 공예 작품, 디지털 창작물을 소개하고 판매하는 온라인 스토어를 준비하고 있습니다." data-en="An online store for artwork, crafts, and digital creations is coming soon.">그림과 공예 작품, 디지털 창작물을 소개하고 판매하는 온라인 스토어를 준비하고 있습니다.</p></div><span class="store-status" data-ko="오픈 준비 중" data-en="COMING SOON">오픈 준비 중</span></div>`;
 const eventsForStore = document.getElementById('events');
-if (eventsForStore) eventsForStore.before(digitalStoreSection);
+if (eventsForStore) eventsForStore.after(digitalStoreSection);
 
 function connectForm(link, url) {
   link.href = url;
@@ -278,7 +278,7 @@ setLanguage(currentLanguage);
 const specialtyPrograms = [
   {id:'digital',titleKo:'하이벨 디지털',titleEn:'Hibelle Digital',image:'assets/specialty/hibelle-digital.jpg',form:'https://docs.google.com/forms/d/1DWtn1FQD86E4EHzABxeoEpHDuVeoFH_Smak4_C1RU7M/viewform',tone:'blue'},
   {id:'english',titleKo:'하이벨 화상영어',titleEn:'Hibelle Online English',image:'assets/specialty/hibelle-online-english.jpg',form:'https://docs.google.com/forms/d/1kN5-d09smqU_UO9rUO91SdQqco7ABYDzWTgpv74EUsc/viewform',tone:'orange'},
-  {id:'melody',titleKo:'미란멜로디 합창',titleEn:'Meeran Melody Choir',image:'assets/specialty/meeran-melody.jpg',form:'https://docs.google.com/forms/d/1LfKkCnsfGLgsvs9ptLluwZkkGupY6iJYBzBbA7jMEK8/viewform',tone:'pink'}
+  {id:'melody',titleKo:'미란멜로디 합창',titleEn:'Meeran Melody Choir',image:'assets/specialty/meeran-melody.jpg',form:null,tone:'pink'}
 ];
 
 const oldSpecialtyStart = document.getElementById('digital-why');
@@ -302,10 +302,39 @@ if (oldSpecialtyStart) {
     const program=specialtyPrograms.find(item=>item.id===button.dataset.specialty);if(!program)return;
     specialtyModal.querySelector('#specialtyModalTitle').textContent=currentLanguage==='en'?program.titleEn:program.titleKo;
     const modalImage=specialtyModal.querySelector('.specialty-modal-image');modalImage.src=program.image;modalImage.alt=`${program.titleKo} 프로그램 전단지`;
-    specialtyModal.querySelector('.specialty-form-link').href=program.form;
+    const formLink=specialtyModal.querySelector('.specialty-form-link');
+    formLink.hidden=!program.form;
+    if(program.form) formLink.href=program.form;
+    specialtyModal.querySelector('.specialty-modal-actions p').textContent=program.form
+      ? (currentLanguage==='ko'?'프로그램 내용을 확인하셨다면 아래 버튼을 눌러 신청서를 작성해주세요.':'After reviewing the program, use the button below to complete the application.')
+      : (currentLanguage==='ko'?'미란멜로디 신청서는 준비 중입니다. 새로운 신청서가 완성되면 연결됩니다.':'The Meeran Melody application is coming soon.');
     specialtyModal.hidden=false;document.body.classList.add('modal-open');
   }));
   specialtyModal.querySelectorAll('[data-specialty-close]').forEach(button=>button.addEventListener('click',closeSpecialtyModal));
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!specialtyModal.hidden)closeSpecialtyModal();});
   setLanguage(currentLanguage);
 }
+
+// Final page flow and content refinements.
+const communitySection=document.getElementById('community');
+if(communitySection){
+  const communityHeading=communitySection.querySelector('.section-heading h2');
+  if(communityHeading){communityHeading.dataset.ko='함께하기';communityHeading.dataset.en='Join Harmony Link';communityHeading.textContent=currentLanguage==='ko'?'함께하기':'Join Harmony Link';}
+  const communityCopy=communitySection.querySelector('.section-heading>p:last-child');
+  if(communityCopy){communityCopy.dataset.ko='입점 파트너와 교육 수강자가 각자의 목적에 맞는 신청 공간으로 바로 연결됩니다.';communityCopy.dataset.en='Partner providers and learners can go directly to the application that fits their needs.';communityCopy.textContent=currentLanguage==='ko'?communityCopy.dataset.ko:communityCopy.dataset.en;}
+}
+document.querySelector('.apply')?.remove();
+document.querySelector('.hero-actions .request-form-link')?.remove();
+document.querySelector('.hero-actions .btn-explore')?.classList.add('btn-primary');
+const serviceArea=document.querySelector('.service-note span');
+if(serviceArea){serviceArea.dataset.ko='뉴욕시 · 롱아일랜드 · 웨체스터 · 뉴저지';serviceArea.dataset.en='New York City · Long Island · Westchester · New Jersey';serviceArea.textContent=currentLanguage==='ko'?serviceArea.dataset.ko:serviceArea.dataset.en;}
+const aboutCopy=document.querySelector('.about-copy');
+aboutCopy?.classList.add('about-copy-card');
+const contactWrap=document.querySelector('.contact-wrap');
+contactWrap?.insertAdjacentHTML('afterbegin','<div class="contact-illustration" aria-hidden="true"><span>✉</span><i></i><b></b><em>♥</em></div>');
+const eventGrid=document.querySelector('.event-grid');
+if(eventGrid){
+  eventGrid.insertAdjacentHTML('beforeend','<article class="event-card event-coming reveal"><div class="event-coming-icon">＋</div><span class="event-badge" data-ko="준비 중" data-en="COMING SOON">준비 중</span><h3 data-ko="새로운 무료강좌를 준비하고 있습니다" data-en="A new free class is coming soon">새로운 무료강좌를 준비하고 있습니다</h3><p data-ko="디지털·언어·음악을 비롯한 새로운 체험 강좌가 곧 공개됩니다." data-en="New trial classes in digital learning, language, music, and more will be announced soon.">디지털·언어·음악을 비롯한 새로운 체험 강좌가 곧 공개됩니다.</p></article>');
+  eventGrid.querySelectorAll('.reveal').forEach(item=>item.classList.add('visible'));
+}
+setLanguage(currentLanguage);
