@@ -259,14 +259,16 @@ upgradeToggle?.addEventListener('click', () => {
 });
 
 const signupForm = document.getElementById('signupForm');
-signupForm?.addEventListener('submit', event => {
-  event.preventDefault();
-  const status = signupForm.querySelector('.signup-status');
-  status.textContent = currentLanguage === 'ko'
-    ? '무료회원 가입 신청이 완료되었습니다.'
-    : 'Your free membership registration is complete.';
-  signupForm.reset();
-});
+if (signupForm) {
+  signupForm.innerHTML = `
+    <div class="signup-form-cta">
+      <span class="signup-form-icon" aria-hidden="true">✓</span>
+      <h3 data-ko="무료회원 가입 신청서를 작성해 주세요" data-en="Complete the free membership form">무료회원 가입 신청서를 작성해 주세요</h3>
+      <p data-ko="이름, 연락처, 이메일과 거주지역을 입력하면 가입 신청이 접수됩니다." data-en="Enter your name, phone, email, and location to submit your membership application.">이름, 연락처, 이메일과 거주지역을 입력하면 가입 신청이 접수됩니다.</p>
+      <a class="btn btn-primary signup-submit" href="https://forms.gle/zDCqwkvT9ZdjrEXN6" target="_blank" rel="noopener noreferrer"><span data-ko="무료회원 가입 신청서 작성" data-en="Complete Free Membership Form">무료회원 가입 신청서 작성</span><b>↗</b></a>
+      <small data-ko="신청서는 새 탭에서 열립니다." data-en="The form opens in a new tab.">신청서는 새 탭에서 열립니다.</small>
+    </div>`;
+}
 
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') closeMenu();
