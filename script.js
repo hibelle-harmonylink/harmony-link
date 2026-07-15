@@ -338,3 +338,47 @@ if(eventGrid){
   eventGrid.querySelectorAll('.reveal').forEach(item=>item.classList.add('visible'));
 }
 setLanguage(currentLanguage);
+
+// Partner recruitment flyer: show the program details before opening the application form.
+const partnerModal = document.createElement('div');
+partnerModal.className = 'partner-modal';
+partnerModal.hidden = true;
+partnerModal.setAttribute('role', 'dialog');
+partnerModal.setAttribute('aria-modal', 'true');
+partnerModal.setAttribute('aria-labelledby', 'partnerModalTitle');
+partnerModal.innerHTML = `
+  <div class="partner-modal-backdrop" data-partner-close></div>
+  <div class="partner-modal-panel">
+    <div class="partner-modal-head">
+      <div>
+        <p>HARMONY LINK PARTNER</p>
+        <h2 id="partnerModalTitle" data-ko="입점 파트너 모집 안내" data-en="Partner Recruitment">입점 파트너 모집 안내</h2>
+      </div>
+      <button class="partner-modal-close" type="button" data-partner-close aria-label="닫기">×</button>
+    </div>
+    <div class="partner-modal-scroll">
+      <img src="assets/partners/partner-recruitment.png" alt="하모니링크 입점 파트너 모집 전단지">
+    </div>
+    <div class="partner-modal-actions">
+      <p data-ko="모집 내용을 확인하신 후 신청서를 작성해 주세요." data-en="Review the details, then complete the application form.">모집 내용을 확인하신 후 신청서를 작성해 주세요.</p>
+      <a class="btn btn-primary" href="${partnerFormUrl}" target="_blank" rel="noopener noreferrer"><span data-ko="신청서 작성" data-en="Complete Application">신청서 작성</span><b>↗</b></a>
+    </div>
+  </div>`;
+document.body.appendChild(partnerModal);
+
+const openPartnerModal = event => {
+  event?.preventDefault();
+  partnerModal.hidden = false;
+  document.body.classList.add('modal-open');
+  partnerModal.querySelector('.partner-modal-close')?.focus();
+};
+const closePartnerModal = () => {
+  partnerModal.hidden = true;
+  document.body.classList.remove('modal-open');
+};
+document.querySelectorAll('.partner-form-link').forEach(link => link.addEventListener('click', openPartnerModal));
+partnerModal.querySelectorAll('[data-partner-close]').forEach(button => button.addEventListener('click', closePartnerModal));
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !partnerModal.hidden) closePartnerModal();
+});
+setLanguage(currentLanguage);
