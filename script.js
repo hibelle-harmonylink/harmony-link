@@ -274,3 +274,38 @@ document.addEventListener('keydown', event => {
 });
 
 setLanguage(currentLanguage);
+
+const specialtyPrograms = [
+  {id:'digital',titleKo:'하이벨 디지털',titleEn:'Hibelle Digital',image:'assets/specialty/hibelle-digital.jpg',form:'https://docs.google.com/forms/d/1DWtn1FQD86E4EHzABxeoEpHDuVeoFH_Smak4_C1RU7M/viewform',tone:'blue'},
+  {id:'english',titleKo:'하이벨 화상영어',titleEn:'Hibelle Online English',image:'assets/specialty/hibelle-online-english.jpg',form:'https://docs.google.com/forms/d/1kN5-d09smqU_UO9rUO91SdQqco7ABYDzWTgpv74EUsc/viewform',tone:'orange'},
+  {id:'melody',titleKo:'미란멜로디 합창',titleEn:'Meeran Melody Choir',image:'assets/specialty/meeran-melody.jpg',form:'https://docs.google.com/forms/d/1LfKkCnsfGLgsvs9ptLluwZkkGupY6iJYBzBbA7jMEK8/viewform',tone:'pink'}
+];
+
+const oldSpecialtyStart = document.getElementById('digital-why');
+if (oldSpecialtyStart) {
+  const specialtySection = document.createElement('section');
+  specialtySection.className = 'specialty-banners section';
+  specialtySection.id = 'specialty-banners';
+  specialtySection.innerHTML = `<div class="container"><div class="section-heading centered reveal"><p class="eyebrow">PREMIUM SPECIALTY PROGRAMS</p><h2 data-ko="전문 교육 프로그램" data-en="Specialty Programs">전문 교육 프로그램</h2><p data-ko="유료회원과 전문 파트너의 프로그램을 소개하는 프리미엄 배너 공간입니다. 신청하기를 누르면 상세 전단지와 신청서를 확인할 수 있습니다." data-en="A premium banner space featuring paid-member and partner programs. Select Apply to view details and the application form.">유료회원과 전문 파트너의 프로그램을 소개하는 프리미엄 배너 공간입니다. 신청하기를 누르면 상세 전단지와 신청서를 확인할 수 있습니다.</p></div><div class="specialty-banner-grid">${specialtyPrograms.map((program,index)=>`<article class="specialty-banner-card ${program.tone} reveal delay-${Math.min(index,2)}"><div class="specialty-poster-preview"><img src="${program.image}" alt="${program.titleKo} 프로그램 전단지"></div><div class="specialty-banner-info"><span data-ko="유료회원 추천 프로그램" data-en="PREMIUM MEMBER PROGRAM">유료회원 추천 프로그램</span><h3 data-ko="${program.titleKo}" data-en="${program.titleEn}">${program.titleKo}</h3><button type="button" class="btn specialty-open" data-specialty="${program.id}"><span data-ko="신청하기" data-en="View & Apply">신청하기</span><b>↗</b></button></div></article>`).join('')}</div></div>`;
+  oldSpecialtyStart.before(specialtySection);
+  specialtySection.querySelectorAll('.reveal').forEach(item=>item.classList.add('visible'));
+  document.querySelectorAll('#digital-why, .english-feature, .choir-feature').forEach(section=>section.remove());
+  document.querySelectorAll('a[href="#digital-why"]').forEach(link=>{link.href='#specialty-banners';});
+
+  const specialtyModal = document.createElement('div');
+  specialtyModal.className = 'specialty-modal';
+  specialtyModal.hidden = true;
+  specialtyModal.innerHTML = `<div class="specialty-modal-backdrop" data-specialty-close></div><div class="specialty-modal-panel" role="dialog" aria-modal="true" aria-labelledby="specialtyModalTitle"><div class="specialty-modal-head"><div><p>PREMIUM SPECIALTY PROGRAM</p><h2 id="specialtyModalTitle"></h2></div><button type="button" class="specialty-close" data-specialty-close aria-label="닫기">×</button></div><div class="specialty-modal-scroll"><img class="specialty-modal-image" src="" alt=""></div><div class="specialty-modal-actions"><p data-ko="프로그램 내용을 확인하셨다면 아래 버튼을 눌러 신청서를 작성해주세요." data-en="After reviewing the program, use the button below to complete the application.">프로그램 내용을 확인하셨다면 아래 버튼을 눌러 신청서를 작성해주세요.</p><a class="btn btn-primary specialty-form-link" href="#" target="_blank" rel="noopener noreferrer"><span data-ko="신청서 작성" data-en="Complete Application">신청서 작성</span><b>↗</b></a></div></div>`;
+  document.body.append(specialtyModal);
+  const closeSpecialtyModal=()=>{specialtyModal.hidden=true;document.body.classList.remove('modal-open');};
+  specialtySection.querySelectorAll('[data-specialty]').forEach(button=>button.addEventListener('click',()=>{
+    const program=specialtyPrograms.find(item=>item.id===button.dataset.specialty);if(!program)return;
+    specialtyModal.querySelector('#specialtyModalTitle').textContent=currentLanguage==='en'?program.titleEn:program.titleKo;
+    const modalImage=specialtyModal.querySelector('.specialty-modal-image');modalImage.src=program.image;modalImage.alt=`${program.titleKo} 프로그램 전단지`;
+    specialtyModal.querySelector('.specialty-form-link').href=program.form;
+    specialtyModal.hidden=false;document.body.classList.add('modal-open');
+  }));
+  specialtyModal.querySelectorAll('[data-specialty-close]').forEach(button=>button.addEventListener('click',closeSpecialtyModal));
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!specialtyModal.hidden)closeSpecialtyModal();});
+  setLanguage(currentLanguage);
+}
