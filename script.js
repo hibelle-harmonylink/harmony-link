@@ -49,7 +49,7 @@ if (programGrid) {
 
 const heroTopics = document.querySelector('.hero-topics');
 if (heroTopics) {
-  heroTopics.innerHTML = learningCategories.map((category, index) => `<span style="--i:${index}">${category.emoji} <b data-ko="${category.ko}" data-en="${category.en}">${category.ko}</b></span>`).join('');
+  heroTopics.innerHTML = '';
 }
 const heroCenterNote=document.querySelector('.center-note');
 if(heroCenterNote)heroCenterNote.innerHTML=`<div class="connection-visual" aria-hidden="true"><span>🎓</span><i>↔</i><span>👥</span></div><strong data-ko="교육과 사람을 잇다" data-en="Connecting Learning & People">교육과 사람을 잇다</strong><small>HARMONY LINK</small>`;
@@ -288,7 +288,6 @@ document.body.appendChild(promotionModal);
 const closePromotion = () => {
   promotionModal.hidden = true;
   document.body.classList.remove('modal-open');
-  sessionStorage.setItem('harmonyAugustPromotionSeen', 'true');
 };
 promotionModal.querySelectorAll('[data-promotion-close]').forEach(item => item.addEventListener('click', closePromotion));
 promotionModal.querySelector('.promotion-action').addEventListener('click', () => {
@@ -297,7 +296,7 @@ promotionModal.querySelector('.promotion-action').addEventListener('click', () =
   if (upgradeToggle) upgradeToggle.setAttribute('aria-expanded', 'true');
   document.getElementById('membership')?.scrollIntoView({behavior:'smooth'});
 });
-if (!sessionStorage.getItem('harmonyAugustPromotionSeen') && new Date() <= new Date('2026-08-31T23:59:59-04:00')) {
+if (new Date() <= new Date('2026-08-31T23:59:59-04:00')) {
   window.setTimeout(() => {
     promotionModal.hidden = false;
     document.body.classList.add('modal-open');
@@ -309,7 +308,7 @@ setLanguage(currentLanguage);
 const specialtyPrograms = [
   {id:'digital',titleKo:'하이벨 디지털',titleEn:'Hibelle Digital',image:'assets/specialty/hibelle-digital.jpg',form:'https://docs.google.com/forms/d/1DWtn1FQD86E4EHzABxeoEpHDuVeoFH_Smak4_C1RU7M/viewform',tone:'blue'},
   {id:'english',titleKo:'하이벨 화상영어',titleEn:'Hibelle Online English',image:'assets/specialty/hibelle-online-english.jpg',form:'https://docs.google.com/forms/d/1kN5-d09smqU_UO9rUO91SdQqco7ABYDzWTgpv74EUsc/viewform',tone:'orange'},
-  {id:'melody',titleKo:'미란멜로디 합창',titleEn:'Meeran Melody Choir',image:'assets/specialty/meeran-melody.jpg',form:null,tone:'pink'}
+  {id:'melody',titleKo:'미란멜로디 합창',titleEn:'Meeran Melody Choir',image:'assets/specialty/meeran-melody.jpg',form:'https://docs.google.com/forms/d/1LfKkCnsfGLgsvs9ptLluwZkkGupY6iJYBzBbA7jMEK8/viewform',tone:'pink'}
 ];
 
 const oldSpecialtyStart = document.getElementById('digital-why');
@@ -579,11 +578,11 @@ if(volunteerAnchor){
   volunteerSection.querySelector('.volunteer-intro h2').dataset.ko='마음을 잇는 무료 봉사';
   volunteerSection.querySelector('.volunteer-intro h2').textContent=currentLanguage==='en'?'Community Volunteer Support':'마음을 잇는 무료 봉사';
   const oldVolunteerButton=volunteerSection.querySelector('.volunteer-intro .btn');
-  oldVolunteerButton.outerHTML=`<div class="volunteer-actions"><button type="button" class="btn btn-primary contact-form-open" data-inquiry="봉사 참여"><span data-ko="봉사하고 싶어요" data-en="I Want to Volunteer">봉사하고 싶어요</span><b>→</b></button><button type="button" class="btn btn-outline contact-form-open" data-inquiry="봉사 도움 요청"><span data-ko="도움이 필요해요" data-en="I Need Volunteer Help">도움이 필요해요</span><b>→</b></button></div>`;
+  oldVolunteerButton.outerHTML=`<div class="volunteer-actions"><button type="button" class="btn btn-primary contact-form-open" data-inquiry="봉사하고 싶어요"><span data-ko="봉사하고 싶어요" data-en="I Want to Volunteer">봉사하고 싶어요</span><b>→</b></button><button type="button" class="btn btn-outline contact-form-open" data-inquiry="도움이 필요해요"><span data-ko="도움이 필요해요" data-en="I Need Volunteer Help">도움이 필요해요</span><b>→</b></button></div>`;
 }
 const refreshedContact=document.querySelector('.contact-wrap');
 if(refreshedContact){
-  refreshedContact.innerHTML=`<div class="contact-main"><div><p class="eyebrow">LET'S CONNECT</p><h2 data-ko="어떤 도움이 필요하신가요?" data-en="How Can We Help?">어떤 도움이 필요하신가요?</h2><p data-ko="교육 신청, 입점, 봉사와 제휴 중 필요한 내용을 알려주시면 알맞은 담당자가 안내해 드립니다." data-en="Tell us whether you need learning, partnership, volunteering, or collaboration support and the right person will respond.">교육 신청, 입점, 봉사와 제휴 중 필요한 내용을 알려주시면 알맞은 담당자가 안내해 드립니다.</p></div></div><div class="contact-choices"><button type="button" class="contact-primary contact-form-open" data-inquiry="일반 문의"><span data-ko="문의사항 작성하기" data-en="Write an Inquiry">문의사항 작성하기</span><strong>이름 · 연락처 · 이메일 · 문의내용</strong><b>↗</b></button><div class="contact-call"><span data-ko="전화 상담" data-en="CALL US">전화 상담</span><a href="tel:+19296030052"><small data-ko="미국" data-en="USA">미국</small><strong>+1 929-603-0052</strong></a><i></i><a href="tel:+821097730052"><small data-ko="한국" data-en="KOREA">한국</small><strong>+82 10-9773-0052</strong></a></div></div>`;
+  refreshedContact.innerHTML=`<div class="contact-main"><div><p class="eyebrow">LET'S CONNECT</p><h2 data-ko="문의 및 상담 하세요" data-en="Contact & Consultation">문의 및 상담 하세요</h2><p data-ko="교육 신청, 입점, 봉사와 제휴 중 필요한 내용을 알려주시면 알맞은 담당자가 안내해 드립니다." data-en="Tell us whether you need learning, partnership, volunteering, or collaboration support and the right person will respond.">교육 신청, 입점, 봉사와 제휴 중 필요한 내용을 알려주시면 알맞은 담당자가 안내해 드립니다.</p></div></div><div class="contact-choices"><a class="contact-primary" href="mailto:hibelle@hibelleconsulting.com"><span data-ko="이메일 문의" data-en="EMAIL US">이메일 문의</span><strong>hibelle@hibelleconsulting.com</strong><b>↗</b></a><div class="contact-call"><span data-ko="전화 상담 · 번호를 누르면 바로 연결됩니다" data-en="CALL US · TAP A NUMBER">전화 상담 · 번호를 누르면 바로 연결됩니다</span><a href="tel:+19296030052"><small data-ko="미국" data-en="USA">미국</small><strong>+1 929-603-0052</strong></a><i></i><a href="tel:+821097730052"><small data-ko="한국" data-en="KOREA">한국</small><strong>+82 10-9773-0052</strong></a></div></div>`;
 }
 const inquiryModal=document.createElement('div');
 inquiryModal.className='inquiry-modal';
@@ -591,7 +590,14 @@ inquiryModal.hidden=true;
 inquiryModal.innerHTML=`<div class="inquiry-backdrop" data-inquiry-close></div><div class="inquiry-panel" role="dialog" aria-modal="true" aria-labelledby="inquiryTitle"><div class="inquiry-head"><div><p>CONTACT HARMONY LINK</p><h2 id="inquiryTitle" data-ko="문의사항을 남겨주세요" data-en="Send Us Your Inquiry">문의사항을 남겨주세요</h2></div><button type="button" data-inquiry-close aria-label="닫기">×</button></div><form id="inquiryForm"><input type="hidden" name="문의 유형" id="inquiryType" value="일반 문의"><input type="hidden" name="_subject" value="Harmony Link 홈페이지 새 문의"><input type="hidden" name="_captcha" value="false"><div class="inquiry-row"><label><span data-ko="이름 *" data-en="Name *">이름 *</span><input name="이름" required autocomplete="name"></label><label><span data-ko="연락처 *" data-en="Phone *">연락처 *</span><input name="연락처" type="tel" required autocomplete="tel"></label></div><label><span data-ko="이메일 *" data-en="Email *">이메일 *</span><input name="email" type="email" required autocomplete="email"></label><label><span data-ko="문의사항 *" data-en="Message *">문의사항 *</span><textarea name="문의사항" rows="6" required></textarea></label><label class="inquiry-consent"><input type="checkbox" required><span data-ko="답변을 위해 입력한 개인정보를 전달하는 데 동의합니다." data-en="I agree to submit my information for a response.">답변을 위해 입력한 개인정보를 전달하는 데 동의합니다.</span></label><button type="submit" class="btn btn-primary inquiry-submit"><span data-ko="문의 보내기" data-en="Send Inquiry">문의 보내기</span><b>→</b></button><p class="inquiry-status" role="status"></p></form></div>`;
 document.body.appendChild(inquiryModal);
 const closeInquiryModal=()=>{inquiryModal.hidden=true;document.body.classList.remove('modal-open');};
-const openInquiryModal=(type='일반 문의')=>{inquiryModal.querySelector('#inquiryType').value=type;inquiryModal.hidden=false;document.body.classList.add('modal-open');inquiryModal.querySelector('input[name="이름"]').focus();};
+const openInquiryModal=(type='일반 문의')=>{
+  inquiryModal.querySelector('#inquiryType').value=type;
+  const title=inquiryModal.querySelector('#inquiryTitle');
+  const titleKo=(type==='봉사하고 싶어요'||type==='도움이 필요해요')?type:'문의사항을 남겨주세요';
+  const titleEn=type==='봉사하고 싶어요'?'I Want to Volunteer':type==='도움이 필요해요'?'I Need Volunteer Help':'Send Us Your Inquiry';
+  title.dataset.ko=titleKo;title.dataset.en=titleEn;title.textContent=currentLanguage==='en'?titleEn:titleKo;
+  inquiryModal.hidden=false;document.body.classList.add('modal-open');inquiryModal.querySelector('input[name="이름"]').focus();
+};
 document.querySelectorAll('.contact-form-open').forEach(button=>button.addEventListener('click',()=>openInquiryModal(button.dataset.inquiry)));
 const footerInquiryLink=[...document.querySelectorAll('footer a')].find(link=>link.dataset.ko==='문의하기');
 if(footerInquiryLink){footerInquiryLink.href='#contact';footerInquiryLink.addEventListener('click',event=>{event.preventDefault();openInquiryModal('홈페이지 하단 문의');});}
@@ -695,4 +701,31 @@ accessForm.addEventListener('submit', async event => {
     accessForm.querySelector('input').select();
   }
 });
+
+// Partner-only membership presentation: learner platform signup is intentionally omitted.
+const partnerMembershipSection = document.getElementById('membership');
+if (partnerMembershipSection) {
+  partnerMembershipSection.querySelector('.signup-layout')?.remove();
+  partnerMembershipSection.querySelector('.learner-fee-notice')?.remove();
+  const eyebrow = partnerMembershipSection.querySelector('.section-heading .eyebrow');
+  const heading = partnerMembershipSection.querySelector('.section-heading h2');
+  const copy = partnerMembershipSection.querySelector('.section-heading > p:last-child');
+  if (eyebrow) eyebrow.textContent = 'PARTNER MEMBERSHIP';
+  if (heading) {
+    heading.dataset.ko = '입점 파트너 멤버십';
+    heading.dataset.en = 'Partner Memberships';
+    heading.textContent = currentLanguage === 'en' ? heading.dataset.en : heading.dataset.ko;
+  }
+  if (copy) {
+    copy.dataset.ko = '강사와 교육업체를 위한 BASIC·PREMIUM 멤버십 혜택과 요금제를 비교해 보세요.';
+    copy.dataset.en = 'Compare BASIC and PREMIUM plans for instructors and education providers.';
+    copy.textContent = currentLanguage === 'en' ? copy.dataset.en : copy.dataset.ko;
+  }
+  const priceIntro = partnerMembershipSection.querySelector('.price-summary-intro small');
+  if (priceIntro) {
+    priceIntro.dataset.ko = '입점 강사와 교육업체를 위한 파트너 전용 요금제입니다.';
+    priceIntro.dataset.en = 'Plans exclusively for partner instructors and education providers.';
+    priceIntro.textContent = currentLanguage === 'en' ? priceIntro.dataset.en : priceIntro.dataset.ko;
+  }
+}
 setLanguage(currentLanguage);
