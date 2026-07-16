@@ -325,6 +325,12 @@ if (oldSpecialtyStart) {
     specialtyModal.querySelector('#specialtyModalTitle').textContent=currentLanguage==='en'?program.titleEn:program.titleKo;
     const modalImage=specialtyModal.querySelector('.specialty-modal-image');modalImage.src=program.image;modalImage.alt=`${program.titleKo} 프로그램 전단지`;
     const teacher=specialtyModal.querySelector('.specialty-teacher');
+    teacher.hidden=program.id==='english';
+    const englishTeachers=specialtyModal.querySelector('.english-teachers');
+    if(englishTeachers){
+      englishTeachers.hidden=program.id!=='english';
+      if(program.id==='english') specialtyModal.querySelector('.specialty-modal-head').after(englishTeachers);
+    }
     teacher.querySelector('img').src=program.teacherImage;teacher.querySelector('img').alt=`${program.teacherKo} 강사`;
     teacher.querySelector('h3').textContent=currentLanguage==='en'?program.teacherEn:program.teacherKo;
     teacher.querySelector('p').textContent=currentLanguage==='en'?program.teacherRoleEn:program.teacherRoleKo;
@@ -395,16 +401,13 @@ if (specialtyScroll) {
       <figure><img src="assets/teachers/ara.png" alt="영어 강사 아라"><figcaption>아라 <small>Ara</small></figcaption></figure>
     </div>
   </section>`);
-  document.querySelectorAll('.specialty-open').forEach(button => button.addEventListener('click', () => {
-    specialtyScroll.querySelector('.english-teachers').hidden = button.dataset.specialty !== 'english';
-  }));
 }
 
 // Approved partners are registered here once and automatically appear in the matching category room.
 const registeredPartners = [
-  {category:0,name:'하이벨 디지털',type:'스마트폰·AI·컴퓨터 교육',status:'직영',featured:true},
-  {category:1,name:'하이벨 화상영어',type:'1:1 맞춤 화상영어',status:'직영',featured:true},
-  {category:2,name:'미란멜로디',type:'합창·발성·음악 교육',status:'공동 운영',featured:true}
+  {category:0,name:'하이벨 디지털',type:'스마트폰·AI·컴퓨터 교육',status:'직영',featured:true,logo:'assets/brands/hibelle-digital.jpg'},
+  {category:1,name:'하이벨 화상영어',type:'1:1 맞춤 화상영어',status:'직영',featured:true,logo:'assets/brands/hibelle-online-english.jpg'},
+  {category:2,name:'미란멜로디',type:'합창·발성·음악 교육',status:'공동 운영',featured:true,logo:'assets/brands/meeran-melody.jpg'}
 ];
 const categoryResources = {
   0: {titleKo:'디지털 교육 프로그램 자료',titleEn:'Digital Education Resources',descriptionKo:'스마트폰, AI, 컴퓨터 교육 PPT 10장을 확인할 수 있습니다.',descriptionEn:'View 10 presentation slides for smartphone, AI, and computer learning.',action:'gallery'},
@@ -448,7 +451,7 @@ const categoryPurposes = [
 const reasonModal = document.createElement('div');
 reasonModal.className = 'reason-modal';
 reasonModal.hidden = true;
-reasonModal.innerHTML = `<div class="reason-backdrop" data-reason-close></div><div class="reason-panel" role="dialog" aria-modal="true" aria-labelledby="reasonTitle"><button type="button" class="reason-close" data-reason-close aria-label="닫기">×</button><span class="reason-emoji"></span><p data-ko="LEARNING GUIDE" data-en="LEARNING GUIDE">LEARNING GUIDE</p><h2 id="reasonTitle"></h2><div class="reason-summary"><section><span data-ko="배움의 이유" data-en="WHY IT MATTERS">배움의 이유</span><h3 class="reason-lead"></h3><p class="reason-copy"></p></section><section><span data-ko="배움의 목적" data-en="LEARNING GOAL">배움의 목적</span><p class="reason-purpose"></p></section></div><div class="reason-partners"><div><span data-ko="RELATED PARTNERS" data-en="RELATED PARTNERS">RELATED PARTNERS</span><h3 data-ko="관련 업체·강사" data-en="Providers & Instructors">관련 업체·강사</h3></div><div class="reason-partner-list"></div></div></div>`;
+reasonModal.innerHTML = `<div class="reason-backdrop" data-reason-close></div><div class="reason-panel" role="dialog" aria-modal="true" aria-labelledby="reasonTitle"><button type="button" class="reason-close" data-reason-close aria-label="닫기">×</button><header class="reason-heading"><span class="reason-emoji"></span><div><p>LEARNING GUIDE</p><h2 id="reasonTitle"></h2></div><strong class="reason-lead"></strong></header><div class="reason-summary"><section><span data-ko="배움의 이유" data-en="WHY IT MATTERS">배움의 이유</span><p class="reason-copy"></p></section><section><span data-ko="배움의 목적" data-en="LEARNING GOAL">배움의 목적</span><p class="reason-purpose"></p></section></div><div class="reason-partners"><div><span data-ko="RELATED PARTNERS" data-en="RELATED PARTNERS">RELATED PARTNERS</span><h3 data-ko="관련 업체·강사" data-en="Providers & Instructors">관련 업체·강사</h3></div><div class="reason-partner-list"></div></div></div>`;
 document.body.appendChild(reasonModal);
 let activeReasonCategory = 0;
 function closeReasonModal(){reasonModal.hidden=true;document.body.classList.remove('modal-open');}
@@ -462,7 +465,7 @@ function openReasonModal(index){
   reasonModal.querySelector('.reason-copy').textContent=reason[1];
   reasonModal.querySelector('.reason-purpose').textContent=categoryPurposes[index];
   const partners=registeredPartners.filter(partner=>partner.category===index);
-  reasonModal.querySelector('.reason-partner-list').innerHTML=partners.length?partners.map(partner=>`<article><b>${partner.name.charAt(0)}</b><div><strong>${partner.name}</strong><small>${partner.type}</small></div><span>${partner.status}</span></article>`).join(''):`<article class="reason-partner-empty"><b>＋</b><div><strong data-ko="입점 파트너 모집 중" data-en="Partners wanted">입점 파트너 모집 중</strong><small data-ko="검증된 업체와 강사가 등록되면 이곳에 표시됩니다." data-en="Approved providers will appear here.">검증된 업체와 강사가 등록되면 이곳에 표시됩니다.</small></div></article>`;
+  reasonModal.querySelector('.reason-partner-list').innerHTML=partners.length?partners.map(partner=>`<article>${partner.logo?`<img src="${partner.logo}" alt="${partner.name} 로고">`:`<b>${partner.name.charAt(0)}</b>`}<div><strong>${partner.name}</strong><small>${partner.type}</small></div><span>${partner.status}</span></article>`).join(''):`<article class="reason-partner-empty"><b>＋</b><div><strong data-ko="입점 파트너 모집 중" data-en="Partners wanted">입점 파트너 모집 중</strong><small data-ko="검증된 업체와 강사가 등록되면 이곳에 표시됩니다." data-en="Approved providers will appear here.">검증된 업체와 강사가 등록되면 이곳에 표시됩니다.</small></div></article>`;
   reasonModal.hidden=false;document.body.classList.add('modal-open');
   setLanguage(currentLanguage);
 }
@@ -720,5 +723,14 @@ if (partnerMembershipSection) {
     priceIntro.dataset.en = 'Plans exclusively for partner instructors and education providers.';
     priceIntro.textContent = currentLanguage === 'en' ? priceIntro.dataset.en : priceIntro.dataset.ko;
   }
+  const signupLayout=partnerMembershipSection.querySelector('.signup-layout');
+  if(signupLayout){
+    signupLayout.insertAdjacentHTML('afterend',`<div class="member-benefit-grid"><article><b>01</b><span data-ko="자동 회원 등록" data-en="AUTOMATIC SIGNUP">자동 회원 등록</span><p data-ko="입점 파트너 또는 교육 신청 정보로 회원 등록을 준비합니다." data-en="Partner or class applications can start membership registration.">입점 파트너 또는 교육 신청 정보로 회원 등록을 준비합니다.</p></article><article><b>02</b><span data-ko="간편 본인 확인" data-en="SIMPLE VERIFICATION">간편 본인 확인</span><p data-ko="이메일 또는 문자 인증으로 안전하게 본인을 확인합니다." data-en="Verify securely by email or text message.">이메일 또는 문자 인증으로 안전하게 본인을 확인합니다.</p></article><article><b>03</b><span data-ko="회원 소식과 혜택" data-en="MEMBER UPDATES">회원 소식과 혜택</span><p data-ko="새 프로그램과 무료 강좌 소식을 편리하게 확인합니다." data-en="Receive new program and free-event updates.">새 프로그램과 무료 강좌 소식을 편리하게 확인합니다.</p></article></div>`);
+    signupLayout.remove();
+  }
+  partnerMembershipSection.querySelector('.learner-fee-notice')?.remove();
+  partnerMembershipSection.querySelector('.member-portal-preview')?.remove();
 }
+const finalContactHeading=document.querySelector('.contact-main h2');
+if(finalContactHeading){finalContactHeading.dataset.ko='문의 및 상담';finalContactHeading.dataset.en='Contact & Consultation';finalContactHeading.textContent=currentLanguage==='en'?finalContactHeading.dataset.en:finalContactHeading.dataset.ko;}
 setLanguage(currentLanguage);
