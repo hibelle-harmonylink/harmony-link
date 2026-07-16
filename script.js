@@ -51,6 +51,8 @@ const heroTopics = document.querySelector('.hero-topics');
 if (heroTopics) {
   heroTopics.innerHTML = learningCategories.map((category, index) => `<span style="--i:${index}">${category.emoji} <b data-ko="${category.ko}" data-en="${category.en}">${category.ko}</b></span>`).join('');
 }
+const heroCenterNote=document.querySelector('.center-note');
+if(heroCenterNote)heroCenterNote.innerHTML=`<div class="connection-visual" aria-hidden="true"><span>🎓</span><i>↔</i><span>👥</span></div><strong data-ko="교육과 사람을 잇다" data-en="Connecting Learning & People">교육과 사람을 잇다</strong><small>HARMONY LINK</small>`;
 
 document.body.insertAdjacentHTML('beforeend', `
   <div class="digital-gallery-modal" id="digitalGallery" hidden role="dialog" aria-modal="true" aria-labelledby="digitalGalleryTitle">
@@ -332,12 +334,15 @@ if (oldSpecialtyStart) {
     specialtyModal.querySelector('#specialtyModalTitle').textContent=currentLanguage==='en'?program.titleEn:program.titleKo;
     const modalImage=specialtyModal.querySelector('.specialty-modal-image');modalImage.src=program.image;modalImage.alt=`${program.titleKo} 프로그램 전단지`;
     const formLink=specialtyModal.querySelector('.specialty-form-link');
-    specialtyModal.querySelector('.specialty-slides-link').hidden=program.id!=='digital';
-    formLink.hidden=!program.form;
-    if(program.form) formLink.href=program.form;
+    specialtyModal.querySelector('.specialty-slides-link').hidden=true;
+    specialtyModal.querySelector('.specialty-modal-scroll').hidden=true;
+    formLink.hidden=false;
+    formLink.href=program.form||'#';
+    formLink.setAttribute('aria-disabled',String(!program.form));
+    formLink.querySelector('span').textContent=program.form?(currentLanguage==='en'?'Complete Application':'신청서 작성'):(currentLanguage==='en'?'Application Coming Soon':'신청서 작성 (준비 중)');
     specialtyModal.querySelector('.specialty-modal-actions p').textContent=program.form
-      ? (currentLanguage==='ko'?'프로그램 내용을 확인하셨다면 아래 버튼을 눌러 신청서를 작성해주세요.':'After reviewing the program, use the button below to complete the application.')
-      : (currentLanguage==='ko'?'미란멜로디 신청서는 준비 중입니다. 새로운 신청서가 완성되면 연결됩니다.':'The Meeran Melody application is coming soon.');
+      ? (currentLanguage==='ko'?'아래 버튼에서 신청서를 작성해 주세요.':'Use the button below to complete the application.')
+      : (currentLanguage==='ko'?'합창 신청서 버튼을 준비했습니다. 신청서 주소가 완성되면 연결됩니다.':'The choir application button is ready and will be connected when the form is available.');
     specialtyModal.hidden=false;document.body.classList.add('modal-open');
   }));
   specialtySection.querySelectorAll('.specialty-banner-card').forEach(card=>{
@@ -346,6 +351,7 @@ if (oldSpecialtyStart) {
     card.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();card.querySelector('.specialty-open').click();}});
   });
   specialtyModal.querySelectorAll('[data-specialty-close]').forEach(button=>button.addEventListener('click',closeSpecialtyModal));
+  specialtyModal.querySelector('.specialty-form-link').addEventListener('click',event=>{if(event.currentTarget.getAttribute('aria-disabled')==='true')event.preventDefault();});
   specialtyModal.querySelector('.specialty-slides-link').addEventListener('click',()=>{closeSpecialtyModal();openDigitalGallery();});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!specialtyModal.hidden)closeSpecialtyModal();});
   setLanguage(currentLanguage);
@@ -366,6 +372,7 @@ const serviceArea=document.querySelector('.service-note span');
 if(serviceArea){serviceArea.dataset.ko='뉴욕시 · 롱아일랜드 · 웨체스터 · 뉴저지';serviceArea.dataset.en='New York City · Long Island · Westchester · New Jersey';serviceArea.textContent=currentLanguage==='ko'?serviceArea.dataset.ko:serviceArea.dataset.en;}
 const aboutCopy=document.querySelector('.about-copy');
 aboutCopy?.classList.add('about-copy-card');
+aboutCopy?.querySelector('p')?.remove();
 const contactWrap=document.querySelector('.contact-wrap');
 contactWrap?.insertAdjacentHTML('afterbegin','<div class="contact-illustration" aria-hidden="true"><span>✉</span><i></i><b></b><em>♥</em></div>');
 const eventGrid=document.querySelector('.event-grid');
@@ -406,7 +413,7 @@ if (specialtyScroll) {
 // Approved partners are registered here once and automatically appear in the matching category room.
 const registeredPartners = [
   {category:0,name:'하이벨 디지털',type:'스마트폰·AI·컴퓨터 교육',status:'직영',featured:true},
-  {category:1,name:'하이벨 화상영어',type:'1:1 맞춤 화상영어',status:'운영 중',featured:true},
+  {category:1,name:'하이벨 화상영어',type:'1:1 맞춤 화상영어',status:'직영',featured:true},
   {category:2,name:'미란멜로디',type:'합창·발성·음악 교육',status:'공동 운영',featured:true}
 ];
 const categoryResources = {
