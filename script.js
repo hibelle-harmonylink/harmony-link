@@ -292,7 +292,7 @@ if (oldSpecialtyStart) {
   const specialtyModal = document.createElement('div');
   specialtyModal.className = 'specialty-modal';
   specialtyModal.hidden = true;
-  specialtyModal.innerHTML = `<div class="specialty-modal-backdrop" data-specialty-close></div><div class="specialty-modal-panel" role="dialog" aria-modal="true" aria-labelledby="specialtyModalTitle"><div class="specialty-modal-head"><div><p>PREMIUM SPECIALTY PROGRAM</p><h2 id="specialtyModalTitle"></h2></div><button type="button" class="specialty-close" data-specialty-close aria-label="닫기">×</button></div><div class="specialty-modal-scroll"><img class="specialty-modal-image" src="" alt=""></div><div class="specialty-modal-actions"><p data-ko="프로그램 내용을 확인하셨다면 아래 버튼을 눌러 신청서를 작성해주세요." data-en="After reviewing the program, use the button below to complete the application.">프로그램 내용을 확인하셨다면 아래 버튼을 눌러 신청서를 작성해주세요.</p><a class="btn btn-primary specialty-form-link" href="#" target="_blank" rel="noopener noreferrer"><span data-ko="신청서 작성" data-en="Complete Application">신청서 작성</span><b>↗</b></a></div></div>`;
+  specialtyModal.innerHTML = `<div class="specialty-modal-backdrop" data-specialty-close></div><div class="specialty-modal-panel" role="dialog" aria-modal="true" aria-labelledby="specialtyModalTitle"><div class="specialty-modal-head"><div><p>PREMIUM SPECIALTY PROGRAM</p><h2 id="specialtyModalTitle"></h2></div><button type="button" class="specialty-close" data-specialty-close aria-label="닫기">×</button></div><div class="specialty-modal-scroll"><img class="specialty-modal-image" src="" alt=""></div><div class="specialty-modal-actions"><p data-ko="프로그램 내용을 확인하셨다면 아래 버튼을 눌러 신청서를 작성해주세요." data-en="After reviewing the program, use the button below to complete the application.">프로그램 내용을 확인하셨다면 아래 버튼을 눌러 신청서를 작성해주세요.</p><div><button type="button" class="btn btn-outline specialty-slides-link" hidden><span data-ko="디지털 교육 자료 보기" data-en="View Digital Materials">디지털 교육 자료 보기</span><b>↗</b></button><a class="btn btn-primary specialty-form-link" href="#" target="_blank" rel="noopener noreferrer"><span data-ko="신청서 작성" data-en="Complete Application">신청서 작성</span><b>↗</b></a></div></div></div>`;
   document.body.append(specialtyModal);
   const closeSpecialtyModal=()=>{specialtyModal.hidden=true;document.body.classList.remove('modal-open');};
   specialtySection.querySelectorAll('[data-specialty]').forEach(button=>button.addEventListener('click',()=>{
@@ -300,6 +300,7 @@ if (oldSpecialtyStart) {
     specialtyModal.querySelector('#specialtyModalTitle').textContent=currentLanguage==='en'?program.titleEn:program.titleKo;
     const modalImage=specialtyModal.querySelector('.specialty-modal-image');modalImage.src=program.image;modalImage.alt=`${program.titleKo} 프로그램 전단지`;
     const formLink=specialtyModal.querySelector('.specialty-form-link');
+    specialtyModal.querySelector('.specialty-slides-link').hidden=program.id!=='digital';
     formLink.hidden=!program.form;
     if(program.form) formLink.href=program.form;
     specialtyModal.querySelector('.specialty-modal-actions p').textContent=program.form
@@ -307,7 +308,13 @@ if (oldSpecialtyStart) {
       : (currentLanguage==='ko'?'미란멜로디 신청서는 준비 중입니다. 새로운 신청서가 완성되면 연결됩니다.':'The Meeran Melody application is coming soon.');
     specialtyModal.hidden=false;document.body.classList.add('modal-open');
   }));
+  specialtySection.querySelectorAll('.specialty-banner-card').forEach(card=>{
+    card.setAttribute('role','button');card.tabIndex=0;
+    card.addEventListener('click',event=>{if(!event.target.closest('.specialty-open'))card.querySelector('.specialty-open').click();});
+    card.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();card.querySelector('.specialty-open').click();}});
+  });
   specialtyModal.querySelectorAll('[data-specialty-close]').forEach(button=>button.addEventListener('click',closeSpecialtyModal));
+  specialtyModal.querySelector('.specialty-slides-link').addEventListener('click',()=>{closeSpecialtyModal();openDigitalGallery();});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!specialtyModal.hidden)closeSpecialtyModal();});
   setLanguage(currentLanguage);
 }
@@ -356,8 +363,11 @@ if (specialtyScroll) {
       <figure><img src="assets/teachers/ara.png" alt="영어 강사 아라"><figcaption>아라 <small>Ara</small></figcaption></figure>
     </div>
   </section>`);
+  specialtyScroll.insertAdjacentHTML('afterbegin', `<section class="featured-specialty-teacher digital-specialty-teacher" hidden><img src="assets/teachers/noh-hyekyung.png" alt="디지털 교육 강사 노혜경"><div><p class="eyebrow">HIBELLE DIGITAL INSTRUCTOR</p><h3 data-ko="노혜경 강사" data-en="Instructor Hyekyung Noh">노혜경 강사</h3><span data-ko="디지털 교육 · 스마트폰 · AI 활용" data-en="Digital Learning · Smartphones · AI">디지털 교육 · 스마트폰 · AI 활용</span><p data-ko="일상에서 바로 활용할 수 있는 쉽고 실용적인 디지털 교육을 안내합니다." data-en="Practical, approachable digital learning for everyday life.">일상에서 바로 활용할 수 있는 쉽고 실용적인 디지털 교육을 안내합니다.</p></div></section><section class="featured-specialty-teacher melody-specialty-teacher" hidden><img src="assets/teachers/kim-miran.jpg" alt="합창 교육 강사 김미란"><div><p class="eyebrow">MEERAN MELODY DIRECTOR</p><h3 data-ko="김미란 강사" data-en="Instructor Miran Kim">김미란 강사</h3><span data-ko="합창 · 발성 · 음악 공동체" data-en="Choir · Voice · Music Community">합창 · 발성 · 음악 공동체</span><p data-ko="함께 노래하며 자신감과 따뜻한 관계를 만드는 힐링 합창을 이끕니다." data-en="Leading healing choir experiences that build confidence and connection.">함께 노래하며 자신감과 따뜻한 관계를 만드는 힐링 합창을 이끕니다.</p></div></section>`);
   document.querySelectorAll('.specialty-open').forEach(button => button.addEventListener('click', () => {
     specialtyScroll.querySelector('.english-teachers').hidden = button.dataset.specialty !== 'english';
+    specialtyScroll.querySelector('.digital-specialty-teacher').hidden = button.dataset.specialty !== 'digital';
+    specialtyScroll.querySelector('.melody-specialty-teacher').hidden = button.dataset.specialty !== 'melody';
   }));
 }
 
@@ -392,10 +402,24 @@ const categoryReasons = [
   ['새로운 경험','낯선 장소와 문화를 경험하며 일상에 설렘을 더하고 새로운 관계를 만듭니다.'],
   ['다음 기회','실용적인 기술과 자격을 준비해 취업·창업과 새로운 역할에 도전할 힘을 얻습니다.']
 ];
+const categoryPurposes = [
+  '디지털 기기를 두려움 없이 사용하고 일상의 필요한 일을 스스로 해결하는 것이 목표입니다.',
+  '실생활에서 바로 쓰는 표현을 익혀 자신 있게 대화하고 관계의 폭을 넓히는 것이 목표입니다.',
+  '호흡·발성·악기 활동을 통해 정서적 안정과 함께하는 즐거움을 키우는 것이 목표입니다.',
+  '안전하고 즐거운 움직임을 습관으로 만들어 균형감각과 생활 체력을 높이는 것이 목표입니다.',
+  '생활에 필요한 금융 지식을 이해하고 내 상황에 맞는 현명한 결정을 내리는 것이 목표입니다.',
+  '다양한 재료와 표현 방법을 경험하며 창의성과 성취감을 키우는 것이 목표입니다.',
+  '내 몸에 맞는 운동을 익혀 유연성·근력·독립적인 생활 능력을 지키는 것이 목표입니다.',
+  '인문·독서·문화 활동을 통해 생각을 깊게 하고 의미 있는 대화를 이어가는 것이 목표입니다.',
+  '감정을 이해하고 건강하게 표현하며 관계 속 갈등을 지혜롭게 다루는 것이 목표입니다.',
+  '반복적이고 즐거운 두뇌 활동으로 기억력과 집중력을 꾸준히 자극하는 것이 목표입니다.',
+  '안전한 문화 체험을 통해 새로운 환경에 대한 자신감과 삶의 활력을 얻는 것이 목표입니다.',
+  '실용 역량과 자격을 갖춰 새로운 일과 사회적 역할에 도전하는 것이 목표입니다.'
+];
 const reasonModal = document.createElement('div');
 reasonModal.className = 'reason-modal';
 reasonModal.hidden = true;
-reasonModal.innerHTML = `<div class="reason-backdrop" data-reason-close></div><div class="reason-panel" role="dialog" aria-modal="true" aria-labelledby="reasonTitle"><button type="button" class="reason-close" data-reason-close aria-label="닫기">×</button><span class="reason-emoji"></span><p data-ko="WHY THIS LEARNING MATTERS" data-en="WHY THIS LEARNING MATTERS">WHY THIS LEARNING MATTERS</p><h2 id="reasonTitle"></h2><h3 class="reason-lead"></h3><p class="reason-copy"></p><div class="reason-actions"><button type="button" class="btn btn-primary reason-provider"><span data-ko="관련 업체·강사 보기" data-en="View Providers & Instructors">관련 업체·강사 보기</span><b>→</b></button><button type="button" class="btn btn-outline reason-slides" hidden><span data-ko="디지털 PPT 보기" data-en="View Digital Slides">디지털 PPT 보기</span><b>↗</b></button></div></div>`;
+reasonModal.innerHTML = `<div class="reason-backdrop" data-reason-close></div><div class="reason-panel" role="dialog" aria-modal="true" aria-labelledby="reasonTitle"><button type="button" class="reason-close" data-reason-close aria-label="닫기">×</button><span class="reason-emoji"></span><p data-ko="LEARNING GUIDE" data-en="LEARNING GUIDE">LEARNING GUIDE</p><h2 id="reasonTitle"></h2><div class="reason-summary"><section><span data-ko="배움의 이유" data-en="WHY IT MATTERS">배움의 이유</span><h3 class="reason-lead"></h3><p class="reason-copy"></p></section><section><span data-ko="배움의 목적" data-en="LEARNING GOAL">배움의 목적</span><p class="reason-purpose"></p></section></div><div class="reason-partners"><div><span data-ko="RELATED PARTNERS" data-en="RELATED PARTNERS">RELATED PARTNERS</span><h3 data-ko="관련 업체·강사" data-en="Providers & Instructors">관련 업체·강사</h3></div><div class="reason-partner-list"></div></div></div>`;
 document.body.appendChild(reasonModal);
 let activeReasonCategory = 0;
 function closeReasonModal(){reasonModal.hidden=true;document.body.classList.remove('modal-open');}
@@ -407,12 +431,13 @@ function openReasonModal(index){
   reasonModal.querySelector('#reasonTitle').textContent=currentLanguage==='en'?category.en:category.ko;
   reasonModal.querySelector('.reason-lead').textContent=reason[0];
   reasonModal.querySelector('.reason-copy').textContent=reason[1];
-  reasonModal.querySelector('.reason-slides').hidden=index!==0;
+  reasonModal.querySelector('.reason-purpose').textContent=categoryPurposes[index];
+  const partners=registeredPartners.filter(partner=>partner.category===index);
+  reasonModal.querySelector('.reason-partner-list').innerHTML=partners.length?partners.map(partner=>`<article><b>${partner.name.charAt(0)}</b><div><strong>${partner.name}</strong><small>${partner.type}</small></div><span>${partner.status}</span></article>`).join(''):`<article class="reason-partner-empty"><b>＋</b><div><strong data-ko="입점 파트너 모집 중" data-en="Partners wanted">입점 파트너 모집 중</strong><small data-ko="검증된 업체와 강사가 등록되면 이곳에 표시됩니다." data-en="Approved providers will appear here.">검증된 업체와 강사가 등록되면 이곳에 표시됩니다.</small></div></article>`;
   reasonModal.hidden=false;document.body.classList.add('modal-open');
+  setLanguage(currentLanguage);
 }
 reasonModal.querySelectorAll('[data-reason-close]').forEach(item=>item.addEventListener('click',closeReasonModal));
-reasonModal.querySelector('.reason-provider').addEventListener('click',()=>{closeReasonModal();openCategoryRoom(activeReasonCategory);});
-reasonModal.querySelector('.reason-slides').addEventListener('click',()=>{closeReasonModal();openDigitalGallery();});
 function openCategoryRoom(index) {
   const category = learningCategories[index];
   const providers = registeredPartners.filter(partner => partner.category === index);
@@ -432,9 +457,7 @@ function openCategoryRoom(index) {
   setLanguage(currentLanguage);
 }
 categoryCards.forEach((card,index) => {
-  card.insertAdjacentHTML('beforeend', `<div class="category-action-guide"><span class="material-guide"><small data-ko="카드 클릭" data-en="CLICK CARD">카드 클릭</small><strong data-ko="이 교육이 필요한 이유" data-en="Why This Learning Matters">이 교육이 필요한 이유</strong><b>?</b></span><button type="button" class="provider-room-open"><span><small data-ko="입점 파트너 찾기" data-en="FIND PARTNERS">입점 파트너 찾기</small><strong data-ko="관련 업체·강사 보기" data-en="View Providers & Instructors">관련 업체·강사 보기</strong></span><b>＋</b></button></div>`);
-  const providerButton = card.querySelector('.provider-room-open');
-  providerButton.addEventListener('click', event => {event.stopPropagation();openCategoryRoom(index);});
+  card.insertAdjacentHTML('beforeend', `<div class="category-action-guide"><button type="button" class="category-primary-action"><span><small data-ko="배움 안내" data-en="LEARNING GUIDE">배움 안내</small><strong data-ko="이유·목적·관련 업체 보기" data-en="Why, Goals & Providers">이유·목적·관련 업체 보기</strong></span><b>→</b></button></div>`);
   card.addEventListener('click', () => openReasonModal(index));
   card.addEventListener('keydown', event => {if((event.key === 'Enter' || event.key === ' ') && event.target === card){event.preventDefault();openReasonModal(index);}});
 });
@@ -517,11 +540,39 @@ document.querySelectorAll('a[href="#membership"]').forEach(link=>{
 const volunteerAnchor=document.getElementById('events');
 if(volunteerAnchor){
   volunteerAnchor.insertAdjacentHTML('beforebegin', `<section class="volunteer section" id="volunteer"><div class="container volunteer-shell"><div class="volunteer-intro reveal visible"><p class="eyebrow">COMMUNITY VOLUNTEERS</p><h2 data-ko="배움과 마음을 나누는 무료 봉사" data-en="Share Your Time and Talents">배움과 마음을 나누는 무료 봉사</h2><p data-ko="지역사회에 따뜻한 연결이 필요한 곳에서 자신의 시간과 재능을 나눠주세요. 작은 참여도 누군가의 새로운 시작이 됩니다." data-en="Share your time and talents where our community needs connection. Every contribution can become someone's new beginning.">지역사회에 따뜻한 연결이 필요한 곳에서 자신의 시간과 재능을 나눠주세요. 작은 참여도 누군가의 새로운 시작이 됩니다.</p><a href="#contact" class="btn btn-primary"><span data-ko="봉사 참여 문의" data-en="Volunteer With Us">봉사 참여 문의</span><b>→</b></a></div><div class="volunteer-grid"><article><span>01</span><b>🤝</b><h3 data-ko="수업 진행 도움" data-en="Class Support">수업 진행 도움</h3><p data-ko="참여자 안내, 준비와 현장 진행을 함께합니다." data-en="Help welcome participants and support class activities.">참여자 안내, 준비와 현장 진행을 함께합니다.</p></article><article><span>02</span><b>💻</b><h3 data-ko="디지털 도움" data-en="Digital Support">디지털 도움</h3><p data-ko="스마트폰과 온라인 이용이 어려운 이웃을 돕습니다." data-en="Help neighbors with smartphones and online services.">스마트폰과 온라인 이용이 어려운 이웃을 돕습니다.</p></article><article><span>03</span><b>🎨</b><h3 data-ko="재능 나눔" data-en="Share a Talent">재능 나눔</h3><p data-ko="음악·미술·언어 등 나만의 재능을 나눕니다." data-en="Share your skills in music, art, languages, and more.">음악·미술·언어 등 나만의 재능을 나눕니다.</p></article></div></div></section>`);
+  const volunteerSection=document.getElementById('volunteer');
+  volunteerSection.querySelector('.volunteer-grid article')?.remove();
+  volunteerSection.querySelector('.volunteer-intro h2').dataset.ko='마음을 잇는 무료 봉사';
+  volunteerSection.querySelector('.volunteer-intro h2').textContent=currentLanguage==='en'?'Community Volunteer Support':'마음을 잇는 무료 봉사';
+  const oldVolunteerButton=volunteerSection.querySelector('.volunteer-intro .btn');
+  oldVolunteerButton.outerHTML=`<div class="volunteer-actions"><button type="button" class="btn btn-primary contact-form-open" data-inquiry="봉사 참여"><span data-ko="봉사하고 싶어요" data-en="I Want to Volunteer">봉사하고 싶어요</span><b>→</b></button><button type="button" class="btn btn-outline contact-form-open" data-inquiry="봉사 도움 요청"><span data-ko="도움이 필요해요" data-en="I Need Volunteer Help">도움이 필요해요</span><b>→</b></button></div>`;
 }
 const refreshedContact=document.querySelector('.contact-wrap');
 if(refreshedContact){
-  refreshedContact.innerHTML=`<div class="contact-main"><div class="contact-mark" aria-hidden="true">H</div><div><p class="eyebrow">LET'S CONNECT</p><h2 data-ko="어떤 도움이 필요하신가요?" data-en="How Can We Help?">어떤 도움이 필요하신가요?</h2><p data-ko="교육 신청, 입점, 봉사와 제휴 중 필요한 내용을 알려주시면 알맞은 담당자가 안내해 드립니다." data-en="Tell us whether you need learning, partnership, volunteering, or collaboration support and the right person will respond.">교육 신청, 입점, 봉사와 제휴 중 필요한 내용을 알려주시면 알맞은 담당자가 안내해 드립니다.</p></div></div><div class="contact-choices"><a class="contact-primary" href="mailto:hibelle@hibelleconsulting.com"><span data-ko="이메일로 문의하기" data-en="Send an Email">이메일로 문의하기</span><strong>hibelle@hibelleconsulting.com</strong><b>↗</b></a><div class="contact-call"><span data-ko="전화 상담" data-en="CALL US">전화 상담</span><a href="tel:+19296030052"><small data-ko="미국" data-en="USA">미국</small><strong>+1 929-603-0052</strong></a><i></i><a href="tel:+821097730052"><small data-ko="한국" data-en="KOREA">한국</small><strong>+82 10-9773-0052</strong></a></div></div>`;
+  refreshedContact.innerHTML=`<div class="contact-main"><div><p class="eyebrow">LET'S CONNECT</p><h2 data-ko="어떤 도움이 필요하신가요?" data-en="How Can We Help?">어떤 도움이 필요하신가요?</h2><p data-ko="교육 신청, 입점, 봉사와 제휴 중 필요한 내용을 알려주시면 알맞은 담당자가 안내해 드립니다." data-en="Tell us whether you need learning, partnership, volunteering, or collaboration support and the right person will respond.">교육 신청, 입점, 봉사와 제휴 중 필요한 내용을 알려주시면 알맞은 담당자가 안내해 드립니다.</p></div></div><div class="contact-choices"><button type="button" class="contact-primary contact-form-open" data-inquiry="일반 문의"><span data-ko="문의사항 작성하기" data-en="Write an Inquiry">문의사항 작성하기</span><strong>이름 · 연락처 · 이메일 · 문의내용</strong><b>↗</b></button><div class="contact-call"><span data-ko="전화 상담" data-en="CALL US">전화 상담</span><a href="tel:+19296030052"><small data-ko="미국" data-en="USA">미국</small><strong>+1 929-603-0052</strong></a><i></i><a href="tel:+821097730052"><small data-ko="한국" data-en="KOREA">한국</small><strong>+82 10-9773-0052</strong></a></div></div>`;
 }
+const inquiryModal=document.createElement('div');
+inquiryModal.className='inquiry-modal';
+inquiryModal.hidden=true;
+inquiryModal.innerHTML=`<div class="inquiry-backdrop" data-inquiry-close></div><div class="inquiry-panel" role="dialog" aria-modal="true" aria-labelledby="inquiryTitle"><div class="inquiry-head"><div><p>CONTACT HARMONY LINK</p><h2 id="inquiryTitle" data-ko="문의사항을 남겨주세요" data-en="Send Us Your Inquiry">문의사항을 남겨주세요</h2></div><button type="button" data-inquiry-close aria-label="닫기">×</button></div><form id="inquiryForm"><input type="hidden" name="문의 유형" id="inquiryType" value="일반 문의"><input type="hidden" name="_subject" value="Harmony Link 홈페이지 새 문의"><input type="hidden" name="_captcha" value="false"><div class="inquiry-row"><label><span data-ko="이름 *" data-en="Name *">이름 *</span><input name="이름" required autocomplete="name"></label><label><span data-ko="연락처 *" data-en="Phone *">연락처 *</span><input name="연락처" type="tel" required autocomplete="tel"></label></div><label><span data-ko="이메일 *" data-en="Email *">이메일 *</span><input name="email" type="email" required autocomplete="email"></label><label><span data-ko="문의사항 *" data-en="Message *">문의사항 *</span><textarea name="문의사항" rows="6" required></textarea></label><label class="inquiry-consent"><input type="checkbox" required><span data-ko="답변을 위해 입력한 개인정보를 전달하는 데 동의합니다." data-en="I agree to submit my information for a response.">답변을 위해 입력한 개인정보를 전달하는 데 동의합니다.</span></label><button type="submit" class="btn btn-primary inquiry-submit"><span data-ko="문의 보내기" data-en="Send Inquiry">문의 보내기</span><b>→</b></button><p class="inquiry-status" role="status"></p></form></div>`;
+document.body.appendChild(inquiryModal);
+const closeInquiryModal=()=>{inquiryModal.hidden=true;document.body.classList.remove('modal-open');};
+const openInquiryModal=(type='일반 문의')=>{inquiryModal.querySelector('#inquiryType').value=type;inquiryModal.hidden=false;document.body.classList.add('modal-open');inquiryModal.querySelector('input[name="이름"]').focus();};
+document.querySelectorAll('.contact-form-open').forEach(button=>button.addEventListener('click',()=>openInquiryModal(button.dataset.inquiry)));
+const footerInquiryLink=[...document.querySelectorAll('footer a')].find(link=>link.dataset.ko==='문의하기');
+if(footerInquiryLink){footerInquiryLink.href='#contact';footerInquiryLink.addEventListener('click',event=>{event.preventDefault();openInquiryModal('홈페이지 하단 문의');});}
+inquiryModal.querySelectorAll('[data-inquiry-close]').forEach(item=>item.addEventListener('click',closeInquiryModal));
+inquiryModal.querySelector('#inquiryForm').addEventListener('submit',async event=>{
+  event.preventDefault();
+  const form=event.currentTarget;const status=form.querySelector('.inquiry-status');const submit=form.querySelector('.inquiry-submit');
+  status.textContent=currentLanguage==='en'?'Sending...':'보내는 중입니다...';submit.disabled=true;
+  try{
+    const response=await fetch('https://formsubmit.co/ajax/hibelle@hibelleconsulting.com',{method:'POST',headers:{'Accept':'application/json'},body:new FormData(form)});
+    if(!response.ok)throw new Error('submit failed');
+    status.textContent=currentLanguage==='en'?'Your inquiry has been sent.':'문의가 전송되었습니다. 확인 후 연락드리겠습니다.';form.reset();
+  }catch(error){status.textContent=currentLanguage==='en'?'Delivery failed. Please email hibelle@hibelleconsulting.com.':'전송에 실패했습니다. hibelle@hibelleconsulting.com으로 이메일을 보내주세요.';}
+  finally{submit.disabled=false;}
+});
 setLanguage(currentLanguage);
 
 // Partner recruitment flyer: show the program details before opening the application form.
