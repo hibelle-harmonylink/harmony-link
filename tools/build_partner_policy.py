@@ -270,8 +270,35 @@ for i,(label,value) in enumerate([
     c1,c2=contact.rows[i].cells; shade(c1,PALE); shade(c2,WHITE)
     set_cell_text(c1,label,True,NAVY,9); set_cell_text(c2,value,False,INK,9.5)
 
-doc.add_paragraph()
-add_callout("운영 원칙", "HarmonyLink는 강사와 교육기관이 함께 성장하는 신뢰 기반의 교육 플랫폼을 지향합니다. 공정한 매칭, 투명한 운영, 상호 존중을 바탕으로 지속 가능한 교육 생태계를 만들어 갑니다.", fill=NAVY, color=WHITE)
+doc.add_page_break()
+principle = doc.add_table(rows=1, cols=1)
+principle.alignment = WD_TABLE_ALIGNMENT.CENTER
+principle.autofit = False
+principle.columns[0].width = Inches(6.7)
+principle_cell = principle.cell(0, 0)
+shade(principle_cell, NAVY)
+cell_margins(principle_cell, 420, 420, 420, 420)
+
+principle_title = principle_cell.paragraphs[0]
+principle_title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+principle_title.paragraph_format.space_after = Pt(18)
+principle_title_run = principle_title.add_run("운영 원칙")
+principle_title_run.bold = True
+principle_title_run.font.size = Pt(22)
+principle_title_run.font.color.rgb = RGBColor.from_string(WHITE)
+
+for principle_text in [
+    "Harmony Link는 강사와 교육기관이 함께 성장하는 신뢰 기반의 교육 플랫폼을 지향합니다.",
+    "공정한 매칭, 투명한 운영, 상호 존중을 바탕으로 지속 가능한 교육 생태계를 만들어 갑니다."
+]:
+    principle_paragraph = principle_cell.add_paragraph()
+    principle_paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    principle_paragraph.paragraph_format.space_after = Pt(13)
+    principle_paragraph.paragraph_format.line_spacing = 1.35
+    principle_run = principle_paragraph.add_run(principle_text)
+    principle_run.bold = True
+    principle_run.font.size = Pt(14)
+    principle_run.font.color.rgb = RGBColor.from_string(WHITE)
 
 doc.core_properties.title = "HarmonyLink 입점 파트너 플랫폼 이용 및 운영 정책"
 doc.core_properties.subject = "Partner Platform Policy Version 1.0"
