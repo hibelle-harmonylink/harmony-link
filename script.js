@@ -272,6 +272,38 @@ document.addEventListener('keydown', event => {
 
 setLanguage(currentLanguage);
 
+// 2026-07-16: visible partner pricing and limited-time PREMIUM promotion.
+const membershipPricingAnchor = document.querySelector('#membership .upgrade-prompt');
+if (membershipPricingAnchor && !document.querySelector('.partner-price-summary')) {
+  membershipPricingAnchor.insertAdjacentHTML('beforebegin', `<div class="partner-price-summary reveal visible" aria-label="입점 파트너 멤버십 요금"><div class="price-summary-intro"><span data-ko="입점 강사·교육업체 전용" data-en="FOR PARTNER PROVIDERS">입점 강사·교육업체 전용</span><strong data-ko="파트너 멤버십" data-en="Partner Memberships">파트너 멤버십</strong><small data-ko="수강자는 Harmony Link 플랫폼을 무료로 이용합니다." data-en="Learners use the Harmony Link platform free of charge.">수강자는 Harmony Link 플랫폼을 무료로 이용합니다.</small></div><div class="price-summary-plan basic"><span>BASIC</span><strong>$20</strong><small data-ko="월 이용료" data-en="per month">월 이용료</small></div><div class="price-summary-plan premium"><span>PREMIUM</span><strong>$50</strong><small data-ko="월 이용료" data-en="per month">월 이용료</small></div></div>`);
+}
+
+const promotionModal = document.createElement('div');
+promotionModal.className = 'promotion-modal';
+promotionModal.hidden = true;
+promotionModal.innerHTML = `<div class="promotion-backdrop" data-promotion-close></div><section class="promotion-panel" role="dialog" aria-modal="true" aria-labelledby="promotionTitle"><button class="promotion-close" type="button" data-promotion-close aria-label="닫기">×</button><span class="promotion-badge" data-ko="8월 한정 혜택" data-en="AUGUST SPECIAL">8월 한정 혜택</span><p class="promotion-eyebrow">HARMONY LINK PARTNER</p><h2 id="promotionTitle" data-ko="PREMIUM 회원<br>3개월 등록비 면제" data-en="PREMIUM Partners<br>3 Months Registration Fee Waived">PREMIUM 회원<br>3개월 등록비 면제</h2><p data-ko="2026년 8월 31일까지 프리미엄 회원으로 접수한 입점 강사·교육업체에게 3개월 등록비 면제 혜택을 드립니다." data-en="Partner instructors and education providers who apply for PREMIUM membership by August 31, 2026 receive a three-month registration fee waiver.">2026년 8월 31일까지 프리미엄 회원으로 접수한 입점 강사·교육업체에게 3개월 등록비 면제 혜택을 드립니다.</p><div class="promotion-prices"><span><b>BASIC</b><strong>$20</strong><small data-ko="/ 월" data-en="/ month">/ 월</small></span><span class="featured"><b>PREMIUM</b><strong>$50</strong><small data-ko="/ 월" data-en="/ month">/ 월</small></span></div><button class="btn promotion-action" type="button"><span data-ko="멤버십 혜택 확인하기" data-en="View Membership Benefits">멤버십 혜택 확인하기</span><b>→</b></button><small class="promotion-deadline" data-ko="접수 마감 · 2026년 8월 31일" data-en="Application deadline · August 31, 2026">접수 마감 · 2026년 8월 31일</small></section>`;
+document.body.appendChild(promotionModal);
+const closePromotion = () => {
+  promotionModal.hidden = true;
+  document.body.classList.remove('modal-open');
+  sessionStorage.setItem('harmonyAugustPromotionSeen', 'true');
+};
+promotionModal.querySelectorAll('[data-promotion-close]').forEach(item => item.addEventListener('click', closePromotion));
+promotionModal.querySelector('.promotion-action').addEventListener('click', () => {
+  closePromotion();
+  if (paidPlans) paidPlans.hidden = false;
+  if (upgradeToggle) upgradeToggle.setAttribute('aria-expanded', 'true');
+  document.getElementById('membership')?.scrollIntoView({behavior:'smooth'});
+});
+if (!sessionStorage.getItem('harmonyAugustPromotionSeen') && new Date() <= new Date('2026-08-31T23:59:59-04:00')) {
+  window.setTimeout(() => {
+    promotionModal.hidden = false;
+    document.body.classList.add('modal-open');
+    setLanguage(currentLanguage);
+  }, 650);
+}
+setLanguage(currentLanguage);
+
 const specialtyPrograms = [
   {id:'digital',titleKo:'하이벨 디지털',titleEn:'Hibelle Digital',image:'assets/specialty/hibelle-digital.jpg',form:'https://docs.google.com/forms/d/1DWtn1FQD86E4EHzABxeoEpHDuVeoFH_Smak4_C1RU7M/viewform',tone:'blue'},
   {id:'english',titleKo:'하이벨 화상영어',titleEn:'Hibelle Online English',image:'assets/specialty/hibelle-online-english.jpg',form:'https://docs.google.com/forms/d/1kN5-d09smqU_UO9rUO91SdQqco7ABYDzWTgpv74EUsc/viewform',tone:'orange'},
@@ -457,7 +489,7 @@ function openCategoryRoom(index) {
   setLanguage(currentLanguage);
 }
 categoryCards.forEach((card,index) => {
-  card.insertAdjacentHTML('beforeend', `<div class="category-action-guide"><button type="button" class="category-primary-action"><span><small data-ko="배움 안내" data-en="LEARNING GUIDE">배움 안내</small><strong data-ko="이유·목적·관련 업체 보기" data-en="Why, Goals & Providers">이유·목적·관련 업체 보기</strong></span><b>→</b></button></div>`);
+  card.insertAdjacentHTML('beforeend', `<div class="category-action-guide"><button type="button" class="category-primary-action"><span><small data-ko="교육 카테고리" data-en="EDUCATION CATEGORY">교육 카테고리</small><strong data-ko="둘러보기" data-en="Explore">둘러보기</strong></span><b>→</b></button></div>`);
   card.addEventListener('click', () => openReasonModal(index));
   card.addEventListener('keydown', event => {if((event.key === 'Enter' || event.key === ' ') && event.target === card){event.preventDefault();openReasonModal(index);}});
 });
