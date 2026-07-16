@@ -41,7 +41,7 @@ const learningCategories = [
 const programGrid = document.querySelector('.program-grid');
 if (programGrid) {
   programGrid.innerHTML = learningCategories.map((category, index) => `
-    <article class="program-card category-card ${index > 2 ? 'coming-soon' : ''} reveal" role="button" tabindex="0" aria-label="${category.ko} 파트너 방 보기">
+    <article class="program-card category-card ${index > 2 ? 'coming-soon' : ''} reveal" role="button" tabindex="0" aria-label="${category.ko}이 필요한 이유 보기">
       <div class="program-art category-art" style="--category-hue:${205 + index * 17}"><span>${String(index + 1).padStart(2, '0')}</span><b>${category.emoji}</b></div>
       <div class="program-info"><p>${category.kicker}</p><h3 data-ko="${category.ko}" data-en="${category.en}">${category.ko}</h3><div class="tags">${category.tags.map(tag => `<span data-ko="${tag[0]}" data-en="${tag[1]}">${tag[0]}</span>`).join('')}</div></div>
     </article>`).join('');
@@ -378,6 +378,41 @@ providerDirectoryModal.hidden = true;
 providerDirectoryModal.innerHTML = `<div class="directory-backdrop" data-directory-close></div><div class="directory-panel" role="dialog" aria-modal="true" aria-labelledby="directoryTitle"><div class="directory-head"><div><p>HARMONY LINK CATEGORY ROOM</p><h2 id="directoryTitle"></h2><small class="room-subtitle"></small></div><button type="button" data-directory-close aria-label="닫기">×</button></div><section class="room-resource" hidden></section><div class="room-section-title"><div><span data-ko="APPROVED PARTNERS" data-en="APPROVED PARTNERS">APPROVED PARTNERS</span><h3 data-ko="입점 파트너·강사" data-en="Partner Providers & Instructors">입점 파트너·강사</h3></div><b class="room-partner-count"></b></div><div class="directory-list"></div><div class="directory-foot"><p data-ko="심사가 완료된 새 업체와 강사는 등록 후 해당 카테고리 방에 자동으로 추가됩니다." data-en="New approved providers and instructors are automatically added to the matching category room.">심사가 완료된 새 업체와 강사는 등록 후 해당 카테고리 방에 자동으로 추가됩니다.</p><a href="${partnerFormUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary"><span data-ko="파트너 등록 신청" data-en="Apply as a Partner">파트너 등록 신청</span><b>↗</b></a></div></div>`;
 document.body.appendChild(providerDirectoryModal);
 const categoryCards = [...document.querySelectorAll('.program-grid .category-card')];
+const categoryReasons = [
+  ['디지털 자립','예약·결제·정보 검색이 온라인으로 이동한 일상에서 스스로 안전하게 생활하는 힘을 기릅니다.'],
+  ['더 넓은 소통','새로운 언어는 가족, 이웃, 여행지에서 자신 있게 관계를 이어가는 문을 열어줍니다.'],
+  ['정서와 연결','노래와 악기 활동은 마음을 편안하게 하고 다른 사람과 자연스럽게 어울리게 합니다.'],
+  ['즐거운 활력','리듬에 맞춰 움직이며 균형감각과 체력을 기르고 일상에 활기를 더합니다.'],
+  ['현명한 선택','재정·세무·부동산의 기본을 이해해 생활 속 중요한 결정을 더 안전하게 내립니다.'],
+  ['표현과 성취','손으로 만들고 표현하는 과정에서 집중력과 자신감, 창작의 기쁨을 발견합니다.'],
+  ['건강한 일상','꾸준한 움직임으로 유연성과 근력을 지키고 더 독립적인 생활을 준비합니다.'],
+  ['깊이 있는 삶','인문·독서·문화 활동으로 세상을 보는 시야를 넓히고 풍요로운 대화를 만듭니다.'],
+  ['마음 돌봄','감정을 이해하고 건강하게 소통하는 방법을 배워 자신과 관계를 함께 돌봅니다.'],
+  ['두뇌 건강','즐거운 인지 활동으로 기억력과 집중력을 자극하고 활기찬 생활 습관을 만듭니다.'],
+  ['새로운 경험','낯선 장소와 문화를 경험하며 일상에 설렘을 더하고 새로운 관계를 만듭니다.'],
+  ['다음 기회','실용적인 기술과 자격을 준비해 취업·창업과 새로운 역할에 도전할 힘을 얻습니다.']
+];
+const reasonModal = document.createElement('div');
+reasonModal.className = 'reason-modal';
+reasonModal.hidden = true;
+reasonModal.innerHTML = `<div class="reason-backdrop" data-reason-close></div><div class="reason-panel" role="dialog" aria-modal="true" aria-labelledby="reasonTitle"><button type="button" class="reason-close" data-reason-close aria-label="닫기">×</button><span class="reason-emoji"></span><p data-ko="WHY THIS LEARNING MATTERS" data-en="WHY THIS LEARNING MATTERS">WHY THIS LEARNING MATTERS</p><h2 id="reasonTitle"></h2><h3 class="reason-lead"></h3><p class="reason-copy"></p><div class="reason-actions"><button type="button" class="btn btn-primary reason-provider"><span data-ko="관련 업체·강사 보기" data-en="View Providers & Instructors">관련 업체·강사 보기</span><b>→</b></button><button type="button" class="btn btn-outline reason-slides" hidden><span data-ko="디지털 PPT 보기" data-en="View Digital Slides">디지털 PPT 보기</span><b>↗</b></button></div></div>`;
+document.body.appendChild(reasonModal);
+let activeReasonCategory = 0;
+function closeReasonModal(){reasonModal.hidden=true;document.body.classList.remove('modal-open');}
+function openReasonModal(index){
+  activeReasonCategory=index;
+  const category=learningCategories[index];
+  const reason=categoryReasons[index];
+  reasonModal.querySelector('.reason-emoji').textContent=category.emoji;
+  reasonModal.querySelector('#reasonTitle').textContent=currentLanguage==='en'?category.en:category.ko;
+  reasonModal.querySelector('.reason-lead').textContent=reason[0];
+  reasonModal.querySelector('.reason-copy').textContent=reason[1];
+  reasonModal.querySelector('.reason-slides').hidden=index!==0;
+  reasonModal.hidden=false;document.body.classList.add('modal-open');
+}
+reasonModal.querySelectorAll('[data-reason-close]').forEach(item=>item.addEventListener('click',closeReasonModal));
+reasonModal.querySelector('.reason-provider').addEventListener('click',()=>{closeReasonModal();openCategoryRoom(activeReasonCategory);});
+reasonModal.querySelector('.reason-slides').addEventListener('click',()=>{closeReasonModal();openDigitalGallery();});
 function openCategoryRoom(index) {
   const category = learningCategories[index];
   const providers = registeredPartners.filter(partner => partner.category === index);
@@ -397,11 +432,11 @@ function openCategoryRoom(index) {
   setLanguage(currentLanguage);
 }
 categoryCards.forEach((card,index) => {
-  card.insertAdjacentHTML('beforeend', `<div class="category-action-guide"><span class="material-guide"><small data-ko="카드 클릭" data-en="CLICK CARD">카드 클릭</small><strong data-ko="교육안 보기" data-en="View Program Guide">교육안 보기</strong><b>↗</b></span><button type="button" class="provider-room-open"><span><small data-ko="입점 파트너 찾기" data-en="FIND PARTNERS">입점 파트너 찾기</small><strong data-ko="관련 업체·강사 보기" data-en="View Providers & Instructors">관련 업체·강사 보기</strong></span><b>＋</b></button></div>`);
+  card.insertAdjacentHTML('beforeend', `<div class="category-action-guide"><span class="material-guide"><small data-ko="카드 클릭" data-en="CLICK CARD">카드 클릭</small><strong data-ko="이 교육이 필요한 이유" data-en="Why This Learning Matters">이 교육이 필요한 이유</strong><b>?</b></span><button type="button" class="provider-room-open"><span><small data-ko="입점 파트너 찾기" data-en="FIND PARTNERS">입점 파트너 찾기</small><strong data-ko="관련 업체·강사 보기" data-en="View Providers & Instructors">관련 업체·강사 보기</strong></span><b>＋</b></button></div>`);
   const providerButton = card.querySelector('.provider-room-open');
   providerButton.addEventListener('click', event => {event.stopPropagation();openCategoryRoom(index);});
-  card.addEventListener('click', () => index === 0 ? openDigitalGallery() : openCategoryRoom(index));
-  card.addEventListener('keydown', event => {if((event.key === 'Enter' || event.key === ' ') && event.target === card){event.preventDefault();index === 0 ? openDigitalGallery() : openCategoryRoom(index);}});
+  card.addEventListener('click', () => openReasonModal(index));
+  card.addEventListener('keydown', event => {if((event.key === 'Enter' || event.key === ' ') && event.target === card){event.preventDefault();openReasonModal(index);}});
 });
 const closeDirectory = () => {providerDirectoryModal.hidden = true;document.body.classList.remove('modal-open');};
 providerDirectoryModal.querySelectorAll('[data-directory-close]').forEach(item => item.addEventListener('click', closeDirectory));
@@ -468,6 +503,24 @@ if (currentEventGrid) {
 const contactSectionForAds = document.getElementById('contact');
 if (contactSectionForAds) {
   contactSectionForAds.insertAdjacentHTML('beforebegin', `<section class="advertising section" id="advertising"><div class="container"><div class="section-heading centered reveal visible"><p class="eyebrow">COMMUNITY PARTNERS</p><h2 data-ko="지역 업체 광고·제휴 공간" data-en="Local Business Advertising">지역 업체 광고·제휴 공간</h2><p data-ko="지역사회와 함께 성장할 광고 파트너를 위한 배너 자리입니다." data-en="Banner placements for local partners growing with our community.">지역사회와 함께 성장할 광고 파트너를 위한 배너 자리입니다.</p></div><div class="ad-grid"><a href="#contact"><span>AD 01</span><b data-ko="프리미엄 광고 배너" data-en="Premium Ad Banner">프리미엄 광고 배너</b><small data-ko="광고 문의" data-en="Advertising inquiry">광고 문의</small></a><a href="#contact"><span>AD 02</span><b data-ko="지역 업체 소개" data-en="Local Business Feature">지역 업체 소개</b><small data-ko="광고 문의" data-en="Advertising inquiry">광고 문의</small></a><a href="#contact"><span>AD 03</span><b data-ko="문화·교육 제휴" data-en="Culture & Education Partner">문화·교육 제휴</b><small data-ko="제휴 문의" data-en="Partnership inquiry">제휴 문의</small></a></div></div></section>`);
+}
+setLanguage(currentLanguage);
+
+// Simplified participation flow, volunteer opportunities, and contact area.
+document.getElementById('membership')?.remove();
+document.querySelectorAll('a[href="#membership"]').forEach(link=>{
+  link.href='#community';
+  link.dataset.ko='신청하기';
+  link.dataset.en='Apply';
+  link.textContent=currentLanguage==='en'?'Apply':'신청하기';
+});
+const volunteerAnchor=document.getElementById('events');
+if(volunteerAnchor){
+  volunteerAnchor.insertAdjacentHTML('beforebegin', `<section class="volunteer section" id="volunteer"><div class="container volunteer-shell"><div class="volunteer-intro reveal visible"><p class="eyebrow">COMMUNITY VOLUNTEERS</p><h2 data-ko="배움과 마음을 나누는 무료 봉사" data-en="Share Your Time and Talents">배움과 마음을 나누는 무료 봉사</h2><p data-ko="지역사회에 따뜻한 연결이 필요한 곳에서 자신의 시간과 재능을 나눠주세요. 작은 참여도 누군가의 새로운 시작이 됩니다." data-en="Share your time and talents where our community needs connection. Every contribution can become someone's new beginning.">지역사회에 따뜻한 연결이 필요한 곳에서 자신의 시간과 재능을 나눠주세요. 작은 참여도 누군가의 새로운 시작이 됩니다.</p><a href="#contact" class="btn btn-primary"><span data-ko="봉사 참여 문의" data-en="Volunteer With Us">봉사 참여 문의</span><b>→</b></a></div><div class="volunteer-grid"><article><span>01</span><b>🤝</b><h3 data-ko="수업 진행 도움" data-en="Class Support">수업 진행 도움</h3><p data-ko="참여자 안내, 준비와 현장 진행을 함께합니다." data-en="Help welcome participants and support class activities.">참여자 안내, 준비와 현장 진행을 함께합니다.</p></article><article><span>02</span><b>💻</b><h3 data-ko="디지털 도움" data-en="Digital Support">디지털 도움</h3><p data-ko="스마트폰과 온라인 이용이 어려운 이웃을 돕습니다." data-en="Help neighbors with smartphones and online services.">스마트폰과 온라인 이용이 어려운 이웃을 돕습니다.</p></article><article><span>03</span><b>🎨</b><h3 data-ko="재능 나눔" data-en="Share a Talent">재능 나눔</h3><p data-ko="음악·미술·언어 등 나만의 재능을 나눕니다." data-en="Share your skills in music, art, languages, and more.">음악·미술·언어 등 나만의 재능을 나눕니다.</p></article></div></div></section>`);
+}
+const refreshedContact=document.querySelector('.contact-wrap');
+if(refreshedContact){
+  refreshedContact.innerHTML=`<div class="contact-main"><div class="contact-mark" aria-hidden="true">H</div><div><p class="eyebrow">LET'S CONNECT</p><h2 data-ko="어떤 도움이 필요하신가요?" data-en="How Can We Help?">어떤 도움이 필요하신가요?</h2><p data-ko="교육 신청, 입점, 봉사와 제휴 중 필요한 내용을 알려주시면 알맞은 담당자가 안내해 드립니다." data-en="Tell us whether you need learning, partnership, volunteering, or collaboration support and the right person will respond.">교육 신청, 입점, 봉사와 제휴 중 필요한 내용을 알려주시면 알맞은 담당자가 안내해 드립니다.</p></div></div><div class="contact-choices"><a class="contact-primary" href="mailto:hibelle@hibelleconsulting.com"><span data-ko="이메일로 문의하기" data-en="Send an Email">이메일로 문의하기</span><strong>hibelle@hibelleconsulting.com</strong><b>↗</b></a><div class="contact-call"><span data-ko="전화 상담" data-en="CALL US">전화 상담</span><a href="tel:+19296030052"><small data-ko="미국" data-en="USA">미국</small><strong>+1 929-603-0052</strong></a><i></i><a href="tel:+821097730052"><small data-ko="한국" data-en="KOREA">한국</small><strong>+82 10-9773-0052</strong></a></div></div>`;
 }
 setLanguage(currentLanguage);
 
