@@ -660,7 +660,7 @@ document.addEventListener('keydown', event => {
 setLanguage(currentLanguage);
 
 // Temporary locked Partner Center. Replace with server-side authentication when member login launches.
-const partnerCenterHash = '1409de759e8cec9f93bbf2b7da0bbbe348e69c4751165690f7f8629cfc413b77';
+const partnerCenterHash = 'ace475ae6f4ad97d067897a8829f408df9d17b6308bddd6edefcafac50e460a4';
 const contactNavLink = document.querySelector('#primary-nav a[href="#contact"]');
 if (contactNavLink) {
   const partnerCenterNav = document.createElement('a');
@@ -675,6 +675,10 @@ const partnerCenter = document.createElement('section');
 partnerCenter.className = 'partner-center section';
 partnerCenter.id = 'partner-center';
 partnerCenter.innerHTML = `<div class="container partner-center-shell"><div class="partner-center-copy"><p class="eyebrow">PARTNER CENTER</p><span class="partner-lock" aria-hidden="true">🔒</span><h2 data-ko="입점 파트너 전용 자료실" data-en="Partner Resource Center">입점 파트너 전용 자료실</h2><p data-ko="HarmonyLink 입점 강사와 교육업체를 위한 운영 정책 및 파트너 자료를 제공합니다." data-en="Policies and resources for approved HarmonyLink instructors and education providers.">HarmonyLink 입점 강사와 교육업체를 위한 운영 정책 및 파트너 자료를 제공합니다.</p><div class="partner-security-note"><b data-ko="파트너 전용" data-en="PARTNERS ONLY">파트너 전용</b><span data-ko="승인된 입점 파트너에게 전달된 접근코드를 입력해 주세요." data-en="Enter the access code provided to approved partners.">승인된 입점 파트너에게 전달된 접근코드를 입력해 주세요.</span></div></div><div class="partner-access-card"><form id="partnerAccessForm"><label for="partnerAccessCode" data-ko="파트너 접근코드" data-en="Partner Access Code">파트너 접근코드</label><div><input id="partnerAccessCode" type="password" autocomplete="current-password" required data-placeholder-ko="접근코드를 입력하세요" data-placeholder-en="Enter access code" placeholder="접근코드를 입력하세요"><button class="btn btn-primary" type="submit"><span data-ko="잠금 해제" data-en="Unlock">잠금 해제</span><b>→</b></button></div><p class="partner-access-status" role="status"></p></form><div class="partner-downloads" hidden><span class="unlocked-badge" data-ko="접근 승인됨" data-en="ACCESS GRANTED">접근 승인됨</span><article><div><b>DOCX</b></div><section><h3 data-ko="입점 파트너 플랫폼 이용 및 운영 정책" data-en="Partner Platform Use & Operations Policy">입점 파트너 플랫폼 이용 및 운영 정책</h3><p>Version 1.0 · Hibelle Consulting Inc.</p><small data-ko="멤버십, 15% 이용수수료, 수업 절차와 운영 원칙" data-en="Memberships, 15% platform fee, class process, and operating principles">멤버십, 15% 이용수수료, 수업 절차와 운영 원칙</small></section><a class="btn btn-primary" href="downloads/HarmonyLink_Partner_Policy_v1.0.docx" download><span data-ko="문서 다운로드" data-en="Download Policy">문서 다운로드</span><b>↓</b></a></article><p class="partner-download-warning" data-ko="이 자료는 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다." data-en="This resource is for approved partners only. External sharing or unauthorized distribution is prohibited.">이 자료는 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다.</p></div></div></div>`;
+const partnerSecurityCopy=partnerCenter.querySelector('.partner-security-note span');
+partnerSecurityCopy.dataset.ko='입점 신청 후 이메일로 받은 접근코드를 입력해 주세요.';
+partnerSecurityCopy.dataset.en='Enter the access code sent to you by email after applying.';
+partnerSecurityCopy.textContent=currentLanguage==='en'?partnerSecurityCopy.dataset.en:partnerSecurityCopy.dataset.ko;
 const advertisingSection = document.getElementById('advertising');
 const contactForPartnerCenter = document.getElementById('contact');
 (advertisingSection || contactForPartnerCenter)?.before(partnerCenter);
