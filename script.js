@@ -41,7 +41,7 @@ const learningCategories = [
 const programGrid = document.querySelector('.program-grid');
 if (programGrid) {
   programGrid.innerHTML = learningCategories.map((category, index) => `
-    <article class="program-card category-card ${index === 0 ? 'digital-gallery-card' : ''} ${index > 2 ? 'coming-soon' : ''} reveal" ${index === 0 ? 'role="button" tabindex="0" aria-label="디지털 교육안 보기"' : ''}>
+    <article class="program-card category-card ${index > 2 ? 'coming-soon' : ''} reveal" role="button" tabindex="0" aria-label="${category.ko} 파트너 방 보기">
       <div class="program-art category-art" style="--category-hue:${205 + index * 17}"><span>${String(index + 1).padStart(2, '0')}</span><b>${category.emoji}</b></div>
       <div class="program-info"><p>${category.kicker}</p><h3 data-ko="${category.ko}" data-en="${category.en}">${category.ko}</h3><div class="tags">${category.tags.map(tag => `<span data-ko="${tag[0]}" data-en="${tag[1]}">${tag[0]}</span>`).join('')}</div></div>
     </article>`).join('');
@@ -88,11 +88,6 @@ function closeDigitalGallery() {
   document.body.classList.remove('modal-open');
 }
 
-const digitalGalleryCard = document.querySelector('.digital-gallery-card');
-digitalGalleryCard?.addEventListener('click', openDigitalGallery);
-digitalGalleryCard?.addEventListener('keydown', event => {
-  if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openDigitalGallery(); }
-});
 digitalGallery.querySelector('.gallery-prev').addEventListener('click', () => showDigitalSlide(currentDigitalSlide - 1));
 digitalGallery.querySelector('.gallery-next').addEventListener('click', () => showDigitalSlide(currentDigitalSlide + 1));
 galleryThumbs.forEach(thumb => thumb.addEventListener('click', () => showDigitalSlide(Number(thumb.dataset.slide))));
@@ -366,35 +361,47 @@ if (specialtyScroll) {
   }));
 }
 
-const categoryProviders = {
-  0: [{name:'하이벨 디지털',type:'직영 디지털 교육',status:'운영 중'}],
-  1: [{name:'하이벨 화상영어',type:'1:1 맞춤 화상영어',status:'운영 중'}],
-  2: [{name:'미란멜로디',type:'합창·음악 교육',status:'공동 운영'}]
+// Approved partners are registered here once and automatically appear in the matching category room.
+const registeredPartners = [
+  {category:0,name:'하이벨 디지털',type:'스마트폰·AI·컴퓨터 교육',status:'직영',featured:true},
+  {category:1,name:'하이벨 화상영어',type:'1:1 맞춤 화상영어',status:'운영 중',featured:true},
+  {category:2,name:'미란멜로디',type:'합창·발성·음악 교육',status:'공동 운영',featured:true}
+];
+const categoryResources = {
+  0: {titleKo:'디지털 교육 프로그램 자료',titleEn:'Digital Education Resources',descriptionKo:'스마트폰, AI, 컴퓨터 교육 PPT 10장을 확인할 수 있습니다.',descriptionEn:'View 10 presentation slides for smartphone, AI, and computer learning.',action:'gallery'},
+  1: {titleKo:'언어 교육 프로그램',titleEn:'Language Program',descriptionKo:'영어·일본어·생활 회화 프로그램 자료가 등록되는 공간입니다.',descriptionEn:'Resources for English, Japanese, and practical conversation appear here.'},
+  2: {titleKo:'음악 교육 프로그램',titleEn:'Music Program',descriptionKo:'합창·발성·악기 프로그램 자료가 등록되는 공간입니다.',descriptionEn:'Resources for choir, voice, and instruments appear here.'}
 };
 const providerDirectoryModal = document.createElement('div');
-providerDirectoryModal.className = 'directory-modal';
+providerDirectoryModal.className = 'directory-modal category-room-modal';
 providerDirectoryModal.hidden = true;
-providerDirectoryModal.innerHTML = `<div class="directory-backdrop" data-directory-close></div><div class="directory-panel" role="dialog" aria-modal="true" aria-labelledby="directoryTitle"><div class="directory-head"><div><p>HARMONY LINK DIRECTORY</p><h2 id="directoryTitle"></h2></div><button type="button" data-directory-close aria-label="닫기">×</button></div><div class="directory-list"></div><div class="directory-foot"><p data-ko="새로운 입점 업체와 강사가 등록되면 이 목록에 계속 추가됩니다." data-en="New partner providers and instructors will continue to be added here.">새로운 입점 업체와 강사가 등록되면 이 목록에 계속 추가됩니다.</p><a href="#community" class="btn btn-primary" data-directory-close><span data-ko="입점·교육 신청 보기" data-en="View Applications">입점·교육 신청 보기</span><b>→</b></a></div></div>`;
+providerDirectoryModal.innerHTML = `<div class="directory-backdrop" data-directory-close></div><div class="directory-panel" role="dialog" aria-modal="true" aria-labelledby="directoryTitle"><div class="directory-head"><div><p>HARMONY LINK CATEGORY ROOM</p><h2 id="directoryTitle"></h2><small class="room-subtitle"></small></div><button type="button" data-directory-close aria-label="닫기">×</button></div><section class="room-resource" hidden></section><div class="room-section-title"><div><span data-ko="APPROVED PARTNERS" data-en="APPROVED PARTNERS">APPROVED PARTNERS</span><h3 data-ko="입점 파트너·강사" data-en="Partner Providers & Instructors">입점 파트너·강사</h3></div><b class="room-partner-count"></b></div><div class="directory-list"></div><div class="directory-foot"><p data-ko="심사가 완료된 새 업체와 강사는 등록 후 해당 카테고리 방에 자동으로 추가됩니다." data-en="New approved providers and instructors are automatically added to the matching category room.">심사가 완료된 새 업체와 강사는 등록 후 해당 카테고리 방에 자동으로 추가됩니다.</p><a href="${partnerFormUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary"><span data-ko="파트너 등록 신청" data-en="Apply as a Partner">파트너 등록 신청</span><b>↗</b></a></div></div>`;
 document.body.appendChild(providerDirectoryModal);
 const categoryCards = [...document.querySelectorAll('.program-grid .category-card')];
+function openCategoryRoom(index) {
+  const category = learningCategories[index];
+  const providers = registeredPartners.filter(partner => partner.category === index);
+  const resource = categoryResources[index];
+  providerDirectoryModal.querySelector('#directoryTitle').textContent = currentLanguage === 'en' ? category.en : category.ko;
+  providerDirectoryModal.querySelector('.room-subtitle').textContent = currentLanguage === 'en' ? `${category.kicker} partner room` : `${category.ko} 전용 파트너 방`;
+  providerDirectoryModal.querySelector('.room-partner-count').textContent = currentLanguage === 'en' ? `${providers.length} listed` : `${providers.length}곳 등록`;
+  const resourceArea = providerDirectoryModal.querySelector('.room-resource');
+  resourceArea.hidden = !resource;
+  resourceArea.innerHTML = resource ? `<div class="room-resource-icon">${index === 0 ? 'PPT' : category.emoji}</div><div><span data-ko="PROGRAM RESOURCES" data-en="PROGRAM RESOURCES">PROGRAM RESOURCES</span><h3>${currentLanguage === 'en' ? resource.titleEn : resource.titleKo}</h3><p>${currentLanguage === 'en' ? resource.descriptionEn : resource.descriptionKo}</p></div>${resource.action === 'gallery' ? `<button type="button" class="btn btn-primary room-gallery-open"><span data-ko="PPT 자료 보기" data-en="View Slides">${currentLanguage === 'en' ? 'View Slides' : 'PPT 자료 보기'}</span><b>→</b></button>` : '<span class="room-resource-status" data-ko="자료 등록 예정" data-en="Resources coming soon">자료 등록 예정</span>'}` : '';
+  resourceArea.querySelector('.room-gallery-open')?.addEventListener('click', () => { closeDirectory(); openDigitalGallery(); });
+  providerDirectoryModal.querySelector('.directory-list').innerHTML = providers.length
+    ? providers.map(provider => `<article class="partner-profile ${provider.featured ? 'featured' : ''}"><span>${provider.status}</span><div class="partner-avatar">${provider.name.charAt(0)}</div><h3>${provider.name}</h3><p>${provider.type}</p><small data-ko="프로필·프로그램 준비 중" data-en="Profile and programs coming soon">프로필·프로그램 준비 중</small></article>`).join('')
+    : `<div class="directory-empty"><b>＋</b><h3 data-ko="첫 입점 파트너를 기다립니다" data-en="Be the first partner here">첫 입점 파트너를 기다립니다</h3><p data-ko="검증된 업체와 강사가 등록되는 순서대로 이 방에 소개됩니다." data-en="Approved providers and instructors will appear here as they join.">검증된 업체와 강사가 등록되는 순서대로 이 방에 소개됩니다.</p><a href="${partnerFormUrl}" target="_blank" rel="noopener noreferrer" data-ko="이 카테고리에 등록 신청 ↗" data-en="Apply for this category ↗">이 카테고리에 등록 신청 ↗</a></div>`;
+  providerDirectoryModal.hidden = false;
+  document.body.classList.add('modal-open');
+  setLanguage(currentLanguage);
+}
 categoryCards.forEach((card,index) => {
-  const button = document.createElement('button');
-  button.type = 'button';
-  button.className = 'directory-open';
-  button.innerHTML = `<span data-ko="관련 업체·강사 보기" data-en="View Providers">관련 업체·강사 보기</span><b>＋</b>`;
-  button.addEventListener('click', event => {
-    event.stopPropagation();
-    const title = learningCategories[index];
-    providerDirectoryModal.querySelector('#directoryTitle').textContent = currentLanguage === 'en' ? title.en : title.ko;
-    const providers = categoryProviders[index] || [];
-    providerDirectoryModal.querySelector('.directory-list').innerHTML = providers.length
-      ? providers.map(provider => `<article><span>${provider.status}</span><h3>${provider.name}</h3><p>${provider.type}</p></article>`).join('')
-      : `<div class="directory-empty"><b>＋</b><h3 data-ko="입점 파트너 등록 예정" data-en="Partner listings coming soon">입점 파트너 등록 예정</h3><p data-ko="검증된 업체와 강사가 등록되는 순서대로 소개됩니다." data-en="Verified providers and instructors will appear here as they join.">검증된 업체와 강사가 등록되는 순서대로 소개됩니다.</p></div>`;
-    providerDirectoryModal.hidden = false;
-    document.body.classList.add('modal-open');
-    setLanguage(currentLanguage);
-  });
-  card.querySelector('.program-info')?.appendChild(button);
+  card.insertAdjacentHTML('beforeend', `<div class="category-action-guide"><span class="material-guide"><small data-ko="카드 클릭" data-en="CLICK CARD">카드 클릭</small><strong data-ko="교육안 보기" data-en="View Program Guide">교육안 보기</strong><b>↗</b></span><button type="button" class="provider-room-open"><span><small data-ko="입점 파트너 찾기" data-en="FIND PARTNERS">입점 파트너 찾기</small><strong data-ko="관련 업체·강사 보기" data-en="View Providers & Instructors">관련 업체·강사 보기</strong></span><b>＋</b></button></div>`);
+  const providerButton = card.querySelector('.provider-room-open');
+  providerButton.addEventListener('click', event => {event.stopPropagation();openCategoryRoom(index);});
+  card.addEventListener('click', () => index === 0 ? openDigitalGallery() : openCategoryRoom(index));
+  card.addEventListener('keydown', event => {if((event.key === 'Enter' || event.key === ' ') && event.target === card){event.preventDefault();index === 0 ? openDigitalGallery() : openCategoryRoom(index);}});
 });
 const closeDirectory = () => {providerDirectoryModal.hidden = true;document.body.classList.remove('modal-open');};
 providerDirectoryModal.querySelectorAll('[data-directory-close]').forEach(item => item.addEventListener('click', closeDirectory));
