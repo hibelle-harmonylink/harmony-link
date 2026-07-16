@@ -274,11 +274,9 @@ document.addEventListener('keydown', event => {
 
 setLanguage(currentLanguage);
 
-// 2026-07-16: visible partner pricing and limited-time PREMIUM promotion.
+// Partner pricing stays behind the comparison control so the page remains calm.
 const membershipPricingAnchor = document.querySelector('#membership .upgrade-prompt');
-if (membershipPricingAnchor && !document.querySelector('.partner-price-summary')) {
-  membershipPricingAnchor.insertAdjacentHTML('beforebegin', `<div class="partner-price-summary reveal visible" aria-label="입점 파트너 멤버십 요금"><div class="price-summary-intro"><span data-ko="입점 강사·교육업체 전용" data-en="FOR PARTNER PROVIDERS">입점 강사·교육업체 전용</span><strong data-ko="파트너 멤버십" data-en="Partner Memberships">파트너 멤버십</strong><small data-ko="수강자는 Harmony Link 플랫폼을 무료로 이용합니다." data-en="Learners use the Harmony Link platform free of charge.">수강자는 Harmony Link 플랫폼을 무료로 이용합니다.</small></div><div class="price-summary-plan basic"><span>BASIC</span><strong>$20</strong><small data-ko="월 이용료" data-en="per month">월 이용료</small></div><div class="price-summary-plan premium"><span>PREMIUM</span><strong>$50</strong><small data-ko="월 이용료" data-en="per month">월 이용료</small></div></div>`);
-}
+document.querySelector('.partner-price-summary')?.remove();
 
 const promotionModal = document.createElement('div');
 promotionModal.className = 'promotion-modal';
@@ -296,19 +294,13 @@ promotionModal.querySelector('.promotion-action').addEventListener('click', () =
   if (upgradeToggle) upgradeToggle.setAttribute('aria-expanded', 'true');
   document.getElementById('membership')?.scrollIntoView({behavior:'smooth'});
 });
-if (new Date() <= new Date('2026-08-31T23:59:59-04:00')) {
-  window.setTimeout(() => {
-    promotionModal.hidden = false;
-    document.body.classList.add('modal-open');
-    setLanguage(currentLanguage);
-  }, 650);
-}
+// Do not open the price promotion automatically. Prices appear only after comparison is requested.
 setLanguage(currentLanguage);
 
 const specialtyPrograms = [
-  {id:'digital',titleKo:'하이벨 디지털',titleEn:'Hibelle Digital',image:'assets/specialty/hibelle-digital.jpg',form:'https://docs.google.com/forms/d/1DWtn1FQD86E4EHzABxeoEpHDuVeoFH_Smak4_C1RU7M/viewform',tone:'blue'},
-  {id:'english',titleKo:'하이벨 화상영어',titleEn:'Hibelle Online English',image:'assets/specialty/hibelle-online-english.jpg',form:'https://docs.google.com/forms/d/1kN5-d09smqU_UO9rUO91SdQqco7ABYDzWTgpv74EUsc/viewform',tone:'orange'},
-  {id:'melody',titleKo:'미란멜로디 합창',titleEn:'Meeran Melody Choir',image:'assets/specialty/meeran-melody.jpg',form:'https://docs.google.com/forms/d/1LfKkCnsfGLgsvs9ptLluwZkkGupY6iJYBzBbA7jMEK8/viewform',tone:'pink'}
+  {id:'digital',titleKo:'하이벨 디지털',titleEn:'Hibelle Digital',image:'assets/specialty/hibelle-digital.jpg',teacherImage:'assets/teachers/noh-hyekyung.png',teacherKo:'노혜경',teacherEn:'Hyekyung Noh',teacherRoleKo:'디지털 교육 대표 강사',teacherRoleEn:'Lead Digital Instructor',form:'https://docs.google.com/forms/d/1DWtn1FQD86E4EHzABxeoEpHDuVeoFH_Smak4_C1RU7M/viewform',tone:'blue'},
+  {id:'english',titleKo:'하이벨 화상영어',titleEn:'Hibelle Online English',image:'assets/specialty/hibelle-online-english.jpg',teacherImage:'assets/teachers/rachel.png',teacherKo:'하이벨 화상영어 강사진',teacherEn:'Hibelle Online English Team',teacherRoleKo:'1:1 화상영어 전문 강사',teacherRoleEn:'1:1 Online English Instructors',form:'https://docs.google.com/forms/d/1kN5-d09smqU_UO9rUO91SdQqco7ABYDzWTgpv74EUsc/viewform',tone:'orange'},
+  {id:'melody',titleKo:'미란멜로디 합창',titleEn:'Meeran Melody Choir',image:'assets/specialty/meeran-melody.jpg',teacherImage:'assets/teachers/kim-miran.jpg',teacherKo:'김미란',teacherEn:'Miran Kim',teacherRoleKo:'합창·음악 교육 대표 강사',teacherRoleEn:'Lead Choir & Music Instructor',form:null,tone:'pink'}
 ];
 
 const oldSpecialtyStart = document.getElementById('digital-why');
@@ -325,16 +317,19 @@ if (oldSpecialtyStart) {
   const specialtyModal = document.createElement('div');
   specialtyModal.className = 'specialty-modal';
   specialtyModal.hidden = true;
-  specialtyModal.innerHTML = `<div class="specialty-modal-backdrop" data-specialty-close></div><div class="specialty-modal-panel" role="dialog" aria-modal="true" aria-labelledby="specialtyModalTitle"><div class="specialty-modal-head"><div><p>PREMIUM SPECIALTY PROGRAM</p><h2 id="specialtyModalTitle"></h2></div><button type="button" class="specialty-close" data-specialty-close aria-label="닫기">×</button></div><div class="specialty-modal-scroll"><img class="specialty-modal-image" src="" alt=""></div><div class="specialty-modal-actions"><p data-ko="프로그램 내용을 확인하셨다면 아래 버튼을 눌러 신청서를 작성해주세요." data-en="After reviewing the program, use the button below to complete the application.">프로그램 내용을 확인하셨다면 아래 버튼을 눌러 신청서를 작성해주세요.</p><div><button type="button" class="btn btn-outline specialty-slides-link" hidden><span data-ko="디지털 교육 자료 보기" data-en="View Digital Materials">디지털 교육 자료 보기</span><b>↗</b></button><a class="btn btn-primary specialty-form-link" href="#" target="_blank" rel="noopener noreferrer"><span data-ko="신청서 작성" data-en="Complete Application">신청서 작성</span><b>↗</b></a></div></div></div>`;
+  specialtyModal.innerHTML = `<div class="specialty-modal-backdrop" data-specialty-close></div><div class="specialty-modal-panel" role="dialog" aria-modal="true" aria-labelledby="specialtyModalTitle"><div class="specialty-modal-head"><div><p>PREMIUM SPECIALTY PROGRAM</p><h2 id="specialtyModalTitle"></h2></div><button type="button" class="specialty-close" data-specialty-close aria-label="닫기">×</button></div><div class="specialty-teacher"><img src="" alt=""><div><span data-ko="대표 강사" data-en="FEATURED INSTRUCTOR">대표 강사</span><h3></h3><p></p></div></div><div class="specialty-modal-scroll"><img class="specialty-modal-image" src="" alt=""></div><div class="specialty-modal-actions"><p data-ko="강사와 프로그램 전단지를 확인한 후 신청해 주세요." data-en="Review the instructor and program flyer, then apply.">강사와 프로그램 전단지를 확인한 후 신청해 주세요.</p><div><a class="btn btn-primary specialty-form-link" href="#" target="_blank" rel="noopener noreferrer"><span data-ko="신청서 작성" data-en="Complete Application">신청서 작성</span><b>↗</b></a></div></div></div>`;
   document.body.append(specialtyModal);
   const closeSpecialtyModal=()=>{specialtyModal.hidden=true;document.body.classList.remove('modal-open');};
   specialtySection.querySelectorAll('[data-specialty]').forEach(button=>button.addEventListener('click',()=>{
     const program=specialtyPrograms.find(item=>item.id===button.dataset.specialty);if(!program)return;
     specialtyModal.querySelector('#specialtyModalTitle').textContent=currentLanguage==='en'?program.titleEn:program.titleKo;
     const modalImage=specialtyModal.querySelector('.specialty-modal-image');modalImage.src=program.image;modalImage.alt=`${program.titleKo} 프로그램 전단지`;
+    const teacher=specialtyModal.querySelector('.specialty-teacher');
+    teacher.querySelector('img').src=program.teacherImage;teacher.querySelector('img').alt=`${program.teacherKo} 강사`;
+    teacher.querySelector('h3').textContent=currentLanguage==='en'?program.teacherEn:program.teacherKo;
+    teacher.querySelector('p').textContent=currentLanguage==='en'?program.teacherRoleEn:program.teacherRoleKo;
     const formLink=specialtyModal.querySelector('.specialty-form-link');
-    specialtyModal.querySelector('.specialty-slides-link').hidden=true;
-    specialtyModal.querySelector('.specialty-modal-scroll').hidden=true;
+    specialtyModal.querySelector('.specialty-modal-scroll').hidden=false;
     formLink.hidden=false;
     formLink.href=program.form||'#';
     formLink.setAttribute('aria-disabled',String(!program.form));
@@ -351,7 +346,6 @@ if (oldSpecialtyStart) {
   });
   specialtyModal.querySelectorAll('[data-specialty-close]').forEach(button=>button.addEventListener('click',closeSpecialtyModal));
   specialtyModal.querySelector('.specialty-form-link').addEventListener('click',event=>{if(event.currentTarget.getAttribute('aria-disabled')==='true')event.preventDefault();});
-  specialtyModal.querySelector('.specialty-slides-link').addEventListener('click',()=>{closeSpecialtyModal();openDigitalGallery();});
   document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!specialtyModal.hidden)closeSpecialtyModal();});
   setLanguage(currentLanguage);
 }
@@ -401,11 +395,8 @@ if (specialtyScroll) {
       <figure><img src="assets/teachers/ara.png" alt="영어 강사 아라"><figcaption>아라 <small>Ara</small></figcaption></figure>
     </div>
   </section>`);
-  specialtyScroll.insertAdjacentHTML('afterbegin', `<section class="featured-specialty-teacher digital-specialty-teacher" hidden><img src="assets/teachers/noh-hyekyung.png" alt="디지털 교육 강사 노혜경"><div><p class="eyebrow">HIBELLE DIGITAL INSTRUCTOR</p><h3 data-ko="노혜경 강사" data-en="Instructor Hyekyung Noh">노혜경 강사</h3><span data-ko="디지털 교육 · 스마트폰 · AI 활용" data-en="Digital Learning · Smartphones · AI">디지털 교육 · 스마트폰 · AI 활용</span><p data-ko="일상에서 바로 활용할 수 있는 쉽고 실용적인 디지털 교육을 안내합니다." data-en="Practical, approachable digital learning for everyday life.">일상에서 바로 활용할 수 있는 쉽고 실용적인 디지털 교육을 안내합니다.</p></div></section><section class="featured-specialty-teacher melody-specialty-teacher" hidden><img src="assets/teachers/kim-miran.jpg" alt="합창 교육 강사 김미란"><div><p class="eyebrow">MEERAN MELODY DIRECTOR</p><h3 data-ko="김미란 강사" data-en="Instructor Miran Kim">김미란 강사</h3><span data-ko="합창 · 발성 · 음악 공동체" data-en="Choir · Voice · Music Community">합창 · 발성 · 음악 공동체</span><p data-ko="함께 노래하며 자신감과 따뜻한 관계를 만드는 힐링 합창을 이끕니다." data-en="Leading healing choir experiences that build confidence and connection.">함께 노래하며 자신감과 따뜻한 관계를 만드는 힐링 합창을 이끕니다.</p></div></section>`);
   document.querySelectorAll('.specialty-open').forEach(button => button.addEventListener('click', () => {
     specialtyScroll.querySelector('.english-teachers').hidden = button.dataset.specialty !== 'english';
-    specialtyScroll.querySelector('.digital-specialty-teacher').hidden = button.dataset.specialty !== 'digital';
-    specialtyScroll.querySelector('.melody-specialty-teacher').hidden = button.dataset.specialty !== 'melody';
   }));
 }
 
@@ -706,23 +697,21 @@ accessForm.addEventListener('submit', async event => {
   }
 });
 
-// Partner-only membership presentation: learner platform signup is intentionally omitted.
+// Membership presentation: free signup first, partner prices only in the comparison panel.
 const partnerMembershipSection = document.getElementById('membership');
 if (partnerMembershipSection) {
-  partnerMembershipSection.querySelector('.signup-layout')?.remove();
-  partnerMembershipSection.querySelector('.learner-fee-notice')?.remove();
   const eyebrow = partnerMembershipSection.querySelector('.section-heading .eyebrow');
   const heading = partnerMembershipSection.querySelector('.section-heading h2');
   const copy = partnerMembershipSection.querySelector('.section-heading > p:last-child');
-  if (eyebrow) eyebrow.textContent = 'PARTNER MEMBERSHIP';
+  if (eyebrow) eyebrow.textContent = 'FREE SIGNUP · PARTNER MEMBERSHIP';
   if (heading) {
-    heading.dataset.ko = '입점 파트너 멤버십';
-    heading.dataset.en = 'Partner Memberships';
+    heading.dataset.ko = '무료 가입과 파트너 멤버십';
+    heading.dataset.en = 'Free Signup & Partner Memberships';
     heading.textContent = currentLanguage === 'en' ? heading.dataset.en : heading.dataset.ko;
   }
   if (copy) {
-    copy.dataset.ko = '강사와 교육업체를 위한 BASIC·PREMIUM 멤버십 혜택과 요금제를 비교해 보세요.';
-    copy.dataset.en = 'Compare BASIC and PREMIUM plans for instructors and education providers.';
+    copy.dataset.ko = '수강자는 무료로 가입하고, 강사와 교육업체의 요금은 요금제 비교를 눌렀을 때만 확인할 수 있습니다.';
+    copy.dataset.en = 'Learners join free. Partner pricing is shown only when Compare Plans is selected.';
     copy.textContent = currentLanguage === 'en' ? copy.dataset.en : copy.dataset.ko;
   }
   const priceIntro = partnerMembershipSection.querySelector('.price-summary-intro small');
