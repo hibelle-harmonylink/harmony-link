@@ -294,7 +294,14 @@ promotionModal.querySelector('.promotion-action').addEventListener('click', () =
   if (upgradeToggle) upgradeToggle.setAttribute('aria-expanded', 'true');
   document.getElementById('membership')?.scrollIntoView({behavior:'smooth'});
 });
-// Do not open the price promotion automatically. Prices appear only after comparison is requested.
+// Show the limited-time promotion again on every page load through August 31, 2026.
+const promotionDeadline = new Date('2026-09-01T00:00:00-04:00');
+if (new Date() < promotionDeadline) {
+  window.setTimeout(() => {
+    promotionModal.hidden = false;
+    document.body.classList.add('modal-open');
+  }, 450);
+}
 setLanguage(currentLanguage);
 
 const specialtyPrograms = [
