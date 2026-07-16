@@ -561,14 +561,9 @@ if (contactSectionForAds) {
 }
 setLanguage(currentLanguage);
 
-// Simplified participation flow, volunteer opportunities, and contact area.
-document.getElementById('membership')?.remove();
-document.querySelectorAll('a[href="#membership"]').forEach(link=>{
-  link.href='#community';
-  link.dataset.ko='신청하기';
-  link.dataset.en='Apply';
-  link.textContent=currentLanguage==='en'?'Apply':'신청하기';
-});
+// Keep membership visible: learners join free, while partner providers may select BASIC or PREMIUM.
+const activeMembershipSection = document.getElementById('membership');
+if (activeMembershipSection) activeMembershipSection.hidden = false;
 const volunteerAnchor=document.getElementById('events');
 if(volunteerAnchor){
   volunteerAnchor.insertAdjacentHTML('beforebegin', `<section class="volunteer section" id="volunteer"><div class="container volunteer-shell"><div class="volunteer-intro reveal visible"><p class="eyebrow">COMMUNITY VOLUNTEERS</p><h2 data-ko="배움과 마음을 나누는 무료 봉사" data-en="Share Your Time and Talents">배움과 마음을 나누는 무료 봉사</h2><p data-ko="지역사회에 따뜻한 연결이 필요한 곳에서 자신의 시간과 재능을 나눠주세요. 작은 참여도 누군가의 새로운 시작이 됩니다." data-en="Share your time and talents where our community needs connection. Every contribution can become someone's new beginning.">지역사회에 따뜻한 연결이 필요한 곳에서 자신의 시간과 재능을 나눠주세요. 작은 참여도 누군가의 새로운 시작이 됩니다.</p><a href="#contact" class="btn btn-primary"><span data-ko="봉사 참여 문의" data-en="Volunteer With Us">봉사 참여 문의</span><b>→</b></a></div><div class="volunteer-grid"><article><span>01</span><b>🤝</b><h3 data-ko="수업 진행 도움" data-en="Class Support">수업 진행 도움</h3><p data-ko="참여자 안내, 준비와 현장 진행을 함께합니다." data-en="Help welcome participants and support class activities.">참여자 안내, 준비와 현장 진행을 함께합니다.</p></article><article><span>02</span><b>💻</b><h3 data-ko="디지털 도움" data-en="Digital Support">디지털 도움</h3><p data-ko="스마트폰과 온라인 이용이 어려운 이웃을 돕습니다." data-en="Help neighbors with smartphones and online services.">스마트폰과 온라인 이용이 어려운 이웃을 돕습니다.</p></article><article><span>03</span><b>🎨</b><h3 data-ko="재능 나눔" data-en="Share a Talent">재능 나눔</h3><p data-ko="음악·미술·언어 등 나만의 재능을 나눕니다." data-en="Share your skills in music, art, languages, and more.">음악·미술·언어 등 나만의 재능을 나눕니다.</p></article></div></div></section>`);
