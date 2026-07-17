@@ -592,9 +592,15 @@ const closeInquiryModal=()=>{inquiryModal.hidden=true;document.body.classList.re
 const openInquiryModal=(type='일반 문의')=>{
   inquiryModal.querySelector('#inquiryType').value=type;
   const title=inquiryModal.querySelector('#inquiryTitle');
-  const titleKo=(type==='봉사하고 싶어요'||type==='도움이 필요해요')?type:'문의사항을 남겨주세요';
+  const specialRequest=type==='봉사하고 싶어요'||type==='도움이 필요해요';
+  const titleKo=specialRequest?type:'문의하기';
   const titleEn=type==='봉사하고 싶어요'?'I Want to Volunteer':type==='도움이 필요해요'?'I Need Volunteer Help':'Send Us Your Inquiry';
   title.dataset.ko=titleKo;title.dataset.en=titleEn;title.textContent=currentLanguage==='en'?titleEn:titleKo;
+  const messageLabel=inquiryModal.querySelector('textarea')?.closest('label')?.querySelector('span');
+  const messageBox=inquiryModal.querySelector('textarea');
+  const submitText=inquiryModal.querySelector('.inquiry-submit span');
+  if(!specialRequest&&messageLabel&&messageBox){messageLabel.dataset.ko='궁금하신 사항 *';messageLabel.dataset.en='Your question *';messageLabel.textContent=currentLanguage==='en'?'Your question *':'궁금하신 사항 *';messageBox.name='문의하기';messageBox.placeholder='궁금하신 사항을 적어주세요.';}
+  if(submitText){submitText.dataset.ko=specialRequest?'접수하기':'문의 보내기';submitText.dataset.en=specialRequest?'Submit Request':'Send Inquiry';submitText.textContent=currentLanguage==='en'?submitText.dataset.en:submitText.dataset.ko;}
   inquiryModal.hidden=false;document.body.classList.add('modal-open');inquiryModal.querySelector('input[name="이름"]').focus();
 };
 document.querySelectorAll('.contact-form-open').forEach(button=>button.addEventListener('click',()=>openInquiryModal(button.dataset.inquiry)));
@@ -820,6 +826,11 @@ if (partnerPlans) {
     button.setAttribute('aria-expanded', String(willOpen));
     button.querySelector('em').textContent = willOpen ? '혜택 닫기 −' : '혜택 보기 ＋';
   }));
+}
+
+const providerCard = document.querySelector('.audience-card.provider');
+if (providerCard && !providerCard.querySelector('.partner-joining-note')) {
+  providerCard.insertAdjacentHTML('beforeend', '<p class="matching-disclaimer partner-joining-note" data-ko="입점비 없이 시작하고, 파트너 멤버십과 매칭 지원은 필요에 맞게 선택할 수 있습니다." data-en="Start with no listing fee and choose partner membership and matching support as needed.">입점비 없이 시작하고, 파트너 멤버십과 매칭 지원은 필요에 맞게 선택할 수 있습니다.</p>');
 }
 
 // Reusable volunteer program area; new opportunities can be appended as cards later.
