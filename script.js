@@ -740,4 +740,56 @@ if (partnerMembershipSection) {
 }
 const finalContactHeading=document.querySelector('.contact-main h2');
 if(finalContactHeading){finalContactHeading.dataset.ko='문의 및 상담';finalContactHeading.dataset.en='Contact & Consultation';finalContactHeading.textContent=currentLanguage==='en'?finalContactHeading.dataset.en:finalContactHeading.dataset.ko;}
+
+// 2026-07-16: clearer application, category, volunteer, and partner-ad journeys.
+document.querySelector('#primary-nav a[data-ko="함께하기"]')?.remove();
+
+const finalHeroCenterNote = document.querySelector('.center-note');
+if (finalHeroCenterNote) finalHeroCenterNote.innerHTML = `<div class="connection-symbol" aria-hidden="true"><span>🎓</span><i>↔</i><span>👥</span></div><strong data-ko="교육과 사람을 잇다" data-en="Connecting Education & People">교육과 사람을 잇다</strong><small>HARMONY LINK</small>`;
+
+document.querySelector('#about .values-grid')?.remove();
+const companyIntroLink = document.querySelector('#about .company-link');
+const brandStructure = document.querySelector('#about .brand-structure');
+if (companyIntroLink && brandStructure) {companyIntroLink.classList.add('structure-company-link');brandStructure.appendChild(companyIntroLink);}
+
+const relatedPartnersLabel = reasonModal?.querySelector('.reason-partners > div:first-child > span');
+const relatedPartnersTitle = reasonModal?.querySelector('.reason-partners > div:first-child > h3');
+if (relatedPartnersLabel) {relatedPartnersLabel.dataset.ko='관련 업체·강사';relatedPartnersLabel.dataset.en='RELATED PROVIDERS';relatedPartnersLabel.textContent=currentLanguage==='en'?'RELATED PROVIDERS':'관련 업체·강사';}
+if (relatedPartnersTitle) {relatedPartnersTitle.dataset.ko='등록 업체 및 강사';relatedPartnersTitle.dataset.en='Providers & Instructors';relatedPartnersTitle.textContent=currentLanguage==='en'?'Providers & Instructors':'등록 업체 및 강사';}
+
+const partnerModalActions = partnerModal?.querySelector('.partner-modal-actions');
+if (partnerModalActions && !partnerModal.querySelector('.partner-modal-plans')) partnerModalActions.insertAdjacentHTML('beforebegin', `<section class="partner-modal-plans"><div><span>BASIC PARTNER</span><strong>$20<small data-ko=" / 월" data-en=" / month"> / 월</small></strong><p data-ko="기본 프로필·카테고리 노출·매칭 안내" data-en="Profile, category listing, and matching notices">기본 프로필·카테고리 노출·매칭 안내</p></div><div class="premium"><span>PREMIUM PARTNER</span><strong>$50<small data-ko=" / 월" data-en=" / month"> / 월</small></strong><p data-ko="전문 디자인·우선 노출·심사 및 수수료 혜택" data-en="Design, priority placement, review, and fee benefits">전문 디자인·우선 노출·심사 및 수수료 혜택</p></div></section>`);
+
+const volunteerArea = document.getElementById('volunteer');
+if (volunteerArea) {
+  const volunteerTitle = volunteerArea.querySelector('.volunteer-intro h2');
+  if (volunteerTitle) {volunteerTitle.dataset.ko='마음을 잇는 디지털 무료 봉사';volunteerTitle.dataset.en='Digital Volunteers Connecting Hearts';volunteerTitle.textContent=currentLanguage==='en'?volunteerTitle.dataset.en:volunteerTitle.dataset.ko;}
+  volunteerArea.querySelector('.volunteer-grid')?.remove();
+  const volunteerIntro = volunteerArea.querySelector('.volunteer-intro');
+  if (volunteerIntro && !volunteerArea.querySelector('.volunteer-feature-image')) volunteerIntro.insertAdjacentHTML('afterbegin', `<img class="volunteer-feature-image" src="assets/volunteer/digital-volunteer.png" alt="디지털 무료 봉사 안내">`);
+}
+
+const inquiryMessageLabel = inquiryModal.querySelector('textarea')?.closest('label')?.querySelector('span');
+const inquiryMessageBox = inquiryModal.querySelector('textarea');
+document.querySelectorAll('.contact-form-open').forEach(button => button.addEventListener('click', () => {
+  const volunteerRequest=button.dataset.inquiry==='봉사하고 싶어요';const helpRequest=button.dataset.inquiry==='도움이 필요해요';
+  if(!inquiryMessageLabel||!inquiryMessageBox||(!volunteerRequest&&!helpRequest))return;
+  const ko=volunteerRequest?'봉사 내용 *':'도움 내용 *';const en=volunteerRequest?'Volunteer details *':'Help needed *';
+  inquiryMessageLabel.dataset.ko=ko;inquiryMessageLabel.dataset.en=en;inquiryMessageLabel.textContent=currentLanguage==='en'?en:ko;
+  inquiryMessageBox.name=volunteerRequest?'봉사 내용':'도움 내용';inquiryMessageBox.placeholder=volunteerRequest?'가능한 봉사 내용과 시간을 적어주세요.':'필요한 도움의 내용을 적어주세요.';
+}));
+
+const advertisingArea = document.getElementById('advertising');
+if (advertisingArea) {
+  const adHeading=advertisingArea.querySelector('.section-heading h2');
+  if(adHeading){adHeading.dataset.ko='업체 광고·제휴 공간';adHeading.dataset.en='Business Advertising & Partnerships';adHeading.textContent=currentLanguage==='en'?adHeading.dataset.en:adHeading.dataset.ko;}
+  const adGrid=advertisingArea.querySelector('.ad-grid');
+  if(adGrid)adGrid.innerHTML=`<button type="button" data-ad-room="premium"><span>AD 01</span><b data-ko="프리미엄 광고" data-en="Premium Advertising">프리미엄 광고</b><small data-ko="업체 둘러보기 →" data-en="View businesses →">업체 둘러보기 →</small></button><button type="button" data-ad-room="community"><span>PARTNERS</span><b data-ko="협력 업체" data-en="Community Partners">협력 업체</b><small data-ko="협력 업체 둘러보기 →" data-en="View partners →">협력 업체 둘러보기 →</small></button><button type="button" data-ad-room="culture"><span>AD 03</span><b data-ko="문화·교육 제휴" data-en="Culture & Education">문화·교육 제휴</b><small data-ko="제휴 업체 둘러보기 →" data-en="View partners →">제휴 업체 둘러보기 →</small></button>`;
+}
+
+const adDirectoryModal=document.createElement('div');adDirectoryModal.className='ad-directory-modal';adDirectoryModal.hidden=true;
+adDirectoryModal.innerHTML=`<div class="ad-directory-backdrop" data-ad-close></div><section class="ad-directory-panel" role="dialog" aria-modal="true" aria-labelledby="adDirectoryTitle"><button type="button" class="ad-directory-close" data-ad-close aria-label="닫기">×</button><p class="eyebrow">HARMONY LINK PARTNERS</p><h2 id="adDirectoryTitle"></h2><div class="ad-directory-list"></div></section>`;document.body.appendChild(adDirectoryModal);
+const adRooms={premium:{ko:'프리미엄 광고 업체',en:'Premium Advertisers',items:[]},community:{ko:'협력 업체',en:'Community Partners',items:[{name:'AALEAC',copy:'지역사회와 함께하는 협력 기관',url:'https://aaleac.org/'}]},culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',items:[]}};
+document.querySelectorAll('[data-ad-room]').forEach(button=>button.addEventListener('click',()=>{const room=adRooms[button.dataset.adRoom];adDirectoryModal.querySelector('h2').textContent=currentLanguage==='en'?room.en:room.ko;adDirectoryModal.querySelector('.ad-directory-list').innerHTML=room.items.length?room.items.map(item=>`<article><div><span>PARTNER</span><h3>${item.name}</h3><p>${item.copy}</p></div><a href="${item.url}" target="_blank" rel="noopener noreferrer" class="btn btn-primary"><span data-ko="홈페이지 보기" data-en="Visit Website">홈페이지 보기</span><b>↗</b></a></article>`).join(''):`<div class="ad-directory-empty"><b>＋</b><h3 data-ko="업체 등록 준비 중" data-en="Listings coming soon">업체 등록 준비 중</h3><p data-ko="새로운 업체가 등록되면 이 공간에 계속 추가됩니다." data-en="New businesses will continue to be added here.">새로운 업체가 등록되면 이 공간에 계속 추가됩니다.</p></div>`;adDirectoryModal.hidden=false;document.body.classList.add('modal-open');setLanguage(currentLanguage);}));
+adDirectoryModal.querySelectorAll('[data-ad-close]').forEach(button=>button.addEventListener('click',()=>{adDirectoryModal.hidden=true;document.body.classList.remove('modal-open');}));
 setLanguage(currentLanguage);
