@@ -290,9 +290,7 @@ const closePromotion = () => {
 promotionModal.querySelectorAll('[data-promotion-close]').forEach(item => item.addEventListener('click', closePromotion));
 promotionModal.querySelector('.promotion-action').addEventListener('click', () => {
   closePromotion();
-  if (paidPlans) paidPlans.hidden = false;
-  if (upgradeToggle) upgradeToggle.setAttribute('aria-expanded', 'true');
-  document.getElementById('membership')?.scrollIntoView({behavior:'smooth'});
+  document.querySelector('.audience-card.provider .partner-form-link')?.click();
 });
 // Show the limited-time promotion again on every page load through August 31, 2026.
 const promotionDeadline = new Date('2026-09-01T00:00:00-04:00');
@@ -766,7 +764,7 @@ if (volunteerArea) {
   if (volunteerTitle) {volunteerTitle.dataset.ko='마음을 잇는 디지털 무료 봉사';volunteerTitle.dataset.en='Digital Volunteers Connecting Hearts';volunteerTitle.textContent=currentLanguage==='en'?volunteerTitle.dataset.en:volunteerTitle.dataset.ko;}
   volunteerArea.querySelector('.volunteer-grid')?.remove();
   const volunteerIntro = volunteerArea.querySelector('.volunteer-intro');
-  if (volunteerIntro && !volunteerArea.querySelector('.volunteer-feature-image')) volunteerIntro.insertAdjacentHTML('afterbegin', `<img class="volunteer-feature-image" src="assets/volunteer/digital-volunteer.png" alt="디지털 무료 봉사 안내">`);
+  if (volunteerIntro && !volunteerArea.querySelector('.volunteer-feature-image')) volunteerIntro.insertAdjacentHTML('beforeend', `<a class="volunteer-image-link" href="assets/volunteer/digital-volunteer.png" target="_blank" rel="noopener noreferrer" aria-label="디지털 무료 봉사 안내 이미지 크게 보기"><img class="volunteer-feature-image" src="assets/volunteer/digital-volunteer.png" alt="디지털 무료 봉사 안내"><span data-ko="이미지 크게 보기 ↗" data-en="View larger ↗">이미지 크게 보기 ↗</span></a>`);
 }
 
 const inquiryMessageLabel = inquiryModal.querySelector('textarea')?.closest('label')?.querySelector('span');
@@ -789,7 +787,8 @@ if (advertisingArea) {
 
 const adDirectoryModal=document.createElement('div');adDirectoryModal.className='ad-directory-modal';adDirectoryModal.hidden=true;
 adDirectoryModal.innerHTML=`<div class="ad-directory-backdrop" data-ad-close></div><section class="ad-directory-panel" role="dialog" aria-modal="true" aria-labelledby="adDirectoryTitle"><button type="button" class="ad-directory-close" data-ad-close aria-label="닫기">×</button><p class="eyebrow">HARMONY LINK PARTNERS</p><h2 id="adDirectoryTitle"></h2><div class="ad-directory-list"></div></section>`;document.body.appendChild(adDirectoryModal);
-const adRooms={premium:{ko:'프리미엄 광고 업체',en:'Premium Advertisers',items:[]},community:{ko:'협력 업체',en:'Community Partners',items:[{name:'AALEAC',copy:'지역사회와 함께하는 협력 기관',url:'https://aaleac.org/'}]},culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',items:[]}};
-document.querySelectorAll('[data-ad-room]').forEach(button=>button.addEventListener('click',()=>{const room=adRooms[button.dataset.adRoom];adDirectoryModal.querySelector('h2').textContent=currentLanguage==='en'?room.en:room.ko;adDirectoryModal.querySelector('.ad-directory-list').innerHTML=room.items.length?room.items.map(item=>`<article><div><span>PARTNER</span><h3>${item.name}</h3><p>${item.copy}</p></div><a href="${item.url}" target="_blank" rel="noopener noreferrer" class="btn btn-primary"><span data-ko="홈페이지 보기" data-en="Visit Website">홈페이지 보기</span><b>↗</b></a></article>`).join(''):`<div class="ad-directory-empty"><b>＋</b><h3 data-ko="업체 등록 준비 중" data-en="Listings coming soon">업체 등록 준비 중</h3><p data-ko="새로운 업체가 등록되면 이 공간에 계속 추가됩니다." data-en="New businesses will continue to be added here.">새로운 업체가 등록되면 이 공간에 계속 추가됩니다.</p></div>`;adDirectoryModal.hidden=false;document.body.classList.add('modal-open');setLanguage(currentLanguage);}));
+const adRooms={premium:{ko:'프리미엄 광고 업체',en:'Premium Advertisers',items:[]},community:{ko:'협력 업체',en:'Community Partners',items:[{name:'AALEAC',copy:'업체명을 클릭하면 홈페이지로 이동합니다.',url:'https://aaleac.org/',image:'assets/partners/aaleac-identity.png'}]},culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',items:[]}};
+document.querySelectorAll('[data-ad-room]').forEach(button=>button.addEventListener('click',()=>{const room=adRooms[button.dataset.adRoom];adDirectoryModal.querySelector('h2').textContent=currentLanguage==='en'?room.en:room.ko;adDirectoryModal.querySelector('.ad-directory-list').innerHTML=room.items.length?room.items.map(item=>`<article class="ad-partner-card"><img src="${item.image}" alt="${item.name} 로고 및 기관명"><div><span>COMMUNITY PARTNER</span><a class="ad-partner-name" href="${item.url}" target="_blank" rel="noopener noreferrer"><h3>${item.name} <b>↗</b></h3></a><p>${item.copy}</p></div></article>`).join(''):`<div class="ad-directory-empty"><b>＋</b><h3 data-ko="업체 등록 준비 중" data-en="Listings coming soon">업체 등록 준비 중</h3><p data-ko="새로운 업체가 등록되면 이 공간에 계속 추가됩니다." data-en="New businesses will continue to be added here.">새로운 업체가 등록되면 이 공간에 계속 추가됩니다.</p></div>`;adDirectoryModal.hidden=false;document.body.classList.add('modal-open');setLanguage(currentLanguage);}));
 adDirectoryModal.querySelectorAll('[data-ad-close]').forEach(button=>button.addEventListener('click',()=>{adDirectoryModal.hidden=true;document.body.classList.remove('modal-open');}));
+document.getElementById('membership')?.remove();
 setLanguage(currentLanguage);
