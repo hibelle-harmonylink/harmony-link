@@ -855,3 +855,30 @@ document.querySelectorAll('.contact-form-open').forEach(button => button.addEven
   if (subject) subject.value = `Harmony Link ${type} 신청`;
   if (response) response.value = `Harmony Link에 ${type} 신청을 보내주셔서 감사합니다. 정상적으로 접수되었으며, 내용을 확인한 뒤 담당자가 연락드리겠습니다.`;
 }));
+
+// Partner-only resource library. Available files download immediately; planned files are clearly labeled.
+const partnerResourceSections = [
+  {no:'01',icon:'🚀',title:'시작하기 (필수)',copy:'입점 후 가장 먼저 확인하는 필수 안내 자료',items:[['환영 안내서'],['플랫폼 운영 정책'],['입점 파트너 계약서 (PDF)'],['강사 활동 가이드'],['자주 묻는 질문 (FAQ)']]},
+  {no:'02',icon:'📘',title:'운영 매뉴얼',copy:'기관 출강과 실제 수업 운영을 위한 기준',items:[['기관 수업 진행 방법'],['출강 체크리스트'],['첫 수업 준비 방법'],['수업 종료 후 해야 할 일'],['강사 매너·복장 가이드'],['안전 수칙']]},
+  {no:'03',icon:'🗂️',title:'수업 자료',copy:'수업 현장에서 바로 활용하는 양식과 템플릿',items:[['수업계획서 양식'],['출석부'],['만족도 조사'],['수료증 양식'],['강의 노트 양식'],['PPT 템플릿'],['Canva 템플릿']]},
+  {no:'04',icon:'📣',title:'홍보 자료',copy:'Harmony Link 브랜드 홍보용 디자인 자료',items:[['Harmony Link 로고','assets/harmony-logo.png','PNG'],['전단지 예시','assets/partners/partner-recruitment.png','PNG'],['브랜드 컬러 가이드'],['SNS 카드뉴스'],['배너'],['명함 디자인'],['프로필 이미지 템플릿']]},
+  {no:'05',icon:'🏢',title:'기관 제출용 문서',copy:'기관 담당자에게 바로 전달할 수 있는 문서',items:[['강사 프로필 양식'],['프로그램 제안서'],['강의계획서'],['견적서'],['일정표'],['기관 소개서']]},
+  {no:'06',icon:'💻',title:'디지털 교육 자료',copy:'디지털·AI 교육 강사를 위한 전문 교안',items:[['ChatGPT 자료'],['Canva 자료'],['AI 활용 자료'],['스마트폰 교안'],['컴퓨터 교안'],['영상편집 교안']]},
+  {no:'07',icon:'🎵',title:'음악 교육 자료',copy:'합창과 음악 활동 수업을 위한 자료',items:[['합창곡'],['반주 자료'],['발성 자료'],['음악 활동지'],['악보'],['프로그램 예시']]},
+  {no:'08',icon:'🎬',title:'영상 강의',copy:'파트너의 수업과 사업 운영 역량을 높이는 콘텐츠',items:[['Canva 사용법'],['ChatGPT 활용법'],['강의 잘하는 방법'],['시니어 수업 노하우'],['기관 계약 방법'],['마케팅 방법']]},
+  {no:'09',icon:'⬇️',title:'다운로드 센터',copy:'로고·포스터·배너·문서 파일 모음',items:[['Harmony Link 로고','assets/harmony-logo.png','PNG'],['하이벨 디지털 이미지','assets/brands/hibelle-digital.jpg','JPG'],['하이벨 화상영어 이미지','assets/brands/hibelle-online-english.jpg','JPG'],['Meeran Melody 이미지','assets/brands/meeran-melody.jpg','JPG'],['입점 파트너 모집 포스터','assets/partners/partner-recruitment.png','PNG'],['PowerPoint'],['PDF']]},
+  {no:'10',icon:'⭐',title:'회원 혜택',copy:'PREMIUM 파트너 전용 신청 서비스',premium:true,items:[['홍보 디자인 신청'],['홈페이지 추천 노출 신청'],['프로그램 등록 신청'],['배너 제작 신청']]},
+  {no:'11',icon:'📌',title:'공지사항',copy:'매칭·행사·교육 및 시스템 소식',items:[['신규 기관 모집'],['출강 모집'],['이벤트'],['교육 일정'],['시스템 업데이트']]},
+  {no:'12',icon:'💬',title:'커뮤니티',copy:'파트너끼리 경험과 정보를 나누는 공간',items:[['질문 게시판'],['강사 후기'],['자료 공유'],['성공 사례']]}
+];
+if (downloads) {
+  const resourceMarkup = partnerResourceSections.map((section,index) => `<article class="partner-resource-group${section.premium?' premium-resource':''}">
+    <button type="button" class="partner-resource-toggle" aria-expanded="${index===0?'true':'false'}" aria-controls="partnerResource${index}"><span class="resource-number">${section.no}</span><b>${section.icon}</b><div><h3>${section.title}${section.premium?'<em>PREMIUM</em>':''}</h3><p>${section.copy}</p></div><i>${index===0?'−':'＋'}</i></button>
+    <div class="partner-resource-items" id="partnerResource${index}"${index===0?'':' hidden'}>${section.items.map(item=>`<div class="partner-resource-item"><span>${item[2]||'준비 중'}</span><strong>${item[0]}</strong>${item[1]?`<a href="${item[1]}" download>다운로드 ↓</a>`:'<small>자료 준비 중</small>'}</div>`).join('')}</div>
+  </article>`).join('');
+  downloads.innerHTML = `<div class="partner-library-head"><span class="unlocked-badge">접근 승인됨</span><p>필요한 영역을 선택하면 다운로드 가능한 파일과 준비 중인 자료를 확인할 수 있습니다.</p></div><div class="partner-resource-library">${resourceMarkup}</div><p class="partner-download-warning">이 자료는 승인된 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다.</p>`;
+  downloads.querySelectorAll('.partner-resource-toggle').forEach(button=>button.addEventListener('click',()=>{
+    const panel=downloads.querySelector(`#${button.getAttribute('aria-controls')}`);const open=panel.hidden;
+    panel.hidden=!open;button.setAttribute('aria-expanded',String(open));button.querySelector('i').textContent=open?'−':'＋';
+  }));
+}
