@@ -792,3 +792,55 @@ document.querySelectorAll('[data-ad-room]').forEach(button=>button.addEventListe
 adDirectoryModal.querySelectorAll('[data-ad-close]').forEach(button=>button.addEventListener('click',()=>{adDirectoryModal.hidden=true;document.body.classList.remove('modal-open');}));
 document.getElementById('membership')?.remove();
 setLanguage(currentLanguage);
+
+// Interactive partner plan comparison inside the partner application modal.
+const partnerPlans = partnerModal?.querySelector('.partner-modal-plans');
+if (partnerPlans) {
+  partnerPlans.innerHTML = `
+    <button type="button" class="partner-plan-toggle" aria-expanded="false" aria-controls="basicBenefits">
+      <span>BASIC PARTNER</span><strong>$20<small> / 월</small></strong><em>혜택 보기 ＋</em>
+    </button>
+    <div class="partner-plan-benefits" id="basicBenefits" hidden>
+      <h3>BASIC 회원 혜택</h3>
+      <ul><li>업체·강사 프로필 강화 및 전체 교육 카테고리 노출</li><li>기관 및 수강 의뢰 매칭 안내</li><li>프로그램 정보 월 1회 수정</li><li>기본 운영 상담 및 소형 배너 노출</li></ul>
+    </div>
+    <button type="button" class="partner-plan-toggle premium" aria-expanded="false" aria-controls="premiumBenefits">
+      <span>PREMIUM PARTNER</span><strong>$50<small> / 월</small></strong><em>혜택 보기 ＋</em>
+    </button>
+    <div class="partner-plan-benefits premium-benefits" id="premiumBenefits" hidden>
+      <h3>PREMIUM 회원 혜택</h3>
+      <ul><li>BASIC 회원의 모든 혜택</li><li>하이벨 홍보 전단·배너 디자인 지원</li><li>전문교육·메인·추천 영역 우선 노출</li><li>신규 기관 우선 매칭 및 심사 우선 처리</li><li>디지털 스토어 판매 수수료 할인</li></ul>
+    </div>`;
+  partnerPlans.querySelectorAll('.partner-plan-toggle').forEach(button => button.addEventListener('click', () => {
+    const panel = document.getElementById(button.getAttribute('aria-controls'));
+    const willOpen = panel.hidden;
+    partnerPlans.querySelectorAll('.partner-plan-benefits').forEach(item => { item.hidden = true; });
+    partnerPlans.querySelectorAll('.partner-plan-toggle').forEach(item => { item.setAttribute('aria-expanded', 'false'); item.querySelector('em').textContent = '혜택 보기 ＋'; });
+    panel.hidden = !willOpen;
+    button.setAttribute('aria-expanded', String(willOpen));
+    button.querySelector('em').textContent = willOpen ? '혜택 닫기 −' : '혜택 보기 ＋';
+  }));
+}
+
+// Reusable volunteer program area; new opportunities can be appended as cards later.
+if (volunteerArea && !volunteerArea.querySelector('.volunteer-program-grid')) {
+  volunteerArea.querySelector('.volunteer-intro')?.insertAdjacentHTML('afterend', `
+    <div class="volunteer-program-grid">
+      <article class="volunteer-program active"><span>NOW</span><b>💻</b><div><h3>무료 방문 디지털 지원</h3><p>디지털 기기 연결과 기본 사용이 어려운 이웃을 직접 찾아가 도와드립니다.</p></div></article>
+      <article class="volunteer-program coming"><span>COMING SOON</span><b>＋</b><div><h3>새 봉사 프로그램</h3><p>지역사회에 필요한 봉사 프로그램이 이 공간에 계속 추가될 예정입니다.</p></div></article>
+    </div>`);
+}
+
+// Send an acknowledgement to the applicant as well as the owner notification.
+const inquiryForm = inquiryModal?.querySelector('#inquiryForm');
+if (inquiryForm && !inquiryForm.querySelector('[name="_autoresponse"]')) {
+  inquiryForm.insertAdjacentHTML('afterbegin', '<input type="hidden" name="_autoresponse" value="Harmony Link에 신청해 주셔서 감사합니다. 접수가 완료되었습니다. 내용을 확인한 뒤 담당자가 연락드리겠습니다.">');
+}
+document.querySelectorAll('.contact-form-open').forEach(button => button.addEventListener('click', () => {
+  if (!inquiryForm) return;
+  const type = button.dataset.inquiry || '문의 및 상담';
+  const subject = inquiryForm.querySelector('[name="_subject"]');
+  const response = inquiryForm.querySelector('[name="_autoresponse"]');
+  if (subject) subject.value = `Harmony Link ${type} 신청`;
+  if (response) response.value = `Harmony Link에 ${type} 신청을 보내주셔서 감사합니다. 정상적으로 접수되었으며, 내용을 확인한 뒤 담당자가 연락드리겠습니다.`;
+}));
