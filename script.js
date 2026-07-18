@@ -796,9 +796,9 @@ if (advertisingArea) {
 const adDirectoryModal=document.createElement('div');adDirectoryModal.className='ad-directory-modal';adDirectoryModal.hidden=true;
 adDirectoryModal.innerHTML=`<div class="ad-directory-backdrop" data-ad-close></div><section class="ad-directory-panel" role="dialog" aria-modal="true" aria-labelledby="adDirectoryTitle"><button type="button" class="ad-directory-close" data-ad-close aria-label="닫기">×</button><p class="eyebrow">HARMONY LINK PARTNERS</p><h2 id="adDirectoryTitle"></h2><div class="ad-directory-list"></div></section>`;document.body.appendChild(adDirectoryModal);
 const adRooms={
-  premium:{ko:'프리미엄 광고 업체',en:'Premium Advertisers',label:'PREMIUM ADVERTISER',slots:3,items:[]},
-  community:{ko:'협력 업체',en:'Community Partners',label:'COMMUNITY PARTNER',slots:3,items:[{name:'AALEAC',copy:'업체명을 클릭하면 홈페이지로 이동합니다.',url:'https://aaleac.org/',image:'assets/partners/aaleac-identity.png'}]},
-  culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',label:'CULTURE & EDUCATION PARTNER',slots:3,items:[]}
+  premium:{ko:'프리미엄 광고 업체',en:'Premium Advertisers',label:'PREMIUM ADVERTISER',slots:4,items:[]},
+  community:{ko:'협력 업체',en:'Community Partners',label:'COMMUNITY PARTNER',slots:4,items:[{name:'AALEAC',copy:'업체명을 클릭하면 홈페이지로 이동합니다.',url:'https://aaleac.org/',image:'assets/partners/aaleac-identity.png'}]},
+  culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',label:'CULTURE & EDUCATION PARTNER',slots:4,items:[]}
 };
 document.querySelectorAll('[data-ad-room]').forEach(button=>button.addEventListener('click',()=>{
   const room=adRooms[button.dataset.adRoom];
