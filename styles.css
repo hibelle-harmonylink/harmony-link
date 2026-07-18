@@ -173,6 +173,22 @@ html[lang="en"] .program-grid .program-card:nth-child(3)::after,html[lang="en"] 
 .volunteer-intro{grid-template-columns:1fr minmax(330px,440px);column-gap:52px}.volunteer-intro .eyebrow,.volunteer-intro h2,.volunteer-intro>p,.volunteer-actions{grid-column:1}.volunteer-image-link{grid-column:2;grid-row:1/6;position:relative;display:block;align-self:center;border-radius:24px;overflow:hidden;box-shadow:0 20px 48px rgba(5,57,127,.2)}.volunteer-feature-image{width:100%;height:290px;object-fit:cover;object-position:top;display:block;border-radius:0;box-shadow:none}.volunteer-image-link>span{position:absolute;right:14px;bottom:14px;padding:8px 12px;border-radius:30px;background:rgba(5,43,95,.88);color:#fff;font-size:10px;font-weight:700}.ad-partner-card{display:grid!important;grid-template-columns:260px 1fr!important;align-items:center!important}.ad-partner-card>img{width:260px;height:145px;object-fit:contain;border-radius:14px;background:#fff;border:1px solid #d7e4f4}.ad-partner-name{display:inline-block;color:var(--blue)}.ad-partner-name h3{font-size:27px;margin:5px 0}.ad-partner-name b{display:inline-grid;width:30px;height:30px;place-items:center;border-radius:50%;background:var(--blue);color:#fff;font-size:15px}.ad-partner-card p{font-weight:600;color:#63758d}
 @media(max-width:760px){.volunteer-intro{grid-template-columns:1fr}.volunteer-image-link{grid-column:1;grid-row:auto;margin-top:20px}.volunteer-feature-image{height:230px;margin:0}.ad-partner-card{grid-template-columns:1fr!important}.ad-partner-card>img{width:100%;height:auto}.ad-partner-name h3{font-size:24px}}
 
+/* Standard 16:9 advertiser directory, ready for continuously added partners. */
+.ad-directory-panel{width:min(960px,95vw)}
+.ad-directory-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ad-directory-list .ad-partner-card,.ad-directory-list .ad-slot-card{display:block!important;padding:0!important;overflow:hidden;background:#fff}
+.ad-partner-image,.ad-slot-visual{width:100%;aspect-ratio:16/9;background:#fff;border-bottom:1px solid #d7e4f4;display:grid;place-items:center;overflow:hidden}
+.ad-partner-image img{width:100%;height:100%;object-fit:contain;padding:12px;display:block}
+.ad-partner-copy,.ad-slot-card>div:last-child{padding:18px 20px 21px}
+.ad-partner-copy>span,.ad-slot-card span{font-size:9px;letter-spacing:1.3px;color:var(--blue);font-weight:800}
+.ad-slot-card{border:1px dashed #9fc0e8!important;border-radius:18px;background:#f7fbff!important}
+.ad-slot-visual{background:linear-gradient(145deg,#edf6ff,#f8fbff)}
+.ad-slot-visual b{display:grid;place-items:center;width:50px;height:50px;border-radius:50%;background:#dcecff;color:var(--blue);font-size:28px}
+.ad-slot-visual small{position:absolute;margin-top:76px;color:#7890ad;font-size:9px;font-weight:700;letter-spacing:1px}
+.ad-slot-card h3{font-size:19px;margin:6px 0}
+.ad-slot-card p{font-size:11px;color:var(--muted);margin:0;line-height:1.6}
+@media(max-width:760px){.ad-directory-list{grid-template-columns:1fr}.ad-partner-card{grid-template-columns:1fr!important}.ad-partner-image img{padding:8px}}
+
 /* Interactive partner benefits, equal participation cards, and scalable volunteer programs. */
 .partner-modal-plans{grid-template-columns:1fr 1fr;align-items:start}
 .partner-plan-toggle{appearance:none;border:1px solid #c9dbf0;border-radius:16px;padding:18px;text-align:left;background:#fff;color:var(--deep);cursor:pointer;display:grid;gap:4px;transition:.2s}
