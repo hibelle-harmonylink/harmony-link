@@ -140,6 +140,28 @@ html[lang="en"] .program-grid .program-card:nth-child(3)::after,html[lang="en"] 
 .connection-visual{gap:20px!important}.connection-visual span{width:102px!important;height:102px!important;border-radius:28px!important;font-size:52px!important;background:rgba(255,255,255,.22)!important;border:2px solid rgba(255,255,255,.65)!important;box-shadow:0 12px 32px rgba(0,20,65,.28)}.connection-visual i{font-size:38px!important;font-weight:900}
 .reason-heading{display:grid;grid-template-columns:62px 1fr minmax(180px,auto);gap:14px;align-items:center}.reason-heading .reason-emoji{position:static!important;width:58px;height:58px;border-radius:17px;display:grid;place-items:center;background:#e8f2ff;font-size:29px}.reason-heading p{margin:0;color:var(--blue);font-size:9px;letter-spacing:1.4px;font-weight:800}.reason-heading h2{font-size:26px;margin:0!important}.reason-heading .reason-lead{font-size:30px;color:var(--deep);line-height:1.1;text-align:right;margin:0;padding-right:54px}.reason-panel>p:first-of-type,.reason-panel>h2{margin-left:0!important}.reason-summary{margin-top:20px!important}.reason-summary section{min-height:118px;padding:20px!important}.reason-partner-list article{grid-template-columns:74px 1fr auto!important}.reason-partner-list article>img{width:74px;height:74px;border-radius:14px;object-fit:cover;background:#fff;border:1px solid #d5e2f0}.reason-partners h3{font-size:23px!important}
 .english-teachers{padding:22px 28px!important;background:#f3f8ff!important;border-bottom:1px solid var(--line)}.english-teachers .eyebrow{margin-bottom:5px}.english-teachers>h3{margin:0 0 3px}.english-teachers>.teacher-grid{margin-top:14px}.specialty-teacher[hidden]{display:none!important}
+
+/* Specialty program hierarchy: two directly operated programs above, joint program below. */
+.specialty-banner-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.specialty-banner-card{position:relative}
+.specialty-banner-card.specialty-melody{grid-column:1/-1;display:grid;grid-template-columns:minmax(280px,42%) 1fr;align-items:stretch;max-width:none;width:100%}
+.specialty-melody .specialty-poster-preview{height:320px}
+.specialty-melody .specialty-banner-info{display:flex;flex-direction:column;justify-content:center;padding:34px 42px}
+.specialty-operation-badge{position:absolute;top:18px;left:18px;z-index:2;display:inline-flex!important;align-items:center;justify-content:center;min-width:88px;padding:10px 16px;border-radius:999px;background:#0758c9;color:#fff!important;font-size:14px!important;letter-spacing:.05em!important;box-shadow:0 8px 20px rgba(7,88,201,.28)}
+.specialty-english .specialty-operation-badge{background:#e66b24}
+.specialty-melody .specialty-operation-badge{background:#b73d78}
+.specialty-banner-info h3{font-size:27px;margin:12px 0 22px}
+.melody-program-list{padding:30px 18px 18px;background:linear-gradient(180deg,#fff7fb,#fff)}
+.melody-program-list[hidden]{display:none!important}
+.melody-program-heading{text-align:center;max-width:560px;margin:0 auto 20px}
+.melody-program-heading>span{font-size:9px;letter-spacing:1.5px;color:#b73d78;font-weight:800}
+.melody-program-heading h3{font-size:24px;margin:5px 0}
+.melody-program-heading p{font-size:11px;color:var(--muted);margin:0}
+.melody-program-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.melody-program-grid article{min-height:112px;padding:19px;border:1px solid #efd3e1;border-radius:17px;background:#fff;box-shadow:0 10px 24px rgba(183,61,120,.08)}
+.melody-program-grid b{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#fae5ef;color:#b73d78;font-size:11px}
+.melody-program-grid h4{font-size:16px;line-height:1.45;margin:13px 0 0}
+@media(max-width:700px){.specialty-banner-grid{grid-template-columns:1fr}.specialty-banner-card.specialty-melody{grid-column:auto;display:block}.specialty-melody .specialty-poster-preview{height:310px}.specialty-melody .specialty-banner-info{padding:24px}.melody-program-grid{grid-template-columns:1fr}.melody-program-grid article{min-height:auto}}
 .member-benefit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:30px 0}.member-benefit-grid article{position:relative;min-height:150px;padding:24px;border:1px solid #d9e5f3;border-radius:17px;background:#fff}.member-benefit-grid b{position:absolute;right:18px;top:15px;color:#a5b6ca;font-size:10px}.member-benefit-grid span{display:block;color:var(--blue);font-size:13px;font-weight:800;margin-top:28px}.member-benefit-grid p{font-size:11px;color:var(--muted);margin:8px 0 0}
 @media(max-width:650px){.connection-visual span{width:72px!important;height:72px!important;font-size:37px!important}.connection-visual i{font-size:27px!important}.reason-heading{grid-template-columns:52px 1fr}.reason-heading .reason-lead{grid-column:1/3;text-align:left;padding:10px 0 0;font-size:25px}.reason-partner-list article{grid-template-columns:62px 1fr auto!important}.reason-partner-list article>img{width:62px;height:62px}.member-benefit-grid{grid-template-columns:1fr}.english-teachers{padding:18px!important}}
 
