@@ -816,19 +816,30 @@ setLanguage(currentLanguage);
 const partnerPlans = partnerModal?.querySelector('.partner-modal-plans');
 if (partnerPlans) {
   partnerPlans.innerHTML = `
-    <button type="button" class="partner-plan-toggle" aria-expanded="false" aria-controls="basicBenefits">
-      <span>BASIC PARTNER</span><strong>$20<small> / 월</small></strong><em>혜택 보기 ＋</em>
+    <div class="partner-plan-intro"><span>PARTNER MEMBERSHIP</span><strong>신청만 해도 무료 파트너로 등록할 수 있습니다</strong><p>필요한 홍보와 매칭 지원 수준에 따라 언제든 베이직 또는 프리미엄으로 업그레이드하세요.</p></div>
+    <button type="button" class="partner-plan-toggle free" aria-expanded="false" aria-controls="freeBenefits">
+      <i>무료 가입</i><span>FREE PARTNER</span><strong>$0<small> / 월</small></strong><p>기본 등록과 플랫폼 체험</p><em>혜택 보기 ＋</em>
+    </button>
+    <div class="partner-plan-benefits free-benefits" id="freeBenefits" hidden>
+      <h3>FREE 파트너 혜택</h3>
+      <p class="plan-benefit-lead">비용 없이 입점하여 기본 정보를 알리고 플랫폼을 시작하는 단계입니다.</p>
+      <ul><li>업체·강사 기본 프로필 등록</li><li>교육 카테고리 1개 기본 노출</li><li>기본 프로그램 1개 등록</li><li>프로그램 정보 분기별 1회 수정</li><li>기관·수강 의뢰 매칭 가능 시 안내</li><li>플랫폼 공지와 뉴스레터 제공</li></ul>
+    </div>
+    <button type="button" class="partner-plan-toggle basic" aria-expanded="false" aria-controls="basicBenefits">
+      <i>홍보·매칭 강화</i><span>BASIC PARTNER</span><strong>$20<small> / 월</small></strong><p>꾸준한 노출과 매칭 안내</p><em>혜택 보기 ＋</em>
     </button>
     <div class="partner-plan-benefits" id="basicBenefits" hidden>
       <h3>BASIC 회원 혜택</h3>
-      <ul><li>업체·강사 프로필 강화 및 전체 교육 카테고리 노출</li><li>기관 및 수강 의뢰 매칭 안내</li><li>프로그램 정보 월 1회 수정</li><li>기본 운영 상담 및 소형 배너 노출</li></ul>
+      <p class="plan-benefit-lead">직접 만든 홍보물과 프로그램으로 정기적인 노출과 매칭 안내를 받는 단계입니다.</p>
+      <ul><li>FREE 파트너의 모든 혜택</li><li>강화된 업체·강사 프로필</li><li>교육 카테고리 최대 3개 노출</li><li>프로그램 최대 3개 등록</li><li>프로그램 정보 월 1회 수정</li><li>기관·수강 의뢰 정기 매칭 안내</li><li>소형 배너 및 검색 우선 노출</li><li>이메일 기본 운영 상담</li></ul>
     </div>
     <button type="button" class="partner-plan-toggle premium" aria-expanded="false" aria-controls="premiumBenefits">
-      <span>PREMIUM PARTNER</span><strong>$50<small> / 월</small></strong><em>혜택 보기 ＋</em>
+      <i>가장 강력한 성장 지원</i><span>PREMIUM PARTNER</span><strong>$50<small> / 월</small></strong><p>전문 디자인·최우선 홍보·매칭</p><em>혜택 보기 ＋</em>
     </button>
     <div class="partner-plan-benefits premium-benefits" id="premiumBenefits" hidden>
       <h3>PREMIUM 회원 혜택</h3>
-      <ul><li>BASIC 회원의 모든 혜택</li><li>하이벨 홍보 전단·배너 디자인 지원</li><li>전문교육·메인·추천 영역 우선 노출</li><li>신규 기관 우선 매칭 및 심사 우선 처리</li><li>디지털 스토어 판매 수수료 할인</li></ul>
+      <p class="plan-benefit-lead">하이벨이 홍보 디자인부터 최우선 노출과 매칭까지 적극 지원하는 프리미엄 단계입니다.</p>
+      <ul><li>BASIC 파트너의 모든 혜택</li><li>하이벨 홍보 전단·배너 디자인 지원</li><li>전체 교육 카테고리와 추천 영역 노출</li><li>프로그램 등록 및 수정 제한 없음</li><li>전문교육 섹션 프리미엄 배너 노출</li><li>메인 페이지·추천 강사 우선 노출</li><li>신규 기관 의뢰 최우선 매칭</li><li>입점·프로그램 심사 우선 처리</li><li>디지털 스토어 판매 수수료 할인</li><li>우선 운영 상담·특별 프로모션 초청</li></ul>
     </div>`;
   partnerPlans.querySelectorAll('.partner-plan-toggle').forEach(button => button.addEventListener('click', () => {
     const panel = document.getElementById(button.getAttribute('aria-controls'));
