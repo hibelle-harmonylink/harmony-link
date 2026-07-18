@@ -639,8 +639,11 @@ partnerModal.innerHTML = `
       </div>
       <button class="partner-modal-close" type="button" data-partner-close aria-label="닫기">×</button>
     </div>
-    <div class="partner-modal-scroll">
-      <img src="assets/partners/partner-recruitment.png" alt="하모니링크 입점 파트너 모집 전단지">
+    <div class="partner-modal-scroll partner-flyer-scroll">
+      <button type="button" class="partner-flyer-toggle" aria-expanded="false">
+        <img src="assets/partners/partner-recruitment.png" alt="하모니링크 입점 파트너 모집 전단지">
+        <span data-ko="전단지 클릭해서 크게 보기" data-en="Click to enlarge flyer">전단지 클릭해서 크게 보기</span>
+      </button>
     </div>
     <div class="partner-modal-actions">
       <p data-ko="모집 내용을 확인하신 후 신청서를 작성해 주세요." data-en="Review the details, then complete the application form.">모집 내용을 확인하신 후 신청서를 작성해 주세요.</p>
@@ -659,6 +662,14 @@ const closePartnerModal = () => {
   partnerModal.hidden = true;
   document.body.classList.remove('modal-open');
 };
+const partnerFlyerToggle=partnerModal.querySelector('.partner-flyer-toggle');
+partnerFlyerToggle?.addEventListener('click',()=>{
+  const flyerScroll=partnerModal.querySelector('.partner-flyer-scroll');
+  const expanded=!flyerScroll.classList.contains('expanded');
+  flyerScroll.classList.toggle('expanded',expanded);
+  partnerFlyerToggle.setAttribute('aria-expanded',String(expanded));
+  partnerFlyerToggle.querySelector('span').textContent=currentLanguage==='en'?(expanded?'Click to collapse flyer':'Click to enlarge flyer'):(expanded?'전단지 접기':'전단지 클릭해서 크게 보기');
+});
 document.querySelectorAll('.partner-form-link').forEach(link => link.addEventListener('click', openPartnerModal));
 partnerModal.querySelectorAll('[data-partner-close]').forEach(button => button.addEventListener('click', closePartnerModal));
 document.addEventListener('keydown', event => {
@@ -812,6 +823,20 @@ adDirectoryModal.querySelectorAll('[data-ad-close]').forEach(button=>button.addE
 document.getElementById('membership')?.remove();
 setLanguage(currentLanguage);
 
+// Learner application flyer: preview first, then continue to the class request form.
+const learnerApplicationModal=document.createElement('div');
+learnerApplicationModal.className='partner-modal learner-application-modal';
+learnerApplicationModal.hidden=true;
+learnerApplicationModal.innerHTML=`<div class="partner-modal-backdrop" data-learner-close></div><div class="partner-modal-panel"><div class="partner-modal-head"><div><p>HARMONY LINK LEARNING</p><h2 data-ko="교육 신청 안내" data-en="Learning Request">교육 신청 안내</h2></div><button class="partner-modal-close" type="button" data-learner-close aria-label="닫기">×</button></div><div class="partner-modal-scroll learner-flyer-scroll"><button type="button" class="partner-flyer-toggle" aria-expanded="false"><img src="assets/partners/learner-application.png" alt="하모니링크 교육 신청 안내 전단지"><span data-ko="전단지 클릭해서 크게 보기" data-en="Click to enlarge flyer">전단지 클릭해서 크게 보기</span></button></div><div class="partner-modal-actions"><p data-ko="교육 안내를 확인한 후 신청서를 작성해 주세요." data-en="Review the learning information, then complete the request form.">교육 안내를 확인한 후 신청서를 작성해 주세요.</p><a class="btn btn-primary" href="${requestFormUrl}" target="_blank" rel="noopener noreferrer"><span data-ko="교육 신청서 작성" data-en="Complete Learning Request">교육 신청서 작성</span><b>↗</b></a></div></div>`;
+document.body.appendChild(learnerApplicationModal);
+const closeLearnerApplication=()=>{learnerApplicationModal.hidden=true;document.body.classList.remove('modal-open');};
+document.querySelector('.audience-card.learner .request-form-link')?.addEventListener('click',event=>{event.preventDefault();learnerApplicationModal.hidden=false;document.body.classList.add('modal-open');learnerApplicationModal.querySelector('.partner-modal-close')?.focus();});
+learnerApplicationModal.querySelectorAll('[data-learner-close]').forEach(button=>button.addEventListener('click',closeLearnerApplication));
+const learnerFlyerToggle=learnerApplicationModal.querySelector('.partner-flyer-toggle');
+learnerFlyerToggle?.addEventListener('click',()=>{const flyerScroll=learnerApplicationModal.querySelector('.learner-flyer-scroll');const expanded=!flyerScroll.classList.contains('expanded');flyerScroll.classList.toggle('expanded',expanded);learnerFlyerToggle.setAttribute('aria-expanded',String(expanded));learnerFlyerToggle.querySelector('span').textContent=currentLanguage==='en'?(expanded?'Click to collapse flyer':'Click to enlarge flyer'):(expanded?'전단지 접기':'전단지 클릭해서 크게 보기');});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!learnerApplicationModal.hidden)closeLearnerApplication();});
+setLanguage(currentLanguage);
+
 // Interactive partner plan comparison inside the partner application modal.
 const partnerPlans = partnerModal?.querySelector('.partner-modal-plans');
 if (partnerPlans) {
@@ -838,8 +863,8 @@ if (partnerPlans) {
     </button>
     <div class="partner-plan-benefits premium-benefits" id="premiumBenefits" hidden>
       <h3>PREMIUM 회원 혜택</h3>
-      <p class="plan-benefit-lead">하이벨이 홍보 디자인부터 최우선 노출과 매칭까지 적극 지원하는 프리미엄 단계입니다.</p>
-      <ul><li>BASIC 파트너의 모든 혜택</li><li>하이벨 홍보 전단·배너 디자인 지원</li><li>전체 교육 카테고리와 추천 영역 노출</li><li>프로그램 등록 및 수정 제한 없음</li><li>전문교육 섹션 프리미엄 배너 노출</li><li>메인 페이지·추천 강사 우선 노출</li><li>신규 기관 의뢰 최우선 매칭</li><li>입점·프로그램 심사 우선 처리</li><li>디지털 스토어 판매 수수료 할인</li><li>우선 운영 상담·특별 프로모션 초청</li></ul>
+      <p class="plan-benefit-lead">홍보 디자인부터 최우선 노출과 매칭까지 적극 지원하는 프리미엄 단계입니다.</p>
+      <ul><li>BASIC 파트너의 모든 혜택</li><li>홍보 전단·배너 디자인 지원</li><li>전체 교육 카테고리와 추천 영역 노출</li><li>프로그램 등록 및 수정 제한 없음</li><li>전문교육 섹션 프리미엄 배너 노출</li><li>메인 페이지·추천 강사 우선 노출</li><li>신규 기관 의뢰 최우선 매칭</li><li>입점·프로그램 심사 우선 처리</li><li>디지털 스토어 판매 수수료 할인</li><li>우선 운영 상담·특별 프로모션 초청</li></ul>
     </div>`;
   partnerPlans.querySelectorAll('.partner-plan-toggle').forEach(button => button.addEventListener('click', () => {
     const panel = document.getElementById(button.getAttribute('aria-controls'));
