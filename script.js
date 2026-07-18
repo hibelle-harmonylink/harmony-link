@@ -665,7 +665,7 @@ document.addEventListener('keydown', event => {
 setLanguage(currentLanguage);
 
 // Temporary locked Partner Center. Replace with server-side authentication when member login launches.
-const partnerCenterHash = 'ace475ae6f4ad97d067897a8829f408df9d17b6308bddd6edefcafac50e460a4';
+const partnerCenterHash = 'c01060fd04d8032eb00cc7754f141a8d3cb9f49fdccfe11a08946378041bdf18';
 const contactNavLink = document.querySelector('#primary-nav a[href="#contact"]');
 if (contactNavLink) {
   const partnerCenterNav = document.createElement('a');
