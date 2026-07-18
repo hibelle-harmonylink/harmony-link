@@ -349,7 +349,7 @@ if (oldSpecialtyStart) {
     formLink.querySelector('span').textContent=currentLanguage==='en'?'Complete Application':'신청서 작성';
     specialtyModal.querySelector('.specialty-modal-actions p').textContent=program.form
       ? (currentLanguage==='ko'?'아래 버튼에서 신청서를 작성해 주세요.':'Use the button below to complete the application.')
-      : (currentLanguage==='ko'?'대표 프로필과 전단지, 네 가지 미란멜로디 프로그램을 확인해 보세요.':'View the featured profile, flyer, and four Meeran Melody programs.');
+      : (currentLanguage==='ko'?'대표 프로필과 전단지, 세 가지 미란멜로디 프로그램을 확인해 보세요.':'View the featured profile, flyer, and three Meeran Melody programs.');
     specialtyModal.hidden=false;document.body.classList.add('modal-open');
   }));
   specialtySection.querySelectorAll('.specialty-banner-card').forEach(card=>{
