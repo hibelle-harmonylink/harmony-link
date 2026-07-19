@@ -175,17 +175,22 @@ menuButton.addEventListener('click', () => {
 });
 
 if (window.innerWidth <= 760) nav.setAttribute('aria-hidden', 'true');
-nav.querySelectorAll('a').forEach(link => link.addEventListener('click', event => {
+nav.addEventListener('click', event => {
+  const link = event.target.closest('a');
+  if (!link || !nav.contains(link)) return;
   const hash = link.getAttribute('href');
   const target = hash?.startsWith('#') ? document.querySelector(hash) : null;
   if (target) {
     event.preventDefault();
     closeMenu();
-    window.setTimeout(() => target.scrollIntoView({behavior: 'smooth', block: 'start'}), 60);
+    window.setTimeout(() => {
+      target.scrollIntoView({behavior: 'smooth', block: 'start'});
+      history.replaceState(null, '', hash);
+    }, 60);
     return;
   }
   closeMenu();
-}));
+});
 
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && nav.classList.contains('open')) closeMenu();
