@@ -852,9 +852,8 @@ const adRooms={
 
 // Build the main news popup from the same approved program and partner registries used on the page.
 const promotionNews=[
-  {typeKo:'기간 한정 혜택',typeEn:'LIMITED BENEFIT',titleKo:'PREMIUM 파트너 3개월 등록비 면제',titleEn:'PREMIUM Partners · 3 Months Fee Waived',copyKo:'2026년 8월 31일까지 프리미엄 파트너로 접수하면 3개월 등록비 면제 혜택을 드립니다.',copyEn:'Apply as a PREMIUM partner by August 31, 2026 to receive a three-month registration fee waiver.',icon:'★',target:'#provider-options',actionKo:'입점 안내 보기',actionEn:'View Partner Info'},
-  ...specialtyPrograms.map(program=>({typeKo:'전문 수업 등록',typeEn:'NEW SPECIALTY PROGRAM',titleKo:program.titleKo,titleEn:program.titleEn,copyKo:`${program.operationKo} 전문교육 프로그램이 등록되었습니다.`,copyEn:`A ${program.operationEn.toLowerCase()} specialty program is now listed.`,image:program.image,target:'#specialty-banners',actionKo:'수업 보기',actionEn:'View Program'})),
-  ...registeredPartners.map(partner=>({typeKo:'입점 파트너 등록',typeEn:'NEW EDUCATION PARTNER',titleKo:partner.name,titleEn:partner.name,copyKo:`${partner.type} · ${partner.status}`,copyEn:`${partner.type} · ${partner.status}`,image:partner.logo,target:'#programs',actionKo:'파트너 보기',actionEn:'View Partner'})),
+  {typeKo:'기간 한정 혜택',typeEn:'LIMITED BENEFIT',titleKo:'PREMIUM 파트너 3개월 등록비 면제',titleEn:'PREMIUM Partners · 3 Months Fee Waived',copyKo:'2026년 8월 31일까지 프리미엄 파트너로 접수하면 3개월 등록비 면제 혜택을 드립니다.',copyEn:'Apply as a PREMIUM partner by August 31, 2026 to receive a three-month registration fee waiver.',image:'assets/harmony-logo.png',target:'#provider-options',actionKo:'입점 안내 보기',actionEn:'View Partner Info'},
+  ...specialtyPrograms.map((program,index)=>({typeKo:'전문 수업 등록',typeEn:'NEW SPECIALTY PROGRAM',titleKo:program.titleKo,titleEn:program.titleEn,copyKo:`${program.operationKo} 전문교육 프로그램이 등록되었습니다.`,copyEn:`A ${program.operationEn.toLowerCase()} specialty program is now listed.`,image:registeredPartners[index]?.logo||program.image,target:'#specialty-banners',actionKo:'수업 보기',actionEn:'View Program'})),
   ...Object.entries(adRooms).flatMap(([roomKey,room])=>room.items.map(item=>({typeKo:roomKey==='premium'?'프리미엄 광고 등록':'협력업체 등록',typeEn:roomKey==='premium'?'NEW PREMIUM ADVERTISER':'NEW COMMUNITY PARTNER',titleKo:item.name,titleEn:item.name,copyKo:item.copy,copyEn:item.copy,image:item.image,target:'#advertising',actionKo:'광고·업체 보기',actionEn:'View Listing'})))
 ];
 let promotionNewsIndex=0;
@@ -863,7 +862,7 @@ const renderPromotionNews=()=>{
   const news=promotionNews[promotionNewsIndex];
   const isEnglish=currentLanguage==='en';
   const media=promotionModal.querySelector('.promotion-news-media');
-  media.dataset.kind=!news.image?'benefit':news.target==='#advertising'?'advertising':'program';
+  media.dataset.kind=news.target==='#provider-options'?'benefit':news.target==='#advertising'?'advertising':'program';
   const image=promotionModal.querySelector('.promotion-news-media img');
   const icon=promotionModal.querySelector('.promotion-news-media b');
   image.hidden=!news.image;image.src=news.image||'';image.alt=news.image?`${news.titleKo} 이미지`:'';icon.hidden=Boolean(news.image);icon.textContent=news.icon||'NEW';
