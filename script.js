@@ -846,7 +846,7 @@ const closeAdImage=()=>{adImageModal.hidden=true;};
 adImageModal.querySelectorAll('[data-ad-image-close]').forEach(button=>button.addEventListener('click',closeAdImage));
 const adRooms={
   premium:{ko:'프리미엄 광고 업체',en:'Premium Advertisers',label:'PREMIUM ADVERTISER',slots:4,items:[{name:'Yura Kim · High Line Residential',copy:'로고를 클릭하면 부동산 안내 배너를 크게 볼 수 있습니다.',image:'assets/ads/yura-kim-highline-logo.png',banner:'assets/ads/highline-residential-ko.png',chatUrl:'https://open.kakao.com/me/hlresy',brokerUrl:'https://www.hlres.com/yura-kim',imageOnly:true}]},
-  community:{ko:'협력 업체',en:'Community Partners',label:'COMMUNITY PARTNER',slots:4,items:[{name:'AALEAC',copy:'업체명을 클릭하면 홈페이지로 이동합니다.',url:'https://aaleac.org/',image:'assets/partners/aaleac-shield.png'}]},
+  community:{ko:'협력 업체',en:'Community Partners',label:'COMMUNITY PARTNER',slots:4,items:[{name:'AALEAC',copy:'업체명을 클릭하면 홈페이지로 이동합니다.',url:'https://aaleac.org/',image:'assets/partners/aaleac-shield.png?v=20260720-34'}]},
   culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',label:'CULTURE & EDUCATION PARTNER',slots:4,items:[]}
 };
 
