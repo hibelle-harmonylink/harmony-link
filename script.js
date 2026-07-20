@@ -132,7 +132,7 @@ aboutSection?.insertAdjacentHTML('afterend', `
 const digitalStoreSection = document.createElement('section');
 digitalStoreSection.className = 'digital-store section';
 digitalStoreSection.id = 'digital-store';
-digitalStoreSection.innerHTML = `<div class="container digital-store-wrap reveal"><div class="store-icon" aria-hidden="true">🎨</div><div><p class="eyebrow">HARMONY LINK DIGITAL STORE</p><h2 data-ko="배움에서 탄생한 작품을<br>새로운 가치로 연결합니다" data-en="Connecting creations from learning<br>with new value">배움에서 탄생한 작품을<br>새로운 가치로 연결합니다</h2><p data-ko="그림과 공예 작품, 디지털 창작물을 소개하고 판매하는 온라인 스토어를 준비하고 있습니다." data-en="An online store for artwork, crafts, and digital creations is coming soon.">그림과 공예 작품, 디지털 창작물을 소개하고 판매하는 온라인 스토어를 준비하고 있습니다.</p></div><span class="store-status" data-ko="오픈 준비 중" data-en="COMING SOON">오픈 준비 중</span></div>`;
+digitalStoreSection.innerHTML = `<div class="container digital-store-wrap reveal"><div class="store-icon" aria-hidden="true">🎨</div><div><p class="eyebrow">HARMONY LINK DIGITAL STORE</p><h2 data-ko="배움에서 탄생한 작품을 새로운 가치로 연결합니다" data-en="Connecting creations from learning with new value">배움에서 탄생한 작품을 새로운 가치로 연결합니다</h2><p data-ko="그림과 공예 작품, 디지털 창작물을 소개하고 판매하는 온라인 스토어를 준비하고 있습니다." data-en="An online store for artwork, crafts, and digital creations is coming soon.">그림과 공예 작품, 디지털 창작물을 소개하고 판매하는 온라인 스토어를 준비하고 있습니다.</p></div><span class="store-status" data-ko="오픈 준비 중" data-en="COMING SOON">오픈 준비 중</span></div>`;
 const eventsForStore = document.getElementById('events');
 if (eventsForStore) eventsForStore.after(digitalStoreSection);
 
