@@ -6,6 +6,20 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+  <script>
+    (() => {
+      const pageVersion = '20260720-29';
+      fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
+        .then(response => response.ok ? response.json() : null)
+        .then(release => {
+          if (!release?.version || release.version === pageVersion) return;
+          const latestUrl = new URL(window.location.href);
+          latestUrl.searchParams.set('refresh', release.version);
+          window.location.replace(latestUrl);
+        })
+        .catch(() => {});
+    })();
+  </script>
   <meta name="description" content="Harmony Link는 세대와 지역을 연결하는 문화·교육 프로그램을 제공합니다.">
   <title>Harmony Link | 배움으로 이어지는 우리</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
