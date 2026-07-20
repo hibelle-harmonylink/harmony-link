@@ -735,7 +735,7 @@ const partnerSecurityCopy=partnerCenter.querySelector('.partner-security-note sp
 const partnerCenterHeading=partnerCenter.querySelector('.partner-center-copy h2');
 partnerCenterHeading.dataset.ko='입점 파트너<br>전용 자료실';partnerCenterHeading.dataset.en='Partner<br>Resource Center';partnerCenterHeading.innerHTML=partnerCenterHeading.dataset[currentLanguage];
 const partnerCenterDescription=partnerCenter.querySelector('.partner-center-copy>p:not(.eyebrow)');
-partnerCenterDescription.dataset.ko='HarmonyLink 입점 강사와 교육업체를 위한<br>운영 정책 및 파트너 자료를 제공합니다.';partnerCenterDescription.dataset.en='Resources for approved HarmonyLink instructors and providers,<br>including operating policies and partner materials.';partnerCenterDescription.innerHTML=partnerCenterDescription.dataset[currentLanguage];
+partnerCenterDescription.dataset.ko='HarmonyLink 입점 강사와 교육업체를 위한 운영 정책 및 파트너 자료를 제공합니다.';partnerCenterDescription.dataset.en='Resources and operating policies for approved HarmonyLink instructors and education providers.';partnerCenterDescription.innerHTML=partnerCenterDescription.dataset[currentLanguage];
 partnerSecurityCopy.dataset.ko='입점 신청 후 이메일로 받은 접근코드를 입력해 주세요.';
 partnerSecurityCopy.dataset.en='Enter the access code sent to you by email after applying.';
 partnerSecurityCopy.textContent=currentLanguage==='en'?partnerSecurityCopy.dataset.en:partnerSecurityCopy.dataset.ko;

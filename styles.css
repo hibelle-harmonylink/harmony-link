@@ -289,3 +289,5 @@ html[lang="en"] .program-grid .program-card:nth-child(3)::after,html[lang="en"] 
 .contact-main p:last-child{max-width:none!important;white-space:nowrap;font-size:12px!important}.contact-primary{border-radius:30px!important;padding:18px 24px!important}.contact-call{border-radius:10px!important;border-left:5px solid #21a273!important;background:#f1fbf7!important}
 @media(max-width:760px){.contact-main p:last-child{white-space:normal}.connection-symbol{margin-bottom:13px}}
 html[lang="ko"] h1,html[lang="ko"] h2,html[lang="ko"] h3,html[lang="ko"] p,html[lang="ko"] small{word-break:keep-all;overflow-wrap:break-word}.partner-center-copy h2,.partner-center-copy>p{word-break:keep-all;overflow-wrap:break-word}
+.partner-center-shell{grid-template-columns:430px minmax(0,1fr);align-items:center}.partner-center-copy>p:not(.eyebrow){white-space:nowrap;font-size:11px}.partner-access-card{transform:translateY(18px)}
+@media(max-width:1000px){.partner-center-shell{grid-template-columns:1fr}.partner-center-copy>p:not(.eyebrow){white-space:normal}.partner-access-card{transform:none;margin-top:18px}}
