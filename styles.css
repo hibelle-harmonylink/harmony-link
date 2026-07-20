@@ -264,3 +264,5 @@ html[lang="en"] .program-grid .program-card:nth-child(3)::after,html[lang="en"] 
 .promotion-news-media img{width:100%;height:100%;border-radius:0;object-fit:cover;object-position:center;padding:0;background:transparent;box-shadow:none;transform:none}
 .promotion-news-media[data-kind="benefit"] img{width:100%;height:100%;padding:30px;object-fit:contain}
 .promotion-news-media[data-item="aaleac"] img{object-position:left center;transform:none}
+.promotion-news-media[data-kind="program"]{background:#fff}
+.promotion-news-media[data-kind="program"] img{width:92%;height:92%;object-fit:contain;object-position:center;padding:12px;background:#fff}
