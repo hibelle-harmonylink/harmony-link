@@ -857,6 +857,8 @@ const promotionNews=[
   ...Object.entries(adRooms).flatMap(([roomKey,room])=>room.items.map(item=>({typeKo:roomKey==='premium'?'프리미엄 광고 등록':'협력업체 등록',typeEn:roomKey==='premium'?'NEW PREMIUM ADVERTISER':'NEW COMMUNITY PARTNER',titleKo:item.name.includes('Yura Kim')?'Yura Kim':item.name,titleEn:item.name.includes('Yura Kim')?'Yura Kim':item.name,subtitleKo:item.name.includes('Yura Kim')?'High Line Residential':item.name==='AALEAC'?'아시안 아메리칸 사법 경찰자문위원회':'',subtitleEn:item.name.includes('Yura Kim')?'High Line Residential':item.name==='AALEAC'?'Asian American Law Enforcement Advisory Council':'',copyKo:item.copy,copyEn:item.copy,image:item.image,target:item.brokerUrl||item.url||item.chatUrl||'#advertising',actionKo:'업체 바로가기',actionEn:'Visit Business'})))
 ];
 let promotionNewsIndex=0;
+let promotionNewsTimer;
+const restartPromotionTimer=()=>{window.clearTimeout(promotionNewsTimer);promotionNewsTimer=window.setTimeout(()=>{if(!promotionModal.hidden){promotionNewsIndex=(promotionNewsIndex+1)%promotionNews.length;renderPromotionNews();}restartPromotionTimer();},7000);};
 promotionModal.innerHTML=`<div class="promotion-backdrop" data-promotion-close></div><section class="promotion-panel promotion-news-panel" role="dialog" aria-modal="true" aria-labelledby="promotionTitle"><button class="promotion-close" type="button" data-promotion-close aria-label="닫기">×</button><div class="promotion-news-media"><img src="" alt="" hidden><b aria-hidden="true">★</b></div><div class="promotion-news-copy"><span class="promotion-badge"></span><p class="promotion-eyebrow">HARMONY LINK NEW UPDATE</p><h2 id="promotionTitle"></h2><p class="promotion-news-description"></p><a class="btn promotion-action" href="#"><span></span><b>→</b></a><div class="promotion-news-nav"><button type="button" class="promotion-prev" aria-label="이전 소식">‹</button><div class="promotion-dots"></div><small class="promotion-counter"></small><button type="button" class="promotion-next" aria-label="다음 소식">›</button></div></div></section>`;
 const renderPromotionNews=()=>{
   const news=promotionNews[promotionNewsIndex];
@@ -875,14 +877,14 @@ const renderPromotionNews=()=>{
   if(/^https?:\/\//.test(news.target)){action.target='_blank';action.rel='noopener noreferrer';}else{action.removeAttribute('target');action.removeAttribute('rel');}
   promotionModal.querySelector('.promotion-counter').textContent=`${promotionNewsIndex+1} / ${promotionNews.length}`;
   promotionModal.querySelector('.promotion-dots').innerHTML=promotionNews.map((_,index)=>`<button type="button" data-promotion-index="${index}" class="${index===promotionNewsIndex?'active':''}" aria-label="${index+1}번 소식"></button>`).join('');
-  promotionModal.querySelectorAll('[data-promotion-index]').forEach(dot=>dot.addEventListener('click',()=>{promotionNewsIndex=Number(dot.dataset.promotionIndex);renderPromotionNews();}));
+  promotionModal.querySelectorAll('[data-promotion-index]').forEach(dot=>dot.addEventListener('click',()=>{promotionNewsIndex=Number(dot.dataset.promotionIndex);renderPromotionNews();restartPromotionTimer();}));
 };
 promotionModal.querySelectorAll('[data-promotion-close]').forEach(item=>item.addEventListener('click',closePromotion));
-promotionModal.querySelector('.promotion-prev').addEventListener('click',()=>{promotionNewsIndex=(promotionNewsIndex-1+promotionNews.length)%promotionNews.length;renderPromotionNews();});
-promotionModal.querySelector('.promotion-next').addEventListener('click',()=>{promotionNewsIndex=(promotionNewsIndex+1)%promotionNews.length;renderPromotionNews();});
+promotionModal.querySelector('.promotion-prev').addEventListener('click',()=>{promotionNewsIndex=(promotionNewsIndex-1+promotionNews.length)%promotionNews.length;renderPromotionNews();restartPromotionTimer();});
+promotionModal.querySelector('.promotion-next').addEventListener('click',()=>{promotionNewsIndex=(promotionNewsIndex+1)%promotionNews.length;renderPromotionNews();restartPromotionTimer();});
 promotionModal.querySelector('.promotion-action').addEventListener('click',()=>closePromotion());
 renderPromotionNews();
-window.setInterval(()=>{if(!promotionModal.hidden){promotionNewsIndex=(promotionNewsIndex+1)%promotionNews.length;renderPromotionNews();}},5000);
+restartPromotionTimer();
 document.querySelectorAll('[data-ad-room]').forEach(button=>button.addEventListener('click',()=>{
   const room=adRooms[button.dataset.adRoom];
   adDirectoryModal.querySelector('h2').textContent=currentLanguage==='en'?room.en:room.ko;
