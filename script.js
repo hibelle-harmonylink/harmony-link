@@ -992,6 +992,18 @@ document.querySelectorAll('.contact-form-open').forEach(button => button.addEven
 }));
 
 // Partner-only resource library. Available files download immediately; planned files are clearly labeled.
+// Dated seminars/classes are sorted chronologically and hidden at midnight after their final date.
+const eventGrid=document.querySelector('#events .event-grid');
+if(eventGrid){
+  const eventRules=[
+    {image:'finance-ai-seminar.jpg',end:'2026-07-25T00:00:00-04:00'},
+    {image:'one-day-class.jpg',end:'2026-08-02T00:00:00-04:00'}
+  ];
+  const eventCards=[...eventGrid.querySelectorAll('.event-card')];
+  eventCards.forEach(card=>{const source=card.querySelector('img')?.getAttribute('src')||'';const rule=eventRules.find(item=>source.includes(item.image));if(rule)card.dataset.eventEnd=rule.end;});
+  eventCards.sort((a,b)=>Date.parse(a.dataset.eventEnd||'9999-12-31')-Date.parse(b.dataset.eventEnd||'9999-12-31')).forEach(card=>{card.hidden=Boolean(card.dataset.eventEnd)&&Date.now()>=Date.parse(card.dataset.eventEnd);eventGrid.appendChild(card);});
+}
+
 const partnerResourceSections = [
   {no:'01',icon:'🚀',title:'시작하기 (필수)',copy:'입점 후 가장 먼저 확인하는 필수 안내 자료',items:[['환영 안내서'],['플랫폼 운영 정책'],['입점 파트너 계약서 (PDF)'],['강사 활동 가이드'],['자주 묻는 질문 (FAQ)']]},
   {no:'02',icon:'📘',title:'운영 매뉴얼',copy:'기관 출강과 실제 수업 운영을 위한 기준',items:[['기관 수업 진행 방법'],['출강 체크리스트'],['첫 수업 준비 방법'],['수업 종료 후 해야 할 일'],['강사 매너·복장 가이드'],['안전 수칙']]},
