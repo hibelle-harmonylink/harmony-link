@@ -288,3 +288,4 @@ html[lang="en"] .program-grid .program-card:nth-child(3)::after,html[lang="en"] 
 .center-note{gap:0!important}.connection-symbol{margin-bottom:18px}.center-note>strong{margin:0 0 2px}.center-note>small{margin:0}
 .contact-main p:last-child{max-width:none!important;white-space:nowrap;font-size:12px!important}.contact-primary{border-radius:30px!important;padding:18px 24px!important}.contact-call{border-radius:10px!important;border-left:5px solid #21a273!important;background:#f1fbf7!important}
 @media(max-width:760px){.contact-main p:last-child{white-space:normal}.connection-symbol{margin-bottom:13px}}
+html[lang="ko"] h1,html[lang="ko"] h2,html[lang="ko"] h3,html[lang="ko"] p,html[lang="ko"] small{word-break:keep-all;overflow-wrap:break-word}.partner-center-copy h2,.partner-center-copy>p{word-break:keep-all;overflow-wrap:break-word}
