@@ -862,6 +862,8 @@ promotionModal.innerHTML=`<div class="promotion-backdrop" data-promotion-close><
 const renderPromotionNews=()=>{
   const news=promotionNews[promotionNewsIndex];
   const isEnglish=currentLanguage==='en';
+  const media=promotionModal.querySelector('.promotion-news-media');
+  media.dataset.kind=!news.image?'benefit':news.target==='#advertising'?'advertising':'program';
   const image=promotionModal.querySelector('.promotion-news-media img');
   const icon=promotionModal.querySelector('.promotion-news-media b');
   image.hidden=!news.image;image.src=news.image||'';image.alt=news.image?`${news.titleKo} 이미지`:'';icon.hidden=Boolean(news.image);icon.textContent=news.icon||'NEW';
