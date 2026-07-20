@@ -281,3 +281,4 @@ html[lang="en"] .program-grid .program-card:nth-child(3)::after,html[lang="en"] 
 .promotion-news-media[data-item="yura"]:before{background-image:url("assets/ads/highline-hl-symbol.png");background-size:cover;background-position:center}
 .promotion-news-media[data-kind="benefit"] img{width:80%;height:80%;padding:18px}
 @media(min-width:681px){.promotion-news-media[data-kind="benefit"] img{width:72%;height:auto;aspect-ratio:1;padding:18px}}
+.promotion-news-copy,.promotion-news-copy h2,.promotion-news-copy h2>small,.promotion-news-description,.promotion-news-copy .promotion-action{word-break:keep-all;overflow-wrap:break-word}
