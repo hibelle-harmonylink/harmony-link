@@ -849,6 +849,36 @@ const adRooms={
   community:{ko:'협력 업체',en:'Community Partners',label:'COMMUNITY PARTNER',slots:4,items:[{name:'AALEAC',copy:'업체명을 클릭하면 홈페이지로 이동합니다.',url:'https://aaleac.org/',image:'assets/partners/aaleac-identity.png'}]},
   culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',label:'CULTURE & EDUCATION PARTNER',slots:4,items:[]}
 };
+
+// Build the main news popup from the same approved program and partner registries used on the page.
+const promotionNews=[
+  {typeKo:'기간 한정 혜택',typeEn:'LIMITED BENEFIT',titleKo:'PREMIUM 파트너 3개월 등록비 면제',titleEn:'PREMIUM Partners · 3 Months Fee Waived',copyKo:'2026년 8월 31일까지 프리미엄 파트너로 접수하면 3개월 등록비 면제 혜택을 드립니다.',copyEn:'Apply as a PREMIUM partner by August 31, 2026 to receive a three-month registration fee waiver.',icon:'★',target:'#provider-options',actionKo:'입점 안내 보기',actionEn:'View Partner Info'},
+  ...specialtyPrograms.map(program=>({typeKo:'전문 수업 등록',typeEn:'NEW SPECIALTY PROGRAM',titleKo:program.titleKo,titleEn:program.titleEn,copyKo:`${program.operationKo} 전문교육 프로그램이 등록되었습니다.`,copyEn:`A ${program.operationEn.toLowerCase()} specialty program is now listed.`,image:program.image,target:'#specialty-banners',actionKo:'수업 보기',actionEn:'View Program'})),
+  ...registeredPartners.map(partner=>({typeKo:'입점 파트너 등록',typeEn:'NEW EDUCATION PARTNER',titleKo:partner.name,titleEn:partner.name,copyKo:`${partner.type} · ${partner.status}`,copyEn:`${partner.type} · ${partner.status}`,image:partner.logo,target:'#programs',actionKo:'파트너 보기',actionEn:'View Partner'})),
+  ...Object.entries(adRooms).flatMap(([roomKey,room])=>room.items.map(item=>({typeKo:roomKey==='premium'?'프리미엄 광고 등록':'협력업체 등록',typeEn:roomKey==='premium'?'NEW PREMIUM ADVERTISER':'NEW COMMUNITY PARTNER',titleKo:item.name,titleEn:item.name,copyKo:item.copy,copyEn:item.copy,image:item.image,target:'#advertising',actionKo:'광고·업체 보기',actionEn:'View Listing'})))
+];
+let promotionNewsIndex=0;
+promotionModal.innerHTML=`<div class="promotion-backdrop" data-promotion-close></div><section class="promotion-panel promotion-news-panel" role="dialog" aria-modal="true" aria-labelledby="promotionTitle"><button class="promotion-close" type="button" data-promotion-close aria-label="닫기">×</button><div class="promotion-news-media"><img src="" alt="" hidden><b aria-hidden="true">★</b></div><div class="promotion-news-copy"><span class="promotion-badge"></span><p class="promotion-eyebrow">HARMONY LINK NEW UPDATE</p><h2 id="promotionTitle"></h2><p class="promotion-news-description"></p><a class="btn promotion-action" href="#"><span></span><b>→</b></a><div class="promotion-news-nav"><button type="button" class="promotion-prev" aria-label="이전 소식">‹</button><div class="promotion-dots"></div><small class="promotion-counter"></small><button type="button" class="promotion-next" aria-label="다음 소식">›</button></div></div></section>`;
+const renderPromotionNews=()=>{
+  const news=promotionNews[promotionNewsIndex];
+  const isEnglish=currentLanguage==='en';
+  const image=promotionModal.querySelector('.promotion-news-media img');
+  const icon=promotionModal.querySelector('.promotion-news-media b');
+  image.hidden=!news.image;image.src=news.image||'';image.alt=news.image?`${news.titleKo} 이미지`:'';icon.hidden=Boolean(news.image);icon.textContent=news.icon||'NEW';
+  promotionModal.querySelector('.promotion-badge').textContent=isEnglish?news.typeEn:news.typeKo;
+  promotionModal.querySelector('#promotionTitle').textContent=isEnglish?news.titleEn:news.titleKo;
+  promotionModal.querySelector('.promotion-news-description').textContent=isEnglish?news.copyEn:news.copyKo;
+  const action=promotionModal.querySelector('.promotion-action');action.href=news.target;action.querySelector('span').textContent=isEnglish?news.actionEn:news.actionKo;
+  promotionModal.querySelector('.promotion-counter').textContent=`${promotionNewsIndex+1} / ${promotionNews.length}`;
+  promotionModal.querySelector('.promotion-dots').innerHTML=promotionNews.map((_,index)=>`<button type="button" data-promotion-index="${index}" class="${index===promotionNewsIndex?'active':''}" aria-label="${index+1}번 소식"></button>`).join('');
+  promotionModal.querySelectorAll('[data-promotion-index]').forEach(dot=>dot.addEventListener('click',()=>{promotionNewsIndex=Number(dot.dataset.promotionIndex);renderPromotionNews();}));
+};
+promotionModal.querySelectorAll('[data-promotion-close]').forEach(item=>item.addEventListener('click',closePromotion));
+promotionModal.querySelector('.promotion-prev').addEventListener('click',()=>{promotionNewsIndex=(promotionNewsIndex-1+promotionNews.length)%promotionNews.length;renderPromotionNews();});
+promotionModal.querySelector('.promotion-next').addEventListener('click',()=>{promotionNewsIndex=(promotionNewsIndex+1)%promotionNews.length;renderPromotionNews();});
+promotionModal.querySelector('.promotion-action').addEventListener('click',()=>closePromotion());
+renderPromotionNews();
+window.setInterval(()=>{if(!promotionModal.hidden){promotionNewsIndex=(promotionNewsIndex+1)%promotionNews.length;renderPromotionNews();}},5000);
 document.querySelectorAll('[data-ad-room]').forEach(button=>button.addEventListener('click',()=>{
   const room=adRooms[button.dataset.adRoom];
   adDirectoryModal.querySelector('h2').textContent=currentLanguage==='en'?room.en:room.ko;
