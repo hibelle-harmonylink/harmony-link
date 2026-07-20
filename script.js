@@ -993,15 +993,15 @@ document.querySelectorAll('.contact-form-open').forEach(button => button.addEven
 
 // Partner-only resource library. Available files download immediately; planned files are clearly labeled.
 // Dated seminars/classes are sorted chronologically and hidden at midnight after their final date.
-const eventGrid=document.querySelector('#events .event-grid');
-if(eventGrid){
+const datedEventGrid=document.querySelector('#events .event-grid');
+if(datedEventGrid){
   const eventRules=[
     {image:'finance-ai-seminar.jpg',end:'2026-07-25T00:00:00-04:00'},
     {image:'one-day-class.jpg',end:'2026-08-02T00:00:00-04:00'}
   ];
-  const eventCards=[...eventGrid.querySelectorAll('.event-card')];
+  const eventCards=[...datedEventGrid.querySelectorAll('.event-card')];
   eventCards.forEach(card=>{const source=card.querySelector('img')?.getAttribute('src')||'';const rule=eventRules.find(item=>source.includes(item.image));if(rule)card.dataset.eventEnd=rule.end;});
-  eventCards.sort((a,b)=>Date.parse(a.dataset.eventEnd||'9999-12-31')-Date.parse(b.dataset.eventEnd||'9999-12-31')).forEach(card=>{card.hidden=Boolean(card.dataset.eventEnd)&&Date.now()>=Date.parse(card.dataset.eventEnd);eventGrid.appendChild(card);});
+  eventCards.sort((a,b)=>Date.parse(a.dataset.eventEnd||'9999-12-31')-Date.parse(b.dataset.eventEnd||'9999-12-31')).forEach(card=>{card.hidden=Boolean(card.dataset.eventEnd)&&Date.now()>=Date.parse(card.dataset.eventEnd);datedEventGrid.appendChild(card);});
 }
 
 const partnerResourceSections = [
