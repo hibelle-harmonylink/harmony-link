@@ -280,3 +280,4 @@ html[lang="en"] .program-grid .program-card:nth-child(3)::after,html[lang="en"] 
 @media(max-width:680px){.promotion-news-media[data-item="yura"]{grid-template-rows:120px auto;gap:9px}.promotion-news-media[data-item="yura"]:before{width:120px;height:120px;background-size:655px 1159px;background-position:-359px -475px}.promotion-news-media[data-item="yura"]:after{font-size:13px}}
 .promotion-news-media[data-item="yura"]:before{background-image:url("assets/ads/highline-hl-symbol.png");background-size:cover;background-position:center}
 .promotion-news-media[data-kind="benefit"] img{width:80%;height:80%;padding:18px}
+@media(min-width:681px){.promotion-news-media[data-kind="benefit"] img{width:72%;height:auto;aspect-ratio:1;padding:18px}}
