@@ -292,3 +292,4 @@ html[lang="ko"] h1,html[lang="ko"] h2,html[lang="ko"] h3,html[lang="ko"] p,html[
 .partner-center-shell{grid-template-columns:430px minmax(0,1fr);align-items:center}.partner-center-copy>p:not(.eyebrow){white-space:nowrap;font-size:11px}.partner-access-card{transform:translateY(18px)}
 @media(max-width:1000px){.partner-center-shell{grid-template-columns:1fr}.partner-center-copy>p:not(.eyebrow){white-space:normal}.partner-access-card{transform:none;margin-top:18px}}
 .ad-partner-name h3 b{display:none}
+.ad-partner-copy>h3{color:var(--blue)}
