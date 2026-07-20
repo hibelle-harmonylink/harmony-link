@@ -282,3 +282,4 @@ html[lang="en"] .program-grid .program-card:nth-child(3)::after,html[lang="en"] 
 .promotion-news-media[data-kind="benefit"] img{width:80%;height:80%;padding:18px}
 @media(min-width:681px){.promotion-news-media[data-kind="benefit"] img{width:72%;height:auto;aspect-ratio:1;padding:18px}}
 .promotion-news-copy,.promotion-news-copy h2,.promotion-news-copy h2>small,.promotion-news-description,.promotion-news-copy .promotion-action{word-break:keep-all;overflow-wrap:break-word}
+@media(max-width:680px){.promotion-news-nav{grid-template-columns:46px minmax(0,1fr) auto 46px;gap:7px}.promotion-news-nav>button{position:relative;z-index:3;width:46px;height:46px;font-size:27px;touch-action:manipulation}.promotion-dots{position:relative;z-index:1}}
