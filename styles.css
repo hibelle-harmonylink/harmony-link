@@ -501,3 +501,8 @@ main>section .reveal{opacity:1!important;transform:none!important}
 #volunteer .volunteer-feature-image{height:255px}
 @media(prefers-reduced-motion:reduce){#volunteer .volunteer-program{animation:none}}
 @media(max-width:760px){.specialty-modal-image-link>span{right:10px;bottom:10px;font-size:10px}.melody-program-card-copy{align-items:flex-start!important;flex-wrap:wrap}.melody-program-card-copy p{flex-basis:100%;margin:4px 0 0 34px}#volunteer .volunteer-intro{grid-template-columns:1fr}#volunteer .volunteer-feature-image{height:195px}}
+/* Specialty flyer title previews */
+.specialty-poster-preview{position:relative;display:block;height:145px!important;background:#fff;cursor:zoom-in}
+.specialty-poster-preview img{width:100%;height:100%;object-fit:cover!important;object-position:center top!important;display:block}
+.specialty-poster-preview>span{position:absolute;right:12px;bottom:10px;padding:7px 11px;border-radius:24px;background:rgba(5,43,95,.9);color:#fff;font-size:10px;font-weight:800;box-shadow:0 7px 18px rgba(0,0,0,.2)}
+@media(max-width:700px){.specialty-poster-preview,.specialty-melody .specialty-poster-preview{height:130px!important}}
