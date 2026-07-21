@@ -453,6 +453,9 @@ const registeredPartners = [
   {category:1,name:'하이벨 화상영어',type:'1:1 맞춤 화상영어',status:'직영',featured:true,logo:'assets/brands/hibelle-online-english.jpg'},
   {category:2,name:'미란멜로디',type:'합창·발성·음악 교육',status:'공동 운영',featured:true,logo:'assets/brands/meeran-melody-logo.png'}
 ];
+Object.assign(registeredPartners[0],{nameEn:'Hibelle Digital',typeEn:'Smartphone, AI & Computer Education',statusEn:'DIRECTLY OPERATED'});
+Object.assign(registeredPartners[1],{nameEn:'Hibelle Online English',typeEn:'Personalized 1:1 Online English',statusEn:'DIRECTLY OPERATED'});
+Object.assign(registeredPartners[2],{nameEn:'Meeran Melody',typeEn:'Choir, Voice & Music Education',statusEn:'CO-OPERATED'});
 const categoryResources = {
   0: {titleKo:'디지털 교육 프로그램 자료',titleEn:'Digital Education Resources',descriptionKo:'스마트폰, AI, 컴퓨터 교육 PPT 10장을 확인할 수 있습니다.',descriptionEn:'View 10 presentation slides for smartphone, AI, and computer learning.',action:'gallery'},
   1: {titleKo:'언어 교육 프로그램',titleEn:'Language Program',descriptionKo:'영어·일본어·생활 회화 프로그램 자료가 등록되는 공간입니다.',descriptionEn:'Resources for English, Japanese, and practical conversation appear here.'},
@@ -492,6 +495,34 @@ const categoryPurposes = [
   '안전한 문화 체험을 통해 새로운 환경에 대한 자신감과 삶의 활력을 얻는 것이 목표입니다.',
   '실용 역량과 자격을 갖춰 새로운 일과 사회적 역할에 도전하는 것이 목표입니다.'
 ];
+const categoryReasonsEn = [
+  ['Digital Independence','Build the confidence to manage bookings, payments, communication, and information safely in everyday digital life.'],
+  ['Wider Communication','A new language opens doors to confident relationships with family, neighbors, and people you meet while traveling.'],
+  ['Emotion & Connection','Singing and instrumental activities bring comfort and make it easier to connect naturally with others.'],
+  ['Joyful Energy','Move with rhythm to improve balance and stamina while adding energy to everyday life.'],
+  ['Informed Choices','Understand the basics of finance, taxes, and real estate to make safer everyday decisions.'],
+  ['Expression & Achievement','Discover focus, confidence, and the joy of creating through hands-on art and craft activities.'],
+  ['Healthy Daily Life','Maintain flexibility and strength through regular movement and support a more independent life.'],
+  ['A Richer Life','Broaden your perspective through humanities, reading, and cultural activities that inspire meaningful conversation.'],
+  ['Emotional Care','Learn to understand emotions, communicate in healthy ways, and care for yourself and your relationships.'],
+  ['Brain Wellness','Stimulate memory and concentration through enjoyable cognitive activities and active daily habits.'],
+  ['New Experiences','Experience new places and cultures, add excitement to daily life, and form new connections.'],
+  ['Your Next Opportunity','Build practical skills and credentials for employment, entrepreneurship, and new community roles.']
+];
+const categoryPurposesEn = [
+  'Use digital devices confidently and handle essential everyday tasks independently.',
+  'Learn practical expressions, communicate confidently, and expand meaningful relationships.',
+  'Build emotional well-being and shared enjoyment through breathing, voice, singing, and instruments.',
+  'Develop safe movement habits that improve balance, energy, and everyday fitness.',
+  'Understand useful financial knowledge and make informed decisions for your own circumstances.',
+  'Explore materials and techniques while building creativity, confidence, and a sense of achievement.',
+  'Learn suitable exercises that support flexibility, strength, and independent living.',
+  'Deepen thinking and sustain meaningful conversation through humanities, reading, and culture.',
+  'Understand and express emotions in healthy ways while navigating relationships wisely.',
+  'Support memory and concentration with consistent, enjoyable brain activities.',
+  'Gain confidence and renewed energy through safe cultural and travel experiences.',
+  'Develop practical skills and qualifications for new work and social opportunities.'
+];
 const reasonModal = document.createElement('div');
 reasonModal.className = 'reason-modal';
 reasonModal.hidden = true;
@@ -505,11 +536,11 @@ function openReasonModal(index){
   const reason=categoryReasons[index];
   reasonModal.querySelector('.reason-emoji').textContent=category.emoji;
   reasonModal.querySelector('#reasonTitle').textContent=currentLanguage==='en'?category.en:category.ko;
-  reasonModal.querySelector('.reason-lead').textContent=reason[0];
-  reasonModal.querySelector('.reason-copy').textContent=reason[1];
-  reasonModal.querySelector('.reason-purpose').textContent=categoryPurposes[index];
+  reasonModal.querySelector('.reason-lead').textContent=currentLanguage==='en'?categoryReasonsEn[index][0]:reason[0];
+  reasonModal.querySelector('.reason-copy').textContent=currentLanguage==='en'?categoryReasonsEn[index][1]:reason[1];
+  reasonModal.querySelector('.reason-purpose').textContent=currentLanguage==='en'?categoryPurposesEn[index]:categoryPurposes[index];
   const partners=registeredPartners.filter(partner=>partner.category===index);
-  reasonModal.querySelector('.reason-partner-list').innerHTML=partners.length?partners.map(partner=>`<article>${partner.logo?`<img src="${partner.logo}" alt="${partner.name} 로고">`:`<b>${partner.name.charAt(0)}</b>`}<div><strong>${partner.name}</strong><small>${partner.type}</small></div><span>${partner.status}</span></article>`).join(''):`<article class="reason-partner-empty"><b>＋</b><div><strong data-ko="입점 파트너 모집 중" data-en="Partners wanted">입점 파트너 모집 중</strong><small data-ko="검증된 업체와 강사가 등록되면 이곳에 표시됩니다." data-en="Approved providers will appear here.">검증된 업체와 강사가 등록되면 이곳에 표시됩니다.</small></div></article>`;
+  reasonModal.querySelector('.reason-partner-list').innerHTML=partners.length?partners.map(partner=>`<article>${partner.logo?`<img src="${partner.logo}" alt="${partner.name} 로고">`:`<b>${partner.name.charAt(0)}</b>`}<div><strong data-ko="${partner.name}" data-en="${partner.nameEn||partner.name}">${partner.name}</strong><small data-ko="${partner.type}" data-en="${partner.typeEn||partner.type}">${partner.type}</small></div><span data-ko="${partner.status}" data-en="${partner.statusEn||partner.status}">${partner.status}</span></article>`).join(''):`<article class="reason-partner-empty"><b>＋</b><div><strong data-ko="입점 파트너 모집 중" data-en="Partners wanted">입점 파트너 모집 중</strong><small data-ko="검증된 업체와 강사가 등록되면 이곳에 표시됩니다." data-en="Approved providers will appear here.">검증된 업체와 강사가 등록되면 이곳에 표시됩니다.</small></div></article>`;
   reasonModal.hidden=false;document.body.classList.add('modal-open');
   setLanguage(currentLanguage);
 }
@@ -526,7 +557,7 @@ function openCategoryRoom(index) {
   resourceArea.innerHTML = resource ? `<div class="room-resource-icon">${index === 0 ? 'PPT' : category.emoji}</div><div><span data-ko="PROGRAM RESOURCES" data-en="PROGRAM RESOURCES">PROGRAM RESOURCES</span><h3>${currentLanguage === 'en' ? resource.titleEn : resource.titleKo}</h3><p>${currentLanguage === 'en' ? resource.descriptionEn : resource.descriptionKo}</p></div>${resource.action === 'gallery' ? `<button type="button" class="btn btn-primary room-gallery-open"><span data-ko="PPT 자료 보기" data-en="View Slides">${currentLanguage === 'en' ? 'View Slides' : 'PPT 자료 보기'}</span><b>→</b></button>` : '<span class="room-resource-status" data-ko="자료 등록 예정" data-en="Resources coming soon">자료 등록 예정</span>'}` : '';
   resourceArea.querySelector('.room-gallery-open')?.addEventListener('click', () => { closeDirectory(); openDigitalGallery(); });
   providerDirectoryModal.querySelector('.directory-list').innerHTML = providers.length
-    ? providers.map(provider => `<article class="partner-profile ${provider.featured ? 'featured' : ''}"><span>${provider.status}</span><div class="partner-avatar">${provider.name.charAt(0)}</div><h3>${provider.name}</h3><p>${provider.type}</p><small data-ko="프로필·프로그램 준비 중" data-en="Profile and programs coming soon">프로필·프로그램 준비 중</small></article>`).join('')
+    ? providers.map(provider => `<article class="partner-profile ${provider.featured ? 'featured' : ''}"><span data-ko="${provider.status}" data-en="${provider.statusEn||provider.status}">${provider.status}</span><div class="partner-avatar">${provider.name.charAt(0)}</div><h3 data-ko="${provider.name}" data-en="${provider.nameEn||provider.name}">${provider.name}</h3><p data-ko="${provider.type}" data-en="${provider.typeEn||provider.type}">${provider.type}</p><small data-ko="프로필·프로그램 준비 중" data-en="Profile and programs coming soon">프로필·프로그램 준비 중</small></article>`).join('')
     : `<div class="directory-empty"><b>＋</b><h3 data-ko="첫 입점 파트너를 기다립니다" data-en="Be the first partner here">첫 입점 파트너를 기다립니다</h3><p data-ko="검증된 업체와 강사가 등록되는 순서대로 이 방에 소개됩니다." data-en="Approved providers and instructors will appear here as they join.">검증된 업체와 강사가 등록되는 순서대로 이 방에 소개됩니다.</p><a href="${partnerFormUrl}" target="_blank" rel="noopener noreferrer" data-ko="이 카테고리에 등록 신청 ↗" data-en="Apply for this category ↗">이 카테고리에 등록 신청 ↗</a></div>`;
   providerDirectoryModal.hidden = false;
   document.body.classList.add('modal-open');
@@ -947,7 +978,7 @@ const closeLearnerApplication=()=>{learnerApplicationModal.hidden=true;document.
 document.querySelector('.audience-card.learner .request-form-link')?.addEventListener('click',event=>{event.preventDefault();learnerApplicationModal.hidden=false;document.body.classList.add('modal-open');learnerApplicationModal.querySelector('.partner-modal-close')?.focus();});
 learnerApplicationModal.querySelectorAll('[data-learner-close]').forEach(button=>button.addEventListener('click',closeLearnerApplication));
 const learnerFlyerToggle=learnerApplicationModal.querySelector('.partner-flyer-toggle');
-learnerFlyerToggle?.addEventListener('click',()=>{const flyerScroll=learnerApplicationModal.querySelector('.learner-flyer-scroll');const expanded=!flyerScroll.classList.contains('expanded');flyerScroll.classList.toggle('expanded',expanded);learnerFlyerToggle.setAttribute('aria-expanded',String(expanded));learnerFlyerToggle.querySelector('span').textContent=currentLanguage==='en'?(expanded?'Click to collapse flyer':'Click to enlarge flyer'):(expanded?'전단지 접기':'전단지 클릭해서 크게 보기');});
+learnerFlyerToggle?.addEventListener('click',()=>{const image=learnerFlyerToggle.querySelector('img');if(image)window.open(new URL(image.getAttribute('src'),location.href).href,'_blank','noopener');});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!learnerApplicationModal.hidden)closeLearnerApplication();});
 setLanguage(currentLanguage);
 

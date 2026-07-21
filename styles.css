@@ -591,3 +591,10 @@ html[lang="en"] #events .event-poster:after{content:"Click to view the full flye
 /* Strong contact information headings */
 .contact-info-stack .contact-info-card>div>small{display:block!important;font-size:17px!important;line-height:1.3!important;font-weight:900!important;letter-spacing:-.2px!important;color:#102b50!important;margin-bottom:7px!important}
 .contact-info-stack .contact-info-card.phone .contact-phone-buttons{margin-top:10px!important}
+/* English category copy, compact flyer hints, and aligned information */
+#events .event-poster:after{left:50%!important;right:auto!important;bottom:7px!important;width:max-content!important;max-width:calc(100% - 20px)!important;transform:translateX(-50%)!important;padding:4px 7px!important;border-radius:7px!important;font-size:8px!important;line-height:1.25!important}
+#events .event-info dl div{grid-template-columns:72px minmax(0,1fr)!important;gap:18px!important;margin:12px 0!important;align-items:start!important}
+#events .event-info dt{line-height:1.5!important}
+#events .event-info dd{line-height:1.55!important}
+.ad-directory-list .ad-partner-card .ad-partner-copy,.ad-directory-list .ad-partner-card:has(.aaleac-logo-wrap) .ad-partner-copy{width:100%!important;margin:0!important;padding-left:18px!important;text-align:left!important}
+.ad-directory-list .ad-partner-card .ad-partner-copy>*{margin-left:0!important;text-align:left!important}
