@@ -324,3 +324,12 @@ html[lang="en"] .volunteer-image-link:after{content:"FREE MOBILE DIGITAL SUPPORT
 .contact-primary{padding:17px 20px!important}
 .contact-primary strong{font-size:13px}
 @media(max-width:1050px){.contact-wrap{grid-template-columns:1fr!important}.partner-center-shell{grid-template-columns:1fr}.partner-center-copy h2{white-space:normal}.partner-access-card{width:min(100%,600px);margin-left:auto;margin-right:auto}}
+.partner-center .partner-center-shell{grid-template-columns:minmax(0,1fr) 560px!important;gap:30px!important}
+.partner-center .partner-center-copy{min-width:0}
+.partner-center .partner-center-copy h2{font-size:32px!important;letter-spacing:-1.8px;white-space:nowrap!important}
+.partner-center .partner-center-copy>p:not(.eyebrow),.partner-center .partner-security-note{display:flex;width:100%!important;max-width:none!important}
+.partner-center .partner-security-note{box-sizing:border-box}
+.partner-center .partner-access-card{width:560px!important;max-width:100%;padding:28px 30px!important}
+html[lang="en"] .volunteer-image-link:after{content:none!important;display:none!important}
+@media(max-width:1100px){.partner-center .partner-center-shell{grid-template-columns:1fr!important}.partner-center .partner-center-copy{width:min(100%,680px);margin:auto}.partner-center .partner-center-copy h2{white-space:nowrap!important}.partner-center .partner-access-card{width:min(100%,680px)!important;margin:12px auto 0}}
+@media(max-width:520px){.partner-center .partner-center-copy h2{font-size:27px!important;letter-spacing:-2px}}
