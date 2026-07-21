@@ -622,7 +622,7 @@ if(volunteerAnchor){
   volunteerSection.querySelector('.volunteer-intro h2').dataset.ko='마음을 잇는 무료 봉사';
   volunteerSection.querySelector('.volunteer-intro h2').textContent=currentLanguage==='en'?'Community Volunteer Support':'마음을 잇는 무료 봉사';
   const oldVolunteerButton=volunteerSection.querySelector('.volunteer-intro .btn');
-  oldVolunteerButton.outerHTML=`<div class="volunteer-actions"><button type="button" class="btn btn-primary contact-form-open" data-inquiry="봉사하고 싶어요"><span data-ko="봉사하고 싶어요" data-en="I Want to Volunteer">봉사하고 싶어요</span><b>→</b></button><button type="button" class="btn btn-outline contact-form-open" data-inquiry="도움이 필요해요"><span data-ko="도움이 필요해요" data-en="I Need Volunteer Help">도움이 필요해요</span><b>→</b></button></div>`;
+  oldVolunteerButton.outerHTML=`<div class="volunteer-actions"><a href="#contact" class="btn btn-primary volunteer-contact-link" data-contact-type="봉사하고 싶어요"><span data-ko="봉사하고 싶어요" data-en="I Want to Volunteer">봉사하고 싶어요</span><b>→</b></a><a href="#contact" class="btn btn-outline volunteer-contact-link" data-contact-type="도움이 필요해요"><span data-ko="도움이 필요해요" data-en="I Need Volunteer Help">도움이 필요해요</span><b>→</b></a></div>`;
 }
 const refreshedContact=document.querySelector('.contact-wrap');
 if(refreshedContact){
@@ -631,6 +631,7 @@ if(refreshedContact){
   const pageConsent=refreshedContact.querySelector('.contact-page-consent');
   if(pageConsent){pageConsent.outerHTML=`<div class="contact-consent-list contact-form-wide"><label><input type="checkbox" required><span data-ko="개인정보 수집에 동의합니다 (필수)" data-en="I agree to the collection of personal information (Required)">개인정보 수집에 동의합니다 (필수)</span><button type="button" class="consent-view" data-ko="보기" data-en="View">보기</button></label><label><input type="checkbox" name="마케팅 활용 동의" value="동의"><span data-ko="마케팅 활용 동의 (선택)" data-en="Marketing use consent (Optional)">마케팅 활용 동의 (선택)</span><button type="button" class="consent-view" data-ko="보기" data-en="View">보기</button></label></div>`;}
   const phoneCardTitle=refreshedContact.querySelector('.contact-info-card.phone h3');if(phoneCardTitle){phoneCardTitle.dataset.ko='전화 문의';phoneCardTitle.dataset.en='Phone Support';phoneCardTitle.textContent=currentLanguage==='en'?'Phone Support':'전화 문의';}
+  const inquiryTypeSelect=refreshedContact.querySelector('select[name="문의 유형"]');if(inquiryTypeSelect){inquiryTypeSelect.querySelector('option[data-ko="봉사 참여·지원"]')?.remove();inquiryTypeSelect.insertAdjacentHTML('beforeend','<option value="봉사하고 싶어요" data-ko="봉사하고 싶어요" data-en="I Want to Volunteer">봉사하고 싶어요</option><option value="도움이 필요해요" data-ko="도움이 필요해요" data-en="I Need Volunteer Help">도움이 필요해요</option>');}
   refreshedContact.querySelector('#contactPageForm')?.addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget;const status=form.querySelector('.contact-page-status');const submit=form.querySelector('.contact-page-submit');status.textContent=currentLanguage==='en'?'Sending...':'전송 중입니다...';submit.disabled=true;try{const response=await fetch('https://formsubmit.co/ajax/hibelle@hibelleconsulting.com',{method:'POST',headers:{Accept:'application/json'},body:new FormData(form)});if(!response.ok)throw new Error('failed');status.textContent=currentLanguage==='en'?'Your inquiry has been submitted.':'문의가 접수되었습니다. 확인 후 연락드리겠습니다.';form.reset();}catch(error){status.textContent=currentLanguage==='en'?'Could not send. Please email us directly.':'전송하지 못했습니다. 이메일로 직접 문의해 주세요.';}finally{submit.disabled=false;}});
 }
 const inquiryModal=document.createElement('div');
@@ -1041,6 +1042,7 @@ if (downloads) {
   }));
 }
 setLanguage(currentLanguage);
+document.querySelectorAll('.volunteer-contact-link').forEach(link=>link.addEventListener('click',()=>{const select=document.querySelector('#contactPageForm select[name="문의 유형"]');if(select)select.value=link.dataset.contactType;}));
 document.addEventListener('click',event=>{if(!event.target.closest('.consent-view'))return;alert(currentLanguage==='en'?'Personal information is used only to respond to your inquiry. Optional marketing consent may be withdrawn at any time.':'개인정보는 문의 확인과 답변을 위해서만 사용됩니다. 선택한 마케팅 활용 동의는 언제든 철회할 수 있습니다.');});
 if (!document.querySelector('.mobile-lang-toggle')) {
   const mobileLanguageButton=document.createElement('button');
