@@ -511,7 +511,7 @@ main>section .reveal{opacity:1!important;transform:none!important}
 #volunteer .volunteer-image-link{justify-self:end;width:580px;max-width:100%;margin-right:0}
 @media(max-width:760px){#volunteer .volunteer-image-link{justify-self:stretch;width:100%}}
 /* Volunteer, participation link, and compact event cards */
-#volunteer .volunteer-intro{grid-template-columns:minmax(0,.72fr) minmax(500px,620px)!important}
+#volunteer .volunteer-intro{grid-template-columns:minmax(0,1fr) 620px!important}
 #volunteer .volunteer-image-link{width:620px!important;justify-self:end!important;margin-left:auto!important}
 #community .community-link,#community .community-link b,#community .community-link small{color:#fff!important}
 #community .community-link b,#community .community-link small{display:block;text-shadow:0 1px 3px rgba(0,30,80,.35)}
