@@ -440,3 +440,6 @@ html[lang="en"] .volunteer-image-link:after{content:none!important;display:none!
 
 /* Mobile final optical alignment. */
 @media(max-width:680px){.promotion-news-media[data-item="english"] img{width:225px!important;height:225px!important;max-width:225px!important;max-height:225px!important}.promotion-news-media[data-item="melody"] img{transform:translateY(-18px)!important}.promotion-news-media[data-item="yura"]:before,.promotion-news-media[data-item="yura"]:after{transform:translateY(5px)!important}}
+
+/* Mobile final vertical nudges. */
+@media(max-width:680px){.promotion-news-media[data-item="english"] img{transform:translateY(-16px)!important}.promotion-news-media[data-item="melody"] img{transform:translateY(-26px)!important}.promotion-news-media[data-item="yura"]:before,.promotion-news-media[data-item="yura"]:after{transform:translateY(10px)!important}}
