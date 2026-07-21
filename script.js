@@ -919,9 +919,11 @@ const promotionNews=[
 ];
 let promotionNewsIndex=0;
 let promotionNewsTimer;
+let promotionRenderToken=0;
 const restartPromotionTimer=()=>{window.clearTimeout(promotionNewsTimer);promotionNewsTimer=window.setTimeout(()=>{if(!promotionModal.hidden){promotionNewsIndex=(promotionNewsIndex+1)%promotionNews.length;renderPromotionNews();}restartPromotionTimer();},7000);};
 promotionModal.innerHTML=`<div class="promotion-backdrop" data-promotion-close></div><section class="promotion-panel promotion-news-panel" role="dialog" aria-modal="true" aria-labelledby="promotionTitle"><button class="promotion-close" type="button" data-promotion-close aria-label="닫기">×</button><div class="promotion-news-media"><img src="" alt="" hidden><b aria-hidden="true">★</b></div><div class="promotion-news-copy"><span class="promotion-badge"></span><p class="promotion-eyebrow">HARMONY LINK NEW UPDATE</p><h2 id="promotionTitle"></h2><p class="promotion-news-description"></p><a class="btn promotion-action" href="#"><span></span><b>→</b></a><div class="promotion-news-nav"><button type="button" class="promotion-prev" aria-label="이전 소식">‹</button><div class="promotion-dots"></div><small class="promotion-counter"></small><button type="button" class="promotion-next" aria-label="다음 소식">›</button></div></div></section>`;
 const renderPromotionNews=()=>{
+  const renderToken=++promotionRenderToken;
   const news=promotionNews[promotionNewsIndex];
   const isEnglish=currentLanguage==='en';
   const media=promotionModal.querySelector('.promotion-news-media');
@@ -931,7 +933,19 @@ const renderPromotionNews=()=>{
   promotionModal.querySelector('.promotion-news-panel').dataset.kind=media.dataset.kind;
   const image=promotionModal.querySelector('.promotion-news-media img');
   const icon=promotionModal.querySelector('.promotion-news-media b');
-  image.hidden=!news.image;image.src=news.image||'';image.alt=news.image?`${news.titleKo} 이미지`:'';icon.hidden=Boolean(news.image);icon.textContent=news.icon||'NEW';
+  image.hidden=true;
+  image.onload=null;
+  image.onerror=null;
+  image.removeAttribute('src');
+  image.alt=news.image?`${news.titleKo} 이미지`:'';
+  icon.hidden=Boolean(news.image);
+  icon.textContent=news.icon||'NEW';
+  if(news.image){
+    image.onload=()=>{if(renderToken===promotionRenderToken)image.hidden=false;};
+    image.onerror=()=>{if(renderToken===promotionRenderToken){image.hidden=true;icon.hidden=false;}};
+    image.src=news.image;
+    if(image.complete&&image.naturalWidth&&renderToken===promotionRenderToken)image.hidden=false;
+  }
   promotionModal.querySelector('.promotion-badge').textContent=isEnglish?news.typeEn:news.typeKo;
   const title=promotionModal.querySelector('#promotionTitle');title.textContent=isEnglish?news.titleEn:news.titleKo;
   const subtitle=isEnglish?news.subtitleEn:news.subtitleKo;if(subtitle){const line=document.createElement('small');line.textContent=subtitle;title.appendChild(line);}

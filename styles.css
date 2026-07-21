@@ -601,6 +601,7 @@ html[lang="en"] #events .event-poster:after{content:"Click to view the full flye
 #partner-center .partner-security-note b{flex:0 0 auto;margin:0!important}
 #partner-center .partner-security-note span{flex:1;min-width:0;margin:0!important;line-height:1.45}
 @media(max-width:520px){#events .event-title-row{gap:8px}#events .event-flyer-button{padding:7px 8px;font-size:8px}#partner-center .partner-security-note{gap:9px!important;padding:12px!important}#partner-center .partner-security-note span{font-size:9px!important}}
+.promotion-news-media img[hidden]{display:none!important}
 #events .event-info dl div{grid-template-columns:72px minmax(0,1fr)!important;gap:18px!important;margin:12px 0!important;align-items:start!important}
 #events .event-info dt{line-height:1.5!important}
 #events .event-info dd{line-height:1.55!important}
