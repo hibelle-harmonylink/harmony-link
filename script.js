@@ -1123,6 +1123,26 @@ document.querySelectorAll('#events .event-card:not(.event-coming)').forEach((car
   flyerButton.textContent=currentLanguage==='en'?flyerButton.dataset.en:flyerButton.dataset.ko;
   row.appendChild(flyerButton);
 });
+const eventFlyerModal=document.createElement('div');
+eventFlyerModal.className='event-flyer-modal';
+eventFlyerModal.hidden=true;
+eventFlyerModal.innerHTML=`<div class="event-flyer-backdrop" data-event-flyer-close></div><section class="event-flyer-panel" role="dialog" aria-modal="true" aria-label="전단지 크게 보기"><button type="button" class="event-flyer-close" data-event-flyer-close aria-label="닫기">×</button><div class="event-flyer-scroll"><img src="" alt=""></div><button type="button" class="event-flyer-collapse" data-event-flyer-close><span data-ko="작게 보기" data-en="Close flyer">작게 보기</span></button></section>`;
+document.body.appendChild(eventFlyerModal);
+const closeEventFlyer=()=>{eventFlyerModal.hidden=true;document.body.classList.remove('modal-open');};
+document.addEventListener('click',event=>{
+  if(window.innerWidth>760)return;
+  const flyerLink=event.target.closest('#events .event-poster, #events .event-flyer-button');
+  if(!flyerLink)return;
+  event.preventDefault();
+  const image=eventFlyerModal.querySelector('img');
+  image.src=flyerLink.href;
+  image.alt=flyerLink.getAttribute('aria-label')||flyerLink.closest('.event-card')?.querySelector('h3')?.textContent||'전단지';
+  eventFlyerModal.hidden=false;
+  document.body.classList.add('modal-open');
+  eventFlyerModal.querySelector('.event-flyer-close')?.focus();
+});
+eventFlyerModal.querySelectorAll('[data-event-flyer-close]').forEach(button=>button.addEventListener('click',closeEventFlyer));
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!eventFlyerModal.hidden)closeEventFlyer();});
 setLanguage(currentLanguage);
 document.querySelectorAll('.volunteer-contact-link').forEach(link=>link.addEventListener('click',()=>{const select=document.querySelector('#contactPageForm select[name="문의 유형"]');if(select)select.value=link.dataset.contactType;}));
 document.addEventListener('click',event=>{if(!event.target.closest('.consent-view'))return;alert(currentLanguage==='en'?'Personal information is used only to respond to your inquiry. Optional marketing consent may be withdrawn at any time.':'개인정보는 문의 확인과 답변을 위해서만 사용됩니다. 선택한 마케팅 활용 동의는 언제든 철회할 수 있습니다.');});
