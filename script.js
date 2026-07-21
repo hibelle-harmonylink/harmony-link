@@ -910,7 +910,7 @@ const renderPromotionNews=()=>{
   }else{
     newsDescription.textContent=isEnglish?news.copyEn:news.copyKo;
   }
-  const action=promotionModal.querySelector('.promotion-action');action.href=news.target;action.querySelector('span').textContent=isEnglish?news.actionEn:news.actionKo;action.onclick=news.specialtyId?(event=>{event.preventDefault();closePromotion();specialtySection.querySelector('[data-specialty="'+news.specialtyId+'"]')?.click();}):null;
+  const action=promotionModal.querySelector('.promotion-action');action.href=news.target;action.querySelector('span').textContent=isEnglish?news.actionEn:news.actionKo;action.dataset.specialty=news.specialtyId||'';
   if(/^https?:\/\//.test(news.target)){action.target='_blank';action.rel='noopener noreferrer';}else{action.removeAttribute('target');action.removeAttribute('rel');}
   promotionModal.querySelector('.promotion-counter').textContent=`${promotionNewsIndex+1} / ${promotionNews.length}`;
   promotionModal.querySelector('.promotion-dots').innerHTML=promotionNews.map((_,index)=>`<button type="button" data-promotion-index="${index}" class="${index===promotionNewsIndex?'active':''}" aria-label="${index+1}번 소식"></button>`).join('');
@@ -919,6 +919,7 @@ const renderPromotionNews=()=>{
 promotionModal.querySelectorAll('[data-promotion-close]').forEach(item=>item.addEventListener('click',closePromotion));
 promotionModal.querySelector('.promotion-prev').addEventListener('click',()=>{promotionNewsIndex=(promotionNewsIndex-1+promotionNews.length)%promotionNews.length;renderPromotionNews();restartPromotionTimer();});
 promotionModal.querySelector('.promotion-next').addEventListener('click',()=>{promotionNewsIndex=(promotionNewsIndex+1)%promotionNews.length;renderPromotionNews();restartPromotionTimer();});
+promotionModal.querySelector('.promotion-action').addEventListener('click',event=>{const specialtyId=event.currentTarget.dataset.specialty;if(!specialtyId)return;event.preventDefault();closePromotion();specialtySection.querySelector(`[data-specialty="${specialtyId}"]`)?.click();});
 promotionModal.querySelector('.promotion-action').addEventListener('click',()=>closePromotion());
 renderPromotionNews();
 restartPromotionTimer();
