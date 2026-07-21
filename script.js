@@ -1132,7 +1132,15 @@ if (!document.querySelector('.mobile-lang-toggle')) {
   mobileLanguageButton.type='button';mobileLanguageButton.className='mobile-lang-toggle';
   mobileLanguageButton.innerHTML='<span>KO</span><i></i><span>EN</span>';
   mobileLanguageButton.setAttribute('aria-label','한국어와 영어 전환');
-  mobileLanguageButton.onclick=()=>setLanguage(currentLanguage==='ko'?'en':'ko');
+  mobileLanguageButton.onclick=()=>{
+    setLanguage(currentLanguage==='ko'?'en':'ko');
+    if(window.innerWidth<=760){
+      renderPromotionNews();
+      promotionModal.hidden=false;
+      document.body.classList.add('modal-open');
+      restartPromotionTimer();
+    }
+  };
   document.querySelector('.nav-wrap')?.insertBefore(mobileLanguageButton,document.querySelector('.menu-toggle'));
   setLanguage(currentLanguage);
 }
