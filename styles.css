@@ -449,3 +449,6 @@ html[lang="en"] .volunteer-image-link:after{content:none!important;display:none!
 
 /* Mobile: add clear breathing room above specialty program titles. */
 @media(max-width:680px){.promotion-news-panel[data-kind="program"] .promotion-eyebrow{margin-bottom:9px!important}}
+
+/* Mobile: use the same update-label-to-title spacing on every popup slide. */
+@media(max-width:680px){.promotion-news-panel .promotion-eyebrow{margin-bottom:9px!important}}
