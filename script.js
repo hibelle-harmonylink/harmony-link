@@ -953,7 +953,9 @@ const renderPromotionNews=()=>{
     if(image.complete&&image.naturalWidth&&renderToken===promotionRenderToken)image.hidden=false;
   }
   promotionModal.querySelector('.promotion-badge').textContent=isEnglish?news.typeEn:news.typeKo;
-  const title=promotionModal.querySelector('#promotionTitle');title.textContent=isEnglish?news.titleEn:news.titleKo;
+  const title=promotionModal.querySelector('#promotionTitle');
+  if(isEnglish&&news.id==='english'&&window.innerWidth<=760){title.innerHTML='Hibelle<br>Online English';}
+  else{title.textContent=isEnglish?news.titleEn:news.titleKo;}
   const subtitle=isEnglish?news.subtitleEn:news.subtitleKo;if(subtitle){const line=document.createElement('small');line.textContent=subtitle;title.appendChild(line);}
   const newsDescription=promotionModal.querySelector('.promotion-news-description');
   if(news.typeEn==='LIMITED BENEFIT'){
