@@ -506,3 +506,7 @@ main>section .reveal{opacity:1!important;transform:none!important}
 .specialty-poster-preview img{width:100%;height:100%;object-fit:cover!important;object-position:center top!important;display:block}
 .specialty-poster-preview>span{position:absolute;right:12px;bottom:10px;padding:7px 11px;border-radius:24px;background:rgba(5,43,95,.9);color:#fff;font-size:10px;font-weight:800;box-shadow:0 7px 18px rgba(0,0,0,.2)}
 @media(max-width:700px){.specialty-poster-preview,.specialty-melody .specialty-poster-preview{height:130px!important}}
+/* Volunteer heading and right-edge alignment */
+#volunteer .volunteer-intro h2{white-space:pre-line}
+#volunteer .volunteer-image-link{justify-self:end;width:580px;max-width:100%;margin-right:0}
+@media(max-width:760px){#volunteer .volunteer-image-link{justify-self:stretch;width:100%}}
