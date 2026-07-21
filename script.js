@@ -451,7 +451,7 @@ if (specialtyScroll) {
 const registeredPartners = [
   {category:0,name:'하이벨 디지털',type:'스마트폰·AI·컴퓨터 교육',status:'직영',featured:true,logo:'assets/brands/hibelle-digital.jpg'},
   {category:1,name:'하이벨 화상영어',type:'1:1 맞춤 화상영어',status:'직영',featured:true,logo:'assets/brands/hibelle-online-english.jpg'},
-  {category:2,name:'미란멜로디',type:'합창·발성·음악 교육',status:'공동 운영',featured:true,logo:'assets/brands/meeran-melody.jpg'}
+  {category:2,name:'미란멜로디',type:'합창·발성·음악 교육',status:'공동 운영',featured:true,logo:'assets/brands/meeran-melody-logo.png'}
 ];
 const categoryResources = {
   0: {titleKo:'디지털 교육 프로그램 자료',titleEn:'Digital Education Resources',descriptionKo:'스마트폰, AI, 컴퓨터 교육 PPT 10장을 확인할 수 있습니다.',descriptionEn:'View 10 presentation slides for smartphone, AI, and computer learning.',action:'gallery'},
@@ -864,8 +864,8 @@ adImageModal.innerHTML=`<div class="ad-image-backdrop" data-ad-image-close></div
 const closeAdImage=()=>{adImageModal.hidden=true;};
 adImageModal.querySelectorAll('[data-ad-image-close]').forEach(button=>button.addEventListener('click',closeAdImage));
 const adRooms={
-  premium:{ko:'프리미엄 광고 업체',en:'Premium Advertisers',label:'PREMIUM ADVERTISER',slots:4,items:[{name:'Yura Kim · High Line Residential',copy:'로고를 클릭하면 부동산 안내 배너를 크게 볼 수 있습니다.',image:'assets/ads/yura-kim-highline-logo.png',banner:'assets/ads/highline-residential-ko.png',bannerEn:'assets/ads/yura-kim-highline-logo.png',chatUrl:'https://open.kakao.com/me/hlresy',brokerUrl:'https://www.hlres.com/yura-kim',imageOnly:true}]},
-  community:{ko:'협력 업체',en:'Community Partners',label:'COMMUNITY PARTNER',slots:4,items:[{name:'AALEAC',displayNameKo:'아시안 아메리칸 사법 경찰자문위원회',displayNameEn:'Asian American Law Enforcement Advisory Council',copy:'홈페이지에서 기관 활동과 소식을 확인할 수 있습니다.',copyEn:'Visit the website to learn about the council and its community work.',url:'https://aaleac.org/',image:'assets/partners/aaleac-shield.png?v=20260720-46'}]},
+  premium:{ko:'프리미엄 광고 업체',en:'Premium Advertisers',label:'PREMIUM ADVERTISER',slots:4,items:[{name:'Yura Kim · High Line Residential',copy:'프리미엄 광고가 등록되었습니다.',copyEn:'A premium advertisement has been added.',image:'assets/ads/yura-kim-highline-logo.png',banner:'assets/ads/highline-residential-ko.png',bannerEn:'assets/ads/yura-kim-highline-logo.png',chatUrl:'https://open.kakao.com/me/hlresy',brokerUrl:'https://www.hlres.com/yura-kim',imageOnly:true}]},
+  community:{ko:'협력 업체',en:'Community Partners',label:'COMMUNITY PARTNER',slots:4,items:[{name:'AALEAC',displayNameKo:'아시안 아메리칸 사법 경찰자문위원회',displayNameEn:'Asian American Law Enforcement Advisory Council',copy:'협력업체가 등록되었습니다.',copyEn:'A community partner has been added.',url:'https://aaleac.org/',image:'assets/partners/aaleac-shield.png?v=20260720-46'}]},
   culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',label:'CULTURE & EDUCATION PARTNER',slots:4,items:[]}
 };
 
@@ -876,7 +876,7 @@ const promotionNews=[
   {typeKo:'기간 한정 혜택',typeEn:'LIMITED BENEFIT',titleKo:'PREMIUM 파트너',titleEn:'PREMIUM Partners',subtitleKo:'3개월 등록비 면제',subtitleEn:'3 Months Fee Waived',copyKo:'2026년 8월 31일까지 프리미엄 파트너로 접수하면 3개월 등록비 면제 혜택을 드립니다.',copyEn:'Apply as a PREMIUM partner by August 31, 2026 to receive a three-month registration fee waiver.',image:'assets/harmony-logo.png',target:'#community',actionKo:'함께하기',actionEn:'Join Us'},
   ...specialtyPrograms.map((program,index)=>({typeKo:'전문 수업 등록',typeEn:'NEW SPECIALTY PROGRAM',titleKo:program.titleKo,titleEn:program.titleEn,copyKo:`${program.operationKo} 전문교육 프로그램이 등록되었습니다.`,copyEn:`A ${program.operationEn.toLowerCase()} specialty program is now listed.`,image:registeredPartners[index]?.logo||program.image,target:'#specialty-banners',actionKo:'수업 보기',actionEn:'View Program'})),
   ...premiumPartnerNews,
-  ...Object.entries(adRooms).flatMap(([roomKey,room])=>room.items.map(item=>({typeKo:roomKey==='premium'?'프리미엄 광고 등록':'협력업체 등록',typeEn:roomKey==='premium'?'NEW PREMIUM ADVERTISER':'NEW COMMUNITY PARTNER',titleKo:item.name.includes('Yura Kim')?'Yura Kim':item.name,titleEn:item.name.includes('Yura Kim')?'Yura Kim':item.name,subtitleKo:item.name.includes('Yura Kim')?'High Line Residential':item.name==='AALEAC'?'아시안 아메리칸 사법 경찰자문위원회':'',subtitleEn:item.name.includes('Yura Kim')?'High Line Residential':item.name==='AALEAC'?'Asian American Law Enforcement Advisory Council':'',copyKo:item.copy,copyEn:item.copy,image:item.image,target:item.brokerUrl||item.url||item.chatUrl||'#advertising',actionKo:'업체 바로가기',actionEn:'Visit Business'})))
+  ...Object.entries(adRooms).flatMap(([roomKey,room])=>room.items.map(item=>({typeKo:roomKey==='premium'?'프리미엄 광고 등록':'협력업체 등록',typeEn:roomKey==='premium'?'NEW PREMIUM ADVERTISER':'NEW COMMUNITY PARTNER',titleKo:item.name.includes('Yura Kim')?'Yura Kim':item.name,titleEn:item.name.includes('Yura Kim')?'Yura Kim':item.name,subtitleKo:item.name.includes('Yura Kim')?'High Line Residential':item.name==='AALEAC'?'아시안 아메리칸 사법 경찰자문위원회':'',subtitleEn:item.name.includes('Yura Kim')?'High Line Residential':item.name==='AALEAC'?'Asian American Law Enforcement Advisory Council':'',copyKo:item.copy,copyEn:item.copyEn||item.copy,image:item.image,target:item.brokerUrl||item.url||item.chatUrl||'#advertising',actionKo:'업체 바로가기',actionEn:'Visit Business'})))
 ];
 let promotionNewsIndex=0;
 let promotionNewsTimer;
@@ -887,7 +887,7 @@ const renderPromotionNews=()=>{
   const isEnglish=currentLanguage==='en';
   const media=promotionModal.querySelector('.promotion-news-media');
   media.dataset.kind=news.typeEn==='LIMITED BENEFIT'?'benefit':news.typeEn.includes('ADVERTISER')||news.typeEn.includes('COMMUNITY PARTNER')?'advertising':'program';
-  media.dataset.item=news.titleKo==='AALEAC'?'aaleac':news.titleKo.includes('Yura Kim')?'yura':'';
+  media.dataset.item=news.titleKo==='AALEAC'?'aaleac':news.titleKo.includes('Yura Kim')?'yura':news.titleKo==='미란멜로디'?'melody':'';
   const image=promotionModal.querySelector('.promotion-news-media img');
   const icon=promotionModal.querySelector('.promotion-news-media b');
   image.hidden=!news.image;image.src=news.image||'';image.alt=news.image?`${news.titleKo} 이미지`:'';icon.hidden=Boolean(news.image);icon.textContent=news.icon||'NEW';
