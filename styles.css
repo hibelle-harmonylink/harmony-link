@@ -452,3 +452,6 @@ html[lang="en"] .volunteer-image-link:after{content:none!important;display:none!
 
 /* Mobile: use the same update-label-to-title spacing on every popup slide. */
 @media(max-width:680px){.promotion-news-panel .promotion-eyebrow{margin-bottom:9px!important}}
+
+/* Mobile: override the higher-specificity advertiser spacing rule. */
+@media(max-width:680px){.promotion-news-panel[data-kind="advertising"] .promotion-eyebrow{margin-bottom:9px!important}}
