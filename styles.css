@@ -588,3 +588,6 @@ html[lang="en"] #events .event-poster:after{content:"Click to view the full flye
 .ad-directory-list .ad-partner-copy>span{display:block!important;text-align:left!important}
 .ad-directory-list .ad-partner-copy h3,.ad-directory-list .ad-partner-card:has(.aaleac-logo-wrap) .ad-partner-name h3{display:block!important;margin:5px 0!important;font-size:18px!important;line-height:1.3!important;letter-spacing:0!important;white-space:normal!important;text-align:left!important}
 .ad-directory-list .ad-partner-copy p,.ad-directory-list .ad-partner-card:has(.aaleac-logo-wrap) .ad-partner-copy>p{margin:5px 0!important;font-size:11px!important;line-height:1.5!important;text-align:left!important}
+/* Strong contact information headings */
+.contact-info-stack .contact-info-card>div>small{display:block!important;font-size:17px!important;line-height:1.3!important;font-weight:900!important;letter-spacing:-.2px!important;color:#102b50!important;margin-bottom:7px!important}
+.contact-info-stack .contact-info-card.phone .contact-phone-buttons{margin-top:10px!important}
