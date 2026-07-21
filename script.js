@@ -215,6 +215,7 @@ function setLanguage(language) {
     element.placeholder = element.dataset[`placeholder${language === 'ko' ? 'Ko' : 'En'}`];
   });
   langButton.querySelectorAll('span').forEach((item, index) => item.classList.toggle('active', (language === 'ko' && index === 0) || (language === 'en' && index === 1)));
+  document.querySelectorAll('.mobile-lang-toggle span').forEach((item, index) => item.classList.toggle('active', (language === 'ko' && index === 0) || (language === 'en' && index === 1)));
   langButton.setAttribute('aria-label', language === 'ko' ? 'Switch to English' : '한국어로 전환');
   menuButton.setAttribute('aria-label', language === 'ko' ? '메뉴 열기' : 'Open menu');
   toTop.setAttribute('aria-label', language === 'ko' ? '맨 위로' : 'Back to top');
@@ -577,6 +578,8 @@ if (currentEventGrid) {
     originalComingCard.querySelector('p').dataset.ko='관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다.';
     originalComingCard.querySelector('p').dataset.en='Try a topic in a single paid session without committing to a regular course.';
     currentEventGrid.querySelector('.paid-grid').appendChild(originalComingCard);
+  } else {
+    currentEventGrid.querySelector('.paid-grid').innerHTML=`<article class="event-card event-coming"><div class="event-coming-icon">＋</div><div class="event-info"><span class="event-badge" data-ko="유료 수업 준비 중" data-en="PAID CLASS COMING SOON">유료 수업 준비 중</span><h3 data-ko="새로운 유료 1회 수업을 준비하고 있습니다" data-en="A new paid one-time class is coming soon">새로운 유료 1회 수업을 준비하고 있습니다</h3><p data-ko="관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다." data-en="Try a topic in a single paid session without committing to a regular course.">관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다.</p></div></article>`;
   }
   const datedCards = currentEventGrid.querySelectorAll('.event-card:not(.event-coming)');
   const endDates = ['2026-07-24','2026-08-01'];
@@ -1031,3 +1034,12 @@ if (downloads) {
   }));
 }
 setLanguage(currentLanguage);
+if (!document.querySelector('.mobile-lang-toggle')) {
+  const mobileLanguageButton=document.createElement('button');
+  mobileLanguageButton.type='button';mobileLanguageButton.className='mobile-lang-toggle';
+  mobileLanguageButton.innerHTML='<span>KO</span><i></i><span>EN</span>';
+  mobileLanguageButton.setAttribute('aria-label','한국어와 영어 전환');
+  mobileLanguageButton.addEventListener('click',()=>setLanguage(currentLanguage==='ko'?'en':'ko'));
+  document.querySelector('.nav-wrap')?.insertBefore(mobileLanguageButton,document.querySelector('.menu-toggle'));
+  setLanguage(currentLanguage);
+}
