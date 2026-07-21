@@ -1086,6 +1086,24 @@ if (downloads) {
     panel.hidden=!open;button.setAttribute('aria-expanded',String(open));button.querySelector('i').textContent=open?'−':'＋';
   }));
 }
+document.querySelectorAll('#events .event-card:not(.event-coming)').forEach(card=>{
+  const heading=card.querySelector('.event-info h3');
+  const poster=card.querySelector('.event-poster');
+  if(!heading||!poster||heading.parentElement?.classList.contains('event-title-row'))return;
+  const row=document.createElement('div');
+  row.className='event-title-row';
+  heading.before(row);
+  row.appendChild(heading);
+  const flyerButton=document.createElement('a');
+  flyerButton.className='event-flyer-button';
+  flyerButton.href=poster.href;
+  flyerButton.target='_blank';
+  flyerButton.rel='noopener noreferrer';
+  flyerButton.dataset.ko='전단지 크게 보기 ↗';
+  flyerButton.dataset.en='View flyer ↗';
+  flyerButton.textContent=currentLanguage==='en'?flyerButton.dataset.en:flyerButton.dataset.ko;
+  row.appendChild(flyerButton);
+});
 setLanguage(currentLanguage);
 document.querySelectorAll('.volunteer-contact-link').forEach(link=>link.addEventListener('click',()=>{const select=document.querySelector('#contactPageForm select[name="문의 유형"]');if(select)select.value=link.dataset.contactType;}));
 document.addEventListener('click',event=>{if(!event.target.closest('.consent-view'))return;alert(currentLanguage==='en'?'Personal information is used only to respond to your inquiry. Optional marketing consent may be withdrawn at any time.':'개인정보는 문의 확인과 답변을 위해서만 사용됩니다. 선택한 마케팅 활용 동의는 언제든 철회할 수 있습니다.');});
