@@ -583,6 +583,10 @@ if (currentEventGrid) {
     paidComingTitle.innerHTML='<span data-ko="새로운 유료 1회 수업" data-en="A new paid one-time class">새로운 유료 1회 수업</span><span class="paid-coming-line" data-ko="준비하고 있습니다" data-en="is coming soon">준비하고 있습니다</span>';
     originalComingCard.querySelector('p').dataset.ko='관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다.';
     originalComingCard.querySelector('p').dataset.en='Try a topic in a single paid session without committing to a regular course.';
+    const paidComingCopy=originalComingCard.querySelector('p');
+    paidComingCopy.removeAttribute('data-ko');
+    paidComingCopy.removeAttribute('data-en');
+    paidComingCopy.innerHTML='<span data-ko="관심 있는 수업을 한 번만 부담 없이 경험할 수 있는" data-en="Try a topic once without committing to a full course.">관심 있는 수업을 한 번만 부담 없이 경험할 수 있는</span><span data-ko="단회 프로그램이 공개됩니다." data-en="A paid one-time program is coming soon.">단회 프로그램이 공개됩니다.</span>';
     currentEventGrid.querySelector('.paid-grid').appendChild(originalComingCard);
   } else {
     currentEventGrid.querySelector('.paid-grid').innerHTML=`<article class="event-card event-coming"><div class="event-coming-icon">＋</div><div class="event-info"><span class="event-badge" data-ko="유료 수업 준비 중" data-en="PAID CLASS COMING SOON">유료 수업 준비 중</span><h3><span data-ko="새로운 유료 1회 수업" data-en="A new paid one-time class">새로운 유료 1회 수업</span><br><span data-ko="준비하고 있습니다" data-en="is coming soon">준비하고 있습니다</span></h3><p data-ko="관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다." data-en="Try a topic in a single paid session without committing to a regular course.">관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다.</p></div></article>`;
