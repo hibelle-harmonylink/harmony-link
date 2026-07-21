@@ -333,3 +333,8 @@ html[lang="en"] .volunteer-image-link:after{content:"FREE MOBILE DIGITAL SUPPORT
 html[lang="en"] .volunteer-image-link:after{content:none!important;display:none!important}
 @media(max-width:1100px){.partner-center .partner-center-shell{grid-template-columns:1fr!important}.partner-center .partner-center-copy{width:min(100%,680px);margin:auto}.partner-center .partner-center-copy h2{white-space:nowrap!important}.partner-center .partner-access-card{width:min(100%,680px)!important;margin:12px auto 0}}
 @media(max-width:520px){.partner-center .partner-center-copy h2{font-size:27px!important;letter-spacing:-2px}}
+.partner-center .partner-center-copy h2{display:block!important;width:max-content!important;max-width:none!important;font-size:28px!important;line-height:1.2!important;white-space:nowrap!important;word-break:normal!important;overflow-wrap:normal!important}
+.partner-center .partner-center-copy>p:not(.eyebrow){width:430px!important;max-width:100%!important}
+.partner-center .partner-security-note{display:flex!important;width:430px!important;max-width:100%!important;align-self:flex-start!important;padding:11px 14px!important}
+.partner-center .partner-security-note span{font-size:10px!important;white-space:normal!important}
+@media(max-width:520px){.partner-center .partner-center-copy h2{font-size:23px!important;letter-spacing:-1.5px!important}}
