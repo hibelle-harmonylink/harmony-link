@@ -532,3 +532,22 @@ main>section .reveal{opacity:1!important;transform:none!important}
 #events .event-info dd small{font-size:10px!important}
 #events .event-type-grid .event-coming{min-height:360px!important;padding:24px 18px!important}
 @media(max-width:760px){#volunteer .volunteer-intro{grid-template-columns:1fr!important}#volunteer .volunteer-image-link{width:100%!important}#events .event-type-block{padding:10px!important}#events .event-type-head{padding:13px 14px!important}#events .event-type-grid .event-poster{height:135px!important;max-height:135px!important}#events .event-type-grid .event-coming{min-height:260px!important}}
+/* Clear volunteer image, highlighted access, flyer hints, and equal ad listings */
+#volunteer .volunteer-image-link{border:0!important;outline:0!important;background:transparent!important;box-shadow:0 20px 48px rgba(5,57,127,.2)!important}
+#volunteer .volunteer-feature-image{border:0!important;outline:0!important;transform:scale(1.012);clip-path:inset(2px)}
+#volunteer .volunteer-actions .btn-outline{background:#e8f5ff!important;color:#0a4f9d!important;border:1px solid #9fc9ee!important;box-shadow:0 10px 24px rgba(36,111,174,.13)!important}
+#events .event-poster{position:relative}
+#events .event-poster:after{content:"클릭하면 전단지를 크게 볼 수 있습니다 ↗";position:absolute;left:10px;right:10px;bottom:9px;padding:7px 9px;border-radius:9px;background:rgba(4,39,89,.9);color:#fff;text-align:center;font-size:10px;font-weight:800;line-height:1.35}
+html[lang="en"] #events .event-poster:after{content:"Click to view the full flyer ↗"}
+#partner-center .partner-security-note{display:flex!important;width:min(100%,470px)!important;padding:14px 16px!important;border:2px solid #85bdf0!important;background:#e9f5ff!important;box-shadow:0 12px 28px rgba(0,30,80,.22)!important}
+#partner-center .partner-security-note b{display:inline-block;width:max-content;margin-bottom:4px;padding:5px 10px;border-radius:30px;background:#0b5fc2!important;color:#fff!important;font-size:11px!important}
+#partner-center .partner-security-note span{color:#173f70!important;font-size:11px!important;font-weight:700}
+.ad-directory-list{grid-auto-rows:345px!important;align-items:stretch!important}
+.ad-directory-list .ad-partner-card,.ad-directory-list .ad-slot-card{height:345px!important;min-height:345px!important;display:flex!important;flex-direction:column!important}
+.ad-directory-list .ad-partner-image,.ad-directory-list .ad-slot-visual{flex:0 0 145px!important;width:100%!important;height:145px!important;aspect-ratio:auto!important}
+.ad-directory-list .ad-partner-copy,.ad-directory-list .ad-slot-card>div:last-child{flex:1;padding:14px 17px 16px!important;overflow:hidden}
+.ad-directory-list .ad-partner-copy h3,.ad-directory-list .ad-slot-card h3{font-size:17px!important;margin:4px 0!important;line-height:1.25!important}
+.ad-directory-list .ad-partner-copy p,.ad-directory-list .ad-slot-card p{font-size:10px!important;line-height:1.45!important;margin:4px 0!important}
+.ad-directory-list .ad-partner-actions{gap:6px!important;margin-top:9px!important}
+.ad-directory-list .ad-partner-actions a{padding:8px 9px!important;font-size:9px!important}
+@media(max-width:760px){.ad-directory-list{grid-auto-rows:auto!important}.ad-directory-list .ad-partner-card,.ad-directory-list .ad-slot-card{height:330px!important;min-height:330px!important}#partner-center .partner-security-note{margin-left:auto!important;margin-right:auto!important}}
