@@ -241,10 +241,15 @@
       var toggle = event.target.closest('.lang-toggle, .mobile-lang-toggle');
       if (!toggle) return;
       event.preventDefault();
-      event.stopImmediatePropagation();
-      if (typeof setLanguage === 'function') {
-        setLanguage(document.documentElement.lang === 'ko' ? 'en' : 'ko');
-      }
+      var language = document.documentElement.lang === 'ko' ? 'en' : 'ko';
+      document.documentElement.lang = language;
+      document.querySelectorAll('[data-ko][data-en]').forEach(function (element) {
+        element.innerHTML = element.dataset[language];
+      });
+      document.querySelectorAll('.lang-toggle span, .mobile-lang-toggle span').forEach(function (item, index) {
+        item.classList.toggle('active', language === (index % 2 === 0 ? 'ko' : 'en'));
+      });
+      localStorage.setItem('harmonyLanguage', language);
     }, true);
   </script>
 </body>
