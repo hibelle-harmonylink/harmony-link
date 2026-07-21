@@ -488,3 +488,16 @@ main>section .reveal{opacity:1!important;transform:none!important}
 #digital-store .digital-store-wrap .eyebrow{color:var(--blue)!important}
 #digital-store .digital-store-wrap p{color:var(--muted)!important}
 #partner-center .partner-center-copy>p:not(.eyebrow){color:var(--muted)!important}
+/* Program flyers, participation cards, and volunteer presentation */
+.specialty-modal-image-link{position:relative;display:block;background:#fff;cursor:zoom-in;overflow:hidden}
+.specialty-modal-image-link>span{position:absolute;right:14px;bottom:14px;padding:9px 13px;border-radius:30px;background:rgba(5,43,95,.9);color:#fff;font-size:11px;font-weight:800;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.melody-program-grid article{background:#fff!important}
+.melody-program-card-copy p{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.7}
+#community .audience-card{border:2px solid #d5ad4f!important;box-shadow:0 16px 42px rgba(137,98,18,.14)!important}
+#volunteer .volunteer-program{position:relative;border-color:#c9deef;box-shadow:0 18px 42px rgba(5,57,127,.17);animation:volunteer-card-float 4s ease-in-out infinite}
+#volunteer .volunteer-program:nth-child(2){animation-delay:-2s}
+@keyframes volunteer-card-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+#volunteer .volunteer-intro{grid-template-columns:minmax(0,.78fr) minmax(460px,580px);column-gap:42px}
+#volunteer .volunteer-feature-image{height:255px}
+@media(prefers-reduced-motion:reduce){#volunteer .volunteer-program{animation:none}}
+@media(max-width:760px){.specialty-modal-image-link>span{right:10px;bottom:10px;font-size:10px}.melody-program-card-copy{align-items:flex-start!important;flex-wrap:wrap}.melody-program-card-copy p{flex-basis:100%;margin:4px 0 0 34px}#volunteer .volunteer-intro{grid-template-columns:1fr}#volunteer .volunteer-feature-image{height:195px}}
