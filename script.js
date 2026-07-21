@@ -1005,7 +1005,7 @@ if(datedEventGrid){
   ];
   const eventCards=[...datedEventGrid.querySelectorAll('.event-card')];
   eventCards.forEach(card=>{const source=card.querySelector('img')?.getAttribute('src')||'';const rule=eventRules.find(item=>source.includes(item.image));if(rule)card.dataset.eventEnd=rule.end;});
-  eventCards.sort((a,b)=>Date.parse(a.dataset.eventEnd||'9999-12-31')-Date.parse(b.dataset.eventEnd||'9999-12-31')).forEach(card=>{card.hidden=Boolean(card.dataset.eventEnd)&&Date.now()>=Date.parse(card.dataset.eventEnd);datedEventGrid.appendChild(card);});
+  eventCards.forEach(card=>{card.hidden=Boolean(card.dataset.eventEnd)&&Date.now()>=Date.parse(card.dataset.eventEnd);});
 }
 
 const partnerResourceSections = [
