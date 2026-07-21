@@ -225,7 +225,7 @@ function setLanguage(language) {
   localStorage.setItem('harmonyLanguage', language);
 }
 
-langButton.addEventListener('click', () => setLanguage(currentLanguage === 'ko' ? 'en' : 'ko'));
+langButton.onclick=()=>setLanguage(currentLanguage==='ko'?'en':'ko');
 
 window.addEventListener('scroll', () => {
   const scrolled = window.scrollY > 30;
@@ -972,13 +972,13 @@ setLanguage(currentLanguage);
 const learnerApplicationModal=document.createElement('div');
 learnerApplicationModal.className='partner-modal learner-application-modal';
 learnerApplicationModal.hidden=true;
-learnerApplicationModal.innerHTML=`<div class="partner-modal-backdrop" data-learner-close></div><div class="partner-modal-panel"><div class="partner-modal-head"><div><p>HARMONY LINK LEARNING</p><h2 data-ko="교육 신청 안내" data-en="Learning Request">교육 신청 안내</h2></div><button class="partner-modal-close" type="button" data-learner-close aria-label="닫기">×</button></div><div class="partner-modal-scroll learner-flyer-scroll"><button type="button" class="partner-flyer-toggle" aria-expanded="false"><img src="assets/partners/learner-application-20260718.png" alt="하모니링크 교육 신청 안내 전단지"><span data-ko="전단지 클릭해서 크게 보기" data-en="Click to enlarge flyer">전단지 클릭해서 크게 보기</span></button></div><div class="partner-modal-actions"><p data-ko="교육 안내를 확인한 후 신청서를 작성해 주세요." data-en="Review the learning information, then complete the request form.">교육 안내를 확인한 후 신청서를 작성해 주세요.</p><a class="btn btn-primary" href="${requestFormUrl}" target="_blank" rel="noopener noreferrer"><span data-ko="교육 신청서 작성" data-en="Complete Learning Request">교육 신청서 작성</span><b>↗</b></a></div></div>`;
+learnerApplicationModal.innerHTML=`<div class="partner-modal-backdrop" data-learner-close></div><div class="partner-modal-panel"><div class="partner-modal-head"><div><p>HARMONY LINK LEARNING</p><h2 data-ko="교육 신청 안내" data-en="Learning Request">교육 신청 안내</h2></div><button class="partner-modal-close" type="button" data-learner-close aria-label="닫기">×</button></div><div class="partner-modal-scroll learner-flyer-scroll"><a class="partner-flyer-toggle" href="assets/partners/learner-application-20260718.png" target="_blank" rel="noopener noreferrer"><img src="assets/partners/learner-application-20260718.png" alt="하모니링크 교육 신청 안내 전단지"><span data-ko="전단지 클릭해서 크게 보기" data-en="Click to enlarge flyer">전단지 클릭해서 크게 보기</span></a></div><div class="partner-modal-actions"><p data-ko="교육 안내를 확인한 후 신청서를 작성해 주세요." data-en="Review the learning information, then complete the request form.">교육 안내를 확인한 후 신청서를 작성해 주세요.</p><a class="btn btn-primary" href="${requestFormUrl}" target="_blank" rel="noopener noreferrer"><span data-ko="교육 신청서 작성" data-en="Complete Learning Request">교육 신청서 작성</span><b>↗</b></a></div></div>`;
 document.body.appendChild(learnerApplicationModal);
 const closeLearnerApplication=()=>{learnerApplicationModal.hidden=true;document.body.classList.remove('modal-open');};
 document.querySelector('.audience-card.learner .request-form-link')?.addEventListener('click',event=>{event.preventDefault();learnerApplicationModal.hidden=false;document.body.classList.add('modal-open');learnerApplicationModal.querySelector('.partner-modal-close')?.focus();});
 learnerApplicationModal.querySelectorAll('[data-learner-close]').forEach(button=>button.addEventListener('click',closeLearnerApplication));
 const learnerFlyerToggle=learnerApplicationModal.querySelector('.partner-flyer-toggle');
-learnerFlyerToggle?.addEventListener('click',()=>{const image=learnerFlyerToggle.querySelector('img');if(image)window.open(new URL(image.getAttribute('src'),location.href).href,'_blank','noopener');});
+
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!learnerApplicationModal.hidden)closeLearnerApplication();});
 setLanguage(currentLanguage);
 
@@ -1097,7 +1097,7 @@ if (!document.querySelector('.mobile-lang-toggle')) {
   mobileLanguageButton.type='button';mobileLanguageButton.className='mobile-lang-toggle';
   mobileLanguageButton.innerHTML='<span>KO</span><i></i><span>EN</span>';
   mobileLanguageButton.setAttribute('aria-label','한국어와 영어 전환');
-  mobileLanguageButton.addEventListener('click',()=>setLanguage(currentLanguage==='ko'?'en':'ko'));
+  mobileLanguageButton.onclick=()=>setLanguage(currentLanguage==='ko'?'en':'ko');
   document.querySelector('.nav-wrap')?.insertBefore(mobileLanguageButton,document.querySelector('.menu-toggle'));
   setLanguage(currentLanguage);
 }
