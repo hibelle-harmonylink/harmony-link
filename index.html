@@ -238,6 +238,22 @@
   <script src="script.js?v=20260721-59"></script>
   <script>
     document.addEventListener('click', function (event) {
+      var flyerButton = event.target.closest('.learner-application-modal .partner-flyer-toggle');
+      if (!flyerButton) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      var flyerScroll = flyerButton.closest('.learner-flyer-scroll');
+      var expanded = !flyerScroll.classList.contains('expanded');
+      flyerScroll.classList.toggle('expanded', expanded);
+      flyerButton.setAttribute('aria-expanded', String(expanded));
+      var label = flyerButton.querySelector('span');
+      if (label) {
+        label.textContent = document.documentElement.lang === 'en'
+          ? (expanded ? 'Click to collapse flyer' : 'Click to enlarge flyer')
+          : (expanded ? '전단지 접기' : '전단지 클릭해서 크게 보기');
+      }
+    }, true);
+    document.addEventListener('click', function (event) {
       var toggle = event.target.closest('.lang-toggle, .mobile-lang-toggle');
       if (!toggle) return;
       event.preventDefault();
