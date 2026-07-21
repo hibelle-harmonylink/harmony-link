@@ -904,7 +904,12 @@ const renderPromotionNews=()=>{
   promotionModal.querySelector('.promotion-badge').textContent=isEnglish?news.typeEn:news.typeKo;
   const title=promotionModal.querySelector('#promotionTitle');title.textContent=isEnglish?news.titleEn:news.titleKo;
   const subtitle=isEnglish?news.subtitleEn:news.subtitleKo;if(subtitle){const line=document.createElement('small');line.textContent=subtitle;title.appendChild(line);}
-  promotionModal.querySelector('.promotion-news-description').textContent=isEnglish?news.copyEn:news.copyKo;
+  const newsDescription=promotionModal.querySelector('.promotion-news-description');
+  if(news.typeEn==='LIMITED BENEFIT'){
+    newsDescription.innerHTML=isEnglish?'Apply as a PREMIUM partner by August 31, 2026.<br>Receive a three-month registration fee waiver.':'2026년 8월 31일까지 프리미엄 파트너로 접수하면<br>3개월 등록비 면제 혜택을 드립니다.';
+  }else{
+    newsDescription.textContent=isEnglish?news.copyEn:news.copyKo;
+  }
   const action=promotionModal.querySelector('.promotion-action');action.href=news.target;action.querySelector('span').textContent=isEnglish?news.actionEn:news.actionKo;
   if(/^https?:\/\//.test(news.target)){action.target='_blank';action.rel='noopener noreferrer';}else{action.removeAttribute('target');action.removeAttribute('rel');}
   promotionModal.querySelector('.promotion-counter').textContent=`${promotionNewsIndex+1} / ${promotionNews.length}`;
