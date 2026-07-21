@@ -892,6 +892,7 @@ const renderPromotionNews=()=>{
   const media=promotionModal.querySelector('.promotion-news-media');
   media.dataset.kind=news.typeEn==='LIMITED BENEFIT'?'benefit':news.typeEn.includes('ADVERTISER')||news.typeEn.includes('COMMUNITY PARTNER')?'advertising':'program';
   media.dataset.item=news.titleKo==='AALEAC'?'aaleac':news.titleKo.includes('Yura Kim')?'yura':news.titleKo==='미란멜로디'?'melody':'';
+  promotionModal.querySelector('.promotion-news-panel').dataset.item=media.dataset.item;
   const image=promotionModal.querySelector('.promotion-news-media img');
   const icon=promotionModal.querySelector('.promotion-news-media b');
   image.hidden=!news.image;image.src=news.image||'';image.alt=news.image?`${news.titleKo} 이미지`:'';icon.hidden=Boolean(news.image);icon.textContent=news.icon||'NEW';

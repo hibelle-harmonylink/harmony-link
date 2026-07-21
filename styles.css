@@ -376,3 +376,6 @@ html[lang="en"] .volunteer-image-link:after{content:none!important;display:none!
 .promotion-news-media[data-kind="benefit"] img{background:transparent!important}.event-info dd strong,.event-info dd small{display:block}.event-info dd strong{font-size:10px;color:var(--text)}.event-info dd small{margin-top:2px;font-size:9px;line-height:1.35;color:var(--muted)}
 
 .paid-grid .event-coming h3>span{display:block!important}.paid-grid .event-coming .paid-coming-line{margin-top:2px}
+
+.promotion-news-panel[data-item="aaleac"] h2>small{white-space:nowrap!important;font-size:.36em!important;letter-spacing:-.8px!important}.ad-partner-card:has(.aaleac-logo-wrap){min-height:210px}.ad-partner-card:has(.aaleac-logo-wrap) .ad-partner-name h3{font-size:15px!important;letter-spacing:-.7px!important;white-space:nowrap!important}.ad-partner-card:has(.aaleac-logo-wrap) .ad-partner-copy{min-width:0}.ad-partner-card:has(.aaleac-logo-wrap) .ad-partner-actions{margin-top:auto}
+@media(max-width:680px){.promotion-news-panel[data-item="aaleac"] h2>small{font-size:.31em!important;letter-spacing:-.9px!important}.ad-partner-card:has(.aaleac-logo-wrap) .ad-partner-name h3{font-size:11px!important;letter-spacing:-.8px!important}}
