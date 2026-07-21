@@ -374,3 +374,5 @@ html[lang="en"] .volunteer-image-link:after{content:none!important;display:none!
 .promotion-news-media[data-kind="benefit"] img{border:0!important;border-radius:0!important;box-shadow:none!important;filter:drop-shadow(1.5px 0 #111) drop-shadow(-1.5px 0 #111) drop-shadow(0 1.5px #111) drop-shadow(0 -1.5px #111)!important}
 
 .promotion-news-media[data-kind="benefit"] img{background:transparent!important}.event-info dd strong,.event-info dd small{display:block}.event-info dd strong{font-size:10px;color:var(--text)}.event-info dd small{margin-top:2px;font-size:9px;line-height:1.35;color:var(--muted)}
+
+.paid-grid .event-coming h3>span{display:block!important}.paid-grid .event-coming .paid-coming-line{margin-top:2px}

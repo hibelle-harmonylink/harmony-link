@@ -577,6 +577,10 @@ if (currentEventGrid) {
     originalComingCard.querySelector('.event-badge').dataset.en='PAID CLASS COMING SOON';
     originalComingCard.querySelector('h3').dataset.ko='새로운 유료 1회 수업을 준비하고 있습니다';
     originalComingCard.querySelector('h3').dataset.en='A new paid one-time class is coming soon';
+    const paidComingTitle=originalComingCard.querySelector('h3');
+    paidComingTitle.removeAttribute('data-ko');
+    paidComingTitle.removeAttribute('data-en');
+    paidComingTitle.innerHTML='<span data-ko="새로운 유료 1회 수업" data-en="A new paid one-time class">새로운 유료 1회 수업</span><span class="paid-coming-line" data-ko="준비하고 있습니다" data-en="is coming soon">준비하고 있습니다</span>';
     originalComingCard.querySelector('p').dataset.ko='관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다.';
     originalComingCard.querySelector('p').dataset.en='Try a topic in a single paid session without committing to a regular course.';
     currentEventGrid.querySelector('.paid-grid').appendChild(originalComingCard);
