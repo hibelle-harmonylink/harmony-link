@@ -895,7 +895,7 @@ const renderPromotionNews=()=>{
   const isEnglish=currentLanguage==='en';
   const media=promotionModal.querySelector('.promotion-news-media');
   media.dataset.kind=news.typeEn==='LIMITED BENEFIT'?'benefit':news.typeEn.includes('ADVERTISER')||news.typeEn.includes('COMMUNITY PARTNER')?'advertising':'program';
-  media.dataset.item=news.titleKo==='AALEAC'?'aaleac':news.titleKo.includes('Yura Kim')?'yura':news.titleKo==='미란멜로디'?'melody':'';
+  media.dataset.item=news.image?.includes('hibelle-digital')?'digital':news.image?.includes('hibelle-online-english')?'english':news.titleKo==='AALEAC'?'aaleac':news.titleKo.includes('Yura Kim')?'yura':news.image?.includes('meeran-melody')?'melody':'';
   promotionModal.querySelector('.promotion-news-panel').dataset.item=media.dataset.item;
   promotionModal.querySelector('.promotion-news-panel').dataset.kind=media.dataset.kind;
   const image=promotionModal.querySelector('.promotion-news-media img');
