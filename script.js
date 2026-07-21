@@ -581,7 +581,7 @@ if (currentEventGrid) {
     originalComingCard.querySelector('p').dataset.en='Try a topic in a single paid session without committing to a regular course.';
     currentEventGrid.querySelector('.paid-grid').appendChild(originalComingCard);
   } else {
-    currentEventGrid.querySelector('.paid-grid').innerHTML=`<article class="event-card event-coming"><div class="event-coming-icon">＋</div><div class="event-info"><span class="event-badge" data-ko="유료 수업 준비 중" data-en="PAID CLASS COMING SOON">유료 수업 준비 중</span><h3 data-ko="새로운 유료 1회 수업을 준비하고 있습니다" data-en="A new paid one-time class is coming soon">새로운 유료 1회 수업을 준비하고 있습니다</h3><p data-ko="관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다." data-en="Try a topic in a single paid session without committing to a regular course.">관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다.</p></div></article>`;
+    currentEventGrid.querySelector('.paid-grid').innerHTML=`<article class="event-card event-coming"><div class="event-coming-icon">＋</div><div class="event-info"><span class="event-badge" data-ko="유료 수업 준비 중" data-en="PAID CLASS COMING SOON">유료 수업 준비 중</span><h3><span data-ko="새로운 유료 1회 수업" data-en="A new paid one-time class">새로운 유료 1회 수업</span><br><span data-ko="준비하고 있습니다" data-en="is coming soon">준비하고 있습니다</span></h3><p data-ko="관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다." data-en="Try a topic in a single paid session without committing to a regular course.">관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다.</p></div></article>`;
   }
   const datedCards = currentEventGrid.querySelectorAll('.event-card:not(.event-coming)');
   const endDates = ['2026-07-24','2026-08-01'];
