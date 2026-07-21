@@ -872,7 +872,7 @@ adImageModal.innerHTML=`<div class="ad-image-backdrop" data-ad-image-close></div
 const closeAdImage=()=>{adImageModal.hidden=true;};
 adImageModal.querySelectorAll('[data-ad-image-close]').forEach(button=>button.addEventListener('click',closeAdImage));
 const adRooms={
-  premium:{ko:'프리미엄 광고 업체',en:'Premium Advertisers',label:'PREMIUM ADVERTISER',slots:4,items:[{name:'Yura Kim · High Line Residential',copy:'프리미엄 광고가 등록되었습니다.',copyEn:'A premium advertisement has been added.',image:'assets/ads/yura-kim-highline-logo.png',banner:'assets/ads/highline-residential-ko.png',bannerEn:'assets/ads/yura-kim-highline-logo.png',chatUrl:'https://open.kakao.com/me/hlresy',brokerUrl:'https://www.hlres.com/yura-kim',imageOnly:true}]},
+  premium:{ko:'프리미엄 광고 업체',en:'Premium Advertisers',label:'PREMIUM ADVERTISER',slots:4,items:[{name:'Yura Kim · High Line Residential',copy:'프리미엄 광고가 등록되었습니다.',copyEn:'A premium advertisement has been added.',image:'assets/ads/highline-hl-symbol.png',banner:'assets/ads/highline-residential-ko.png',bannerEn:'assets/ads/yura-kim-highline-logo.png',chatUrl:'https://open.kakao.com/me/hlresy',brokerUrl:'https://www.hlres.com/yura-kim',imageOnly:true}]},
   community:{ko:'협력 업체',en:'Community Partners',label:'COMMUNITY PARTNER',slots:4,items:[{name:'AALEAC',displayNameKo:'아시안 아메리칸 사법 경찰자문위원회',displayNameEn:'Asian American Law Enforcement Advisory Council',copy:'협력업체가 등록되었습니다.',copyEn:'A community partner has been added.',url:'https://aaleac.org/',image:'assets/partners/aaleac-shield.png?v=20260720-46'}]},
   culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',label:'CULTURE & EDUCATION PARTNER',slots:4,items:[]}
 };

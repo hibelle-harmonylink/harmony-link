@@ -569,3 +569,15 @@ html[lang="en"] #events .event-poster:after{content:"Click to view the full flye
 .contact-info-stack .contact-info-card.phone>b{background:#e8f8f1!important}
 .contact-info-stack .contact-info-card.response>b{background:#fff3d8!important}
 @media(max-width:760px){.ad-directory-list .ad-partner-card,.ad-directory-list .ad-slot-card{height:360px!important;min-height:360px!important}.contact-info-stack .contact-info-card{padding:18px!important}}
+/* Balanced advertising cards */
+.ad-directory-list .ad-partner-card,.ad-directory-list .ad-slot-card{height:360px!important;min-height:360px!important}
+.ad-directory-list .ad-partner-image,.ad-directory-list .ad-slot-visual{flex:0 0 180px!important;height:180px!important}
+.ad-directory-list .ad-partner-copy,.ad-directory-list .ad-slot-card>div:last-child{height:180px!important;min-height:180px!important;padding:15px 18px 17px!important;overflow:hidden!important}
+.ad-directory-list .ad-partner-image img,.ad-directory-list .ad-image-expand img{object-fit:contain!important;object-position:center!important;padding:16px!important;background:#fff!important}
+.ad-directory-list .aaleac-logo-wrap img{object-fit:contain!important;object-position:center!important;padding:24px!important;transform:none!important}
+.ad-directory-list .ad-partner-copy>span,.ad-directory-list .ad-slot-card span{font-size:9px!important}
+.ad-directory-list .ad-partner-copy h3,.ad-directory-list .ad-slot-card h3{font-size:18px!important;line-height:1.3!important;margin:5px 0!important}
+.ad-directory-list .ad-partner-copy p,.ad-directory-list .ad-slot-card p{font-size:11px!important;line-height:1.5!important;margin:5px 0!important}
+.ad-directory-list .ad-partner-actions{gap:7px!important;margin-top:10px!important}
+.ad-directory-list .ad-partner-actions a{padding:8px 10px!important;font-size:9px!important}
+@media(max-width:760px){.ad-directory-list .ad-partner-image,.ad-directory-list .ad-slot-visual{height:180px!important;flex-basis:180px!important}.ad-directory-list .ad-partner-copy,.ad-directory-list .ad-slot-card>div:last-child{height:180px!important}}
