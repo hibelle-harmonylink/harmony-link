@@ -157,6 +157,7 @@ document.querySelectorAll('.digital-request-btn').forEach(link => connectForm(li
 function closeMenu() {
   menuButton.classList.remove('open');
   nav.classList.remove('open');
+  document.querySelector('.site-header')?.classList.remove('menu-open');
   menuButton.setAttribute('aria-expanded', 'false');
   if (window.innerWidth <= 760) nav.setAttribute('aria-hidden', 'true');
   else nav.removeAttribute('aria-hidden');
@@ -168,6 +169,7 @@ menuButton.addEventListener('click', () => {
   const open = !nav.classList.contains('open');
   menuButton.classList.toggle('open', open);
   nav.classList.toggle('open', open);
+  document.querySelector('.site-header')?.classList.toggle('menu-open', open);
   menuButton.setAttribute('aria-expanded', String(open));
   nav.setAttribute('aria-hidden', String(!open));
   document.body.classList.toggle('mobile-menu-open', open);
