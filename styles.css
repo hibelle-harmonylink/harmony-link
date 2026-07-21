@@ -446,3 +446,6 @@ html[lang="en"] .volunteer-image-link:after{content:none!important;display:none!
 
 /* Mobile: keep update-label-to-title spacing identical across program and advertiser slides. */
 @media(max-width:680px){.promotion-news-panel[data-kind="program"] .promotion-eyebrow,.promotion-news-panel[data-kind="advertising"] .promotion-eyebrow{margin:5px 0 2px!important;line-height:1.2!important}.promotion-news-panel[data-kind="program"] h2,.promotion-news-panel[data-kind="advertising"] h2{margin-top:0!important;line-height:1.18!important}}
+
+/* Mobile: add clear breathing room above specialty program titles. */
+@media(max-width:680px){.promotion-news-panel[data-kind="program"] .promotion-eyebrow{margin-bottom:9px!important}}
