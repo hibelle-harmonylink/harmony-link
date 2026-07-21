@@ -385,3 +385,5 @@ html[lang="en"] .volunteer-image-link:after{content:none!important;display:none!
 
 .ad-partner-card:has(.aaleac-logo-wrap) .ad-partner-copy>p{margin:8px 0 22px!important}.ad-partner-card:has(.aaleac-logo-wrap) .ad-partner-actions{margin-top:0!important}
 @media(max-width:680px){.ad-partner-card:has(.aaleac-logo-wrap) .ad-partner-copy>p{margin-bottom:18px!important}}
+
+.promotion-news-media[data-kind="benefit"]{background:#63a9e8!important}.promotion-news-media[data-kind="benefit"] img{background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;filter:none!important}
