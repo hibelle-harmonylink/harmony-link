@@ -919,7 +919,7 @@ const renderPromotionNews=()=>{
 promotionModal.querySelectorAll('[data-promotion-close]').forEach(item=>item.addEventListener('click',closePromotion));
 promotionModal.querySelector('.promotion-prev').addEventListener('click',()=>{promotionNewsIndex=(promotionNewsIndex-1+promotionNews.length)%promotionNews.length;renderPromotionNews();restartPromotionTimer();});
 promotionModal.querySelector('.promotion-next').addEventListener('click',()=>{promotionNewsIndex=(promotionNewsIndex+1)%promotionNews.length;renderPromotionNews();restartPromotionTimer();});
-promotionModal.querySelector('.promotion-action').addEventListener('click',event=>{const specialtyId=event.currentTarget.dataset.specialty;if(!specialtyId)return;event.preventDefault();closePromotion();specialtySection.querySelector(`[data-specialty="${specialtyId}"]`)?.click();});
+promotionModal.querySelector('.promotion-action').addEventListener('click',event=>{const specialtyId=event.currentTarget.dataset.specialty;if(!specialtyId)return;event.preventDefault();closePromotion();document.querySelector(`[data-specialty="${specialtyId}"]`)?.click();});
 promotionModal.querySelector('.promotion-action').addEventListener('click',()=>closePromotion());
 renderPromotionNews();
 restartPromotionTimer();
