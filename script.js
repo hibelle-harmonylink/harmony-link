@@ -972,12 +972,19 @@ setLanguage(currentLanguage);
 const learnerApplicationModal=document.createElement('div');
 learnerApplicationModal.className='partner-modal learner-application-modal';
 learnerApplicationModal.hidden=true;
-learnerApplicationModal.innerHTML=`<div class="partner-modal-backdrop" data-learner-close></div><div class="partner-modal-panel"><div class="partner-modal-head"><div><p>HARMONY LINK LEARNING</p><h2 data-ko="교육 신청 안내" data-en="Learning Request">교육 신청 안내</h2></div><button class="partner-modal-close" type="button" data-learner-close aria-label="닫기">×</button></div><div class="partner-modal-scroll learner-flyer-scroll"><a class="partner-flyer-toggle" href="assets/partners/learner-application-20260718.png" target="_blank" rel="noopener noreferrer"><img src="assets/partners/learner-application-20260718.png" alt="하모니링크 교육 신청 안내 전단지"><span data-ko="전단지 클릭해서 크게 보기" data-en="Click to enlarge flyer">전단지 클릭해서 크게 보기</span></a></div><div class="partner-modal-actions"><p data-ko="교육 안내를 확인한 후 신청서를 작성해 주세요." data-en="Review the learning information, then complete the request form.">교육 안내를 확인한 후 신청서를 작성해 주세요.</p><a class="btn btn-primary" href="${requestFormUrl}" target="_blank" rel="noopener noreferrer"><span data-ko="교육 신청서 작성" data-en="Complete Learning Request">교육 신청서 작성</span><b>↗</b></a></div></div>`;
+learnerApplicationModal.innerHTML=`<div class="partner-modal-backdrop" data-learner-close></div><div class="partner-modal-panel"><div class="partner-modal-head"><div><p>HARMONY LINK LEARNING</p><h2 data-ko="교육 신청 안내" data-en="Learning Request">교육 신청 안내</h2></div><button class="partner-modal-close" type="button" data-learner-close aria-label="닫기">×</button></div><div class="partner-modal-scroll learner-flyer-scroll"><button type="button" class="partner-flyer-toggle" aria-expanded="false"><img src="assets/partners/learner-application-20260718.png" alt="하모니링크 교육 신청 안내 전단지"><span data-ko="전단지 클릭해서 크게 보기" data-en="Click to enlarge flyer">전단지 클릭해서 크게 보기</span></button></div><div class="partner-modal-actions"><p data-ko="교육 안내를 확인한 후 신청서를 작성해 주세요." data-en="Review the learning information, then complete the request form.">교육 안내를 확인한 후 신청서를 작성해 주세요.</p><a class="btn btn-primary" href="${requestFormUrl}" target="_blank" rel="noopener noreferrer"><span data-ko="교육 신청서 작성" data-en="Complete Learning Request">교육 신청서 작성</span><b>↗</b></a></div></div>`;
 document.body.appendChild(learnerApplicationModal);
 const closeLearnerApplication=()=>{learnerApplicationModal.hidden=true;document.body.classList.remove('modal-open');};
 document.querySelector('.audience-card.learner .request-form-link')?.addEventListener('click',event=>{event.preventDefault();learnerApplicationModal.hidden=false;document.body.classList.add('modal-open');learnerApplicationModal.querySelector('.partner-modal-close')?.focus();});
 learnerApplicationModal.querySelectorAll('[data-learner-close]').forEach(button=>button.addEventListener('click',closeLearnerApplication));
 const learnerFlyerToggle=learnerApplicationModal.querySelector('.partner-flyer-toggle');
+learnerFlyerToggle?.addEventListener('click',()=>{
+  const flyerScroll=learnerApplicationModal.querySelector('.learner-flyer-scroll');
+  const expanded=!flyerScroll.classList.contains('expanded');
+  flyerScroll.classList.toggle('expanded',expanded);
+  learnerFlyerToggle.setAttribute('aria-expanded',String(expanded));
+  learnerFlyerToggle.querySelector('span').textContent=currentLanguage==='en'?(expanded?'Click to collapse flyer':'Click to enlarge flyer'):(expanded?'전단지 접기':'전단지 클릭해서 크게 보기');
+});
 
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!learnerApplicationModal.hidden)closeLearnerApplication();});
 setLanguage(currentLanguage);
