@@ -841,7 +841,7 @@ if (partnerModalActions && !partnerModal.querySelector('.partner-modal-plans')) 
 const volunteerArea = document.getElementById('volunteer');
 if (volunteerArea) {
   const volunteerTitle = volunteerArea.querySelector('.volunteer-intro h2');
-  if (volunteerTitle) {volunteerTitle.dataset.ko='마음을 잇는\n디지털 무료 봉사';volunteerTitle.dataset.en='Digital Volunteers Connecting Hearts';volunteerTitle.textContent=currentLanguage==='en'?volunteerTitle.dataset.en:volunteerTitle.dataset.ko;}
+  if (volunteerTitle) {volunteerTitle.dataset.ko='마음을 잇는<br>디지털 무료 봉사';volunteerTitle.dataset.en='Digital Volunteers Connecting Hearts';volunteerTitle.innerHTML=volunteerTitle.dataset[currentLanguage];}
   volunteerArea.querySelector('.volunteer-grid')?.remove();
   const volunteerIntro = volunteerArea.querySelector('.volunteer-intro');
   if (volunteerIntro && !volunteerArea.querySelector('.volunteer-feature-image')) volunteerIntro.insertAdjacentHTML('beforeend', `<a class="volunteer-image-link" href="assets/volunteer/digital-volunteer.png" target="_blank" rel="noopener noreferrer" aria-label="디지털 무료 봉사 안내 이미지 크게 보기"><img class="volunteer-feature-image" src="assets/volunteer/digital-volunteer.png" alt="디지털 무료 봉사 안내"><span data-ko="이미지 크게 보기 ↗" data-en="View larger ↗">이미지 크게 보기 ↗</span></a>`);

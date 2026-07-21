@@ -510,3 +510,25 @@ main>section .reveal{opacity:1!important;transform:none!important}
 #volunteer .volunteer-intro h2{white-space:pre-line}
 #volunteer .volunteer-image-link{justify-self:end;width:580px;max-width:100%;margin-right:0}
 @media(max-width:760px){#volunteer .volunteer-image-link{justify-self:stretch;width:100%}}
+/* Volunteer, participation link, and compact event cards */
+#volunteer .volunteer-intro{grid-template-columns:minmax(0,.72fr) minmax(500px,620px)!important}
+#volunteer .volunteer-image-link{width:620px!important;justify-self:end!important;margin-left:auto!important}
+#community .community-link,#community .community-link b,#community .community-link small{color:#fff!important}
+#community .community-link b,#community .community-link small{display:block;text-shadow:0 1px 3px rgba(0,30,80,.35)}
+#events .event-grid.event-type-layout{gap:15px!important}
+#events .event-type-block{padding:12px!important;border-radius:18px!important}
+#events .event-type-head{margin-bottom:10px!important}
+#events .event-type-grid{gap:10px!important}
+#events .event-type-grid .event-poster{height:145px!important;max-height:145px!important;background:#fff!important;cursor:zoom-in}
+#events .event-type-grid .event-poster img{object-fit:cover!important;object-position:center top!important;border:0!important;outline:0!important}
+#events .trial-type .event-poster img{transform:scale(1.02);clip-path:inset(2px)}
+#events .event-type-grid .event-info{padding:16px 15px!important}
+#events .event-info h3{margin:8px 0!important;font-size:16px!important}
+#events .event-info>p{margin:6px 0!important;line-height:1.55}
+#events .event-info dl{margin-top:12px!important;padding-top:10px!important}
+#events .event-info dl div{grid-template-columns:55px 1fr!important;margin:7px 0!important}
+#events .event-info dt{font-size:12px!important;color:#52647a!important}
+#events .event-info dd,#events .event-info dd strong{font-size:13px!important;line-height:1.45!important}
+#events .event-info dd small{font-size:10px!important}
+#events .event-type-grid .event-coming{min-height:360px!important;padding:24px 18px!important}
+@media(max-width:760px){#volunteer .volunteer-intro{grid-template-columns:1fr!important}#volunteer .volunteer-image-link{width:100%!important}#events .event-type-block{padding:10px!important}#events .event-type-head{padding:13px 14px!important}#events .event-type-grid .event-poster{height:135px!important;max-height:135px!important}#events .event-type-grid .event-coming{min-height:260px!important}}
