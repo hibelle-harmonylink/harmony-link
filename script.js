@@ -1086,10 +1086,15 @@ if (downloads) {
     panel.hidden=!open;button.setAttribute('aria-expanded',String(open));button.querySelector('i').textContent=open?'−':'＋';
   }));
 }
-document.querySelectorAll('#events .event-card:not(.event-coming)').forEach(card=>{
+document.querySelectorAll('#events .event-card:not(.event-coming)').forEach((card,index)=>{
   const heading=card.querySelector('.event-info h3');
   const poster=card.querySelector('.event-poster');
   if(!heading||!poster||heading.parentElement?.classList.contains('event-title-row'))return;
+  if(index===0){
+    heading.dataset.ko='재정과 AI의 협력,<br>더 나은 미래 설계';
+    heading.dataset.en='Finance and AI:<br>Designing a Better Future';
+    heading.innerHTML=heading.dataset[currentLanguage];
+  }
   const row=document.createElement('div');
   row.className='event-title-row';
   heading.before(row);
