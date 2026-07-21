@@ -437,3 +437,6 @@ html[lang="en"] .volunteer-image-link:after{content:none!important;display:none!
 
 /* Mobile: lift specialty marks and refine Yura logo balance. */
 @media(max-width:680px){.promotion-news-media[data-item="digital"] img{transform:translateY(-8px)!important}.promotion-news-media[data-item="english"] img{transform:translateY(-10px)!important}.promotion-news-media[data-item="melody"] img{transform:translateY(-12px)!important}.promotion-news-media[data-item="yura"]{grid-template-rows:132px auto!important;gap:3px!important}.promotion-news-media[data-item="yura"]:before{width:132px!important;height:132px!important}.promotion-news-media[data-item="yura"]:after{font-size:12px!important;line-height:1.05!important;letter-spacing:-.3px!important}}
+
+/* Mobile final optical alignment. */
+@media(max-width:680px){.promotion-news-media[data-item="english"] img{width:225px!important;height:225px!important;max-width:225px!important;max-height:225px!important}.promotion-news-media[data-item="melody"] img{transform:translateY(-18px)!important}.promotion-news-media[data-item="yura"]:before,.promotion-news-media[data-item="yura"]:after{transform:translateY(5px)!important}}
