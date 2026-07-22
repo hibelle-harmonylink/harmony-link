@@ -690,6 +690,35 @@ if(refreshedContact){
   const inquiryTypeSelect=refreshedContact.querySelector('select[name="문의 유형"]');if(inquiryTypeSelect){inquiryTypeSelect.querySelector('option[data-ko="봉사 참여·지원"]')?.remove();inquiryTypeSelect.insertAdjacentHTML('beforeend','<option value="봉사하고 싶어요" data-ko="봉사하고 싶어요" data-en="I Want to Volunteer">봉사하고 싶어요</option><option value="도움이 필요해요" data-ko="도움이 필요해요" data-en="I Need Volunteer Help">도움이 필요해요</option>');}
   refreshedContact.querySelector('#contactPageForm')?.addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget;const status=form.querySelector('.contact-page-status');const submit=form.querySelector('.contact-page-submit');status.textContent=currentLanguage==='en'?'Sending...':'전송 중입니다...';submit.disabled=true;try{const response=await fetch('https://formsubmit.co/ajax/hibelle@hibelleconsulting.com',{method:'POST',headers:{Accept:'application/json'},body:new FormData(form)});if(!response.ok)throw new Error('failed');status.textContent=currentLanguage==='en'?'Your inquiry has been submitted.':'문의가 접수되었습니다. 확인 후 연락드리겠습니다.';form.reset();}catch(error){status.textContent=currentLanguage==='en'?'Could not send. Please email us directly.':'전송하지 못했습니다. 이메일로 직접 문의해 주세요.';}finally{submit.disabled=false;}});
 }
+if(refreshedContact){
+  refreshedContact.closest('#contact')?.classList.add('contact-redesign');
+  refreshedContact.innerHTML=`
+    <div class="contact-showcase-head">
+      <span class="contact-chat-icon" aria-hidden="true">•••</span>
+      <h2 data-ko="무엇을 도와드릴까요?" data-en="How Can We Help?">무엇을 도와드릴까요?</h2>
+      <p data-ko="수업 신청, 파트너 문의, 기타 상담을 편하게 남겨주세요." data-en="Contact us about classes, partnerships, or any other questions.">수업 신청, 파트너 문의, 기타 상담을 편하게 남겨주세요.</p>
+    </div>
+    <div class="contact-showcase-grid">
+      <article class="contact-showcase-card contact-email-card">
+        <span class="contact-showcase-icon" aria-hidden="true">✉</span>
+        <h3 data-ko="이메일 상담" data-en="Email Support">이메일 상담</h3>
+        <a class="contact-email-address" href="mailto:hibelle@hibelleconsulting.com">hibelle@hibelleconsulting.com</a>
+        <p data-ko="문의 내용을 보내주시면<br>확인 후 답변드립니다." data-en="Send us your inquiry and<br>we will respond after review.">문의 내용을 보내주시면<br>확인 후 답변드립니다.</p>
+        <a class="contact-showcase-primary" href="mailto:hibelle@hibelleconsulting.com"><span aria-hidden="true">✉</span><b data-ko="이메일 보내기" data-en="Send Email">이메일 보내기</b></a>
+      </article>
+      <article class="contact-showcase-card contact-phone-card">
+        <span class="contact-showcase-icon phone" aria-hidden="true">☎</span>
+        <h3 data-ko="전화 상담" data-en="Phone Support">전화 상담</h3>
+        <p data-ko="아래 번호를 누르면 바로 전화로 연결됩니다." data-en="Tap a number below to call us directly.">아래 번호를 누르면 바로 전화로 연결됩니다.</p>
+        <div class="contact-country-grid">
+          <a href="tel:+19296030052"><span>🇺🇸 <b data-ko="미국 상담" data-en="USA">미국 상담</b></span><strong>929-603-0052</strong><small data-ko="미국에서 전화하기" data-en="Call USA">☎ 미국에서 전화하기</small></a>
+          <a href="tel:+821097730052"><span>🇰🇷 <b data-ko="한국 상담" data-en="Korea">한국 상담</b></span><strong>010-9773-0052</strong><small data-ko="한국에서 전화하기" data-en="Call Korea">☎ 한국에서 전화하기</small></a>
+        </div>
+        <a class="contact-showcase-primary" href="tel:+19296030052"><span aria-hidden="true">☎</span><b data-ko="전화 연결하기" data-en="Call Now">전화 연결하기</b></a>
+      </article>
+    </div>
+    <div class="contact-response-strip"><span aria-hidden="true">◷</span><div><h3 data-ko="문의 접수 안내" data-en="Inquiry Information">문의 접수 안내</h3><p data-ko="접수된 내용을 확인한 후 담당자가 이메일 또는 전화로 연락드립니다." data-en="After reviewing your inquiry, our team will contact you by email or phone.">접수된 내용을 확인한 후 담당자가 이메일 또는 전화로 연락드립니다.</p></div><b aria-hidden="true">✉</b></div>`;
+}
 const inquiryModal=document.createElement('div');
 inquiryModal.className='inquiry-modal';
 inquiryModal.hidden=true;
