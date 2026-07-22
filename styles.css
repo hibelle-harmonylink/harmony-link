@@ -702,5 +702,7 @@ footer .footer-top{padding-top:0!important;padding-bottom:10px!important;gap:8px
 footer .footer-top>.logo{transform:none!important}
 footer .footer-bottom{padding-top:11px!important}
 @media(max-width:760px){footer{padding:20px 0 12px!important}footer .footer-top{padding-bottom:8px!important;gap:4px!important}footer .footer-bottom{padding-top:9px!important}}
+.mobile-en-only-break{display:none}
+@media(max-width:760px){html[lang="en"] .mobile-en-only-break{display:block}}
 .promotion-news-media[data-item="organic"]{background:#fff!important;border:0!important;box-shadow:none!important}.promotion-news-media[data-item="organic"] img{width:88%!important;height:auto!important;max-width:280px!important;max-height:150px!important;padding:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;object-fit:contain!important}
 @media(max-width:760px){.promotion-news-media[data-item="organic"] img{width:88%!important;height:auto!important;max-width:245px!important;max-height:92px!important;padding:0!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}}

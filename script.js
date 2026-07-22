@@ -696,7 +696,7 @@ if(refreshedContact){
     <div class="contact-showcase-head">
       <span class="contact-chat-icon" aria-hidden="true">•••</span>
       <h2 data-ko="무엇을 도와드릴까요?" data-en="How Can We Help?">무엇을 도와드릴까요?</h2>
-      <p data-ko="수업 신청, 파트너 문의, 기타 상담을 편하게 남겨주세요." data-en="Contact us about classes, partnerships, or any other questions.">수업 신청, 파트너 문의, 기타 상담을 편하게 남겨주세요.</p>
+      <p data-ko="수업 신청, 파트너 문의, 기타 상담을 편하게 남겨주세요." data-en="Contact us about classes,<br class='mobile-en-only-break'>partnerships, or any other questions.">수업 신청, 파트너 문의, 기타 상담을 편하게 남겨주세요.</p>
     </div>
     <div class="contact-showcase-grid">
       <article class="contact-showcase-card contact-email-card">
@@ -717,7 +717,7 @@ if(refreshedContact){
         <div class="contact-dual-actions"><a href="tel:+19296030052"><span aria-hidden="true">☎</span><b data-ko="전화 연결" data-en="Call">전화 연결</b></a><a href="sms:+821097730052"><span aria-hidden="true">✉</span><b data-ko="문자 연결" data-en="Text">문자 연결</b></a></div>
       </article>
     </div>
-    <div class="contact-response-strip"><span aria-hidden="true">◷</span><div><h3 data-ko="문의 접수 안내 · 빠른 응답" data-en="Inquiry Information · Quick Response">문의 접수 안내 · 빠른 응답</h3><p data-ko="접수된 내용을 확인한 후 24시간 안에 이메일 또는 전화로 연락드립니다." data-en="After reviewing your inquiry, we will contact you by email or phone within 24 hours.">접수된 내용을 확인한 후 24시간 안에 이메일 또는 전화로 연락드립니다.</p></div><b aria-hidden="true">✉</b></div>`;
+    <div class="contact-response-strip"><span aria-hidden="true">◷</span><div><h3 data-ko="문의 접수 안내 · 빠른 응답" data-en="Inquiry Information ·<br class='mobile-en-only-break'>Quick Response">문의 접수 안내 · 빠른 응답</h3><p data-ko="접수된 내용을 확인한 후 24시간 안에 이메일 또는 전화로 연락드립니다." data-en="After reviewing your inquiry, we will contact you by email or phone within 24 hours.">접수된 내용을 확인한 후 24시간 안에 이메일 또는 전화로 연락드립니다.</p></div><b aria-hidden="true">✉</b></div>`;
 }
 const inquiryModal=document.createElement('div');
 inquiryModal.className='inquiry-modal';
