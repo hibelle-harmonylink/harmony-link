@@ -629,3 +629,8 @@ footer .footer-top{padding-top:13px!important}footer .footer-top>.logo{transform
 .ad-directory-list .ad-partner-card,.ad-directory-list .ad-slot-card{height:270px!important;min-height:270px!important}.ad-directory-list .ad-partner-image,.ad-directory-list .ad-slot-visual{height:112px!important;flex-basis:112px!important}.ad-directory-list .ad-partner-copy,.ad-directory-list .ad-slot-card>div:last-child{height:158px!important;min-height:158px!important;padding-top:8px!important}.ad-directory-list .ad-partner-card:has(.aaleac-logo-wrap) .ad-partner-copy{transform:translateY(-5px)!important}.ad-directory-list .ad-partner-actions a{min-height:31px!important}
 .contact-consent-list label{display:grid!important;grid-template-columns:14px minmax(0,1fr) 34px!important;gap:4px!important;min-height:20px!important;height:20px!important}.contact-consent-list label>span{width:auto!important;white-space:nowrap!important;font-size:9px!important}.contact-consent-list .consent-view{width:34px!important;text-align:left!important;justify-self:start!important}
 }
+@media(max-width:760px){
+html[lang="ko"] #events .event-flyer-button{top:7px!important}
+#volunteer .volunteer-image-link>span{display:block!important;visibility:visible!important;opacity:1!important;z-index:5!important;right:7px!important;bottom:7px!important}
+#events .past-events-toggle{white-space:nowrap!important;gap:7px!important;padding:9px 10px!important;font-size:10px!important}
+}

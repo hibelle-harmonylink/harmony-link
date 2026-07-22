@@ -406,7 +406,7 @@ if(communitySection){
   const communityHeading=communitySection.querySelector('.section-heading h2');
   if(communityHeading){communityHeading.dataset.ko='함께하기';communityHeading.dataset.en='Join Harmony Link';communityHeading.textContent=currentLanguage==='ko'?'함께하기':'Join Harmony Link';}
   const communityCopy=communitySection.querySelector('.section-heading>p:last-child');
-  if(communityCopy){communityCopy.dataset.ko='입점 파트너와 교육 수강자가 각자의 목적에 맞는 신청 공간으로 바로 연결됩니다.';communityCopy.dataset.en='Partner providers and learners can go directly to the application that fits their needs.';communityCopy.textContent=currentLanguage==='ko'?communityCopy.dataset.ko:communityCopy.dataset.en;}
+  if(communityCopy){communityCopy.dataset.ko='입점 파트너와 교육 수강자가 각자의 목적에 맞는<br class="mobile-only-break">신청 공간으로 바로 연결됩니다.';communityCopy.dataset.en='Partner providers and learners can go directly to the application that fits their needs.';communityCopy.innerHTML=currentLanguage==='ko'?communityCopy.dataset.ko:communityCopy.dataset.en;}
 }
 document.querySelector('.apply')?.remove();
 document.querySelector('.hero-actions .request-form-link')?.remove();
@@ -592,8 +592,8 @@ if (membershipSection) {
 
 const learnerCard = document.querySelector('.audience-card.learner');
 const learnerDescription=learnerCard?.querySelector(':scope>p');
-if(learnerDescription){learnerDescription.dataset.ko='교회, 학교, 도서관, 시니어센터, 기업, 커뮤니티부터 친구 모임과 개인까지<br>원하는 장소에서 맞춤 교육을 신청할 수 있습니다.';learnerDescription.dataset.en='Churches, schools, libraries, senior centers, companies, communities, small groups, and individuals<br>can request tailored learning wherever they are.';learnerDescription.innerHTML=learnerDescription.dataset[currentLanguage];}
-if (learnerCard) learnerCard.insertAdjacentHTML('beforeend', `<p class="matching-disclaimer" data-ko="※ Harmony Link는 강사를 직접 파견하지 않습니다.<br>수업 조건과 수업료는 연결된 강사·교육업체와 직접 협의합니다." data-en="※ Harmony Link does not dispatch instructors.<br>Class terms and tuition are arranged directly with the connected instructor or provider.">※ Harmony Link는 강사를 직접 파견하지 않습니다.<br>수업 조건과 수업료는 연결된 강사·교육업체와 직접 협의합니다.</p>`);
+if(learnerDescription){learnerDescription.dataset.ko='교회, 학교, 도서관, 시니어센터, 기업, 커뮤니티부터 친구 모임과<br class="mobile-only-break">개인까지 원하는 장소에서 맞춤 교육을 신청할 수 있습니다.';learnerDescription.dataset.en='Churches, schools, libraries, senior centers, companies, communities, small groups, and individuals<br>can request tailored learning wherever they are.';learnerDescription.innerHTML=learnerDescription.dataset[currentLanguage];}
+if (learnerCard) learnerCard.insertAdjacentHTML('beforeend', `<p class="matching-disclaimer" data-ko="※ Harmony Link는 강사를 직접 파견하지 않습니다.<br>수업 조건과 수업료는 연결된 강사·교육업체와<br class='mobile-only-break'>직접 협의합니다." data-en="※ Harmony Link does not dispatch instructors.<br>Class terms and tuition are arranged directly with the connected instructor or provider.">※ Harmony Link는 강사를 직접 파견하지 않습니다.<br>수업 조건과 수업료는 연결된 강사·교육업체와 직접 협의합니다.</p>`);
 
 const currentEventGrid = document.querySelector('.event-grid');
 if (currentEventGrid) {
@@ -617,7 +617,7 @@ if (currentEventGrid) {
     const paidComingCopy=originalComingCard.querySelector('p');
     paidComingCopy.removeAttribute('data-ko');
     paidComingCopy.removeAttribute('data-en');
-    paidComingCopy.innerHTML='<span data-ko="관심 있는 수업을 한 번만 부담 없이 경험할 수 있는" data-en="Try a topic once without committing to a full course.">관심 있는 수업을 한 번만 부담 없이 경험할 수 있는</span><span data-ko="단회 프로그램이 공개됩니다." data-en="A paid one-time program is coming soon.">단회 프로그램이 공개됩니다.</span>';
+    paidComingCopy.innerHTML='<span data-ko="관심 있는 수업을 한 번만 부담 없이<br class=\'mobile-only-break\'>경험할 수 있는" data-en="Try a topic once without committing to a full course.">관심 있는 수업을 한 번만 부담 없이 경험할 수 있는</span><span data-ko="단회 프로그램이 공개됩니다." data-en="A paid one-time program is coming soon.">단회 프로그램이 공개됩니다.</span>';
     currentEventGrid.querySelector('.paid-grid').appendChild(originalComingCard);
   } else {
     currentEventGrid.querySelector('.paid-grid').innerHTML=`<article class="event-card event-coming"><div class="event-coming-icon">＋</div><div class="event-info"><span class="event-badge" data-ko="유료 수업 준비 중" data-en="PAID CLASS COMING SOON">유료 수업 준비 중</span><h3><span data-ko="새로운 유료 1회 수업" data-en="A new paid one-time class">새로운 유료 1회 수업</span><br><span data-ko="준비하고 있습니다" data-en="is coming soon">준비하고 있습니다</span></h3><p data-ko="관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다." data-en="Try a topic in a single paid session without committing to a regular course.">관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다.</p></div></article>`;
@@ -644,7 +644,7 @@ if (currentEventGrid) {
 
 const contactSectionForAds = document.getElementById('contact');
 if (contactSectionForAds) {
-  contactSectionForAds.insertAdjacentHTML('beforebegin', `<section class="advertising section" id="advertising"><div class="container"><div class="section-heading centered reveal visible"><p class="eyebrow">COMMUNITY PARTNERS</p><h2 data-ko="지역 업체 광고·제휴 공간" data-en="Local Business Advertising">지역 업체 광고·제휴 공간</h2><p data-ko="지역사회와 함께 성장할 광고 파트너를 위한 배너 자리입니다." data-en="Banner placements for local partners growing with our community.">지역사회와 함께 성장할 광고 파트너를 위한 배너 자리입니다.</p></div><div class="ad-grid"><a href="#contact"><span>AD 01</span><b data-ko="프리미엄 광고 배너" data-en="Premium Ad Banner">프리미엄 광고 배너</b><small data-ko="광고 문의" data-en="Advertising inquiry">광고 문의</small></a><a href="https://aaleac.org/" target="_blank" rel="noopener noreferrer"><span>PARTNER</span><b data-ko="지역 협력 업체" data-en="Community Partner">지역 협력 업체</b><small>AALEAC ↗</small></a><a href="#contact"><span>AD 03</span><b data-ko="문화·교육 제휴" data-en="Culture & Education Partner">문화·교육 제휴</b><small data-ko="제휴 문의" data-en="Partnership inquiry">제휴 문의</small></a></div></div></section>`);
+  contactSectionForAds.insertAdjacentHTML('beforebegin', `<section class="advertising section" id="advertising"><div class="container"><div class="section-heading centered reveal visible"><p class="eyebrow">COMMUNITY PARTNERS</p><h2 data-ko="지역 업체 광고·제휴 공간" data-en="Local Business Advertising">지역 업체 광고·제휴 공간</h2><p data-ko="지역사회와 함께 성장할 광고 파트너를 위한<br class='mobile-only-break'>배너 자리입니다." data-en="Banner placements for local partners growing with our community.">지역사회와 함께 성장할 광고 파트너를 위한 배너 자리입니다.</p></div><div class="ad-grid"><a href="#contact"><span>AD 01</span><b data-ko="프리미엄 광고 배너" data-en="Premium Ad Banner">프리미엄 광고 배너</b><small data-ko="광고 문의" data-en="Advertising inquiry">광고 문의</small></a><a href="https://aaleac.org/" target="_blank" rel="noopener noreferrer"><span>PARTNER</span><b data-ko="지역 협력 업체" data-en="Community Partner">지역 협력 업체</b><small>AALEAC ↗</small></a><a href="#contact"><span>AD 03</span><b data-ko="문화·교육 제휴" data-en="Culture & Education Partner">문화·교육 제휴</b><small data-ko="제휴 문의" data-en="Partnership inquiry">제휴 문의</small></a></div></div></section>`);
 }
 setLanguage(currentLanguage);
 
@@ -791,7 +791,7 @@ const partnerSecurityCopy=partnerCenter.querySelector('.partner-security-note sp
 const partnerCenterHeading=partnerCenter.querySelector('.partner-center-copy h2');
 partnerCenterHeading.dataset.ko='입점 파트너 전용 자료실';partnerCenterHeading.dataset.en='Partner Resource Center';partnerCenterHeading.textContent=partnerCenterHeading.dataset[currentLanguage];
 const partnerCenterDescription=partnerCenter.querySelector('.partner-center-copy>p:not(.eyebrow)');
-partnerCenterDescription.dataset.ko='HarmonyLink 입점 강사와 교육업체를 위한 운영 정책 및 파트너 자료를 제공합니다.';partnerCenterDescription.dataset.en='Resources and operating policies for approved HarmonyLink instructors and education providers.';partnerCenterDescription.innerHTML=partnerCenterDescription.dataset[currentLanguage];
+partnerCenterDescription.dataset.ko='HarmonyLink 입점 강사와 교육업체를 위한<br class="mobile-only-break">운영 정책 및 파트너 자료를 제공합니다.';partnerCenterDescription.dataset.en='Resources and operating policies for approved HarmonyLink instructors and education providers.';partnerCenterDescription.innerHTML=partnerCenterDescription.dataset[currentLanguage];
 partnerSecurityCopy.dataset.ko='입점 신청 후 이메일로 받은 접근코드를 입력해 주세요.';
 partnerSecurityCopy.dataset.en='Enter the access code sent to you by email after applying.';
 partnerSecurityCopy.textContent=currentLanguage==='en'?partnerSecurityCopy.dataset.en:partnerSecurityCopy.dataset.ko;
@@ -1044,7 +1044,7 @@ if (partnerPlans) {
 
 const providerCard = document.querySelector('.audience-card.provider');
 if (providerCard && !providerCard.querySelector('.partner-joining-note')) {
-  providerCard.insertAdjacentHTML('beforeend', '<p class="matching-disclaimer partner-joining-note" data-ko="※ 입점비 없이 시작하고,<br>파트너 멤버십과 매칭 지원은 필요에 맞게 선택할 수 있습니다." data-en="※ Start with no listing fee.<br>Choose partner membership and matching support as needed.">※ 입점비 없이 시작하고,<br>파트너 멤버십과 매칭 지원은 필요에 맞게 선택할 수 있습니다.</p>');
+  providerCard.insertAdjacentHTML('beforeend', '<p class="matching-disclaimer partner-joining-note" data-ko="※ 입점비 없이 시작하고,<br>파트너 멤버십과 매칭 지원은 필요에 맞게<br class=\'mobile-only-break\'>선택할 수 있습니다." data-en="※ Start with no listing fee.<br>Choose partner membership and matching support as needed.">※ 입점비 없이 시작하고,<br>파트너 멤버십과 매칭 지원은 필요에 맞게 선택할 수 있습니다.</p>');
 }
 
 // Reusable volunteer program area; new opportunities can be appended as cards later.
