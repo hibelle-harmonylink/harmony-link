@@ -711,13 +711,13 @@ if(refreshedContact){
         <h3 data-ko="전화 상담" data-en="Phone Support">전화 상담</h3>
         <p data-ko="아래 번호를 누르면 바로 전화로 연결됩니다." data-en="Tap a number below to call us directly.">아래 번호를 누르면 바로 전화로 연결됩니다.</p>
         <div class="contact-country-grid">
-          <a href="tel:+19296030052"><span><i class="country-flag" aria-hidden="true">🇺🇸</i> <b data-ko="미국 상담" data-en="USA">미국 상담</b></span><strong>929-603-0052</strong><small data-ko="미국에서 전화하기" data-en="Call USA">☎ 미국에서 전화하기</small></a>
-          <a href="sms:+821097730052"><span><i class="country-flag" aria-hidden="true">🇰🇷</i> <b data-ko="한국 상담" data-en="Korea">한국 상담</b></span><strong>010-9773-0052</strong><small data-ko="한국으로 문자 보내기" data-en="Text Korea">✉ 한국으로 문자 보내기</small></a>
+          <div><span><i class="country-flag flag-us" aria-hidden="true"><svg viewBox="0 0 28 18"><rect width="28" height="18" fill="#fff"/><path stroke="#c91f37" stroke-width="2" d="M0 1h28M0 5h28M0 9h28M0 13h28M0 17h28"/><rect width="12" height="9" fill="#244a9b"/><g fill="#fff"><circle cx="2" cy="2" r=".6"/><circle cx="5" cy="2" r=".6"/><circle cx="8" cy="2" r=".6"/><circle cx="2" cy="5" r=".6"/><circle cx="5" cy="5" r=".6"/><circle cx="8" cy="5" r=".6"/></g></svg></i><b data-ko="미국 상담" data-en="USA">미국 상담</b></span><strong>929-603-0052</strong></div>
+          <div><span><i class="country-flag flag-kr" aria-hidden="true"><svg viewBox="0 0 28 18"><rect width="28" height="18" rx="1" fill="#fff"/><path d="M14 4.5a4.5 4.5 0 0 1 0 9 2.25 2.25 0 0 0 0-4.5 2.25 2.25 0 0 1 0-4.5z" fill="#cd2e3a"/><path d="M14 13.5a4.5 4.5 0 0 1 0-9 2.25 2.25 0 0 0 0 4.5 2.25 2.25 0 0 1 0 4.5z" fill="#0f64b4"/><g stroke="#111" stroke-width="1"><path d="m4 4 4-2M4.5 5.5l4-2M20 14l4-2M19.5 12.5l4-2M4 14l4 2M4.5 12.5l4 2M20 4l4 2M19.5 5.5l4 2"/></g></svg></i><b data-ko="한국 상담" data-en="Korea">한국 상담</b></span><strong>010-9773-0052</strong></div>
         </div>
-        <a class="contact-showcase-primary" href="tel:+19296030052"><span aria-hidden="true">☎</span><b data-ko="전화 연결하기" data-en="Call Now">전화 연결하기</b></a>
+        <div class="contact-dual-actions"><a href="tel:+19296030052"><span aria-hidden="true">☎</span><b data-ko="전화 연결" data-en="Call">전화 연결</b></a><a href="sms:+821097730052"><span aria-hidden="true">✉</span><b data-ko="문자 연결" data-en="Text">문자 연결</b></a></div>
       </article>
     </div>
-    <div class="contact-response-strip"><span aria-hidden="true">◷</span><div><h3 data-ko="문의 접수 안내" data-en="Inquiry Information">문의 접수 안내</h3><p data-ko="접수된 내용을 확인한 후 담당자가 이메일 또는 전화로 연락드립니다." data-en="After reviewing your inquiry, our team will contact you by email or phone.">접수된 내용을 확인한 후 담당자가 이메일 또는 전화로 연락드립니다.</p></div><b aria-hidden="true">✉</b></div>`;
+    <div class="contact-response-strip"><span aria-hidden="true">◷</span><div><h3 data-ko="문의 접수 안내 · 빠른 응답" data-en="Inquiry Information · Quick Response">문의 접수 안내 · 빠른 응답</h3><p data-ko="접수된 내용을 확인한 후 24시간 안에 이메일 또는 전화로 연락드립니다." data-en="After reviewing your inquiry, we will contact you by email or phone within 24 hours.">접수된 내용을 확인한 후 24시간 안에 이메일 또는 전화로 연락드립니다.</p></div><b aria-hidden="true">✉</b></div>`;
 }
 const inquiryModal=document.createElement('div');
 inquiryModal.className='inquiry-modal';
