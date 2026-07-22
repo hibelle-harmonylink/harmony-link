@@ -592,7 +592,7 @@ if (membershipSection) {
 
 const learnerCard = document.querySelector('.audience-card.learner');
 const learnerDescription=learnerCard?.querySelector(':scope>p');
-if(learnerDescription){learnerDescription.dataset.ko='교회, 학교, 도서관, 시니어센터, 기업, 커뮤니티부터 친구 모임과<br class="mobile-only-break">개인까지 원하는 장소에서 맞춤 교육을 신청할 수 있습니다.';learnerDescription.dataset.en='Churches, schools, libraries, senior centers, companies, communities, small groups, and individuals<br>can request tailored learning wherever they are.';learnerDescription.innerHTML=learnerDescription.dataset[currentLanguage];}
+if(learnerDescription){learnerDescription.dataset.ko='교회, 학교, 도서관, 시니어센터, 기업, 커뮤니티부터<br class="mobile-only-break">친구 모임과 개인까지<br class="mobile-only-break">원하는 장소에서 맞춤 교육을 신청할 수 있습니다.';learnerDescription.dataset.en='Churches, schools, libraries, senior centers, companies, communities, small groups, and individuals<br>can request tailored learning wherever they are.';learnerDescription.innerHTML=learnerDescription.dataset[currentLanguage];}
 if (learnerCard) learnerCard.insertAdjacentHTML('beforeend', `<p class="matching-disclaimer" data-ko="※ Harmony Link는 강사를 직접 파견하지 않습니다.<br>수업 조건과 수업료는 연결된 강사·교육업체와<br class='mobile-only-break'>직접 협의합니다." data-en="※ Harmony Link does not dispatch instructors.<br>Class terms and tuition are arranged directly with the connected instructor or provider.">※ Harmony Link는 강사를 직접 파견하지 않습니다.<br>수업 조건과 수업료는 연결된 강사·교육업체와 직접 협의합니다.</p>`);
 
 const currentEventGrid = document.querySelector('.event-grid');
@@ -1143,6 +1143,7 @@ document.addEventListener('click',event=>{
   if(!flyerLink)return;
   event.preventDefault();
   const image=eventFlyerModal.querySelector('img');
+  eventFlyerModal.classList.toggle('trial-flyer-open',Boolean(flyerLink.closest('.trial-type')));
   image.src=flyerLink.href;
   image.alt=flyerLink.getAttribute('aria-label')||flyerLink.closest('.event-card')?.querySelector('h3')?.textContent||'전단지';
   eventFlyerModal.hidden=false;
