@@ -702,7 +702,7 @@ if(refreshedContact){
       <article class="contact-showcase-card contact-email-card">
         <span class="contact-showcase-icon" aria-hidden="true">✉</span>
         <h3 data-ko="이메일 상담" data-en="Email Support">이메일 상담</h3>
-        <p data-ko="문의 내용을 보내주시면<br>확인 후 답변드립니다." data-en="Send us your inquiry and<br>we will respond after review.">문의 내용을 보내주시면<br>확인 후 답변드립니다.</p>
+        <p data-ko="문의 내용을 보내주시면 확인 후 답변드립니다." data-en="Send us your inquiry and we will respond after review.">문의 내용을 보내주시면 확인 후 답변드립니다.</p>
         <a class="contact-email-address" href="mailto:hibelle@hibelleconsulting.com">hibelle@hibelleconsulting.com</a>
         <a class="contact-showcase-primary" href="mailto:hibelle@hibelleconsulting.com"><span aria-hidden="true">✉</span><b data-ko="이메일 보내기" data-en="Send Email">이메일 보내기</b></a>
       </article>
