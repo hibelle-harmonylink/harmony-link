@@ -717,7 +717,7 @@ if(refreshedContact){
         <div class="contact-dual-actions"><a href="tel:+19296030052"><span aria-hidden="true">☎</span><b data-ko="전화 연결" data-en="Call">전화 연결</b></a><a href="sms:+821097730052"><span aria-hidden="true">✉</span><b data-ko="문자 연결" data-en="Text">문자 연결</b></a></div>
       </article>
     </div>
-    <div class="contact-response-strip"><span aria-hidden="true">◷</span><div><h3 data-ko="문의 접수 안내 · 빠른 응답" data-en="Inquiry Information ·<br class='mobile-en-only-break'>Quick Response">문의 접수 안내 · 빠른 응답</h3><p data-ko="접수된 내용을 확인한 후 24시간 안에 이메일 또는 전화로 연락드립니다." data-en="After reviewing your inquiry, we will contact you by email or phone within 24 hours.">접수된 내용을 확인한 후 24시간 안에 이메일 또는 전화로 연락드립니다.</p></div><b aria-hidden="true">✉</b></div>`;
+    <div class="contact-response-strip"><span aria-hidden="true">◷</span><div><h3 data-ko="문의 접수 안내 · 빠른 응답" data-en="Inquiry Information ·<br class='mobile-en-only-break'>Quick Response">문의 접수 안내 · 빠른 응답</h3><p data-ko="접수된 내용을 확인한 후<br class='mobile-ko-only-break'>24시간 안에 이메일 또는 전화로 연락드립니다." data-en="After reviewing your inquiry,<br class='mobile-en-only-break'>we will contact you by email or phone within 24 hours.">접수된 내용을 확인한 후 24시간 안에 이메일 또는 전화로 연락드립니다.</p></div><b aria-hidden="true">✉</b></div>`;
 }
 const inquiryModal=document.createElement('div');
 inquiryModal.className='inquiry-modal';
