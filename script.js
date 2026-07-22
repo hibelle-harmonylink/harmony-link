@@ -711,8 +711,8 @@ if(refreshedContact){
         <h3 data-ko="전화 상담" data-en="Phone Support">전화 상담</h3>
         <p data-ko="아래 번호를 누르면 바로 전화로 연결됩니다." data-en="Tap a number below to call us directly.">아래 번호를 누르면 바로 전화로 연결됩니다.</p>
         <div class="contact-country-grid">
-          <a href="tel:+19296030052"><span>🇺🇸 <b data-ko="미국 상담" data-en="USA">미국 상담</b></span><strong>929-603-0052</strong><small data-ko="미국에서 전화하기" data-en="Call USA">☎ 미국에서 전화하기</small></a>
-          <a href="tel:+821097730052"><span>🇰🇷 <b data-ko="한국 상담" data-en="Korea">한국 상담</b></span><strong>010-9773-0052</strong><small data-ko="한국에서 전화하기" data-en="Call Korea">☎ 한국에서 전화하기</small></a>
+          <a href="tel:+19296030052"><span><i class="country-flag" aria-hidden="true">🇺🇸</i> <b data-ko="미국 상담" data-en="USA">미국 상담</b></span><strong>929-603-0052</strong><small data-ko="미국에서 전화하기" data-en="Call USA">☎ 미국에서 전화하기</small></a>
+          <a href="sms:+821097730052"><span><i class="country-flag" aria-hidden="true">🇰🇷</i> <b data-ko="한국 상담" data-en="Korea">한국 상담</b></span><strong>010-9773-0052</strong><small data-ko="한국으로 문자 보내기" data-en="Text Korea">✉ 한국으로 문자 보내기</small></a>
         </div>
         <a class="contact-showcase-primary" href="tel:+19296030052"><span aria-hidden="true">☎</span><b data-ko="전화 연결하기" data-en="Call Now">전화 연결하기</b></a>
       </article>
