@@ -412,7 +412,7 @@ document.querySelector('.apply')?.remove();
 document.querySelector('.hero-actions .request-form-link')?.remove();
 document.querySelector('.hero-actions .btn-explore')?.classList.add('btn-primary');
 const serviceArea=document.querySelector('.service-note span');
-if(serviceArea){serviceArea.dataset.ko='뉴욕시 · 롱아일랜드 · 웨체스터 · 뉴저지';serviceArea.dataset.en='New York City · Long Island · Westchester · New Jersey';serviceArea.textContent=currentLanguage==='ko'?serviceArea.dataset.ko:serviceArea.dataset.en;}
+if(serviceArea){serviceArea.dataset.ko='뉴욕시 · 롱아일랜드 · 웨체스터 · 뉴저지';serviceArea.dataset.en='New York City · Long Island<br class="mobile-only-break">Westchester · New Jersey';serviceArea.innerHTML=currentLanguage==='ko'?serviceArea.dataset.ko:serviceArea.dataset.en;}
 const aboutCopy=document.querySelector('.about-copy');
 aboutCopy?.classList.add('about-copy-card');
 aboutCopy?.querySelector('p')?.remove();
@@ -954,8 +954,7 @@ const renderPromotionNews=()=>{
   }
   promotionModal.querySelector('.promotion-badge').textContent=isEnglish?news.typeEn:news.typeKo;
   const title=promotionModal.querySelector('#promotionTitle');
-  if(isEnglish&&news.id==='english'&&window.innerWidth<=760){title.innerHTML='Hibelle<br>Online English';}
-  else{title.textContent=isEnglish?news.titleEn:news.titleKo;}
+  title.textContent=isEnglish?news.titleEn:news.titleKo;
   const subtitle=isEnglish?news.subtitleEn:news.subtitleKo;if(subtitle){const line=document.createElement('small');line.textContent=subtitle;title.appendChild(line);}
   const newsDescription=promotionModal.querySelector('.promotion-news-description');
   if(news.typeEn==='LIMITED BENEFIT'){
@@ -1131,6 +1130,10 @@ document.querySelectorAll('#events .event-card:not(.event-coming)').forEach((car
   flyerButton.textContent=currentLanguage==='en'?flyerButton.dataset.en:flyerButton.dataset.ko;
   row.appendChild(flyerButton);
 });
+const mobileTrialHeading=document.querySelector('#events .trial-type .event-title-row h3');
+if(mobileTrialHeading)mobileTrialHeading.dataset.en='Music & Digital<br class="mobile-only-break">One-Day Experience';
+const mobilePaidHeading=document.querySelector('#events .paid-type .event-card h3 span:first-child');
+if(mobilePaidHeading)mobilePaidHeading.dataset.en='A new paid<br class="mobile-only-break">one-time class';
 const eventFlyerModal=document.createElement('div');
 eventFlyerModal.className='event-flyer-modal';
 eventFlyerModal.hidden=true;
