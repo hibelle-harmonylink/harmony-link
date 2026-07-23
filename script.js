@@ -1237,7 +1237,7 @@ document.addEventListener('click',event=>{
       .replace('요청할 수 있습니다.','요청할 수\n있습니다.');
   }
   if(!isMarketing&&currentLanguage==='ko'&&window.innerWidth<=760){
-    localized=localized.replace('관련 업무가 끝난 후 내부 방침에 따라','관련 업무가 끝난 후\n내부 방침에 따라');
+    localized=localized.replace('관련 업무가 끝난 후 내부 방침에 따라\n안전하게','관련 업무가 끝난 후\n내부 방침에 따라 안전하게');
   }
   const [title,...bodyParts]=localized.split('\n\n');
   consentDetailModal.querySelector('h2').textContent=title.replace(/^\[|\]$/g,'');
