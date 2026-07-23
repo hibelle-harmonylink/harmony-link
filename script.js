@@ -1229,7 +1229,13 @@ document.addEventListener('click',event=>{
     }
   };
   const message=isMarketing?messages.marketing:messages.privacy;
-  const localized=currentLanguage==='en'?message.en:message.ko;
+  let localized=currentLanguage==='en'?message.en:message.ko;
+  if(isMarketing&&currentLanguage==='ko'&&window.innerWidth<=760){
+    localized=localized
+      .replace('혜택 소식 안내','혜택 소식\n안내')
+      .replace('문의 접수에는 제한이 없습니다.','문의 접수에는\n제한이 없습니다.')
+      .replace('요청할 수 있습니다.','요청할 수\n있습니다.');
+  }
   const [title,...bodyParts]=localized.split('\n\n');
   consentDetailModal.querySelector('h2').textContent=title.replace(/^\[|\]$/g,'');
   consentDetailModal.querySelector('.consent-detail-body').textContent=bodyParts.join('\n\n');
