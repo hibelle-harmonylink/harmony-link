@@ -1239,6 +1239,11 @@ document.addEventListener('click',event=>{
   if(!isMarketing&&currentLanguage==='ko'&&window.innerWidth<=760){
     localized=localized.replace('관련 업무가 끝난 후 내부 방침에 따라\n안전하게','관련 업무가 끝난 후\n내부 방침에 따라 안전하게');
   }
+  if(currentLanguage==='en'&&window.innerWidth<=760){
+    localized=isMarketing
+      ? localized.replace('new programs, free classes','new programs,\nfree classes')
+      : localized.replace('phone number, email address','phone number,\nemail address');
+  }
   const [title,...bodyParts]=localized.split('\n\n');
   consentDetailModal.querySelector('h2').textContent=title.replace(/^\[|\]$/g,'');
   consentDetailModal.querySelector('.consent-detail-body').textContent=bodyParts.join('\n\n');
