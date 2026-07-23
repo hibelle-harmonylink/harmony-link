@@ -1205,7 +1205,24 @@ eventFlyerModal.querySelectorAll('[data-event-flyer-close]').forEach(button=>but
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!eventFlyerModal.hidden)closeEventFlyer();});
 setLanguage(currentLanguage);
 document.querySelectorAll('.volunteer-contact-link').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();openInquiryModal(link.dataset.contactType);}));
-document.addEventListener('click',event=>{if(!event.target.closest('.consent-view'))return;alert(currentLanguage==='en'?'Personal information is used only to respond to your inquiry. Optional marketing consent may be withdrawn at any time.':'개인정보는 문의 확인과 답변을 위해서만 사용됩니다. 선택한 마케팅 활용 동의는 언제든 철회할 수 있습니다.');});
+document.addEventListener('click',event=>{
+  const viewButton=event.target.closest('.consent-view');
+  if(!viewButton)return;
+  const consentRow=viewButton.closest('label');
+  const isMarketing=Boolean(consentRow?.querySelector('input[name="마케팅 활용 동의"]'));
+  const messages={
+    privacy:{
+      ko:'[개인정보 수집·이용 안내]\n\n수집 항목: 이름, 연락처, 이메일, 문의 내용\n이용 목적: 문의 확인, 상담 및 답변 제공\n보관 안내: 문의 처리와 관련 업무가 끝난 후 내부 방침에 따라 안전하게 관리·삭제합니다.\n\n문의 접수를 위해 필요한 필수 동의입니다.',
+      en:'[Personal Information Collection & Use]\n\nInformation collected: Name, phone number, email address, and inquiry details\nPurpose: To review your inquiry and provide consultation or a response\nRetention: Information is securely managed and deleted according to our internal policy after the inquiry and related work are completed.\n\nThis consent is required to submit an inquiry.'
+    },
+    marketing:{
+      ko:'[마케팅 활용 동의 안내]\n\n이용 목적: 새로운 프로그램, 무료 강좌, 행사 및 혜택 소식 안내\n연락 방법: 이메일 또는 문자 메시지\n\n선택 동의 항목이며, 동의하지 않아도 문의 접수에는 제한이 없습니다. 동의 후에도 언제든 수신 거부 또는 철회를 요청할 수 있습니다.',
+      en:'[Marketing Communications Consent]\n\nPurpose: To share updates about new programs, free classes, events, and benefits\nContact methods: Email or text message\n\nThis consent is optional. You may submit an inquiry without agreeing, and you may unsubscribe or withdraw your consent at any time.'
+    }
+  };
+  const message=isMarketing?messages.marketing:messages.privacy;
+  alert(currentLanguage==='en'?message.en:message.ko);
+});
 const footerTop=document.querySelector('.footer-top');if(footerTop&&!document.querySelector('.footer-social-panel'))footerTop.insertAdjacentHTML('beforeend',`<div class="footer-social-panel"><div class="footer-social-copy"><span data-ko="하모니링크의 새로운 프로그램 소식을 소셜미디어에서도 만나보세요." data-en="Discover Harmony Link's new programs on social media.">하모니링크의 새로운 프로그램 소식을 소셜미디어에서도 만나보세요.</span></div><nav aria-label="소셜미디어"><a href="https://www.instagram.com/hibelleconsulting/" target="_blank" rel="noopener noreferrer" class="instagram" aria-label="Instagram"><img src="assets/instagram.svg" alt="Instagram"></a><a href="https://www.threads.net/@hibelleconsulting" target="_blank" rel="noopener noreferrer" class="threads" aria-label="Threads"><img src="assets/threads.svg" alt="Threads"></a></nav></div>`);
 if (!document.querySelector('.mobile-lang-toggle')) {
   const mobileLanguageButton=document.createElement('button');
