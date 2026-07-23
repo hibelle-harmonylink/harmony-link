@@ -1224,8 +1224,8 @@ document.addEventListener('click',event=>{
       en:'[Personal Information Collection & Use]\n\nInformation collected: Name, phone number, email address, and inquiry details\n\nPurpose: To review your inquiry and provide consultation or a response\n\nRetention: Information is securely managed and deleted according to our internal policy after the inquiry and related work are completed.\n\nThis consent is required to submit an inquiry.'
     },
     marketing:{
-      ko:'[마케팅 활용 동의 안내]\n\n이용 목적: 새로운 프로그램, 무료 강좌, 행사 및 혜택 소식 안내\n연락 방법: 이메일 또는 문자 메시지\n\n선택 동의 항목이며, 동의하지 않아도 문의 접수에는 제한이 없습니다. 동의 후에도 언제든 수신 거부 또는 철회를 요청할 수 있습니다.',
-      en:'[Marketing Communications Consent]\n\nPurpose: To share updates about new programs, free classes, events, and benefits\nContact methods: Email or text message\n\nThis consent is optional. You may submit an inquiry without agreeing, and you may unsubscribe or withdraw your consent at any time.'
+      ko:'[마케팅 활용 동의 안내]\n\n이용 목적: 새로운 프로그램, 무료 강좌, 행사 및 혜택 소식 안내\n연락 방법: 이메일 또는 문자 메시지\n\n선택 동의 항목이며, 동의하지 않아도 문의 접수에는 제한이 없습니다.\n동의 후에도 언제든 수신 거부 또는 철회를 요청할 수 있습니다.',
+      en:'[Marketing Communications Consent]\n\nPurpose: To share updates about new programs, free classes, events, and benefits\nContact methods: Email or text message\n\nThis consent is optional. You may submit an inquiry\nwithout agreeing.\nAfter you agree, you may unsubscribe or withdraw your consent at any time.'
     }
   };
   const message=isMarketing?messages.marketing:messages.privacy;
