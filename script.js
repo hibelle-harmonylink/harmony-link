@@ -1221,7 +1221,7 @@ document.addEventListener('click',event=>{
   const messages={
     privacy:{
       ko:'[개인정보 수집·이용 안내]\n\n수집 항목: 이름, 연락처, 이메일, 문의 내용\n\n이용 목적: 문의 확인, 상담 및 답변 제공\n\n보관 안내: 문의 처리와 관련 업무가 끝난 후 내부 방침에 따라\n안전하게 관리·삭제합니다.\n\n문의 접수를 위해 필요한 필수 동의입니다.',
-      en:'[Personal Information Collection & Use]\n\nInformation collected: Name, phone number, email address, and inquiry details\n\nPurpose: To review your inquiry and provide consultation or a response\n\nRetention: Information is securely managed and deleted according to our internal policy after the inquiry and related work are completed.\n\nThis consent is required to submit an inquiry.'
+      en:'[Personal Information Collection & Use]\n\nInformation collected: Name, phone number, email address, and inquiry details\n\nPurpose: To review your inquiry and provide consultation or a response\n\nRetention: Information is securely managed and deleted according to our internal policy\nafter the inquiry and related work are completed.\n\nThis consent is required to submit an inquiry.'
     },
     marketing:{
       ko:'[마케팅 활용 동의 안내]\n\n이용 목적: 새로운 프로그램, 무료 강좌, 행사 및 혜택 소식 안내\n연락 방법: 이메일 또는 문자 메시지\n\n선택 동의 항목이며, 동의하지 않아도 문의 접수에는 제한이 없습니다.\n동의 후에도 언제든 수신 거부 또는 철회를 요청할 수 있습니다.',
