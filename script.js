@@ -1188,6 +1188,14 @@ eventFlyerModal.hidden=true;
 eventFlyerModal.innerHTML=`<div class="event-flyer-backdrop" data-event-flyer-close></div><section class="event-flyer-panel" role="dialog" aria-modal="true" aria-label="전단지 크게 보기"><button type="button" class="event-flyer-close" data-event-flyer-close aria-label="닫기">×</button><div class="event-flyer-scroll"><img src="" alt=""></div><button type="button" class="event-flyer-collapse" data-event-flyer-close><span data-ko="작게 보기" data-en="Close flyer">작게 보기</span></button></section>`;
 document.body.appendChild(eventFlyerModal);
 const closeEventFlyer=()=>{eventFlyerModal.hidden=true;document.body.classList.remove('modal-open');};
+const consentDetailModal=document.createElement('div');
+consentDetailModal.className='consent-detail-modal';
+consentDetailModal.hidden=true;
+consentDetailModal.innerHTML=`<div class="consent-detail-backdrop" data-consent-detail-close></div><section class="consent-detail-panel" role="dialog" aria-modal="true" aria-labelledby="consentDetailTitle"><button type="button" class="consent-detail-close" data-consent-detail-close aria-label="닫기">×</button><h2 id="consentDetailTitle"></h2><div class="consent-detail-body"></div><button type="button" class="consent-detail-confirm" data-consent-detail-close data-ko="확인" data-en="Close">확인</button></section>`;
+document.body.appendChild(consentDetailModal);
+const closeConsentDetail=()=>{consentDetailModal.hidden=true;};
+consentDetailModal.querySelectorAll('[data-consent-detail-close]').forEach(button=>button.addEventListener('click',closeConsentDetail));
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!consentDetailModal.hidden)closeConsentDetail();});
 document.addEventListener('click',event=>{
   if(window.innerWidth>760)return;
   const flyerLink=event.target.closest('#events .event-poster, #events .event-flyer-button');
@@ -1212,7 +1220,7 @@ document.addEventListener('click',event=>{
   const isMarketing=Boolean(consentRow?.querySelector('input[name="마케팅 활용 동의"]'));
   const messages={
     privacy:{
-      ko:'[개인정보 수집·이용 안내]\n\n수집 항목: 이름, 연락처, 이메일, 문의 내용\n\n이용 목적: 문의 확인, 상담 및 답변 제공\n\n보관 안내: 문의 처리와 관련 업무가 끝난 후 내부 방침에 따라 안전하게 관리·삭제합니다.\n\n문의 접수를 위해 필요한 필수 동의입니다.',
+      ko:'[개인정보 수집·이용 안내]\n\n수집 항목: 이름, 연락처, 이메일, 문의 내용\n\n이용 목적: 문의 확인, 상담 및 답변 제공\n\n보관 안내: 문의 처리와 관련 업무가 끝난 후 내부 방침에 따라\n안전하게 관리·삭제합니다.\n\n문의 접수를 위해 필요한 필수 동의입니다.',
       en:'[Personal Information Collection & Use]\n\nInformation collected: Name, phone number, email address, and inquiry details\n\nPurpose: To review your inquiry and provide consultation or a response\n\nRetention: Information is securely managed and deleted according to our internal policy after the inquiry and related work are completed.\n\nThis consent is required to submit an inquiry.'
     },
     marketing:{
@@ -1221,7 +1229,14 @@ document.addEventListener('click',event=>{
     }
   };
   const message=isMarketing?messages.marketing:messages.privacy;
-  alert(currentLanguage==='en'?message.en:message.ko);
+  const localized=currentLanguage==='en'?message.en:message.ko;
+  const [title,...bodyParts]=localized.split('\n\n');
+  consentDetailModal.querySelector('h2').textContent=title.replace(/^\[|\]$/g,'');
+  consentDetailModal.querySelector('.consent-detail-body').textContent=bodyParts.join('\n\n');
+  const confirm=consentDetailModal.querySelector('.consent-detail-confirm');
+  confirm.textContent=currentLanguage==='en'?'Close':'확인';
+  consentDetailModal.hidden=false;
+  consentDetailModal.querySelector('.consent-detail-close')?.focus();
 });
 const footerTop=document.querySelector('.footer-top');if(footerTop&&!document.querySelector('.footer-social-panel'))footerTop.insertAdjacentHTML('beforeend',`<div class="footer-social-panel"><div class="footer-social-copy"><span data-ko="하모니링크의 새로운 프로그램 소식을 소셜미디어에서도 만나보세요." data-en="Discover Harmony Link's new programs on social media.">하모니링크의 새로운 프로그램 소식을 소셜미디어에서도 만나보세요.</span></div><nav aria-label="소셜미디어"><a href="https://www.instagram.com/hibelleconsulting/" target="_blank" rel="noopener noreferrer" class="instagram" aria-label="Instagram"><img src="assets/instagram.svg" alt="Instagram"></a><a href="https://www.threads.net/@hibelleconsulting" target="_blank" rel="noopener noreferrer" class="threads" aria-label="Threads"><img src="assets/threads.svg" alt="Threads"></a></nav></div>`);
 if (!document.querySelector('.mobile-lang-toggle')) {
