@@ -1220,7 +1220,7 @@ document.addEventListener('click',event=>{
   const isMarketing=Boolean(consentRow?.querySelector('input[name="마케팅 활용 동의"]'));
   const messages={
     privacy:{
-      ko:'[개인정보 수집·이용 안내]\n\n수집 항목: 이름, 연락처, 이메일, 문의 내용\n\n이용 목적: 문의 확인, 상담 및 답변 제공\n\n보관 안내: 문의 처리와 관련 업무가 끝난 후 내부 방침에 따라\n　　　　　안전하게 관리·삭제합니다.\n\n문의 접수를 위해 필요한 필수 동의입니다.',
+      ko:'[개인정보 수집·이용 안내]\n\n수집 항목: 이름, 연락처, 이메일, 문의 내용\n\n이용 목적: 문의 확인, 상담 및 답변 제공\n\n보관 안내: 문의 처리와 관련 업무가 끝난 후 내부 방침에 따라\n안전하게 관리·삭제합니다.\n\n문의 접수를 위해 필요한 필수 동의입니다.',
       en:'[Personal Information Collection & Use]\n\nInformation collected: Name, phone number, email address, and inquiry details\n\nPurpose: To review your inquiry and provide consultation or a response\n\nRetention: Information is securely managed and deleted according to our internal policy\nafter the inquiry and related work are completed.\n\nThis consent is required to submit an inquiry.'
     },
     marketing:{
