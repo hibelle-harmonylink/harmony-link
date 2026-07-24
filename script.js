@@ -821,8 +821,7 @@ document.addEventListener('keydown', event => {
 });
 setLanguage(currentLanguage);
 
-// Temporary locked Partner Center. Replace with server-side authentication when member login launches.
-const partnerCenterHash = 'c01060fd04d8032eb00cc7754f141a8d3cb9f49fdccfe11a08946378041bdf18';
+// Partner Center access is controlled by the Supabase session in auth.js.
 const contactNavLink = document.querySelector('#primary-nav a[href="#contact"]');
 if (contactNavLink) {
   const partnerCenterNav = document.createElement('a');
@@ -851,26 +850,9 @@ const contactForPartnerCenter = document.getElementById('contact');
 
 const accessForm = partnerCenter.querySelector('#partnerAccessForm');
 const downloads = partnerCenter.querySelector('.partner-downloads');
-const unlockPartnerCenter = () => {
-  accessForm.hidden = true;
-  downloads.hidden = false;
-  sessionStorage.setItem('harmonyPartnerAccess', 'granted');
-};
-if (sessionStorage.getItem('harmonyPartnerAccess') === 'granted') unlockPartnerCenter();
-accessForm.addEventListener('submit', async event => {
-  event.preventDefault();
-  const status = accessForm.querySelector('.partner-access-status');
-  const code = accessForm.querySelector('input').value.trim();
-  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(code));
-  const hash = [...new Uint8Array(digest)].map(value => value.toString(16).padStart(2,'0')).join('');
-  if (hash === partnerCenterHash) {
-    status.textContent = '';
-    unlockPartnerCenter();
-  } else {
-    status.textContent = currentLanguage === 'ko' ? '접근코드가 올바르지 않습니다.' : 'The access code is incorrect.';
-    accessForm.querySelector('input').select();
-  }
-});
+accessForm.hidden = true;
+downloads.hidden = true;
+sessionStorage.removeItem('harmonyPartnerAccess');
 
 // Membership presentation: free signup first, partner prices only in the comparison panel.
 const partnerMembershipSection = document.getElementById('membership');
