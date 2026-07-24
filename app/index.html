@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#061d45">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta name="description" content="배움과 사람을 잇는 하모니링크 앱">
+  <title>Harmony Link App</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="icon-192.png?v=59">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="app.css?v=59">
+  <link rel="stylesheet" href="overrides.css?v=59">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" id="brandHome" href="#home" aria-label="하모니링크 홈">
+        <span class="logo-mark brand-image" aria-hidden="true"><img src="../assets/harmony-logo.png" alt=""></span>
+        <span class="logo-name">Harmony <b>Link</b><small data-ko="이음문화센터" data-en="E-eum Culture Center">이음문화센터</small></span>
+      </a>
+      <div class="top-actions">
+        <button id="languageButton" class="round-button" type="button" aria-label="언어 변경">EN</button>
+        <button id="installButton" class="install-button" type="button" hidden>앱 설치</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="screen active" id="home" data-screen="home">
+        <div class="hero">
+          <div class="hero-semicircle" aria-hidden="true"></div>
+          <div class="hero-copy">
+            <p class="eyebrow" data-ko="오늘의 배움" data-en="LEARN SOMETHING TODAY">오늘의 배움</p>
+            <h1 data-ko="배움으로 이어지는<br><em>더 나은 일상</em>" data-en="A better everyday life,<br><em>connected by learning</em>">배움으로 이어지는<br><em>더 나은 일상</em></h1>
+            <p data-ko="내게 맞는 수업과 지역 프로그램을 쉽고 빠르게 찾아보세요." data-en="Quickly discover classes and community programs that fit you.">내게 맞는 수업과 지역 프로그램을 쉽고 빠르게 찾아보세요.</p>
+            <button class="primary-action" type="button" data-go="programs"><span data-ko="프로그램 찾기" data-en="Find a program">프로그램 찾기</span><b>→</b></button>
+          </div>
+          <div class="hero-mark" aria-hidden="true"><span>H</span><i></i><b></b></div>
+        </div>
+
+        <section class="quick-section">
+          <div class="section-title">
+            <div><p class="eyebrow">QUICK START</p><h2 data-ko="무엇을 찾으세요?" data-en="What are you looking for?">무엇을 찾으세요?</h2></div>
+          </div>
+          <div class="quick-grid">
+            <button type="button" data-category="디지털"><span>💻</span><b data-ko="디지털" data-en="Digital">디지털</b><small data-ko="스마트폰·AI" data-en="Phone · AI">스마트폰·AI</small></button>
+            <button type="button" data-category="언어"><span>🌍</span><b data-ko="언어" data-en="Language">언어</b><small data-ko="영어·회화" data-en="English · Speaking">영어·회화</small></button>
+            <button type="button" data-category="음악"><span>🎵</span><b data-ko="음악" data-en="Music">음악</b><small data-ko="노래·악기" data-en="Voice · Instruments">노래·악기</small></button>
+            <button type="button" data-category="댄스"><span>💃</span><b data-ko="댄스" data-en="Dance">댄스</b><small data-ko="라인댄스·리듬" data-en="Line dance · Rhythm">라인댄스·리듬</small></button>
+          </div>
+        </section>
+
+        <section class="feature-card">
+          <div>
+            <span class="badge" data-ko="무료 방문 지원" data-en="FREE HOME VISIT">무료 방문 지원</span>
+            <h2 data-ko="디지털이 어려운 이웃을<br>직접 찾아갑니다" data-en="We bring friendly digital help<br>to your home">디지털이 어려운 이웃을<br>직접 찾아갑니다</h2>
+            <button type="button" data-go="contact" data-subject="무료 방문 디지털 지원"><span data-ko="지원 문의" data-en="Ask for support">지원 문의</span> ↗</button>
+          </div>
+          <img src="../assets/volunteer/digital-volunteer.png" alt="무료 방문 디지털 지원">
+        </section>
+
+        <section class="home-programs">
+          <div class="section-title">
+            <div><p class="eyebrow">RECOMMENDED</p><h2 data-ko="추천 프로그램" data-en="Recommended">추천 프로그램</h2></div>
+            <button type="button" data-go="programs" data-ko="전체보기" data-en="View all">전체보기</button>
+          </div>
+          <div class="horizontal-cards" id="recommendedPrograms"></div>
+        </section>
+      </section>
+
+      <section class="screen" id="programs" data-screen="programs">
+        <div class="page-heading">
+          <p class="eyebrow">PROGRAMS</p>
+          <h1 data-ko="나에게 맞는 배움을 찾아보세요" data-en="Find learning that fits you">나에게 맞는 배움을<br>찾아보세요</h1>
+          <label class="search-box">
+            <span aria-hidden="true">⌕</span>
+            <input id="programSearch" type="search" data-ko-placeholder="프로그램 검색" data-en-placeholder="Search programs" placeholder="프로그램 검색">
+          </label>
+        </div>
+        <div class="filter-row" id="categoryFilters" aria-label="프로그램 분야"></div>
+        <div class="program-list" id="programList"></div>
+        <p class="empty-state" id="programEmpty" hidden data-ko="검색 결과가 없습니다." data-en="No programs found.">검색 결과가 없습니다.</p>
+      </section>
+
+      <section class="screen" id="events" data-screen="events">
+        <div class="page-heading">
+          <p class="eyebrow">EVENTS</p>
+          <h1 data-ko="가볍게 시작하는<br>무료 강좌와 이벤트" data-en="Free classes and events<br>to get you started">가볍게 시작하는<br>무료 강좌와 이벤트</h1>
+        </div>
+        <article class="event-card">
+          <img src="../assets/events/one-day-class.jpg" alt="무료 원데이 클래스">
+          <div><span class="badge" data-ko="참가비 무료" data-en="FREE">참가비 무료</span><h2 data-ko="무료 원데이 클래스" data-en="Free One-Day Class">무료 원데이 클래스</h2><p data-ko="관심 분야를 부담 없이 경험해 보세요. 새 일정은 앱에서 가장 먼저 안내합니다." data-en="Try a new topic with no commitment. New dates will appear here first.">관심 분야를 부담 없이 경험해 보세요. 새 일정은 앱에서 가장 먼저 안내합니다.</p><button type="button" data-go="contact" data-subject="무료 원데이 클래스"><span data-ko="일정 문의하기" data-en="Ask about dates">일정 문의하기</span> →</button></div>
+        </article>
+        <article class="event-card">
+          <img src="../assets/events/finance-ai-seminar.jpg" alt="생활 금융과 AI 세미나">
+          <div><span class="badge dark" data-ko="특별 세미나" data-en="SPECIAL SEMINAR">특별 세미나</span><h2 data-ko="생활 금융 × AI" data-en="Everyday Finance × AI">생활 금융 × AI</h2><p data-ko="실생활에 바로 쓰는 금융 정보와 AI 활용법을 함께 배웁니다." data-en="Learn practical financial information and useful AI skills together.">실생활에 바로 쓰는 금융 정보와 AI 활용법을 함께 배웁니다.</p><button type="button" data-go="contact" data-subject="생활 금융 AI 세미나"><span data-ko="참여 문의하기" data-en="Ask to join">참여 문의하기</span> →</button></div>
+        </article>
+      </section>
+
+      <section class="screen" id="saved" data-screen="saved">
+        <div class="page-heading">
+          <p class="eyebrow">MY LIST</p>
+          <h1 data-ko="관심 프로그램" data-en="Saved programs">관심 프로그램</h1>
+          <p data-ko="저장한 프로그램을 한곳에서 확인하고 바로 문의할 수 있어요." data-en="Review saved programs and ask about them anytime.">저장한 프로그램을 한곳에서 확인하고 바로 문의할 수 있어요.</p>
+        </div>
+        <div class="program-list" id="savedList"></div>
+        <div class="empty-state saved-empty" id="savedEmpty">
+          <span>♡</span><h2 data-ko="아직 저장한 프로그램이 없어요" data-en="Nothing saved yet">아직 저장한 프로그램이 없어요</h2><p data-ko="프로그램의 하트를 눌러 관심 목록에 담아보세요." data-en="Tap the heart on a program to save it here.">프로그램의 하트를 눌러 관심 목록에 담아보세요.</p><button type="button" data-go="programs" data-ko="프로그램 둘러보기" data-en="Browse programs">프로그램 둘러보기</button>
+        </div>
+      </section>
+
+      <section class="screen" id="contact" data-screen="contact">
+        <div class="page-heading">
+          <p class="eyebrow">CONTACT</p>
+          <h1 id="contactTitle" data-ko="궁금한 점을 편하게 남겨주세요" data-en="Tell us how we can help">궁금한 점을 편하게 남겨주세요</h1>
+          <p id="contactDescription" data-ko="프로그램, 강사·파트너 입점 문의를 주시면 확인 후 연락드립니다." data-en="Send us your program, instructor, or partner inquiry and we will get back to you.">프로그램, 강사·파트너 입점 문의를 주시면 확인 후 연락드립니다.</p>
+        </div>
+        <form class="contact-form" id="contactForm">
+          <label><span><b data-ko="이름" data-en="Name">이름</b><i class="required-mark" aria-label="필수">*</i></span><input name="name" required autocomplete="name"></label>
+          <label><span><b data-ko="연락처" data-en="Phone">연락처</b><i class="required-mark" aria-label="필수">*</i></span><input name="phone" type="tel" required autocomplete="tel" inputmode="tel" data-ko-placeholder="예: 929-603-0052" data-en-placeholder="e.g. 929-603-0052" placeholder="예: 929-603-0052"></label>
+          <label><span><b data-ko="이메일" data-en="Email">이메일</b><i class="required-mark" aria-label="필수">*</i></span><input name="email" type="email" required autocomplete="email"></label>
+          <label><span><b data-ko="문의 분야" data-en="Topic">문의 분야</b><i class="required-mark" aria-label="필수">*</i></span><span class="select-wrap"><select name="subject" id="contactSubject" required><option value="수업 신청 문의" data-ko="수업 신청 문의" data-en="Class inquiry">수업 신청 문의</option><option value="입점 파트너 문의" data-ko="입점 파트너 문의" data-en="Partner inquiry">입점 파트너 문의</option><option value="기타 문의" data-ko="기타 문의" data-en="Other inquiry">기타 문의</option></select><i class="select-arrow" aria-hidden="true">⌄</i></span></label>
+          <label><span><b data-ko="문의 내용" data-en="Message">문의 내용</b><i class="required-mark" aria-label="필수">*</i></span><textarea name="message" rows="5" required></textarea></label>
+          <button class="submit-button" type="submit"><span id="contactSubmitLabel" data-ko="문의 보내기" data-en="Send inquiry">문의 보내기</span><b>→</b></button>
+          <p class="form-status" id="formStatus" role="status"></p>
+        </form>
+      </section>
+    </main>
+
+    <div class="news-popup" id="newsPopup" role="dialog" aria-modal="true" aria-labelledby="newsPopupTitle">
+      <button class="news-backdrop" type="button" data-popup-close aria-label="팝업 닫기"></button>
+      <article class="news-panel">
+        <div class="news-media"><img id="newsPopupImage" src="" alt="" role="button" tabindex="0"><span id="newsPopupBadge"></span><span class="zoom-hint" data-ko="이미지 클릭 확대" data-en="Click image to enlarge">이미지 클릭 확대</span></div>
+        <div class="news-copy">
+          <p class="eyebrow">HARMONY LINK NEWS</p>
+          <h2 id="newsPopupTitle"></h2>
+          <p id="newsPopupText"></p>
+          <button class="news-action" id="newsPopupAction" type="button"><span></span><b>→</b></button>
+        </div>
+        <div class="news-controls">
+          <button type="button" id="newsPrev" aria-label="이전 소식">‹</button>
+          <span id="newsCounter"></span>
+          <button type="button" id="newsNext" aria-label="다음 소식">›</button>
+        </div>
+        <div class="news-footer">
+          <button type="button" id="hidePopupToday" data-ko="오늘 하루 보지 않기" data-en="Hide for today">오늘 하루 보지 않기</button>
+          <button type="button" data-popup-close data-ko="닫기" data-en="Close">닫기</button>
+        </div>
+      </article>
+    </div>
+
+    <div class="image-lightbox" id="imageLightbox" hidden role="dialog" aria-modal="true" aria-label="전단지 크게 보기">
+      <button class="lightbox-backdrop" type="button" data-lightbox-close aria-label="크게 보기 닫기"></button>
+      <img id="lightboxImage" src="" alt="">
+      <button class="lightbox-close" type="button" data-lightbox-close aria-label="닫기">×</button>
+    </div>
+
+    <nav class="bottom-nav" aria-label="앱 메뉴">
+      <button class="active" type="button" data-go="home"><span>⌂</span><small data-ko="홈" data-en="Home">홈</small></button>
+      <button type="button" data-go="programs"><span>▦</span><small data-ko="프로그램" data-en="Programs">프로그램</small></button>
+      <button type="button" data-go="events"><span>✦</span><small data-ko="무료강좌" data-en="Events">무료강좌</small></button>
+      <button type="button" data-go="saved"><span>♡</span><small data-ko="관심목록" data-en="Saved">관심목록</small></button>
+      <button type="button" data-go="contact"><span>✉</span><small data-ko="문의" data-en="Contact">문의</small></button>
+    </nav>
+  </div>
+  <script src="app.js?v=59"></script>
+</body>
+</html>
