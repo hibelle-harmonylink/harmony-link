@@ -221,7 +221,7 @@
 /* Contact opened from volunteer and partner popups: separate header, field and action. */
 #contact.volunteer-contact .page-heading,
 #contact.general-contact .page-heading {
-  padding-top: 34px !important;
+  padding-top: 26px !important;
   padding-bottom: 9px !important;
 }
 
@@ -254,13 +254,13 @@
   align-self: end;
   height: 44px !important;
   margin-top: 8px !important;
-  transform: translateY(6px);
+  transform: translateY(8px);
 }
 
 @media (max-height: 740px) {
   #contact.volunteer-contact .page-heading,
   #contact.general-contact .page-heading {
-    padding-top: 26px !important;
+    padding-top: 22px !important;
   }
 
   #contact.volunteer-contact .contact-form,

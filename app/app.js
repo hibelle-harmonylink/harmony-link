@@ -177,7 +177,7 @@ $("#newsPopupAction").addEventListener("click",()=>{
   }
   const contactMode=item.badgeKo==="지역사회 봉사"?"volunteer":"general";
   const topic=item.badgeKo==="파트너 모집"?"partner":"";
-  const query=item.screen==="contact"?`?v=66&popup=off&contact=${contactMode}${topic?`&topic=${topic}`:""}`:"?v=66&popup=off";
+  const query=item.screen==="contact"?`?v=67&popup=off&contact=${contactMode}${topic?`&topic=${topic}`:""}`:"?v=67&popup=off";
   window.open(`${location.pathname}${query}#${item.screen}`,"_blank","noopener,noreferrer");
 });
 $("#hidePopupToday").addEventListener("click",()=>{
