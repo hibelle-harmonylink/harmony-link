@@ -111,13 +111,16 @@ function applyLanguage(){
   localStorage.setItem("hl-language",language);
   renderRecommended();renderFilters();renderPrograms();renderSaved();renderPopup();
 }
-function navigate(screen,contactMode="general"){
-  window.scrollTo({top:0,left:0,behavior:"auto"});
+function navigate(screen,contactMode="general",historyAction="push"){
+  const resetScroll=()=>window.scrollTo({top:0,left:0,behavior:"auto"});
+  resetScroll();
+  requestAnimationFrame(resetScroll);
   if(screen==="contact") setContactMode(contactMode);
   $$(".screen").forEach(el=>el.classList.toggle("active",el.dataset.screen===screen));
   $$(".bottom-nav button").forEach(el=>el.classList.toggle("active",el.dataset.go===screen));
   document.body.classList.toggle("contact-screen-open",screen==="contact");
-  history.replaceState(null,"",`#${screen}`);
+  if(historyAction==="push") history.pushState({screen,contactMode},"",`#${screen}`);
+  if(historyAction==="replace") history.replaceState({screen,contactMode},"",`#${screen}`);
 }
 function toggleSaved(id){
   saved.has(id)?saved.delete(id):saved.add(id);
@@ -177,7 +180,7 @@ $("#newsPopupAction").addEventListener("click",()=>{
   }
   const contactMode=item.badgeKo==="지역사회 봉사"?"volunteer":"general";
   const topic=item.badgeKo==="파트너 모집"?"partner":"";
-  const query=item.screen==="contact"?`?v=69&popup=off&contact=${contactMode}${topic?`&topic=${topic}`:""}`:"?v=69&popup=off";
+  const query=item.screen==="contact"?`?v=70&popup=off&contact=${contactMode}${topic?`&topic=${topic}`:""}`:"?v=70&popup=off";
   window.open(`${location.pathname}${query}#${item.screen}`,"_blank","noopener,noreferrer");
 });
 $("#hidePopupToday").addEventListener("click",()=>{
@@ -217,7 +220,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true});
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker.js?v=69",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker.js?v=70",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;
@@ -233,9 +236,20 @@ if("serviceWorker" in navigator){
 }
 applyLanguage();
 const initialParams=new URLSearchParams(location.search);
+if("scrollRestoration" in history) history.scrollRestoration="manual";
 const initialScreen=location.hash.slice(1)&&$(`[data-screen="${location.hash.slice(1)}"]`)?location.hash.slice(1):"home";
 const initialContactMode=initialParams.get("contact")==="volunteer"?"volunteer":"general";
-navigate(initialScreen,initialContactMode);
+navigate(initialScreen,initialContactMode,"none");
+const initialBase=`${location.pathname}${location.search}`;
+history.replaceState({screen:"home",contactMode:"general"},"",`${initialBase}#home`);
+if(initialScreen!=="home"){
+  history.pushState({screen:initialScreen,contactMode:initialContactMode},"",`${initialBase}#${initialScreen}`);
+}
+window.addEventListener("popstate",event=>{
+  const state=event.state||{screen:"home",contactMode:"general"};
+  navigate(state.screen||"home",state.contactMode||"general","none");
+  setTimeout(()=>window.scrollTo({top:0,left:0,behavior:"auto"}),0);
+});
 if(initialScreen==="contact"&&initialParams.get("topic")==="partner"){
   $("#contactSubject").value="입점 파트너 문의";
   const submitLabel=$("#contactSubmitLabel");

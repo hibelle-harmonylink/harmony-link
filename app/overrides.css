@@ -254,7 +254,63 @@
   align-self: end;
   height: 44px !important;
   margin-top: 8px !important;
-  transform: none;
+  transform: translateY(8px);
+}
+
+/* Compact home learning card using the website's light-blue palette. */
+.app-shell #home .hero {
+  min-height: 280px !important;
+  padding: 23px 22px 18px !important;
+  background: linear-gradient(125deg, #dbeaff 0%, #eef5ff 100%) !important;
+  border-color: #c9ddf5 !important;
+  color: #061d45 !important;
+}
+
+.app-shell #home .hero-semicircle {
+  width: 180px;
+  height: 90px;
+  border-radius: 0 0 0 90px;
+  background: #abd9bd !important;
+}
+
+.app-shell #home .hero h1 {
+  margin-bottom: 12px;
+  color: #061d45 !important;
+  font-size: 32px;
+}
+
+.app-shell #home .hero h1 em {
+  color: #1155d9 !important;
+}
+
+.app-shell #home .hero .eyebrow {
+  margin-bottom: 9px;
+  color: #1155d9 !important;
+}
+
+.app-shell #home .hero p:not(.eyebrow) {
+  margin-bottom: 9px;
+  color: #526681 !important;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.app-shell #home .primary-action {
+  height: 42px;
+  margin-top: 5px;
+}
+
+.app-shell #home .hero-mark {
+  right: 17px;
+  bottom: 18px;
+  width: 82px;
+  height: 82px;
+  border-color: rgba(6,29,69,.18);
+}
+
+.app-shell #home .hero-mark span {
+  inset: 14px;
+  font-size: 24px;
 }
 
 @media (max-height: 740px) {
