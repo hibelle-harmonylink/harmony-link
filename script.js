@@ -750,7 +750,15 @@ inquiryModal.querySelector('#inquiryForm').addEventListener('submit',async event
   form.querySelector('#inquiryType').value=inquiryModal.dataset.inquiryType||'일반 문의';
   status.textContent=currentLanguage==='en'?'Sending...':'보내는 중입니다...';submit.disabled=true;
   try{
-    const response=await fetch('https://formsubmit.co/ajax/hibelle@hibelleconsulting.com',{method:'POST',headers:{'Accept':'application/json'},body:new FormData(form)});
+    const submissionData=new FormData(form);
+    const privacyConsent=form.querySelector('input[name="개인정보 수집·이용 동의"]');
+    const marketingConsent=form.querySelector('input[name="마케팅 활용 동의"]');
+    const easternTime=new Intl.DateTimeFormat('ko-KR',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true,timeZoneName:'short'}).format(new Date());
+    submissionData.set('문의 유형',inquiryModal.dataset.inquiryType||'일반 문의');
+    submissionData.set('개인정보 수집·이용 동의',privacyConsent?.checked?'동의':'미동의');
+    submissionData.set('마케팅 활용 동의',marketingConsent?.checked?'동의':'미동의');
+    submissionData.set('제출 시간 (미동부)',easternTime);
+    const response=await fetch('https://formsubmit.co/ajax/hibelle@hibelleconsulting.com',{method:'POST',headers:{'Accept':'application/json'},body:submissionData});
     if(!response.ok)throw new Error('submit failed');
     status.textContent=currentLanguage==='en'?'Your inquiry has been sent.':'문의가 전송되었습니다. 확인 후 연락드리겠습니다.';form.reset();
   }catch(error){status.textContent=currentLanguage==='en'?'Delivery failed. Please email hibelle@hibelleconsulting.com.':'전송에 실패했습니다. hibelle@hibelleconsulting.com으로 이메일을 보내주세요.';}
