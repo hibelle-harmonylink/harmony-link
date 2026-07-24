@@ -217,3 +217,43 @@
     grid-template-rows: repeat(4, auto) minmax(82px, 1fr) 48px 8px !important;
   }
 }
+
+/* Keep all three flyers aligned directly below the blue category badge. */
+#newsPopup .news-media,
+#newsPopup.one-day-popup .news-media,
+#newsPopup.volunteer-popup .news-media,
+#newsPopup.partner-popup .news-media {
+  flex-basis: 220px !important;
+  height: 220px !important;
+  padding: 48px 12px 0 !important;
+}
+
+#newsPopup .news-panel > .zoom-hint {
+  position: static;
+  display: block;
+  align-self: center;
+  margin: 5px 0 0;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: #eef5ff;
+  color: #65738a;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+#newsPopup .news-panel > .zoom-hint + .news-copy {
+  padding-top: 10px !important;
+}
+
+@media (max-width: 380px), (max-height: 740px) {
+  #newsPopup .news-media,
+  #newsPopup.one-day-popup .news-media,
+  #newsPopup.volunteer-popup .news-media,
+  #newsPopup.partner-popup .news-media {
+    flex-basis: 190px !important;
+    height: 190px !important;
+    padding-top: 45px !important;
+  }
+}
