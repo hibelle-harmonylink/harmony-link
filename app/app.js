@@ -14,9 +14,9 @@ const programs = [
 ];
 const categoryNames={전체:"All",디지털:"Digital",언어:"Language",음악:"Music",댄스:"Dance",금융:"Finance",취미:"Art",건강:"Wellness",문화:"Culture",상담:"Counseling",여행:"Travel",직업:"Career"};
 const popupNews=[
-  {badgeKo:"무료강좌",badgeEn:"FREE CLASS",titleKo:"부담 없이 시작하는<br>무료 원데이 클래스",titleEn:"Start with a free one-day class",textKo:"관심있는 배움을 하루 동안 가볍게 경험해 보세요.<br>새로운 일정은 앱에서 가장 먼저 안내합니다.",textEn:"Try a new learning experience for a day.<br>New dates are announced in the app first.",image:"../assets/events/one-day-class.jpg",actionKo:"신청하기",actionEn:"Apply",url:"https://forms.gle/8b88T3zSsfPUxu128",screen:"events"},
-  {badgeKo:"지역사회 봉사",badgeEn:"COMMUNITY SUPPORT",titleKo:"무료 방문 디지털 지원",titleEn:"Free in-home digital support",textKo:"스마트폰과 디지털 기기 사용이 어려운 이웃을 직접 찾아가<br>친절하게 도와드립니다.",textEn:"Friendly volunteers visit neighbors who need help<br>using smartphones and digital devices.",image:"../assets/volunteer/digital-volunteer.png",actionKo:"신청하기",actionEn:"Apply",screen:"contact"},
-  {badgeKo:"파트너 모집",badgeEn:"PARTNER RECRUITMENT",titleKo:"입점 파트너 모집",titleEn:"Partner Recruitment",textKo:"전문 강사와 교육업체의 좋은 프로그램이 더 많은 사람과 만날 수<br>있도록 연결합니다.",textEn:"We connect trusted instructors and education providers<br>with more learners and organizations.",image:"../assets/partners/partner-recruitment.png",actionKo:"문의하기",actionEn:"Contact us",screen:"contact"}
+  {badgeKo:"무료강좌",badgeEn:"FREE CLASS",titleKo:"무료 원데이 클래스",titleEn:"Free One-Day Class",textKo:"관심있는 배움을 가볍게 경험해 보세요.<br>새로운 일정은 앱에서 가장 먼저 안내합니다.",textEn:"Try a new learning experience.<br>New dates are announced in the app first.",image:"../assets/events/one-day-class.jpg",actionKo:"신청하기",actionEn:"Apply",url:"https://forms.gle/8b88T3zSsfPUxu128",screen:"events"},
+  {badgeKo:"지역사회 봉사",badgeEn:"COMMUNITY SUPPORT",titleKo:"무료 방문 디지털 지원",titleEn:"Free in-home digital support",textKo:"스마트폰과 디지털 기기 사용이 어려운 이웃을 직접 찾아가 친절하게<br>도와드립니다.",textEn:"Friendly volunteers visit neighbors who need help<br>using smartphones and digital devices.",image:"../assets/volunteer/digital-volunteer.png",actionKo:"신청하기",actionEn:"Apply",screen:"contact"},
+  {badgeKo:"파트너 모집",badgeEn:"PARTNER RECRUITMENT",titleKo:"입점 파트너 모집",titleEn:"Partner Recruitment",textKo:"전문 강사와 교육업체의 좋은 프로그램이 더 많은 사람과 만날 수 있도록<br>연결합니다.",textEn:"We connect trusted instructors and education providers<br>with more learners and organizations.",image:"../assets/partners/partner-recruitment.png",actionKo:"문의하기",actionEn:"Contact us",screen:"contact"}
 ];
 let language=localStorage.getItem("hl-language")||"ko";
 let activeCategory="전체";
@@ -74,6 +74,8 @@ function closePopup(){
 function setContactMode(mode="general"){
   const title=$("#contactTitle"),description=$("#contactDescription"),select=$("#contactSubject"),submitLabel=$("#contactSubmitLabel");
   activeContactMode=mode;
+  $("#contact").classList.toggle("volunteer-contact",mode==="volunteer");
+  $("#contact").classList.toggle("general-contact",mode!=="volunteer");
   if(mode==="volunteer"){
     title.dataset.ko="봉사 또는 도움이 필요하신가요?";
     title.dataset.en="Would you like to volunteer or get help?";

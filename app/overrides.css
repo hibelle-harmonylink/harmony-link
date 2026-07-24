@@ -110,3 +110,110 @@
   letter-spacing: 0;
   pointer-events: none;
 }
+
+/* Compact phone popup layout: keep every line visible without crowding. */
+#newsPopup .news-panel {
+  width: min(100%, 390px) !important;
+  max-height: calc(100dvh - 24px) !important;
+  height: auto !important;
+}
+
+#newsPopup .news-media {
+  flex: 0 0 205px !important;
+  height: 205px !important;
+}
+
+#newsPopup.one-day-popup .news-media {
+  padding: 5px 5px 0 !important;
+}
+
+#newsPopup.volunteer-popup .news-media {
+  padding: 38px 24px 0 !important;
+}
+
+#newsPopup.partner-popup .news-media {
+  padding: 34px 14px 0 !important;
+}
+
+#newsPopup .news-copy {
+  padding: 15px 20px 8px !important;
+  overflow: visible !important;
+}
+
+#newsPopup .news-copy .eyebrow {
+  margin-bottom: 6px;
+  font-size: 9px;
+}
+
+#newsPopup .news-copy h2 {
+  margin-bottom: 7px;
+  font-size: 21px;
+  line-height: 1.22;
+}
+
+#newsPopup .news-copy > p:not(.eyebrow) {
+  margin-bottom: 10px !important;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+#newsPopup .news-action {
+  height: 44px;
+}
+
+#newsPopup .news-controls {
+  padding: 2px 20px 7px !important;
+}
+
+#newsPopup .news-controls button {
+  width: 30px;
+  height: 30px;
+}
+
+#newsPopup .news-footer button {
+  height: 42px;
+}
+
+/* Contact pages: equal title sizing and clear spacing above submit button. */
+#contact .page-heading h1 {
+  height: auto !important;
+  min-height: 0 !important;
+  white-space: nowrap;
+  font-size: 19px !important;
+  line-height: 1.2 !important;
+}
+
+#contact .contact-form {
+  grid-template-rows: repeat(4, auto) minmax(96px, 1fr) 50px 8px !important;
+  row-gap: 7px !important;
+}
+
+#contact .contact-form label:last-of-type {
+  min-height: 96px;
+  margin-bottom: 5px;
+}
+
+#contact .submit-button {
+  align-self: end;
+  height: 44px !important;
+  margin-top: 5px !important;
+}
+
+@media (max-width: 380px), (max-height: 740px) {
+  #newsPopup .news-media {
+    flex-basis: 180px !important;
+    height: 180px !important;
+  }
+
+  #newsPopup .news-copy {
+    padding-top: 12px !important;
+  }
+
+  #contact .page-heading h1 {
+    font-size: 17px !important;
+  }
+
+  #contact .contact-form {
+    grid-template-rows: repeat(4, auto) minmax(82px, 1fr) 48px 8px !important;
+  }
+}
