@@ -225,6 +225,12 @@
   padding-bottom: 9px !important;
 }
 
+#contact.volunteer-contact,
+#contact.general-contact {
+  height: calc(100dvh - 174px) !important;
+  margin-top: 20px !important;
+}
+
 #contact.volunteer-contact .contact-form,
 #contact.general-contact .contact-form {
   grid-template-rows: repeat(4, auto) minmax(84px, 1fr) 52px 8px !important;
@@ -242,6 +248,7 @@
   align-self: end;
   height: 44px !important;
   margin-top: 8px !important;
+  transform: translateY(6px);
 }
 
 @media (max-height: 740px) {
