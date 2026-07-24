@@ -3,7 +3,7 @@
   "short_name": "Harmony Link",
   "description": "배움과 사람을 잇는 하모니링크 앱",
   "lang": "ko",
-  "start_url": "./",
+  "start_url": "./?v=68",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
