@@ -218,6 +218,44 @@
   }
 }
 
+/* Contact opened from volunteer and partner popups: separate header, field and action. */
+#contact.volunteer-contact .page-heading,
+#contact.general-contact .page-heading {
+  padding-top: 23px !important;
+  padding-bottom: 9px !important;
+}
+
+#contact.volunteer-contact .contact-form,
+#contact.general-contact .contact-form {
+  grid-template-rows: repeat(4, auto) minmax(84px, 1fr) 52px 8px !important;
+  row-gap: 7px !important;
+}
+
+#contact.volunteer-contact .contact-form label:last-of-type,
+#contact.general-contact .contact-form label:last-of-type {
+  min-height: 84px;
+  margin-bottom: 9px !important;
+}
+
+#contact.volunteer-contact .submit-button,
+#contact.general-contact .submit-button {
+  align-self: end;
+  height: 44px !important;
+  margin-top: 8px !important;
+}
+
+@media (max-height: 740px) {
+  #contact.volunteer-contact .page-heading,
+  #contact.general-contact .page-heading {
+    padding-top: 18px !important;
+  }
+
+  #contact.volunteer-contact .contact-form,
+  #contact.general-contact .contact-form {
+    grid-template-rows: repeat(4, auto) minmax(68px, 1fr) 48px 8px !important;
+  }
+}
+
 /* Keep all three flyers aligned directly below the blue category badge. */
 #newsPopup .news-media,
 #newsPopup.one-day-popup .news-media,
