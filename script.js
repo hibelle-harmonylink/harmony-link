@@ -1088,7 +1088,7 @@ if (providerCard && !providerCard.querySelector('.partner-joining-note')) {
 if (volunteerArea && !volunteerArea.querySelector('.volunteer-program-grid')) {
   volunteerArea.querySelector('.volunteer-intro')?.insertAdjacentHTML('afterend', `
     <div class="volunteer-program-grid">
-      <article class="volunteer-program active"><span>NOW</span><b>💻</b><div><h3 data-ko="무료 방문 디지털 지원" data-en="Free In-Home Digital Support">무료 방문 디지털 지원</h3><p data-ko="디지털 기기 연결과 기본 사용이 어려운 이웃을 직접 찾아가 도와드립니다." data-en="Volunteers visit neighbors who need help connecting and using digital devices.">디지털 기기 연결과 기본 사용이 어려운 이웃을 직접 찾아가 도와드립니다.</p></div></article>
+      <article class="volunteer-program active" role="button" tabindex="0" aria-label="무료 방문 디지털 지원 안내 이미지 크게 보기" data-volunteer-image="assets/volunteer/digital-volunteer.png"><span>NOW</span><b>💻</b><div><h3 data-ko="무료 방문 디지털 지원" data-en="Free In-Home Digital Support">무료 방문 디지털 지원</h3><p data-ko="디지털 기기 연결과 기본 사용이 어려운 이웃을 직접 찾아가 도와드립니다." data-en="Volunteers visit neighbors who need help connecting and using digital devices.">디지털 기기 연결과 기본 사용이 어려운 이웃을 직접 찾아가 도와드립니다.</p></div></article>
       <article class="volunteer-program coming"><span>COMING SOON</span><b>＋</b><div><h3 data-ko="새 봉사 프로그램" data-en="New Volunteer Program">새 봉사 프로그램</h3><p data-ko="지역사회에 필요한 봉사 프로그램이 이 공간에 계속 추가될 예정입니다." data-en="More volunteer programs responding to community needs will be added here.">지역사회에 필요한 봉사 프로그램이 이 공간에 계속 추가될 예정입니다.</p></div></article>
     </div>`);
 }
@@ -1179,7 +1179,27 @@ eventFlyerModal.className='event-flyer-modal';
 eventFlyerModal.hidden=true;
 eventFlyerModal.innerHTML=`<div class="event-flyer-backdrop" data-event-flyer-close></div><section class="event-flyer-panel" role="dialog" aria-modal="true" aria-label="전단지 크게 보기"><button type="button" class="event-flyer-close" data-event-flyer-close aria-label="닫기">×</button><div class="event-flyer-scroll"><img src="" alt=""></div><button type="button" class="event-flyer-collapse" data-event-flyer-close><span data-ko="작게 보기" data-en="Close flyer">작게 보기</span></button></section>`;
 document.body.appendChild(eventFlyerModal);
-const closeEventFlyer=()=>{eventFlyerModal.hidden=true;document.body.classList.remove('modal-open');};
+const closeEventFlyer=()=>{eventFlyerModal.hidden=true;eventFlyerModal.classList.remove('volunteer-flyer-open');document.body.classList.remove('modal-open');};
+const openVolunteerImage=trigger=>{
+  const image=eventFlyerModal.querySelector('img');
+  const imageSource=trigger.dataset.volunteerImage||trigger.getAttribute('href')||'assets/volunteer/digital-volunteer.png';
+  eventFlyerModal.classList.remove('trial-flyer-open');
+  eventFlyerModal.classList.add('volunteer-flyer-open');
+  image.src=imageSource;
+  image.alt=currentLanguage==='en'?'Free In-Home Digital Support information':'무료 방문 디지털 지원 안내 이미지';
+  eventFlyerModal.hidden=false;
+  document.body.classList.add('modal-open');
+  eventFlyerModal.querySelector('.event-flyer-close')?.focus();
+};
+const volunteerProgramCard=volunteerArea?.querySelector('.volunteer-program.active[data-volunteer-image]');
+const volunteerImageLink=volunteerArea?.querySelector('.volunteer-image-link');
+[volunteerProgramCard,volunteerImageLink].filter(Boolean).forEach(trigger=>{
+  trigger.addEventListener('click',event=>{event.preventDefault();openVolunteerImage(trigger);});
+  if(trigger===volunteerProgramCard)trigger.addEventListener('keydown',event=>{
+    if(event.key!=='Enter'&&event.key!==' ')return;
+    event.preventDefault();openVolunteerImage(trigger);
+  });
+});
 const consentDetailModal=document.createElement('div');
 consentDetailModal.className='consent-detail-modal';
 consentDetailModal.hidden=true;
@@ -1194,6 +1214,7 @@ document.addEventListener('click',event=>{
   if(!flyerLink)return;
   event.preventDefault();
   const image=eventFlyerModal.querySelector('img');
+  eventFlyerModal.classList.remove('volunteer-flyer-open');
   eventFlyerModal.classList.toggle('trial-flyer-open',Boolean(flyerLink.closest('.trial-type')));
   image.src=flyerLink.href;
   image.alt=flyerLink.getAttribute('aria-label')||flyerLink.closest('.event-card')?.querySelector('h3')?.textContent||'전단지';
