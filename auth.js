@@ -27,6 +27,7 @@
   const language = () => document.documentElement.lang === 'en' ? 'en' : 'ko';
   const t = (ko, en) => language() === 'en' ? en : ko;
   let activeSession = null;
+  let activeAuthMode = 'login';
 
   const authSlot = document.createElement('div');
   authSlot.className = 'auth-nav-slot';
@@ -63,10 +64,36 @@
   accessCard.insertBefore(authGate, downloads);
   if (accessForm) accessForm.hidden = true;
 
-  const setModalOpen = open => {
+  const setAuthMode = mode => {
+    activeAuthMode = mode === 'signup' ? 'signup' : 'login';
+    const signup = activeAuthMode === 'signup';
+    const title = authModal.querySelector('#authTitle');
+    const description = title?.nextElementSibling;
+    const googleLabel = authModal.querySelector('[data-auth-provider="google"] span');
+    const kakaoLabel = authModal.querySelector('[data-auth-provider="kakao"] span');
+    if (title) {
+      title.dataset.ko = signup ? '간편하게 가입하세요' : '간편하게 로그인하세요';
+      title.dataset.en = signup ? 'Join Harmony Link' : 'Sign in to Harmony Link';
+    }
+    if (description) {
+      description.dataset.ko = signup ? 'Google 또는 카카오 계정으로 별도의 비밀번호 없이 가입할 수 있습니다.' : 'Google 또는 카카오 계정으로 안전하게 시작할 수 있습니다.';
+      description.dataset.en = signup ? 'Join with Google or Kakao—no separate password needed.' : 'Continue securely with your Google or Kakao account.';
+    }
+    if (googleLabel) {
+      googleLabel.dataset.ko = signup ? 'Google로 가입하기' : 'Google로 로그인';
+      googleLabel.dataset.en = signup ? 'Join with Google' : 'Continue with Google';
+    }
+    if (kakaoLabel) {
+      kakaoLabel.dataset.ko = signup ? '카카오로 가입하기' : '카카오로 로그인';
+      kakaoLabel.dataset.en = signup ? 'Join with Kakao' : 'Continue with Kakao';
+    }
+  };
+
+  const setModalOpen = (open, mode = activeAuthMode) => {
     authModal.hidden = !open;
     document.body.classList.toggle('modal-open', open);
     if (open) {
+      setAuthMode(mode);
       updateLanguage();
       authModal.querySelector('[data-auth-provider="google"]')?.focus();
     }
@@ -92,11 +119,17 @@
   const renderHeader = session => {
     authSlot.replaceChildren();
     if (!session?.user) {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'header-login auth-open';
-      button.innerHTML = `<span data-ko="로그인" data-en="Sign In">${t('로그인', 'Sign In')}</span>`;
-      authSlot.appendChild(button);
+      const loginButton = document.createElement('button');
+      loginButton.type = 'button';
+      loginButton.className = 'header-login auth-open';
+      loginButton.dataset.authMode = 'login';
+      loginButton.innerHTML = `<span data-ko="로그인" data-en="Sign In">${t('로그인', 'Sign In')}</span>`;
+      const signupButton = document.createElement('button');
+      signupButton.type = 'button';
+      signupButton.className = 'header-signup auth-open';
+      signupButton.dataset.authMode = 'signup';
+      signupButton.innerHTML = `<span data-ko="가입하기" data-en="Join">${t('가입하기', 'Join')}</span>`;
+      authSlot.append(loginButton, signupButton);
       return;
     }
 
@@ -170,9 +203,10 @@
   };
 
   document.addEventListener('click', async event => {
-    if (event.target.closest('.auth-open')) {
+    const authOpenButton = event.target.closest('.auth-open');
+    if (authOpenButton) {
       event.preventDefault();
-      setModalOpen(true);
+      setModalOpen(true, authOpenButton.dataset.authMode || 'login');
       return;
     }
     if (event.target.closest('[data-auth-close]')) {
