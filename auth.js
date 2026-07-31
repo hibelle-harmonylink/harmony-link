@@ -45,8 +45,8 @@
       <h2 id="authTitle" data-ko="간편하게 로그인하세요" data-en="Sign in to Harmony Link">간편하게 로그인하세요</h2>
       <p data-ko="Google 또는 카카오 계정으로 안전하게 시작할 수 있습니다." data-en="Continue securely with your Google or Kakao account.">Google 또는 카카오 계정으로 안전하게 시작할 수 있습니다.</p>
       <div class="auth-provider-list">
-        <button type="button" class="auth-provider google" data-auth-provider="google"><b>G</b><span data-ko="Google로 로그인" data-en="Continue with Google">Google로 로그인</span></button>
-        <button type="button" class="auth-provider kakao" data-auth-provider="kakao"><b aria-hidden="true">●</b><span data-ko="카카오로 로그인" data-en="Continue with Kakao">카카오로 로그인</span></button>
+        <button type="button" class="auth-provider google" data-auth-provider="google"><img src="assets/auth/google.svg" alt="Google"><span data-ko="Google로 로그인" data-en="Continue with Google">Google로 로그인</span></button>
+        <button type="button" class="auth-provider kakao" data-auth-provider="kakao"><img src="assets/auth/kakao.svg" alt="Kakao"><span data-ko="카카오로 로그인" data-en="Continue with Kakao">카카오로 로그인</span></button>
       </div>
       <p class="auth-status" role="status"></p>
       <small data-ko="로그인하면 이용약관과 개인정보처리방침에 동의한 것으로 간주됩니다." data-en="By signing in, you agree to the Terms and Privacy Policy.">로그인하면 이용약관과 개인정보처리방침에 동의한 것으로 간주됩니다.</small>
@@ -192,6 +192,16 @@
 
   const signIn = async provider => {
     const status = authModal.querySelector('.auth-status');
+    status.textContent = t('로그인 서버를 확인하고 있습니다…', 'Checking the secure sign-in service…');
+    try {
+      const health = await fetch(`${SUPABASE_URL}/auth/v1/settings`, {
+        headers: { apikey: SUPABASE_PUBLISHABLE_KEY }
+      });
+      if (!health.ok) throw new Error(`HTTP ${health.status}`);
+    } catch {
+      status.textContent = t('현재 로그인 서버에 연결할 수 없습니다. Supabase 프로젝트 상태를 확인해 주세요.', 'The sign-in service is currently unavailable. Please check the Supabase project status.');
+      return;
+    }
     status.textContent = t('로그인 화면으로 이동합니다…', 'Opening secure sign-in…');
     localStorage.setItem('harmonyAuthReturn', 'partner-center');
     const redirectTo = `${window.location.origin}${window.location.pathname}`;
