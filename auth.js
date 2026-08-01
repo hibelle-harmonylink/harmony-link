@@ -169,7 +169,9 @@
 
   const renderPartnerCenter = session => {
     const signedIn = Boolean(session?.user);
-    const approvedPartner = signedIn && ['partner', 'admin'].includes(activeMemberRole);
+    const isAdmin = signedIn && activeMemberRole === 'admin';
+    const isPartner = signedIn && activeMemberRole === 'partner';
+    const approvedPartner = isAdmin || isPartner;
     authGate.hidden = signedIn;
     approvalGate.hidden = !signedIn || approvedPartner;
     downloads.hidden = !approvedPartner;
@@ -179,14 +181,14 @@
     const lock = partnerCenter.querySelector('.partner-lock');
 
     if (securityTitle) {
-      securityTitle.dataset.ko = approvedPartner ? '파트너 접근 승인' : signedIn ? '일반회원 로그인' : '회원 로그인 필요';
-      securityTitle.dataset.en = approvedPartner ? 'PARTNER ACCESS APPROVED' : signedIn ? 'GENERAL MEMBER' : 'MEMBER SIGN-IN REQUIRED';
+      securityTitle.dataset.ko = isAdmin ? '관리자' : isPartner ? '승인된 입점 파트너' : signedIn ? '일반회원' : '회원 로그인 필요';
+      securityTitle.dataset.en = isAdmin ? 'ADMINISTRATOR' : isPartner ? 'APPROVED PARTNER' : signedIn ? 'GENERAL MEMBER' : 'MEMBER SIGN-IN REQUIRED';
       securityTitle.textContent = t(securityTitle.dataset.ko, securityTitle.dataset.en);
     }
     if (securityCopy) {
       const profile = signedIn ? getProfile(session.user) : null;
-      securityCopy.dataset.ko = approvedPartner ? `${profile.name}님, 파트너 자료실에 접속했습니다.` : signedIn ? `${profile.name}님은 일반회원입니다. 파트너 승인 후 자료실을 이용할 수 있습니다.` : 'Google 또는 카카오 계정으로 로그인해 주세요.';
-      securityCopy.dataset.en = approvedPartner ? `Welcome ${profile.name}. Partner resources are now available.` : signedIn ? `${profile.name} is a general member. Partner approval is required for resource access.` : 'Sign in with your Google or Kakao account.';
+      securityCopy.dataset.ko = isAdmin ? `${profile.name}님, 관리자 권한으로 접속했습니다.` : isPartner ? `${profile.name}님, 승인된 파트너 자료실에 접속했습니다.` : signedIn ? `${profile.name}님은 일반회원입니다. 파트너 승인 후 자료실을 이용할 수 있습니다.` : 'Google 또는 카카오 계정으로 로그인해 주세요.';
+      securityCopy.dataset.en = isAdmin ? `${profile.name} is signed in as an administrator.` : isPartner ? `Welcome ${profile.name}. Approved partner resources are available.` : signedIn ? `${profile.name} is a general member. Partner approval is required for resource access.` : 'Sign in with your Google or Kakao account.';
       securityCopy.textContent = t(securityCopy.dataset.ko, securityCopy.dataset.en);
     }
     if (lock) lock.textContent = approvedPartner ? '✓' : signedIn ? '⏳' : '🔒';
