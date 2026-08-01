@@ -55,6 +55,16 @@
     </section>`;
   document.body.appendChild(authModal);
 
+  const footerAccountLinks = document.querySelector('.footer-bottom div');
+  const footerDeleteButton = document.createElement('button');
+  footerDeleteButton.type = 'button';
+  footerDeleteButton.className = 'auth-delete footer-account-delete';
+  footerDeleteButton.hidden = true;
+  footerDeleteButton.dataset.ko = '회원 탈퇴';
+  footerDeleteButton.dataset.en = 'Delete Account';
+  footerDeleteButton.textContent = t('회원 탈퇴', 'Delete Account');
+  footerAccountLinks?.appendChild(footerDeleteButton);
+
   const authGate = document.createElement('div');
   authGate.className = 'partner-auth-gate';
   authGate.innerHTML = `
@@ -132,6 +142,7 @@
   const renderHeader = session => {
     authSlot.replaceChildren();
     if (!session?.user) {
+      footerDeleteButton.hidden = true;
       const loginButton = document.createElement('button');
       loginButton.type = 'button';
       loginButton.className = 'header-login auth-open';
@@ -147,6 +158,8 @@
     }
 
     const profile = getProfile(session.user);
+    footerDeleteButton.hidden = false;
+    footerDeleteButton.textContent = t('회원 탈퇴', 'Delete Account');
     const roleLabel = activeMemberRole === 'admin'
       ? t('관리자', 'Administrator')
       : activeMemberRole === 'partner'
@@ -160,7 +173,7 @@
     const picture = avatar
       ? `<img src="${avatar}" alt="">`
       : `<span class="auth-avatar-fallback">${profile.name.trim().charAt(0).toUpperCase() || 'H'}</span>`;
-    wrapper.innerHTML = `${picture}<span class="auth-user-copy"><b></b><small></small></span><span class="auth-user-actions"><button type="button" class="auth-signout" data-ko="로그아웃" data-en="Sign Out">${t('로그아웃', 'Sign Out')}</button><button type="button" class="auth-delete" data-ko="탈퇴하기" data-en="Delete Account">${t('탈퇴하기', 'Delete Account')}</button></span>`;
+    wrapper.innerHTML = `${picture}<span class="auth-user-copy"><b></b><small></small></span><button type="button" class="auth-signout" data-ko="로그아웃" data-en="Sign Out">${t('로그아웃', 'Sign Out')}</button>`;
     wrapper.querySelector('.auth-user-copy b').textContent = profile.name;
     wrapper.querySelector('.auth-user-copy small').textContent = profile.email
       ? `${roleLabel} · ${profile.email}`
