@@ -28,6 +28,7 @@
   const t = (ko, en) => language() === 'en' ? en : ko;
   let activeSession = null;
   let activeAuthMode = 'login';
+  let activeMemberRole = 'guest';
 
   const authSlot = document.createElement('div');
   authSlot.className = 'auth-nav-slot';
@@ -63,6 +64,17 @@
     <button type="button" class="btn btn-primary auth-open"><span data-ko="로그인하기" data-en="Sign In">로그인하기</span><b>→</b></button>`;
   accessCard.insertBefore(authGate, downloads);
   if (accessForm) accessForm.hidden = true;
+
+  const approvalGate = document.createElement('div');
+  approvalGate.className = 'partner-auth-gate partner-approval-gate';
+  approvalGate.hidden = true;
+  approvalGate.innerHTML = `
+    <span class="partner-auth-icon" aria-hidden="true">⏳</span>
+    <p class="eyebrow">PARTNER APPROVAL REQUIRED</p>
+    <h3 data-ko="입점 파트너 승인 대기 중" data-en="Partner approval pending">입점 파트너 승인 대기 중</h3>
+    <p data-ko="현재 일반회원입니다. 관리자가 입점 파트너로 승인하면 전용 자료실이 자동으로 열립니다." data-en="You are currently a general member. Partner resources will open automatically after administrator approval.">현재 일반회원입니다. 관리자가 입점 파트너로 승인하면 전용 자료실이 자동으로 열립니다.</p>
+    <a class="btn btn-primary" href="https://docs.google.com/forms/d/14CqT8WtIl8Fj2h-M08tNpY0lsXh-GgsBNq5p2tnNjzk/viewform" target="_blank" rel="noopener"><span data-ko="입점 파트너 신청하기" data-en="Apply as a Partner">입점 파트너 신청하기</span><b>→</b></a>`;
+  accessCard.insertBefore(approvalGate, downloads);
 
   const setAuthMode = mode => {
     activeAuthMode = mode === 'signup' ? 'signup' : 'login';
@@ -148,28 +160,30 @@
 
   const renderPartnerCenter = session => {
     const signedIn = Boolean(session?.user);
+    const approvedPartner = signedIn && ['partner', 'admin'].includes(activeMemberRole);
     authGate.hidden = signedIn;
-    downloads.hidden = !signedIn;
+    approvalGate.hidden = !signedIn || approvedPartner;
+    downloads.hidden = !approvedPartner;
     if (accessForm) accessForm.hidden = true;
     const securityTitle = partnerCenter.querySelector('.partner-security-note b');
     const securityCopy = partnerCenter.querySelector('.partner-security-note span');
     const lock = partnerCenter.querySelector('.partner-lock');
 
     if (securityTitle) {
-      securityTitle.dataset.ko = signedIn ? '로그인 완료' : '회원 로그인 필요';
-      securityTitle.dataset.en = signedIn ? 'SIGNED IN' : 'MEMBER SIGN-IN REQUIRED';
+      securityTitle.dataset.ko = approvedPartner ? '파트너 접근 승인' : signedIn ? '일반회원 로그인' : '회원 로그인 필요';
+      securityTitle.dataset.en = approvedPartner ? 'PARTNER ACCESS APPROVED' : signedIn ? 'GENERAL MEMBER' : 'MEMBER SIGN-IN REQUIRED';
       securityTitle.textContent = t(securityTitle.dataset.ko, securityTitle.dataset.en);
     }
     if (securityCopy) {
       const profile = signedIn ? getProfile(session.user) : null;
-      securityCopy.dataset.ko = signedIn ? `${profile.name}님, 파트너 자료실에 접속했습니다.` : 'Google 또는 카카오 계정으로 로그인해 주세요.';
-      securityCopy.dataset.en = signedIn ? `Welcome ${profile.name}. Partner resources are now available.` : 'Sign in with your Google or Kakao account.';
+      securityCopy.dataset.ko = approvedPartner ? `${profile.name}님, 파트너 자료실에 접속했습니다.` : signedIn ? `${profile.name}님은 일반회원입니다. 파트너 승인 후 자료실을 이용할 수 있습니다.` : 'Google 또는 카카오 계정으로 로그인해 주세요.';
+      securityCopy.dataset.en = approvedPartner ? `Welcome ${profile.name}. Partner resources are now available.` : signedIn ? `${profile.name} is a general member. Partner approval is required for resource access.` : 'Sign in with your Google or Kakao account.';
       securityCopy.textContent = t(securityCopy.dataset.ko, securityCopy.dataset.en);
     }
-    if (lock) lock.textContent = signedIn ? '✓' : '🔒';
+    if (lock) lock.textContent = approvedPartner ? '✓' : signedIn ? '⏳' : '🔒';
     if (partnerNav) {
-      partnerNav.dataset.ko = signedIn ? '파트너센터 ✓' : '파트너센터 🔒';
-      partnerNav.dataset.en = signedIn ? 'Partner Center ✓' : 'Partner Center 🔒';
+      partnerNav.dataset.ko = approvedPartner ? '파트너센터 ✓' : '파트너센터 🔒';
+      partnerNav.dataset.en = approvedPartner ? 'Partner Center ✓' : 'Partner Center 🔒';
       partnerNav.textContent = t(partnerNav.dataset.ko, partnerNav.dataset.en);
     }
   };
@@ -178,6 +192,25 @@
     activeSession = session;
     renderHeader(session);
     renderPartnerCenter(session);
+  };
+
+  const loadMemberRole = async session => {
+    if (!session?.user) return 'guest';
+    const { data, error } = await client
+      .from('member_profiles')
+      .select('role')
+      .eq('id', session.user.id)
+      .maybeSingle();
+    if (error) {
+      console.error('Member role could not be loaded.', error);
+      return 'member';
+    }
+    return data?.role || 'member';
+  };
+
+  const refreshMemberAccess = async session => {
+    activeMemberRole = await loadMemberRole(session);
+    render(session);
   };
 
   const isNewSignup = user => {
@@ -225,6 +258,9 @@
       element.textContent = element.dataset[language()];
     });
     authGate.querySelectorAll('[data-ko][data-en]').forEach(element => {
+      element.textContent = element.dataset[language()];
+    });
+    approvalGate.querySelectorAll('[data-ko][data-en]').forEach(element => {
       element.textContent = element.dataset[language()];
     });
     render(activeSession);
@@ -305,12 +341,14 @@
     authModal.querySelector('.auth-status').textContent = t(`로그인 오류: ${callbackError}`, `Sign-in error: ${callbackError}`);
   }
 
-  client.auth.getSession().then(({ data, error }) => {
+  client.auth.getSession().then(async ({ data, error }) => {
     if (error) {
       render(null);
       return;
     }
+    activeMemberRole = data.session ? 'loading' : 'guest';
     render(data.session);
+    await refreshMemberAccess(data.session);
     if (data.session && localStorage.getItem('harmonyAuthReturn') === 'partner-center') {
       localStorage.removeItem('harmonyAuthReturn');
       window.setTimeout(() => partnerCenter.scrollIntoView({ behavior: 'smooth', block: 'start' }), 350);
@@ -318,7 +356,9 @@
   });
 
   client.auth.onAuthStateChange((event, session) => {
+    activeMemberRole = session ? 'loading' : 'guest';
     render(session);
+    void refreshMemberAccess(session);
     if (event === 'SIGNED_IN') {
       setModalOpen(false);
       void notifyAdminOfNewSignup(session?.user);
