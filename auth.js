@@ -180,6 +180,46 @@
     renderPartnerCenter(session);
   };
 
+  const isNewSignup = user => {
+    const createdAt = Date.parse(user?.created_at || '');
+    const lastSignInAt = Date.parse(user?.last_sign_in_at || '');
+    if (!Number.isFinite(createdAt) || !Number.isFinite(lastSignInAt)) return false;
+    return Date.now() - createdAt < 5 * 60 * 1000
+      && Math.abs(lastSignInAt - createdAt) < 2 * 60 * 1000;
+  };
+
+  const notifyAdminOfNewSignup = async user => {
+    if (!user?.id || !isNewSignup(user)) return;
+    const notificationKey = `harmony-new-signup-notified:${user.id}`;
+    if (localStorage.getItem(notificationKey)) return;
+
+    localStorage.setItem(notificationKey, 'pending');
+    const signupTime = new Intl.DateTimeFormat('ko-KR', {
+      timeZone: 'America/New_York',
+      dateStyle: 'full',
+      timeStyle: 'long'
+    }).format(new Date(user.created_at));
+    const notification = new FormData();
+    notification.set('_subject', '[Harmony Link] 새 회원 가입 알림');
+    notification.set('_captcha', 'false');
+    notification.set('알림 유형', '새 회원 가입');
+    notification.set('가입 시간 (미동부)', signupTime);
+    notification.set('가입자 확인', 'https://supabase.com/dashboard/project/ricndeoiomzjacmrsjtg/auth/users');
+
+    try {
+      const response = await fetch('https://formsubmit.co/ajax/hibelle@hibelleconsulting.com', {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: notification
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      localStorage.setItem(notificationKey, 'sent');
+    } catch (error) {
+      localStorage.removeItem(notificationKey);
+      console.error('New signup notification could not be sent.', error);
+    }
+  };
+
   const updateLanguage = () => {
     authModal.querySelectorAll('[data-ko][data-en]').forEach(element => {
       element.textContent = element.dataset[language()];
@@ -279,7 +319,10 @@
 
   client.auth.onAuthStateChange((event, session) => {
     render(session);
-    if (event === 'SIGNED_IN') setModalOpen(false);
+    if (event === 'SIGNED_IN') {
+      setModalOpen(false);
+      void notifyAdminOfNewSignup(session?.user);
+    }
   });
 
   new MutationObserver(updateLanguage).observe(document.documentElement, {
