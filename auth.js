@@ -34,6 +34,7 @@
   authSlot.className = 'auth-nav-slot';
   const navCta = nav.querySelector('.nav-cta');
   nav.insertBefore(authSlot, navCta || null);
+  navCta?.remove();
 
   const authModal = document.createElement('div');
   authModal.className = 'auth-modal';
