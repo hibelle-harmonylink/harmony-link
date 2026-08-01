@@ -160,7 +160,7 @@
     const picture = avatar
       ? `<img src="${avatar}" alt="">`
       : `<span class="auth-avatar-fallback">${profile.name.trim().charAt(0).toUpperCase() || 'H'}</span>`;
-    wrapper.innerHTML = `${picture}<span class="auth-user-copy"><b></b><small></small></span><button type="button" class="auth-signout" data-ko="로그아웃" data-en="Sign Out">${t('로그아웃', 'Sign Out')}</button>`;
+    wrapper.innerHTML = `${picture}<span class="auth-user-copy"><b></b><small></small></span><span class="auth-user-actions"><button type="button" class="auth-signout" data-ko="로그아웃" data-en="Sign Out">${t('로그아웃', 'Sign Out')}</button><button type="button" class="auth-delete" data-ko="탈퇴하기" data-en="Delete Account">${t('탈퇴하기', 'Delete Account')}</button></span>`;
     wrapper.querySelector('.auth-user-copy b').textContent = profile.name;
     wrapper.querySelector('.auth-user-copy small').textContent = profile.email
       ? `${roleLabel} · ${profile.email}`
@@ -327,6 +327,26 @@
     if (event.target.closest('.auth-signout')) {
       event.preventDefault();
       await client.auth.signOut();
+      return;
+    }
+    const deleteButton = event.target.closest('.auth-delete');
+    if (deleteButton) {
+      event.preventDefault();
+      const confirmed = window.confirm(t(
+        '정말 탈퇴하시겠습니까? 계정과 회원 정보가 모두 삭제되며 복구할 수 없습니다.',
+        'Delete your account? Your account and membership information will be permanently removed and cannot be restored.'
+      ));
+      if (!confirmed) return;
+      deleteButton.disabled = true;
+      const { error } = await client.rpc('delete_own_account');
+      if (error) {
+        deleteButton.disabled = false;
+        window.alert(t('탈퇴 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.', 'Account deletion failed. Please try again.'));
+        return;
+      }
+      await client.auth.signOut({ scope: 'local' });
+      window.alert(t('회원 탈퇴가 완료되었습니다.', 'Your account has been deleted.'));
+      window.location.replace(`${window.location.origin}${window.location.pathname}`);
     }
   });
 
