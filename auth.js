@@ -205,9 +205,13 @@
     status.textContent = t('로그인 화면으로 이동합니다…', 'Opening secure sign-in…');
     localStorage.setItem('harmonyAuthReturn', 'partner-center');
     const redirectTo = `${window.location.origin}${window.location.pathname}`;
+    const oauthOptions = { redirectTo };
+    if (provider === 'kakao') {
+      oauthOptions.scopes = 'profile_nickname profile_image';
+    }
     const { error } = await client.auth.signInWithOAuth({
       provider,
-      options: { redirectTo }
+      options: oauthOptions
     });
     if (error) status.textContent = t(`로그인 오류: ${error.message}`, `Sign-in error: ${error.message}`);
   };
