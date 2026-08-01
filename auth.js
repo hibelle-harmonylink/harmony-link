@@ -146,6 +146,13 @@
     }
 
     const profile = getProfile(session.user);
+    const roleLabel = activeMemberRole === 'admin'
+      ? t('관리자', 'Administrator')
+      : activeMemberRole === 'partner'
+        ? t('승인 파트너', 'Approved Partner')
+        : activeMemberRole === 'loading'
+          ? t('회원 확인 중', 'Checking Membership')
+          : t('일반회원', 'General Member');
     const wrapper = document.createElement('div');
     wrapper.className = 'auth-user';
     const avatar = safeAvatar(profile.avatar);
@@ -154,7 +161,9 @@
       : `<span class="auth-avatar-fallback">${profile.name.trim().charAt(0).toUpperCase() || 'H'}</span>`;
     wrapper.innerHTML = `${picture}<span class="auth-user-copy"><b></b><small></small></span><button type="button" class="auth-signout" data-ko="로그아웃" data-en="Sign Out">${t('로그아웃', 'Sign Out')}</button>`;
     wrapper.querySelector('.auth-user-copy b').textContent = profile.name;
-    wrapper.querySelector('.auth-user-copy small').textContent = profile.email || t('카카오 회원', 'Kakao member');
+    wrapper.querySelector('.auth-user-copy small').textContent = profile.email
+      ? `${roleLabel} · ${profile.email}`
+      : roleLabel;
     authSlot.appendChild(wrapper);
   };
 
