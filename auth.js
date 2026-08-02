@@ -3,6 +3,7 @@
 
   const SUPABASE_URL = 'https://ricndeoiomzjacmrsjtg.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_cGiclRJGjTqHBPVZqgTiQA_tvGKSQ60';
+  const signupAutomationUrl = window.signupAutomationUrl || '';
   const authLibrary = window.supabase;
   const nav = document.getElementById('primary-nav');
   const partnerCenter = document.getElementById('partner-center');
@@ -60,14 +61,7 @@
   document.body.appendChild(authModal);
 
   const footerAccountLinks = document.querySelector('.footer-bottom div');
-  const footerDeleteButton = document.createElement('button');
-  footerDeleteButton.type = 'button';
-  footerDeleteButton.className = 'auth-delete footer-account-delete';
-  footerDeleteButton.hidden = true;
-  footerDeleteButton.dataset.ko = '회원 탈퇴';
-  footerDeleteButton.dataset.en = 'Delete Account';
-  footerDeleteButton.textContent = t('회원 탈퇴', 'Delete Account');
-  footerAccountLinks?.appendChild(footerDeleteButton);
+  const footerDeleteButton = document.getElementById('footerDeleteAccount');
 
   const authGate = document.createElement('div');
   authGate.className = 'partner-auth-gate';
@@ -152,18 +146,14 @@
   const renderHeader = session => {
     authSlot.replaceChildren();
     if (!session?.user) {
-      footerDeleteButton.hidden = true;
+      footerDeleteButton.hidden = false;
+      footerDeleteButton.textContent = t('회원 탈퇴', 'Delete Account');
       const loginButton = document.createElement('button');
       loginButton.type = 'button';
       loginButton.className = 'header-login auth-open';
       loginButton.dataset.authMode = 'login';
       loginButton.innerHTML = `<span data-ko="로그인" data-en="Sign In">${t('로그인', 'Sign In')}</span>`;
-      const signupButton = document.createElement('button');
-      signupButton.type = 'button';
-      signupButton.className = 'header-signup auth-open';
-      signupButton.dataset.authMode = 'signup';
-      signupButton.innerHTML = `<span data-ko="가입하기" data-en="Join">${t('가입하기', 'Join')}</span>`;
-      authSlot.append(loginButton, signupButton);
+      authSlot.append(loginButton);
       return;
     }
 
@@ -274,12 +264,31 @@
     notification.set('가입 시간 (미동부)', signupTime);
     notification.set('가입자 확인', 'https://supabase.com/dashboard/project/ricndeoiomzjacmrsjtg/auth/users');
 
+    const signupRecord = new FormData();
+    const profile = getProfile(user);
+    signupRecord.set('기록 유형', '회원가입');
+    signupRecord.set('회원 ID', user.id);
+    signupRecord.set('가입 시각', user.created_at || new Date().toISOString());
+    signupRecord.set('이름', profile.name);
+    signupRecord.set('이메일', profile.email);
+    signupRecord.set('가입 방식', user.app_metadata?.provider || 'social');
+    signupRecord.set('회원 구분', '일반회원');
+    signupRecord.set('가입 경로', 'Harmony Link 홈페이지');
+
     try {
-      const response = await fetch('https://formsubmit.co/ajax/hibelle@hibelleconsulting.com', {
+      const deliveries = [fetch('https://formsubmit.co/ajax/hibelle@hibelleconsulting.com', {
         method: 'POST',
         headers: { Accept: 'application/json' },
         body: notification
-      });
+      })];
+      if (signupAutomationUrl) {
+        deliveries.push(fetch(signupAutomationUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: signupRecord
+        }));
+      }
+      const [response] = await Promise.all(deliveries);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       localStorage.setItem(notificationKey, 'sent');
     } catch (error) {
@@ -361,9 +370,17 @@
     const deleteButton = event.target.closest('.auth-delete');
     if (deleteButton) {
       event.preventDefault();
+      if (!activeSession?.user) {
+        setModalOpen(true, 'login');
+        authModal.querySelector('.auth-status').textContent = t(
+          '회원 탈퇴를 하려면 먼저 로그인해 주세요.',
+          'Please sign in before deleting your account.'
+        );
+        return;
+      }
       const confirmed = window.confirm(t(
-        '정말 탈퇴하시겠습니까? 계정과 회원 정보가 모두 삭제되며 복구할 수 없습니다.',
-        'Delete your account? Your account and membership information will be permanently removed and cannot be restored.'
+        '정말 회원 탈퇴를 원하시나요?\n\n탈퇴하면 계정과 회원 정보가 모두 영구 삭제되며 다시 복구할 수 없습니다.\n계속하려면 확인을 눌러 주세요.',
+        'Are you sure you want to delete your account?\n\nYour account and membership information will be permanently deleted and cannot be restored.\nSelect OK to continue.'
       ));
       if (!confirmed) return;
       deleteButton.disabled = true;
