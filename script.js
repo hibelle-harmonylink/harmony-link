@@ -662,7 +662,7 @@ if (currentEventGrid) {
   datedCards.forEach(card => {
     if (today > new Date(card.dataset.eventEnd)) pastGrid.appendChild(card);
   });
-  const comingCard = ({badgeKo,badgeEn,titleKo,titleEn,copyKo,copyEn}) => `<article class="event-card event-coming"><div class="event-coming-icon">＋</div><div class="event-info"><span class="event-badge" data-ko="${badgeKo}" data-en="${badgeEn}">${badgeKo}</span><h3 data-ko="${titleKo}" data-en="${titleEn}">${titleKo}</h3><p data-ko="${copyKo}" data-en="${copyEn}">${copyKo}</p></div></article>`;
+  const comingCard = ({badgeKo,badgeEn,titleKo,titleEn,copyKo,copyEn}) => `<article class="event-card event-coming"><div class="event-coming-icon">＋</div><span class="event-badge" data-ko="${badgeKo}" data-en="${badgeEn}">${badgeKo}</span><h3 data-ko="${titleKo}" data-en="${titleEn}">${titleKo}</h3><p data-ko="${copyKo}" data-en="${copyEn}">${copyKo}</p></article>`;
   const seminarGrid = currentEventGrid.querySelector('.seminar-grid');
   const trialGrid = currentEventGrid.querySelector('.trial-grid');
   if (!seminarGrid.querySelector('.event-card')) seminarGrid.innerHTML = comingCard({badgeKo:'무료 세미나 준비 중',badgeEn:'FREE SEMINAR COMING SOON',titleKo:'새로운 무료 세미나를 준비하고 있습니다',titleEn:'A new free seminar is coming soon',copyKo:'새로운 일정과 장소가 확정되면 안내해 드립니다.',copyEn:'A new date and location will be announced here.'});
