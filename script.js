@@ -634,15 +634,39 @@ if (currentEventGrid) {
     currentEventGrid.querySelector('.paid-grid').innerHTML=`<article class="event-card event-coming"><div class="event-coming-icon">＋</div><div class="event-info"><span class="event-badge" data-ko="유료 수업 준비 중" data-en="PAID CLASS COMING SOON">유료 수업 준비 중</span><h3><span data-ko="새로운 유료 1회 수업" data-en="A new paid one-time class">새로운 유료 1회 수업</span><br><span data-ko="준비하고 있습니다" data-en="is coming soon">준비하고 있습니다</span></h3><p data-ko="관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다." data-en="Try a topic in a single paid session without committing to a regular course.">관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다.</p></div></article>`;
   }
   const datedCards = currentEventGrid.querySelectorAll('.event-card:not(.event-coming)');
-  const endDates = ['2026-07-24','2026-08-01'];
+  const endDates = ['2026-07-24T17:00:00-04:00','2026-08-01T13:00:00-04:00'];
   datedCards.forEach((card,index) => card.dataset.eventEnd = endDates[index]);
+  // Any event address written in the location row automatically receives a Google Maps link.
+  datedCards.forEach(card => {
+    const locationRow = [...card.querySelectorAll('dl>div')].find(row => {
+      const label = row.querySelector('dt');
+      return label?.dataset.ko === '장소' || label?.dataset.en === 'LOCATION';
+    });
+    const locationCopy = locationRow?.querySelector('dd');
+    const address = locationCopy?.querySelector('small')?.textContent.replace(/\s+/g,' ').trim();
+    if (!locationCopy || !address || locationCopy.querySelector('.event-map-link')) return;
+    const mapLink = document.createElement('a');
+    mapLink.className = 'event-map-link';
+    mapLink.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+    mapLink.target = '_blank';
+    mapLink.rel = 'noopener noreferrer';
+    mapLink.dataset.ko = 'Google 지도에서 위치 찾기 ↗';
+    mapLink.dataset.en = 'Find on Google Maps ↗';
+    mapLink.textContent = currentLanguage === 'en' ? mapLink.dataset.en : mapLink.dataset.ko;
+    locationCopy.appendChild(mapLink);
+  });
   currentEventGrid.insertAdjacentHTML('afterend', `<section class="past-events"><div class="past-events-head"><div><p class="eyebrow">PAST EVENTS</p><h3 data-ko="지난 무료강좌" data-en="Past Free Events">지난 무료강좌</h3></div><button class="past-events-toggle" type="button" aria-expanded="false"><span data-ko="지난 강좌 보기" data-en="View Past Events">지난 강좌 보기</span><b>＋</b></button></div><div class="past-event-grid" hidden></div><p class="past-events-empty" data-ko="아직 지난 강좌가 없습니다." data-en="There are no past events yet.">아직 지난 강좌가 없습니다.</p></section>`);
   const pastSection = currentEventGrid.nextElementSibling;
   const pastGrid = pastSection.querySelector('.past-event-grid');
   const today = new Date();
   datedCards.forEach(card => {
-    if (today > new Date(`${card.dataset.eventEnd}T23:59:59`)) pastGrid.appendChild(card);
+    if (today > new Date(card.dataset.eventEnd)) pastGrid.appendChild(card);
   });
+  const comingCard = ({badgeKo,badgeEn,titleKo,titleEn,copyKo,copyEn}) => `<article class="event-card event-coming"><div class="event-coming-icon">＋</div><div class="event-info"><span class="event-badge" data-ko="${badgeKo}" data-en="${badgeEn}">${badgeKo}</span><h3 data-ko="${titleKo}" data-en="${titleEn}">${titleKo}</h3><p data-ko="${copyKo}" data-en="${copyEn}">${copyKo}</p></div></article>`;
+  const seminarGrid = currentEventGrid.querySelector('.seminar-grid');
+  const trialGrid = currentEventGrid.querySelector('.trial-grid');
+  if (!seminarGrid.querySelector('.event-card')) seminarGrid.innerHTML = comingCard({badgeKo:'무료 세미나 준비 중',badgeEn:'FREE SEMINAR COMING SOON',titleKo:'새로운 무료 세미나를 준비하고 있습니다',titleEn:'A new free seminar is coming soon',copyKo:'새로운 일정과 장소가 확정되면 안내해 드립니다.',copyEn:'A new date and location will be announced here.'});
+  if (!trialGrid.querySelector('.event-card')) trialGrid.innerHTML = comingCard({badgeKo:'무료 체험 준비 중',badgeEn:'FREE TRIAL COMING SOON',titleKo:'새로운 무료 체험을 준비하고 있습니다',titleEn:'A new free trial class is coming soon',copyKo:'새로운 체험 프로그램이 확정되면 안내해 드립니다.',copyEn:'A new trial program will be announced here.'});
   pastSection.querySelector('.past-events-empty').hidden = pastGrid.children.length > 0;
   const toggle = pastSection.querySelector('.past-events-toggle');
   toggle.addEventListener('click', () => {
