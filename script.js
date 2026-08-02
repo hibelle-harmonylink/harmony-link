@@ -628,7 +628,7 @@ if (currentEventGrid) {
     const paidComingCopy=originalComingCard.querySelector('p');
     paidComingCopy.removeAttribute('data-ko');
     paidComingCopy.removeAttribute('data-en');
-    paidComingCopy.innerHTML='<span data-ko="관심 있는 수업을 한 번만 부담 없이<br class=\'mobile-only-break\'>경험할 수 있는" data-en="Try a topic once without committing to a full course.">관심 있는 수업을 한 번만 부담 없이 경험할 수 있는</span><span data-ko="단회 프로그램이 공개됩니다." data-en="A paid one-time program is coming soon.">단회 프로그램이 공개됩니다.</span>';
+    paidComingCopy.innerHTML='<span data-ko="관심 있는 수업을 한 번만 부담 없이<br>경험할 수 있는" data-en="Try a topic once without committing to a full course.">관심 있는 수업을 한 번만 부담 없이<br>경험할 수 있는</span><span data-ko="단회 프로그램이 공개됩니다." data-en="A paid one-time program is coming soon.">단회 프로그램이 공개됩니다.</span>';
     currentEventGrid.querySelector('.paid-grid').appendChild(originalComingCard);
   } else {
     currentEventGrid.querySelector('.paid-grid').innerHTML=`<article class="event-card event-coming"><div class="event-coming-icon">＋</div><div class="event-info"><span class="event-badge" data-ko="유료 수업 준비 중" data-en="PAID CLASS COMING SOON">유료 수업 준비 중</span><h3><span data-ko="새로운 유료 1회 수업" data-en="A new paid one-time class">새로운 유료 1회 수업</span><br><span data-ko="준비하고 있습니다" data-en="is coming soon">준비하고 있습니다</span></h3><p data-ko="관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다." data-en="Try a topic in a single paid session without committing to a regular course.">관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다.</p></div></article>`;
@@ -662,11 +662,11 @@ if (currentEventGrid) {
   datedCards.forEach(card => {
     if (today > new Date(card.dataset.eventEnd)) pastGrid.appendChild(card);
   });
-  const comingCard = ({badgeKo,badgeEn,titleKo,titleEn,copyKo,copyEn}) => `<article class="event-card event-coming"><div class="event-coming-icon">＋</div><span class="event-badge" data-ko="${badgeKo}" data-en="${badgeEn}">${badgeKo}</span><h3 data-ko="${titleKo}" data-en="${titleEn}">${titleKo}</h3><p data-ko="${copyKo}" data-en="${copyEn}">${copyKo}</p></article>`;
+  const comingCard = ({badgeKo,badgeEn,titleKo,titleEn,titleLineKo,titleLineEn,copyKo,copyEn}) => `<article class="event-card event-coming"><div class="event-coming-icon">＋</div><span class="event-badge" data-ko="${badgeKo}" data-en="${badgeEn}">${badgeKo}</span><h3><span data-ko="${titleKo}" data-en="${titleEn}">${titleKo}</span><span class="paid-coming-line" data-ko="${titleLineKo}" data-en="${titleLineEn}">${titleLineKo}</span></h3><p data-ko="${copyKo}" data-en="${copyEn}">${copyKo}</p></article>`;
   const seminarGrid = currentEventGrid.querySelector('.seminar-grid');
   const trialGrid = currentEventGrid.querySelector('.trial-grid');
-  if (!seminarGrid.querySelector('.event-card')) seminarGrid.innerHTML = comingCard({badgeKo:'무료 세미나 준비 중',badgeEn:'FREE SEMINAR COMING SOON',titleKo:'새로운 무료 세미나를 준비하고 있습니다',titleEn:'A new free seminar is coming soon',copyKo:'새로운 일정과 장소가 확정되면 안내해 드립니다.',copyEn:'A new date and location will be announced here.'});
-  if (!trialGrid.querySelector('.event-card')) trialGrid.innerHTML = comingCard({badgeKo:'무료 체험 준비 중',badgeEn:'FREE TRIAL COMING SOON',titleKo:'새로운 무료 체험을 준비하고 있습니다',titleEn:'A new free trial class is coming soon',copyKo:'새로운 체험 프로그램이 확정되면 안내해 드립니다.',copyEn:'A new trial program will be announced here.'});
+  if (!seminarGrid.querySelector('.event-card')) seminarGrid.innerHTML = comingCard({badgeKo:'무료 세미나 준비 중',badgeEn:'FREE SEMINAR COMING SOON',titleKo:'새로운 무료 세미나를',titleEn:'A new free seminar',titleLineKo:'준비하고 있습니다',titleLineEn:'is coming soon',copyKo:'새로운 일정과 장소가 확정되면 안내해 드립니다.',copyEn:'A new date and location will be announced here.'});
+  if (!trialGrid.querySelector('.event-card')) trialGrid.innerHTML = comingCard({badgeKo:'무료 체험 준비 중',badgeEn:'FREE TRIAL COMING SOON',titleKo:'새로운 무료 체험을',titleEn:'A new free trial class',titleLineKo:'준비하고 있습니다',titleLineEn:'is coming soon',copyKo:'새로운 체험 프로그램이 확정되면 안내해 드립니다.',copyEn:'A new trial program will be announced here.'});
   pastSection.querySelector('.past-events-empty').hidden = pastGrid.children.length > 0;
   const toggle = pastSection.querySelector('.past-events-toggle');
   toggle.addEventListener('click', () => {
