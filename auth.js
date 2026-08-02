@@ -44,6 +44,10 @@
     <section class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="authTitle">
       <button class="auth-close" type="button" data-auth-close aria-label="닫기">×</button>
       <div class="auth-brand"><img src="assets/harmony-logo.png" alt=""><span>HARMONY LINK MEMBER</span></div>
+      <div class="auth-mode-tabs" role="tablist" aria-label="회원 접속 방식">
+        <button type="button" role="tab" data-auth-mode-tab="login" data-ko="로그인" data-en="Sign In">로그인</button>
+        <button type="button" role="tab" data-auth-mode-tab="signup" data-ko="가입하기" data-en="Join">가입하기</button>
+      </div>
       <h2 id="authTitle" data-ko="간편하게 로그인하세요" data-en="Sign in to Harmony Link">간편하게 로그인하세요</h2>
       <p data-ko="Google 또는 카카오 계정으로 안전하게 시작할 수 있습니다." data-en="Continue securely with your Google or Kakao account.">Google 또는 카카오 계정으로 안전하게 시작할 수 있습니다.</p>
       <div class="auth-provider-list">
@@ -90,6 +94,12 @@
   const setAuthMode = mode => {
     activeAuthMode = mode === 'signup' ? 'signup' : 'login';
     const signup = activeAuthMode === 'signup';
+    authModal.querySelector('.auth-panel')?.classList.toggle('signup-mode', signup);
+    authModal.querySelectorAll('[data-auth-mode-tab]').forEach(tab => {
+      const selected = tab.dataset.authModeTab === activeAuthMode;
+      tab.classList.toggle('active', selected);
+      tab.setAttribute('aria-selected', String(selected));
+    });
     const title = authModal.querySelector('#authTitle');
     const description = title?.nextElementSibling;
     const googleLabel = authModal.querySelector('[data-auth-provider="google"] span');
@@ -318,6 +328,12 @@
   };
 
   document.addEventListener('click', async event => {
+    const modeTab = event.target.closest('[data-auth-mode-tab]');
+    if (modeTab) {
+      setAuthMode(modeTab.dataset.authModeTab);
+      updateLanguage();
+      return;
+    }
     const authOpenButton = event.target.closest('.auth-open');
     if (authOpenButton) {
       event.preventDefault();
