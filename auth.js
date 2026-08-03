@@ -205,7 +205,13 @@
       securityCopy.dataset.en = isAdmin ? `${profile.name} is signed in as an administrator.` : isPartner ? `Welcome ${profile.name}. Approved partner resources are available.` : signedIn ? `${profile.name} is a general member. Partner approval is required for resource access.` : 'Sign in with your Google or Kakao account.';
       securityCopy.textContent = t(securityCopy.dataset.ko, securityCopy.dataset.en);
     }
-    if (lock) lock.textContent = approvedPartner ? '✓' : signedIn ? '⏳' : '🔒';
+    if (lock) {
+      lock.textContent = approvedPartner ? '✓' : signedIn ? '⏳' : '🔒';
+      lock.classList.toggle('partner-lock-action', approvedPartner);
+      lock.tabIndex = approvedPartner ? 0 : -1;
+      lock.setAttribute('role', approvedPartner ? 'button' : 'img');
+      lock.setAttribute('aria-label', approvedPartner ? t('시작하기 필수 자료 열기', 'Open required getting-started resources') : t('파트너 자료실 접근 상태', 'Partner resource access status'));
+    }
     if (partnerNav) {
       partnerNav.dataset.ko = approvedPartner ? '파트너센터 ✓' : '파트너센터 🔒';
       partnerNav.dataset.en = approvedPartner ? 'Partner Center ✓' : 'Partner Center 🔒';
@@ -218,6 +224,25 @@
     renderHeader(session);
     renderPartnerCenter(session);
   };
+
+  const partnerStatusMark = partnerCenter.querySelector('.partner-lock');
+  if (partnerStatusMark) {
+    const openPartnerStart = () => {
+      if (downloads.hidden) return;
+      const firstToggle = downloads.querySelector('.partner-resource-toggle');
+      const firstPanel = firstToggle
+        ? downloads.querySelector(`#${firstToggle.getAttribute('aria-controls')}`)
+        : null;
+      if (firstPanel?.hidden) firstToggle.click();
+      downloads.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    partnerStatusMark.addEventListener('click', openPartnerStart);
+    partnerStatusMark.addEventListener('keydown', event => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      openPartnerStart();
+    });
+  }
 
   const loadMemberRole = async session => {
     if (!session?.user) return 'guest';
