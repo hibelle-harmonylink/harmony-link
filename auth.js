@@ -162,8 +162,12 @@
     footerDeleteButton.textContent = t('회원 탈퇴', 'Delete Account');
     const roleLabel = activeMemberRole === 'admin'
       ? t('관리자', 'Administrator')
-      : activeMemberRole === 'partner'
-        ? t('승인 파트너', 'Approved Partner')
+      : activeMemberRole === 'partner50'
+        ? t('PREMIUM 파트너 · $50', 'PREMIUM Partner · $50')
+        : activeMemberRole === 'partner20'
+          ? t('BASIC 파트너 · $20', 'BASIC Partner · $20')
+          : activeMemberRole === 'partner'
+            ? t('승인 파트너', 'Approved Partner')
         : activeMemberRole === 'loading'
           ? t('회원 확인 중', 'Checking Membership')
           : t('일반회원', 'General Member');
@@ -184,7 +188,10 @@
   const renderPartnerCenter = session => {
     const signedIn = Boolean(session?.user);
     const isAdmin = signedIn && activeMemberRole === 'admin';
-    const isPartner = signedIn && activeMemberRole === 'partner';
+    const isBasicPartner = signedIn && activeMemberRole === 'partner20';
+    const isPremiumPartner = signedIn && activeMemberRole === 'partner50';
+    const isLegacyPartner = signedIn && activeMemberRole === 'partner';
+    const isPartner = isBasicPartner || isPremiumPartner || isLegacyPartner;
     const approvedPartner = isAdmin || isPartner;
     authGate.hidden = signedIn;
     approvalGate.hidden = !signedIn || approvedPartner;
@@ -195,16 +202,25 @@
     const lock = partnerCenter.querySelector('.partner-lock');
 
     if (securityTitle) {
-      securityTitle.dataset.ko = isAdmin ? '관리자' : isPartner ? '승인된 입점 파트너' : signedIn ? '일반회원' : '회원 로그인 필요';
-      securityTitle.dataset.en = isAdmin ? 'ADMINISTRATOR' : isPartner ? 'APPROVED PARTNER' : signedIn ? 'GENERAL MEMBER' : 'MEMBER SIGN-IN REQUIRED';
+      securityTitle.dataset.ko = isAdmin ? '관리자' : isPremiumPartner ? 'PREMIUM 파트너 · $50' : isBasicPartner ? 'BASIC 파트너 · $20' : isPartner ? '승인된 입점 파트너' : signedIn ? '일반회원' : '회원 로그인 필요';
+      securityTitle.dataset.en = isAdmin ? 'ADMINISTRATOR' : isPremiumPartner ? 'PREMIUM PARTNER · $50' : isBasicPartner ? 'BASIC PARTNER · $20' : isPartner ? 'APPROVED PARTNER' : signedIn ? 'GENERAL MEMBER' : 'MEMBER SIGN-IN REQUIRED';
       securityTitle.textContent = t(securityTitle.dataset.ko, securityTitle.dataset.en);
     }
     if (securityCopy) {
       const profile = signedIn ? getProfile(session.user) : null;
-      securityCopy.dataset.ko = isAdmin ? `${profile.name}님, 관리자 권한으로 접속했습니다.` : isPartner ? `${profile.name}님, 승인된 파트너 자료실에 접속했습니다.` : signedIn ? `${profile.name}님은 일반회원입니다. 파트너 승인 후 자료실을 이용할 수 있습니다.` : 'Google 또는 카카오 계정으로 로그인해 주세요.';
-      securityCopy.dataset.en = isAdmin ? `${profile.name} is signed in as an administrator.` : isPartner ? `Welcome ${profile.name}. Approved partner resources are available.` : signedIn ? `${profile.name} is a general member. Partner approval is required for resource access.` : 'Sign in with your Google or Kakao account.';
+      securityCopy.dataset.ko = isAdmin ? `${profile.name}님, 관리자 권한으로 접속했습니다.` : isPremiumPartner ? `${profile.name}님, $50 PREMIUM 파트너 자료실에 접속했습니다.` : isBasicPartner ? `${profile.name}님, $20 BASIC 파트너 자료실에 접속했습니다.` : isPartner ? `${profile.name}님, 승인된 파트너 자료실에 접속했습니다.` : signedIn ? `${profile.name}님은 일반회원입니다. 파트너 승인 후 자료실을 이용할 수 있습니다.` : 'Google 또는 카카오 계정으로 로그인해 주세요.';
+      securityCopy.dataset.en = isAdmin ? `${profile.name} is signed in as an administrator.` : isPremiumPartner ? `Welcome ${profile.name}. Your $50 PREMIUM partner resources are available.` : isBasicPartner ? `Welcome ${profile.name}. Your $20 BASIC partner resources are available.` : isPartner ? `Welcome ${profile.name}. Approved partner resources are available.` : signedIn ? `${profile.name} is a general member. Partner approval is required for resource access.` : 'Sign in with your Google or Kakao account.';
       securityCopy.textContent = t(securityCopy.dataset.ko, securityCopy.dataset.en);
     }
+    const accessBadge = downloads.querySelector('.unlocked-badge');
+    if (accessBadge) {
+      accessBadge.textContent = isAdmin ? t('관리자 전체 이용', 'ADMIN FULL ACCESS') : isPremiumPartner ? t('PREMIUM · $50', 'PREMIUM · $50') : isBasicPartner ? t('BASIC · $20', 'BASIC · $20') : t('승인 파트너', 'APPROVED PARTNER');
+      accessBadge.classList.toggle('premium-tier-badge', isPremiumPartner);
+      accessBadge.classList.toggle('basic-tier-badge', isBasicPartner);
+    }
+    downloads.querySelectorAll('.premium-resource').forEach(section => {
+      section.hidden = approvedPartner && !isAdmin && !isPremiumPartner;
+    });
     if (lock) {
       lock.textContent = approvedPartner ? '✓' : signedIn ? '⏳' : '🔒';
       lock.classList.toggle('partner-lock-action', approvedPartner);
