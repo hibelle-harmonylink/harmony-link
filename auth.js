@@ -30,6 +30,7 @@
   let activeSession = null;
   let activeAuthMode = 'login';
   let activeMemberRole = 'guest';
+  let activeMemberStatus = 'active';
 
   const authSlot = document.createElement('div');
   authSlot.className = 'auth-nav-slot';
@@ -160,14 +161,16 @@
     const profile = getProfile(session.user);
     footerDeleteButton.hidden = false;
     footerDeleteButton.textContent = t('회원 탈퇴', 'Delete Account');
-    const roleLabel = activeMemberRole === 'admin'
+    const roleLabel = activeMemberStatus === 'suspended'
+      ? t('이용 중지', 'Suspended')
+      : activeMemberRole === 'admin'
       ? t('관리자', 'Administrator')
       : activeMemberRole === 'partner50'
         ? t('PREMIUM 파트너 · $50', 'PREMIUM Partner · $50')
         : activeMemberRole === 'partner20'
           ? t('BASIC 파트너 · $20', 'BASIC Partner · $20')
-          : activeMemberRole === 'partner'
-            ? t('승인 파트너', 'Approved Partner')
+          : activeMemberRole === 'partner0'
+            ? t('무료 파트너', 'Free Partner')
         : activeMemberRole === 'loading'
           ? t('회원 확인 중', 'Checking Membership')
           : t('일반회원', 'General Member');
@@ -182,16 +185,24 @@
     wrapper.querySelector('.auth-user-copy small').textContent = profile.email
       ? `${roleLabel} · ${profile.email}`
       : roleLabel;
+    if (activeMemberRole === 'admin' && activeMemberStatus === 'active') {
+      const adminLink = document.createElement('a');
+      adminLink.className = 'admin-member-link';
+      adminLink.href = 'admin.html';
+      adminLink.textContent = t('회원관리', 'Members');
+      authSlot.appendChild(adminLink);
+    }
     authSlot.appendChild(wrapper);
   };
 
   const renderPartnerCenter = session => {
     const signedIn = Boolean(session?.user);
-    const isAdmin = signedIn && activeMemberRole === 'admin';
-    const isBasicPartner = signedIn && activeMemberRole === 'partner20';
-    const isPremiumPartner = signedIn && activeMemberRole === 'partner50';
-    const isLegacyPartner = signedIn && activeMemberRole === 'partner';
-    const isPartner = isBasicPartner || isPremiumPartner || isLegacyPartner;
+    const accountActive = activeMemberStatus !== 'suspended';
+    const isAdmin = signedIn && accountActive && activeMemberRole === 'admin';
+    const isFreePartner = signedIn && accountActive && activeMemberRole === 'partner0';
+    const isBasicPartner = signedIn && accountActive && activeMemberRole === 'partner20';
+    const isPremiumPartner = signedIn && accountActive && activeMemberRole === 'partner50';
+    const isPartner = isFreePartner || isBasicPartner || isPremiumPartner;
     const approvedPartner = isAdmin || isPartner;
     authGate.hidden = signedIn;
     approvalGate.hidden = !signedIn || approvedPartner;
@@ -202,19 +213,19 @@
     const lock = partnerCenter.querySelector('.partner-lock');
 
     if (securityTitle) {
-      securityTitle.dataset.ko = isAdmin ? '관리자' : isPremiumPartner ? 'PREMIUM 파트너 · $50' : isBasicPartner ? 'BASIC 파트너 · $20' : isPartner ? '승인된 입점 파트너' : signedIn ? '일반회원' : '회원 로그인 필요';
-      securityTitle.dataset.en = isAdmin ? 'ADMINISTRATOR' : isPremiumPartner ? 'PREMIUM PARTNER · $50' : isBasicPartner ? 'BASIC PARTNER · $20' : isPartner ? 'APPROVED PARTNER' : signedIn ? 'GENERAL MEMBER' : 'MEMBER SIGN-IN REQUIRED';
+      securityTitle.dataset.ko = !accountActive ? '계정 이용 중지' : isAdmin ? '관리자' : isPremiumPartner ? 'PREMIUM 파트너 · $50' : isBasicPartner ? 'BASIC 파트너 · $20' : isFreePartner ? '무료 파트너' : signedIn ? '일반회원' : '회원 로그인 필요';
+      securityTitle.dataset.en = !accountActive ? 'ACCOUNT SUSPENDED' : isAdmin ? 'ADMINISTRATOR' : isPremiumPartner ? 'PREMIUM PARTNER · $50' : isBasicPartner ? 'BASIC PARTNER · $20' : isFreePartner ? 'FREE PARTNER' : signedIn ? 'GENERAL MEMBER' : 'MEMBER SIGN-IN REQUIRED';
       securityTitle.textContent = t(securityTitle.dataset.ko, securityTitle.dataset.en);
     }
     if (securityCopy) {
       const profile = signedIn ? getProfile(session.user) : null;
-      securityCopy.dataset.ko = isAdmin ? `${profile.name}님, 관리자 권한으로 접속했습니다.` : isPremiumPartner ? `${profile.name}님, $50 PREMIUM 파트너 자료실에 접속했습니다.` : isBasicPartner ? `${profile.name}님, $20 BASIC 파트너 자료실에 접속했습니다.` : isPartner ? `${profile.name}님, 승인된 파트너 자료실에 접속했습니다.` : signedIn ? `${profile.name}님은 일반회원입니다. 파트너 승인 후 자료실을 이용할 수 있습니다.` : 'Google 또는 카카오 계정으로 로그인해 주세요.';
-      securityCopy.dataset.en = isAdmin ? `${profile.name} is signed in as an administrator.` : isPremiumPartner ? `Welcome ${profile.name}. Your $50 PREMIUM partner resources are available.` : isBasicPartner ? `Welcome ${profile.name}. Your $20 BASIC partner resources are available.` : isPartner ? `Welcome ${profile.name}. Approved partner resources are available.` : signedIn ? `${profile.name} is a general member. Partner approval is required for resource access.` : 'Sign in with your Google or Kakao account.';
+      securityCopy.dataset.ko = !accountActive ? `${profile.name}님의 홈페이지 이용이 중지되었습니다. 관리자에게 문의해 주세요.` : isAdmin ? `${profile.name}님, 관리자 권한으로 접속했습니다.` : isPremiumPartner ? `${profile.name}님, $50 PREMIUM 파트너 자료실에 접속했습니다.` : isBasicPartner ? `${profile.name}님, $20 BASIC 파트너 자료실에 접속했습니다.` : isFreePartner ? `${profile.name}님, 무료 파트너 자료실에 접속했습니다.` : signedIn ? `${profile.name}님은 일반회원입니다. 파트너 승인 후 자료실을 이용할 수 있습니다.` : 'Google 또는 카카오 계정으로 로그인해 주세요.';
+      securityCopy.dataset.en = !accountActive ? `${profile.name}'s website access is suspended. Please contact an administrator.` : isAdmin ? `${profile.name} is signed in as an administrator.` : isPremiumPartner ? `Welcome ${profile.name}. Your $50 PREMIUM partner resources are available.` : isBasicPartner ? `Welcome ${profile.name}. Your $20 BASIC partner resources are available.` : isFreePartner ? `Welcome ${profile.name}. Your free partner resources are available.` : signedIn ? `${profile.name} is a general member. Partner approval is required for resource access.` : 'Sign in with your Google or Kakao account.';
       securityCopy.textContent = t(securityCopy.dataset.ko, securityCopy.dataset.en);
     }
     const accessBadge = downloads.querySelector('.unlocked-badge');
     if (accessBadge) {
-      accessBadge.textContent = isAdmin ? t('관리자 전체 이용', 'ADMIN FULL ACCESS') : isPremiumPartner ? t('PREMIUM · $50', 'PREMIUM · $50') : isBasicPartner ? t('BASIC · $20', 'BASIC · $20') : t('승인 파트너', 'APPROVED PARTNER');
+      accessBadge.textContent = isAdmin ? t('관리자 전체 이용', 'ADMIN FULL ACCESS') : isPremiumPartner ? t('PREMIUM · $50', 'PREMIUM · $50') : isBasicPartner ? t('BASIC · $20', 'BASIC · $20') : t('무료 파트너', 'FREE PARTNER');
       accessBadge.classList.toggle('premium-tier-badge', isPremiumPartner);
       accessBadge.classList.toggle('basic-tier-badge', isBasicPartner);
     }
@@ -260,22 +271,24 @@
     });
   }
 
-  const loadMemberRole = async session => {
-    if (!session?.user) return 'guest';
+  const loadMemberAccess = async session => {
+    if (!session?.user) return { role: 'guest', status: 'active' };
     const { data, error } = await client
       .from('member_profiles')
-      .select('role')
+      .select('role,account_status')
       .eq('id', session.user.id)
       .maybeSingle();
     if (error) {
-      console.error('Member role could not be loaded.', error);
-      return 'member';
+      console.error('Member access could not be loaded.', error);
+      return { role: 'member', status: 'active' };
     }
-    return data?.role || 'member';
+    return { role: data?.role || 'member', status: data?.account_status || 'active' };
   };
 
   const refreshMemberAccess = async session => {
-    activeMemberRole = await loadMemberRole(session);
+    const access = await loadMemberAccess(session);
+    activeMemberRole = access.role;
+    activeMemberStatus = access.status;
     render(session);
   };
 
@@ -466,6 +479,7 @@
       return;
     }
     activeMemberRole = data.session ? 'loading' : 'guest';
+    activeMemberStatus = data.session ? 'loading' : 'active';
     render(data.session);
     await refreshMemberAccess(data.session);
     if (data.session && localStorage.getItem('harmonyAuthReturn') === 'partner-center') {
@@ -476,6 +490,7 @@
 
   client.auth.onAuthStateChange((event, session) => {
     activeMemberRole = session ? 'loading' : 'guest';
+    activeMemberStatus = session ? 'loading' : 'active';
     render(session);
     void refreshMemberAccess(session);
     if (event === 'SIGNED_IN') {
