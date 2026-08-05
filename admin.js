@@ -41,30 +41,21 @@
   };
   const setCounts = members => {
     const counts = { all: members.length, member: 0, partner0: 0, partner20: 0, partner50: 0 };
-    const names = { all: [], member: [], partner0: [], partner20: [], partner50: [] };
-    const memberName = member => member.display_name || (member.email || '').split('@')[0] || '이름 없음';
     members.forEach(member => { if (Object.hasOwn(counts, member.role)) counts[member.role] += 1; });
-    members.forEach(member => {
-      const name = memberName(member);
-      names.all.push(name);
-      if (Object.hasOwn(names, member.role)) names[member.role].push(name);
-    });
     Object.entries(counts).forEach(([key, value]) => {
       const target = document.querySelector(`[data-count="${key}"]`);
       if (target) target.textContent = String(value);
-      const nameTarget = document.querySelector(`[data-names="${key}"]`);
-      if (nameTarget) nameTarget.textContent = names[key].join(', ') || '해당 회원 없음';
     });
   };
 
   const createCard = member => {
     const card = template.content.firstElementChild.cloneNode(true);
     card.dataset.memberId = member.id;
-    card.querySelector('.member-email').textContent = member.display_name || member.email || '이름 없음';
-    card.querySelector('.member-email').title = member.email || '';
+    const displayName = member.display_name || (member.email || '').split('@')[0] || '이름 없음';
+    card.querySelector('.member-email').textContent = member.email || '이메일 없음';
     card.querySelector('.member-id').textContent = member.id;
     const badge = card.querySelector('.member-role-badge');
-    badge.textContent = ROLE_LABELS[member.role] || member.role;
+    badge.textContent = `${ROLE_LABELS[member.role] || member.role} · ${displayName}`;
     badge.classList.add(member.role);
     card.querySelectorAll('[data-field]').forEach(field => {
       field.textContent = formatDate(member[field.dataset.field]);

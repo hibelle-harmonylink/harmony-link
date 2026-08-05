@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>회원 및 파트너 관리 | Harmony Link</title>
-  <link rel="stylesheet" href="styles.css?v=20260804-247">
-  <link rel="stylesheet" href="admin.css?v=20260804-247">
+  <link rel="stylesheet" href="styles.css?v=20260804-248">
+  <link rel="stylesheet" href="admin.css?v=20260804-248">
 </head>
 <body class="admin-page">
   <header class="admin-header">
-    <a class="admin-brand" href="./"><img src="assets/harmony-logo.png" alt="Harmony Link"><span>Harmony <b>Link</b></span></a>
+    <a class="logo admin-brand" href="./"><span class="logo-mark brand-image" aria-hidden="true"><img src="assets/harmony-logo.png" alt=""></span><span class="logo-name">Harmony <b>Link</b></span></a>
     <nav><a href="./">홈페이지</a><button id="adminSignOut" type="button" hidden>로그아웃</button></nav>
   </header>
 
@@ -26,11 +26,11 @@
       <div class="admin-title-row"><div><p class="eyebrow">ADMIN MEMBER CENTER</p><h1>회원 및 파트너 관리</h1><p>회원 승인, 파트너 등급과 홈페이지 이용 상태를 안전하게 관리합니다.</p></div><button class="admin-refresh" id="adminRefresh" type="button">새로고침 ↻</button></div>
 
       <div class="admin-summary" aria-label="회원 현황">
-        <article><span>전체 회원</span><strong data-count="all">0</strong><small data-names="all"></small></article>
-        <article><span>미승인</span><strong data-count="member">0</strong><small data-names="member"></small></article>
-        <article><span>무료 파트너</span><strong data-count="partner0">0</strong><small data-names="partner0"></small></article>
-        <article><span>$20 BASIC</span><strong data-count="partner20">0</strong><small data-names="partner20"></small></article>
-        <article><span>$50 PREMIUM</span><strong data-count="partner50">0</strong><small data-names="partner50"></small></article>
+        <article><span>전체 회원</span><strong data-count="all">0</strong></article>
+        <article><span>미승인</span><strong data-count="member">0</strong></article>
+        <article><span>무료 파트너</span><strong data-count="partner0">0</strong></article>
+        <article><span>$20 BASIC</span><strong data-count="partner20">0</strong></article>
+        <article><span>$50 PREMIUM</span><strong data-count="partner50">0</strong></article>
       </div>
 
       <form class="admin-toolbar" id="adminFilters">
@@ -54,6 +54,6 @@
   </template>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="admin.js?v=20260804-247"></script>
+  <script src="admin.js?v=20260804-248"></script>
 </body>
 </html>
