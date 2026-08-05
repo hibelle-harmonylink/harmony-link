@@ -26,14 +26,15 @@ Deno.serve(async (request) => {
     const { data: administrator } = await userClient.from('member_profiles').select('role,account_status').eq('id', user.id).maybeSingle();
     if (administrator?.role !== 'admin' || administrator?.account_status !== 'active') return json({ error: 'Administrator access required' }, 403);
 
-    const { memberId, oldRole, newRole } = await request.json();
-    if (!memberId || !allowedRoles.includes(newRole)) return json({ error: 'Invalid role notification request' }, 400);
+    const { memberId, oldRole } = await request.json();
+    if (!memberId) return json({ error: 'Invalid role notification request' }, 400);
 
     const adminClient = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
     const { data: account, error: accountError } = await adminClient.auth.admin.getUserById(memberId);
     if (accountError || !account.user?.email) return json({ error: 'Member not found' }, 404);
     const { data: profile } = await adminClient.from('member_profiles').select('role').eq('id', memberId).maybeSingle();
-    if (profile?.role !== newRole) return json({ error: 'Stored role does not match the notification' }, 409);
+    const storedRole = profile?.role || '';
+    if (!allowedRoles.includes(storedRole)) return json({ error: 'Stored member role cannot be notified' }, 409);
 
     const metadata = account.user.user_metadata || {};
     const memberName = metadata.full_name || metadata.name || metadata.nickname || account.user.email.split('@')[0];
@@ -43,7 +44,7 @@ Deno.serve(async (request) => {
     formData.set('member_email', account.user.email);
     formData.set('member_name', memberName);
     formData.set('old_role', allowedRoles.includes(oldRole) ? oldRole : '');
-    formData.set('new_role', newRole);
+    formData.set('new_role', storedRole);
     const emailResponse = await fetch(webhookUrl, { method: 'POST', body: formData, redirect: 'follow' });
     if (!emailResponse.ok) return json({ error: 'Email delivery failed' }, 502);
     return json({ ok: true });
