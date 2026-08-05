@@ -27,7 +27,7 @@ Deno.serve(async (request) => {
     if (administrator?.role !== 'admin' || administrator?.account_status !== 'active') return json({ error: 'Administrator access required' }, 403);
 
     const { memberId, oldRole, newRole } = await request.json();
-    if (!memberId || !allowedRoles.includes(oldRole) || !allowedRoles.includes(newRole)) return json({ error: 'Invalid role notification request' }, 400);
+    if (!memberId || !allowedRoles.includes(newRole)) return json({ error: 'Invalid role notification request' }, 400);
 
     const adminClient = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
     const { data: account, error: accountError } = await adminClient.auth.admin.getUserById(memberId);
@@ -42,7 +42,7 @@ Deno.serve(async (request) => {
     formData.set('webhook_secret', webhookSecret);
     formData.set('member_email', account.user.email);
     formData.set('member_name', memberName);
-    formData.set('old_role', oldRole);
+    formData.set('old_role', allowedRoles.includes(oldRole) ? oldRole : '');
     formData.set('new_role', newRole);
     const emailResponse = await fetch(webhookUrl, { method: 'POST', body: formData, redirect: 'follow' });
     if (!emailResponse.ok) return json({ error: 'Email delivery failed' }, 502);
