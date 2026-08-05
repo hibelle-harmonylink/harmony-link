@@ -144,7 +144,7 @@
         apikey: SUPABASE_PUBLISHABLE_KEY,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ memberId: member.id, oldRole })
+      body: JSON.stringify({ memberId: member.id || '', memberEmail: member.email || '', oldRole })
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok || !result.ok) throw new Error(result.error || `메일 서버 오류 (${response.status})`);

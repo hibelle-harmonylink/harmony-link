@@ -26,13 +26,22 @@ Deno.serve(async (request) => {
     const { data: administrator } = await userClient.from('member_profiles').select('role,account_status').eq('id', user.id).maybeSingle();
     if (administrator?.role !== 'admin' || administrator?.account_status !== 'active') return json({ error: 'Administrator access required' }, 403);
 
-    const { memberId, oldRole } = await request.json();
-    if (!memberId) return json({ error: 'Invalid role notification request' }, 400);
+    const { memberId, memberEmail, oldRole } = await request.json();
+    if (!memberId && !memberEmail) return json({ error: 'Member id or email is required' }, 400);
 
     const adminClient = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
-    const { data: account, error: accountError } = await adminClient.auth.admin.getUserById(memberId);
+    let account;
+    let accountError;
+    if (memberId) {
+      ({ data: account, error: accountError } = await adminClient.auth.admin.getUserById(memberId));
+    } else {
+      const { data: users, error: usersError } = await adminClient.auth.admin.listUsers({ page: 1, perPage: 1000 });
+      accountError = usersError;
+      account = { user: users?.users.find(user => user.email?.toLowerCase() === String(memberEmail).toLowerCase()) };
+    }
     if (accountError || !account.user?.email) return json({ error: 'Member not found' }, 404);
-    const { data: profile } = await adminClient.from('member_profiles').select('role').eq('id', memberId).maybeSingle();
+    const resolvedMemberId = account.user.id;
+    const { data: profile } = await adminClient.from('member_profiles').select('role').eq('id', resolvedMemberId).maybeSingle();
     const storedRole = profile?.role || '';
     if (!allowedRoles.includes(storedRole)) return json({ error: 'Stored member role cannot be notified' }, 409);
 
@@ -46,7 +55,11 @@ Deno.serve(async (request) => {
     formData.set('old_role', allowedRoles.includes(oldRole) ? oldRole : '');
     formData.set('new_role', storedRole);
     const emailResponse = await fetch(webhookUrl, { method: 'POST', body: formData, redirect: 'follow' });
-    if (!emailResponse.ok) return json({ error: 'Email delivery failed' }, 502);
+    const emailResult = await emailResponse.text();
+    if (!emailResponse.ok) {
+      console.error('Role email webhook failed', emailResponse.status, emailResult.slice(0, 500));
+      return json({ error: `Email delivery failed (${emailResponse.status})` }, 502);
+    }
     return json({ ok: true });
   } catch (error) {
     return json({ error: error instanceof Error ? error.message : 'Unexpected error' }, 500);
