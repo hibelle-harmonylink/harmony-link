@@ -134,20 +134,20 @@
   };
 
   const sendRoleNotification = async (member, oldRole = '') => {
-    const { data: sessionData, error: sessionError } = await client.auth.getSession();
-    const accessToken = sessionData.session?.access_token;
-    if (sessionError || !accessToken) throw new Error('로그인 세션을 확인할 수 없습니다.');
-    const response = await fetch(`${SUPABASE_URL}/functions/v1/notify-role-change`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        apikey: SUPABASE_PUBLISHABLE_KEY,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ memberId: member.id || '', memberEmail: member.email || '', oldRole })
+    const { data, error } = await client.functions.invoke('notify-role-change', {
+      body: { memberId: member.id || '', memberEmail: member.email || '', oldRole }
     });
-    const result = await response.json().catch(() => ({}));
-    if (!response.ok || !result.ok) throw new Error(result.error || `메일 서버 오류 (${response.status})`);
+    if (error) {
+      let detail = error.message || '메일 서버 호출에 실패했습니다.';
+      if (error.context) {
+        try {
+          const responseBody = await error.context.json();
+          detail = responseBody?.error || detail;
+        } catch { /* Use the SDK error when the response is not JSON. */ }
+      }
+      throw new Error(detail);
+    }
+    if (!data?.ok) throw new Error(data?.error || '메일 서버가 전송을 완료하지 못했습니다.');
   };
 
   const updateMember = async (member, nextRole, nextStatus) => {
