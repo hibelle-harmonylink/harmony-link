@@ -227,9 +227,8 @@
       accessBadge.classList.toggle('premium-tier-badge', isPremiumPartner);
       accessBadge.classList.toggle('basic-tier-badge', isBasicPartner);
     }
-    downloads.querySelectorAll('.premium-resource').forEach(section => {
-      section.hidden = approvedPartner && !isAdmin && !isPremiumPartner;
-    });
+    const resourceTier = isAdmin || isPremiumPartner ? 50 : isBasicPartner ? 20 : 0;
+    if (approvedPartner) window.HarmonyPartnerResources?.setAccessTier(resourceTier, resourceTier);
     if (lock) {
       lock.textContent = approvedPartner ? '✓' : signedIn ? '⏳' : '🔒';
       lock.classList.toggle('partner-lock-action', approvedPartner);
