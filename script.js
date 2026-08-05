@@ -1147,7 +1147,7 @@ if(datedEventGrid){
 }
 
 const partnerResourceSections = [
-  {no:'01',icon:'🚀',title:'시작하기 (필수)',copy:'입점 후 가장 먼저 확인하는 필수 안내 자료',items:[['입점 파트너 시작 안내서','downloads/HarmonyLink_Partner_Getting_Started.html','필수','view'],['플랫폼 이용 및 운영 정책','downloads/HarmonyLink_Partner_Policy_v1.0.docx','DOCX'],['입점 파트너 계약서 (검토용 초안)','downloads/HarmonyLink_Partner_Agreement_Draft_v1.0.docx','DOCX'],['강사 활동 가이드','downloads/HarmonyLink_Instructor_Activity_Guide_v1.0.docx','DOCX'],['자주 묻는 질문 (FAQ)','downloads/HarmonyLink_Partner_FAQ_v1.0.docx','DOCX']]},
+  {no:'01',icon:'🚀',title:'시작하기 (필수)',copy:'입점 후 가장 먼저 확인하는 필수 안내 자료',items:[['입점 파트너 시작 안내서','downloads/HarmonyLink_Partner_Getting_Started.html','필수','view'],['플랫폼 이용 및 운영 정책','downloads/HarmonyLink_Partner_Policy_v1.0.docx','DOCX'],['입점 파트너 계약서','downloads/HarmonyLink_Partner_Agreement_v2.0.pdf','PDF'],['강사 활동 가이드','downloads/HarmonyLink_Instructor_Activity_Guide_v1.0.docx','DOCX'],['자주 묻는 질문 (FAQ)','downloads/HarmonyLink_Partner_FAQ_v1.0.docx','DOCX']]},
   {no:'02',icon:'📘',title:'운영 매뉴얼',copy:'기관 출강과 실제 수업 운영을 위한 기준',items:[['기관 수업 진행 방법'],['출강 체크리스트'],['첫 수업 준비 방법'],['수업 종료 후 해야 할 일'],['강사 매너·복장 가이드'],['안전 수칙']]},
   {no:'03',icon:'🗂️',title:'수업 자료',copy:'수업 현장에서 바로 활용하는 양식과 템플릿',items:[['수업계획서 양식'],['출석부'],['만족도 조사'],['수료증 양식'],['강의 노트 양식'],['PPT 템플릿'],['Canva 템플릿']]},
   {no:'04',icon:'📣',title:'홍보 자료',copy:'Harmony Link 브랜드 홍보용 디자인 자료',items:[['Harmony Link 로고','assets/harmony-logo.png','PNG'],['전단지 예시','assets/partners/partner-recruitment.png','PNG'],['브랜드 컬러 가이드'],['SNS 카드뉴스'],['배너'],['명함 디자인'],['프로필 이미지 템플릿']]},
@@ -1165,7 +1165,7 @@ if (downloads) {
     <button type="button" class="partner-resource-toggle" aria-expanded="${index===0?'true':'false'}" aria-controls="partnerResource${index}"><span class="resource-number">${section.no}</span><b>${section.icon}</b><div><h3>${section.title}${section.premium?'<em>PREMIUM</em>':''}</h3><p>${section.copy}</p></div><i>${index===0?'−':'＋'}</i></button>
     <div class="partner-resource-items" id="partnerResource${index}"${index===0?'':' hidden'}>${section.items.map(item=>`<div class="partner-resource-item"><span>${item[2]||'준비 중'}</span><strong>${item[0]}</strong>${item[1]?(item[3]==='view'?`<a href="${item[1]}" target="_blank" rel="noopener">자료 보기 →</a>`:`<a href="${item[1]}" download>다운로드 ↓</a>`):'<small>자료 준비 중</small>'}</div>`).join('')}</div>
   </article>`).join('');
-  downloads.innerHTML = `<div class="partner-library-head"><span class="unlocked-badge">접근 승인됨</span><p>필요한 영역을 선택하면 다운로드 가능한 파일과 준비 중인 자료를 확인할 수 있습니다.</p></div><div class="partner-resource-library">${resourceMarkup}</div><p class="partner-download-warning">이 자료는 승인된 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다.</p>`;
+  downloads.innerHTML = `<div class="partner-library-head"><div class="partner-library-status"><span class="unlocked-badge">접근 승인됨</span><p>필요한 영역을 선택하면 다운로드 가능한 파일과 준비 중인 자료를 확인할 수 있습니다.</p></div><div class="partner-tier-guide" aria-label="파트너 등급"><span>$0 <b>무료</b></span><span>$20 <b>BASIC</b></span><span>$50 <b>PREMIUM</b></span></div></div><div class="partner-resource-library">${resourceMarkup}</div><p class="partner-download-warning">이 자료는 승인된 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다.</p>`;
   downloads.querySelectorAll('.partner-resource-toggle').forEach(button=>button.addEventListener('click',()=>{
     const panel=downloads.querySelector(`#${button.getAttribute('aria-controls')}`);const open=panel.hidden;
     panel.hidden=!open;button.setAttribute('aria-expanded',String(open));button.querySelector('i').textContent=open?'−':'＋';

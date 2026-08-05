@@ -182,9 +182,7 @@
       : `<span class="auth-avatar-fallback">${profile.name.trim().charAt(0).toUpperCase() || 'H'}</span>`;
     wrapper.innerHTML = `${picture}<span class="auth-user-copy"><b></b><small></small></span><button type="button" class="auth-signout" data-ko="로그아웃" data-en="Sign Out">${t('로그아웃', 'Sign Out')}</button>`;
     wrapper.querySelector('.auth-user-copy b').textContent = profile.name;
-    wrapper.querySelector('.auth-user-copy small').textContent = profile.email
-      ? `${roleLabel} · ${profile.email}`
-      : roleLabel;
+    wrapper.querySelector('.auth-user-copy small').textContent = roleLabel;
     if (activeMemberRole === 'admin' && activeMemberStatus === 'active') {
       const adminLink = document.createElement('a');
       adminLink.className = 'admin-member-link';
