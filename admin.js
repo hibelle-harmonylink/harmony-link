@@ -32,9 +32,14 @@
     message.textContent = text;
     message.classList.toggle('error', error);
   };
-  const formatDate = value => value ? new Intl.DateTimeFormat('ko-KR', {
-    timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
-  }).format(new Date(value)) : '없음';
+  const formatDate = value => {
+    if (!value) return '없음';
+    const parts = new Intl.DateTimeFormat('ko-KR', {
+      timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+    }).formatToParts(new Date(value));
+    const get = type => parts.find(part => part.type === type)?.value || '';
+    return `${get('year')}. ${get('month')}. ${get('day')}. <span class="member-time-period">${get('dayPeriod')} ${get('hour')}:${get('minute')}</span>`;
+  };
   const deny = text => {
     loading.hidden = true; app.hidden = true; denied.hidden = false;
     deniedMessage.textContent = text;
@@ -58,12 +63,12 @@
     badge.textContent = `${ROLE_LABELS[member.role] || member.role} · ${displayName}`;
     badge.classList.add(member.role);
     card.querySelectorAll('[data-field]').forEach(field => {
-      field.textContent = formatDate(member[field.dataset.field]);
+      field.innerHTML = formatDate(member[field.dataset.field]);
     });
     const actions = card.querySelector('.member-actions');
     if (member.role === 'admin' || member.id === currentUserId) {
       card.classList.add('protected');
-      actions.innerHTML = '<div class="member-protected-copy">관리자 계정은 이 화면에서 변경하거나 중지할 수 없습니다.</div>';
+      actions.innerHTML = '<div class="member-protected-copy">관리자 계정은<br class="admin-mobile-break">이 화면에서는 변경하거나 중지할 수 없습니다.</div>';
       return card;
     }
     const select = card.querySelector('.member-role-select');
