@@ -30,27 +30,28 @@ Deno.serve(async (request) => {
     if (!memberId && !memberEmail) return json({ error: 'Member id or email is required' }, 400);
 
     const adminClient = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
-    let account;
-    let accountError;
+    let targetUser = null;
     if (memberId) {
-      ({ data: account, error: accountError } = await adminClient.auth.admin.getUserById(memberId));
+      const { data, error } = await adminClient.auth.admin.getUserById(memberId);
+      if (error) return json({ error: 'Member lookup failed' }, 404);
+      targetUser = data.user;
     } else {
-      const { data: users, error: usersError } = await adminClient.auth.admin.listUsers({ page: 1, perPage: 1000 });
-      accountError = usersError;
-      account = { user: users?.users.find(user => user.email?.toLowerCase() === String(memberEmail).toLowerCase()) };
+      const { data, error } = await adminClient.auth.admin.listUsers({ page: 1, perPage: 1000 });
+      if (error) return json({ error: 'Member lookup failed' }, 404);
+      targetUser = data.users.find(user => user.email?.toLowerCase() === String(memberEmail).toLowerCase()) || null;
     }
-    if (accountError || !account.user?.email) return json({ error: 'Member not found' }, 404);
-    const resolvedMemberId = account.user.id;
+    if (!targetUser?.email) return json({ error: 'Member not found' }, 404);
+    const resolvedMemberId = targetUser.id;
     const { data: profile } = await adminClient.from('member_profiles').select('role').eq('id', resolvedMemberId).maybeSingle();
     const storedRole = profile?.role || '';
     if (!allowedRoles.includes(storedRole)) return json({ error: 'Stored member role cannot be notified' }, 409);
 
-    const metadata = account.user.user_metadata || {};
-    const memberName = metadata.full_name || metadata.name || metadata.nickname || account.user.email.split('@')[0];
+    const metadata = targetUser.user_metadata || {};
+    const memberName = metadata.full_name || metadata.name || metadata.nickname || targetUser.email.split('@')[0];
     const formData = new FormData();
     formData.set('action', 'role_change');
     formData.set('webhook_secret', webhookSecret);
-    formData.set('member_email', account.user.email);
+    formData.set('member_email', targetUser.email);
     formData.set('member_name', memberName);
     formData.set('old_role', allowedRoles.includes(oldRole) ? oldRole : '');
     formData.set('new_role', storedRole);
