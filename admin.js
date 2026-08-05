@@ -95,8 +95,12 @@
   const loadMembers = async () => {
     setMessage('회원 명단을 불러오고 있습니다.');
     refreshButton.disabled = true;
+    refreshButton.classList.add('is-refreshing');
+    refreshButton.textContent = '새로고침 중…';
     const { data, error } = await client.rpc('admin_list_members', { p_search: null, p_role: null });
     refreshButton.disabled = false;
+    refreshButton.classList.remove('is-refreshing');
+    refreshButton.textContent = '새로고침 ↻';
     if (error) {
       if (error.code === '42501') deny('관리자 권한이 확인되지 않아 접근할 수 없습니다.');
       else setMessage(`회원 명단을 불러오지 못했습니다: ${error.message}`, true);
