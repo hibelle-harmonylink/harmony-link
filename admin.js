@@ -133,7 +133,20 @@
       setMessage(`변경에 실패했습니다: ${error.message}`, true);
       return;
     }
-    setMessage('회원 정보가 안전하게 변경되었습니다.');
+    if (roleChanged) {
+      setMessage('등급이 변경되었습니다. 회원 안내메일을 요청하고 있습니다.');
+      try {
+        const { error: notificationError } = await client.functions.invoke('notify-role-change', {
+          body: { memberId: member.id, oldRole: member.role, newRole: nextRole }
+        });
+        if (notificationError) throw notificationError;
+        setMessage('회원 등급이 변경되었으며 안내메일 전송을 요청했습니다.');
+      } catch {
+        setMessage('등급은 변경되었지만 안내메일 요청에 실패했습니다. 다시 새로고침한 후 시도해 주세요.', true);
+      }
+    } else {
+      setMessage('회원 정보가 안전하게 변경되었습니다.');
+    }
     await loadMembers();
   };
 
