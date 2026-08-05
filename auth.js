@@ -130,12 +130,13 @@
   const getProfile = user => {
     const metadata = user?.user_metadata || {};
     const name = metadata.full_name || metadata.name || metadata.nickname || user?.email?.split('@')[0] || t('회원', 'Member');
-    const avatar = metadata.avatar_url || metadata.picture || metadata.profile_image_url || '';
+    const avatar = metadata.custom_avatar || metadata.avatar_url || metadata.picture || metadata.profile_image_url || '';
     return { name, avatar, email: user?.email || '' };
   };
 
   const safeAvatar = avatar => {
     if (!avatar) return '';
+    if (/^data:image\/(?:jpeg|png|webp);base64,/i.test(avatar)) return avatar;
     try {
       const parsed = new URL(avatar);
       return parsed.protocol === 'https:' ? parsed.href : '';
@@ -175,14 +176,35 @@
           ? t('회원 확인 중', 'Checking Membership')
           : t('일반회원', 'General Member');
     const wrapper = document.createElement('div');
-    wrapper.className = 'auth-user';
+    wrapper.className = `auth-user${activeMemberRole === 'admin' ? ' admin-auth-user' : ''}`;
     const avatar = safeAvatar(profile.avatar);
     const picture = avatar
       ? `<img src="${avatar}" alt="">`
       : `<span class="auth-avatar-fallback">${profile.name.trim().charAt(0).toUpperCase() || 'H'}</span>`;
-    wrapper.innerHTML = `${picture}<span class="auth-user-copy"><b></b><small></small></span><button type="button" class="auth-signout" data-ko="로그아웃" data-en="Sign Out">${t('로그아웃', 'Sign Out')}</button>`;
+    wrapper.innerHTML = `<button type="button" class="auth-avatar-edit" title="${t('프로필 사진 변경', 'Change profile photo')}" aria-label="${t('프로필 사진 변경', 'Change profile photo')}">${picture}</button><input class="auth-avatar-input" type="file" accept="image/jpeg,image/png,image/webp" hidden><span class="auth-user-copy"><b></b><small></small></span><button type="button" class="auth-signout" data-ko="로그아웃" data-en="Sign Out">${t('로그아웃', 'Sign Out')}</button>`;
     wrapper.querySelector('.auth-user-copy b').textContent = profile.name;
     wrapper.querySelector('.auth-user-copy small').textContent = roleLabel;
+    const avatarButton = wrapper.querySelector('.auth-avatar-edit');
+    const avatarInput = wrapper.querySelector('.auth-avatar-input');
+    avatarButton.addEventListener('click', () => avatarInput.click());
+    avatarInput.addEventListener('change', async () => {
+      const file = avatarInput.files?.[0];
+      if (!file) return;
+      if (file.size > 8 * 1024 * 1024) { window.alert(t('8MB 이하의 사진을 선택해 주세요.', 'Please choose an image under 8MB.')); return; }
+      avatarButton.disabled = true;
+      try {
+        const source = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file); });
+        const image = await new Promise((resolve, reject) => { const img = new Image(); img.onload = () => resolve(img); img.onerror = reject; img.src = source; });
+        const size = 240; const canvas = document.createElement('canvas'); canvas.width = size; canvas.height = size;
+        const context = canvas.getContext('2d'); const scale = Math.max(size / image.width, size / image.height); const width = image.width * scale; const height = image.height * scale;
+        context.drawImage(image, (size - width) / 2, (size - height) / 2, width, height);
+        const customAvatar = canvas.toDataURL('image/jpeg', .82);
+        const { error } = await client.auth.updateUser({ data: { custom_avatar: customAvatar } });
+        if (error) throw error;
+        const { data } = await client.auth.getSession(); activeSession = data.session; renderHeader(activeSession);
+      } catch (error) { window.alert(t('프로필 사진을 변경하지 못했습니다. 다시 시도해 주세요.', 'Could not change the profile photo. Please try again.')); }
+      finally { avatarButton.disabled = false; }
+    });
     if (activeMemberRole === 'admin' && activeMemberStatus === 'active') {
       const adminLink = document.createElement('a');
       adminLink.className = 'admin-member-link';

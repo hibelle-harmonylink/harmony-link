@@ -25,6 +25,7 @@
     member: '미승인 일반회원', partner0: '무료 파트너', partner20: '$20 BASIC 파트너', partner50: '$50 PREMIUM 파트너', admin: '관리자'
   };
   let currentUserId = '';
+  let currentUserName = '';
   let allMembers = [];
 
   const setMessage = (text = '', error = false) => {
@@ -40,17 +41,27 @@
   };
   const setCounts = members => {
     const counts = { all: members.length, member: 0, partner0: 0, partner20: 0, partner50: 0 };
+    const names = { all: [], member: [], partner0: [], partner20: [], partner50: [] };
+    const memberName = member => member.display_name || (member.email || '').split('@')[0] || '이름 없음';
     members.forEach(member => { if (Object.hasOwn(counts, member.role)) counts[member.role] += 1; });
+    members.forEach(member => {
+      const name = memberName(member);
+      names.all.push(name);
+      if (Object.hasOwn(names, member.role)) names[member.role].push(name);
+    });
     Object.entries(counts).forEach(([key, value]) => {
       const target = document.querySelector(`[data-count="${key}"]`);
       if (target) target.textContent = String(value);
+      const nameTarget = document.querySelector(`[data-names="${key}"]`);
+      if (nameTarget) nameTarget.textContent = names[key].join(', ') || '해당 회원 없음';
     });
   };
 
   const createCard = member => {
     const card = template.content.firstElementChild.cloneNode(true);
     card.dataset.memberId = member.id;
-    card.querySelector('.member-email').textContent = member.email || '이메일 없음';
+    card.querySelector('.member-email').textContent = member.display_name || member.email || '이름 없음';
+    card.querySelector('.member-email').title = member.email || '';
     card.querySelector('.member-id').textContent = member.id;
     const badge = card.querySelector('.member-role-badge');
     badge.textContent = ROLE_LABELS[member.role] || member.role;
@@ -95,7 +106,7 @@
       else setMessage(`회원 명단을 불러오지 못했습니다: ${error.message}`, true);
       return;
     }
-    allMembers = data || [];
+    allMembers = (data || []).map(member => member.id === currentUserId && currentUserName ? { ...member, display_name: currentUserName } : member);
     setCounts(allMembers);
     applyFilters();
     setMessage(`최근 가입 순서로 ${allMembers.length}명의 회원을 표시합니다.`);
@@ -137,6 +148,8 @@
     const { data: sessionData, error: sessionError } = await client.auth.getSession();
     if (sessionError || !sessionData.session?.user) { deny('로그인하지 않은 사용자는 관리자 페이지에 접근할 수 없습니다.'); return; }
     currentUserId = sessionData.session.user.id;
+    const metadata = sessionData.session.user.user_metadata || {};
+    currentUserName = metadata.full_name || metadata.name || metadata.nickname || sessionData.session.user.email?.split('@')[0] || '관리자';
     const { data: profile, error: profileError } = await client.from('member_profiles').select('role,account_status').eq('id', currentUserId).maybeSingle();
     if (profileError || profile?.role !== 'admin' || profile?.account_status !== 'active') { deny('관리자 권한이 확인되지 않아 접근할 수 없습니다.'); return; }
     loading.hidden = true; denied.hidden = true; app.hidden = false; signOutButton.hidden = false;
