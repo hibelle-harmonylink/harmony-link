@@ -84,6 +84,21 @@
       statusButton.classList.toggle('suspended', next === 'suspended');
     });
     card.querySelector('.member-save').addEventListener('click', () => updateMember(member, select.value, statusButton.dataset.status));
+    const resendButton = card.querySelector('.member-resend');
+    resendButton.addEventListener('click', async () => {
+      resendButton.disabled = true;
+      resendButton.textContent = '메일 보내는 중…';
+      setMessage(`${member.email} 회원에게 등급 안내메일을 보내고 있습니다.`);
+      try {
+        await sendRoleNotification(member);
+        setMessage(`${member.email} 회원에게 등급 안내메일을 보냈습니다.`);
+      } catch (error) {
+        setMessage(`안내메일 전송 실패: ${error.message}`, true);
+      } finally {
+        resendButton.disabled = false;
+        resendButton.textContent = '안내메일 다시 보내기';
+      }
+    });
     return card;
   };
 
@@ -118,6 +133,23 @@
     renderMembers(allMembers.filter(member => (!term || (member.email || '').toLowerCase().includes(term)) && (!role || member.role === role)));
   };
 
+  const sendRoleNotification = async (member, oldRole = '') => {
+    const { data: sessionData, error: sessionError } = await client.auth.getSession();
+    const accessToken = sessionData.session?.access_token;
+    if (sessionError || !accessToken) throw new Error('로그인 세션을 확인할 수 없습니다.');
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/notify-role-change`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        apikey: SUPABASE_PUBLISHABLE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ memberId: member.id, oldRole })
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok || !result.ok) throw new Error(result.error || `메일 서버 오류 (${response.status})`);
+  };
+
   const updateMember = async (member, nextRole, nextStatus) => {
     const roleChanged = nextRole !== member.role;
     const statusChanged = nextStatus !== member.account_status;
@@ -136,10 +168,7 @@
     if (roleChanged) {
       setMessage('등급이 변경되었습니다. 회원 안내메일을 요청하고 있습니다.');
       try {
-        const { error: notificationError } = await client.functions.invoke('notify-role-change', {
-          body: { memberId: member.id, oldRole: member.role, newRole: nextRole }
-        });
-        if (notificationError) throw notificationError;
+        await sendRoleNotification(member, member.role);
         setMessage('회원 등급이 변경되었으며 안내메일 전송을 요청했습니다.');
       } catch {
         setMessage('등급은 변경되었지만 안내메일 요청에 실패했습니다. 다시 새로고침한 후 시도해 주세요.', true);
