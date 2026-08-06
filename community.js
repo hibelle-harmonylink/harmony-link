@@ -23,6 +23,10 @@
   const showAccessMessage = (title, copy) => { access.querySelector('h1').textContent = title; access.querySelector('p').textContent = copy; access.hidden = false; app.hidden = true; };
   const formatDate = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'America/New_York', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(value));
   const escapeUrl = value => { try { const raw = String(value || '').trim(); const parsed = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`); return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : ''; } catch { return ''; } };
+  const extractUrls = value => {
+    const matches = String(value || '').match(/(?:https?:\/\/|www\.)[^\s<]+|(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s<]*)?/gi) || [];
+    return matches.map(item => item.replace(/[),.!?]+$/, '')).map(escapeUrl).filter(Boolean);
+  };
   const renderLinkedText = (target, value) => {
     const text = String(value || '');
     const pattern = /((?:https?:\/\/|www\.)[^\s<]+|(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s<]*)?)/gi;
@@ -74,20 +78,21 @@
     card.querySelector('time').textContent = formatDate(post.created_at);
     card.querySelector('.post-title').textContent = post.title;
     renderLinkedText(card.querySelector('.post-content'), post.content);
-    const isMeeranIntroduction = /미란|meeran|melody|멜로디|합창|음악/i.test(`${post.title} ${post.content} ${post.resource_url || ''}`);
-    const visibleAuthorName = isMeeranIntroduction ? '김미란' : post.author_name;
+    const isExistingHarmonyLinkPost = new Date(post.created_at) < new Date('2026-08-06T04:00:00Z');
+    const visibleAuthorName = isExistingHarmonyLinkPost ? '하모니링크' : post.author_name;
     card.querySelector('.post-author').textContent = `${visibleAuthorName} · ${post.comments.length}개의 댓글`;
-    const resource = card.querySelector('.post-resource');
-    const contentUrl = String(post.content || '').match(/(?:https?:\/\/|www\.)[^\s<]+/i)?.[0] || '';
-    const safeUrl = escapeUrl(post.resource_url || contentUrl);
-    if (safeUrl) {
-      resource.href = safeUrl;
-      resource.textContent = safeUrl;
-      resource.setAttribute('aria-label', `관련 링크: ${safeUrl}`);
-      resource.removeAttribute('target');
-      resource.hidden = false;
-      resource.addEventListener('click', event => { event.preventDefault(); window.location.assign(safeUrl); });
-    }
+    const links = card.querySelector('.post-links');
+    const relatedUrls = [...new Set([...extractUrls(post.content), ...extractUrls(post.resource_url)])];
+    relatedUrls.forEach(safeUrl => {
+      const anchor = document.createElement('a');
+      const host = new URL(safeUrl).hostname.replace(/^www\./, '');
+      const label = /youtu\.be|youtube\.com/i.test(host) ? 'YouTube' : /instagram\.com/i.test(host) ? 'Instagram' : host;
+      const labelNode = document.createElement('b'); labelNode.textContent = `${label} 링크`;
+      const urlNode = document.createElement('span'); urlNode.textContent = safeUrl;
+      anchor.className = 'post-link'; anchor.href = safeUrl; anchor.append(labelNode, urlNode);
+      links.append(anchor);
+    });
+    links.hidden = relatedUrls.length === 0;
     const editable = post.author_id === user.id || profile.role === 'admin';
     card.querySelector('.post-actions').hidden = !editable;
     card.querySelector('.edit-post').addEventListener('click', () => openComposer(post));
