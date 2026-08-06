@@ -113,6 +113,7 @@ function updateMemberRoleInSheet_(values, roleLabel) {
   const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
   const sheet = spreadsheet.getSheetByName(MEMBER_SIGNUP.sheetName);
   if (!sheet || sheet.getLastRow() < 2) throw new Error('회원가입 명단을 찾을 수 없습니다.');
+  ensureMemberRoleValidation_(sheet);
   const memberId = String(values.member_id || '').trim();
   const email = String(values.member_email || '').trim().toLowerCase();
   const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, 7).getValues();
@@ -137,6 +138,24 @@ function updateMemberRoleInSheet_(values, roleLabel) {
   sheet.getRange(rowNumber, 3).setValue(String(values.member_name || rows[matchIndex][2] || '').trim());
   sheet.getRange(rowNumber, 6).setValue(roleLabel);
   SpreadsheetApp.flush();
+}
+
+function ensureMemberRoleValidation_(sheet) {
+  const allowedLabels = [
+    '관리자',
+    '일반회원',
+    '무료 파트너',
+    '$20 BASIC 파트너',
+    '$50 PREMIUM 파트너',
+    '베이직회원',
+    '프리미엄회원'
+  ];
+  const rule = SpreadsheetApp.newDataValidation()
+    .requireValueInList(allowedLabels, true)
+    .setAllowInvalid(false)
+    .build();
+  const rowCount = Math.max(sheet.getMaxRows() - 1, 1);
+  sheet.getRange(2, 6, rowCount, 1).setDataValidation(rule);
 }
 
 function escapeHtml_(value) {
