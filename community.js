@@ -74,7 +74,9 @@
     card.querySelector('time').textContent = formatDate(post.created_at);
     card.querySelector('.post-title').textContent = post.title;
     renderLinkedText(card.querySelector('.post-content'), post.content);
-    card.querySelector('.post-author').textContent = `${post.author_name} · ${post.comments.length}개의 댓글`;
+    const isMeeranIntroduction = /미란멜로디|meeran\s*melody/i.test(`${post.title} ${post.content}`);
+    const visibleAuthorName = isMeeranIntroduction ? '김미란' : post.author_name;
+    card.querySelector('.post-author').textContent = `${visibleAuthorName} · ${post.comments.length}개의 댓글`;
     const resource = card.querySelector('.post-resource'); const safeUrl = escapeUrl(post.resource_url);
     if (safeUrl) {
       resource.href = safeUrl;
@@ -128,7 +130,7 @@
   const initialize = async () => {
     if (!client) return;
     const { data } = await client.auth.getSession(); user = data.session?.user;
-    if (!user) { showAccessMessage('로그인이 필요합니다', '홈페이지에서 Google 또는 카카오로 로그인해 주세요.'); return; }
+    if (!user) { window.location.replace('./?refresh=20260805-267#partner-center'); return; }
     const { data: member, error } = await client.from('member_profiles').select('role,account_status,display_name').eq('id', user.id).maybeSingle();
     if (error || !member || member.account_status !== 'active' || !['partner0','partner20','partner50','admin'].includes(member.role)) { showAccessMessage('승인된 파트너만 이용할 수 있습니다', '파트너 승인이 완료되면 커뮤니티를 이용할 수 있습니다.'); return; }
     profile = { ...member, display_name: member.display_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0] };
