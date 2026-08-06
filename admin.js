@@ -207,8 +207,8 @@
     if (sessionError || !sessionData.session?.user) { deny('로그인하지 않은 사용자는 관리자 페이지에 접근할 수 없습니다.'); return; }
     currentUserId = sessionData.session.user.id;
     const metadata = sessionData.session.user.user_metadata || {};
-    currentUserName = metadata.full_name || metadata.name || metadata.nickname || sessionData.session.user.email?.split('@')[0] || '관리자';
-    const { data: profile, error: profileError } = await client.from('member_profiles').select('role,account_status').eq('id', currentUserId).maybeSingle();
+    const { data: profile, error: profileError } = await client.from('member_profiles').select('role,account_status,display_name').eq('id', currentUserId).maybeSingle();
+    currentUserName = profile?.display_name || metadata.full_name || metadata.name || metadata.nickname || sessionData.session.user.email?.split('@')[0] || '관리자';
     if (profileError || profile?.role !== 'admin' || profile?.account_status !== 'active') { deny('관리자 권한이 확인되지 않아 접근할 수 없습니다.'); return; }
     loading.hidden = true; denied.hidden = true; app.hidden = false; signOutButton.hidden = false;
     await loadMembers();

@@ -31,6 +31,7 @@
   let activeAuthMode = 'login';
   let activeMemberRole = 'guest';
   let activeMemberStatus = 'active';
+  let activeMemberName = '';
 
   const authSlot = document.createElement('div');
   authSlot.className = 'auth-nav-slot';
@@ -129,7 +130,7 @@
 
   const getProfile = user => {
     const metadata = user?.user_metadata || {};
-    const name = metadata.full_name || metadata.name || metadata.nickname || user?.email?.split('@')[0] || t('회원', 'Member');
+    const name = activeMemberName || metadata.full_name || metadata.name || metadata.nickname || user?.email?.split('@')[0] || t('회원', 'Member');
     const avatar = metadata.custom_avatar || metadata.avatar_url || metadata.picture || metadata.profile_image_url || '';
     return { name, avatar, email: user?.email || '' };
   };
@@ -294,20 +295,21 @@
     if (!session?.user) return { role: 'guest', status: 'active' };
     const { data, error } = await client
       .from('member_profiles')
-      .select('role,account_status')
+      .select('role,account_status,display_name')
       .eq('id', session.user.id)
       .maybeSingle();
     if (error) {
       console.error('Member access could not be loaded.', error);
       return { role: 'member', status: 'active' };
     }
-    return { role: data?.role || 'member', status: data?.account_status || 'active' };
+    return { role: data?.role || 'member', status: data?.account_status || 'active', name: data?.display_name || '' };
   };
 
   const refreshMemberAccess = async session => {
     const access = await loadMemberAccess(session);
     activeMemberRole = access.role;
     activeMemberStatus = access.status;
+    activeMemberName = access.name || '';
     render(session);
   };
 

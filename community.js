@@ -20,6 +20,7 @@
   let posts = [];
 
   const setMessage = (text, error = false) => { message.textContent = text; message.classList.toggle('error', error); };
+  const showAccessMessage = (title, copy) => { access.querySelector('h1').textContent = title; access.querySelector('p').textContent = copy; access.hidden = false; app.hidden = true; };
   const formatDate = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'America/New_York', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(value));
   const escapeUrl = value => { try { const raw = String(value || '').trim(); const parsed = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`); return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : ''; } catch { return ''; } };
   const renderLinkedText = (target, value) => {
@@ -75,7 +76,12 @@
     renderLinkedText(card.querySelector('.post-content'), post.content);
     card.querySelector('.post-author').textContent = `${post.author_name} · ${post.comments.length}개의 댓글`;
     const resource = card.querySelector('.post-resource'); const safeUrl = escapeUrl(post.resource_url);
-    if (safeUrl) { resource.href = safeUrl; resource.removeAttribute('target'); resource.hidden = false; }
+    if (safeUrl) {
+      resource.href = safeUrl;
+      resource.removeAttribute('target');
+      resource.hidden = false;
+      resource.addEventListener('click', event => { event.preventDefault(); window.location.assign(safeUrl); });
+    }
     const editable = post.author_id === user.id || profile.role === 'admin';
     card.querySelector('.post-actions').hidden = !editable;
     card.querySelector('.edit-post').addEventListener('click', () => openComposer(post));
@@ -120,9 +126,9 @@
   const initialize = async () => {
     if (!client) return;
     const { data } = await client.auth.getSession(); user = data.session?.user;
-    if (!user) { access.querySelector('h1').textContent = '로그인이 필요합니다'; access.querySelector('p').textContent = '홈페이지에서 Google 또는 카카오로 로그인해 주세요.'; return; }
+    if (!user) { showAccessMessage('로그인이 필요합니다', '홈페이지에서 Google 또는 카카오로 로그인해 주세요.'); return; }
     const { data: member, error } = await client.from('member_profiles').select('role,account_status,display_name').eq('id', user.id).maybeSingle();
-    if (error || !member || member.account_status !== 'active' || !['partner0','partner20','partner50','admin'].includes(member.role)) { access.querySelector('h1').textContent = '승인된 파트너만 이용할 수 있습니다'; access.querySelector('p').textContent = '파트너 승인이 완료되면 커뮤니티가 자동으로 열립니다.'; return; }
+    if (error || !member || member.account_status !== 'active' || !['partner0','partner20','partner50','admin'].includes(member.role)) { showAccessMessage('승인된 파트너만 이용할 수 있습니다', '파트너 승인이 완료되면 커뮤니티를 이용할 수 있습니다.'); return; }
     profile = { ...member, display_name: member.display_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0] };
     document.querySelector('[data-admin-only]').hidden = profile.role !== 'admin'; document.getElementById('memberBadge').textContent = roleLabels[profile.role]; document.getElementById('welcomeName').textContent = `${profile.display_name}님, 반갑습니다.`;
     const requestedCategory = new URLSearchParams(location.search).get('category');
