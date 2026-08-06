@@ -69,16 +69,18 @@ Deno.serve(async (request) => {
     const resolvedMemberId = targetUser.id;
     let storedRole = queuedRole;
     if (!storedRole) {
-      const { data: profile } = await adminClient.from('member_profiles').select('role').eq('id', resolvedMemberId).maybeSingle();
+      const { data: profile } = await adminClient.from('member_profiles').select('role,display_name').eq('id', resolvedMemberId).maybeSingle();
       storedRole = profile?.role || '';
     }
     if (!allowedRoles.includes(storedRole)) return json({ error: 'Stored member role cannot be notified' }, 409);
 
     const metadata = targetUser.user_metadata || {};
-    const memberName = metadata.full_name || metadata.name || metadata.nickname || targetUser.email.split('@')[0];
+    const { data: memberProfile } = await adminClient.from('member_profiles').select('display_name').eq('id', resolvedMemberId).maybeSingle();
+    const memberName = memberProfile?.display_name || metadata.full_name || metadata.name || metadata.nickname || targetUser.email.split('@')[0];
     const formData = new FormData();
     formData.set('action', 'role_change');
     formData.set('webhook_secret', webhookSecret);
+    formData.set('member_id', resolvedMemberId);
     formData.set('member_email', targetUser.email);
     formData.set('member_name', memberName);
     formData.set('old_role', allowedRoles.includes(oldRole) ? oldRole : '');
