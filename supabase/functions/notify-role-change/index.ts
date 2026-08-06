@@ -26,16 +26,25 @@ Deno.serve(async (request) => {
     let memberEmail = requestBody.memberEmail || '';
     let oldRole = requestBody.oldRole || '';
     let queuedNotificationId = '';
+    let queuedRole = '';
 
     if (requestBody.notificationId) {
-      const { data: queued } = await adminClient.from('role_email_outbox')
-        .select('id,member_id,old_role,new_role,processed_at,attempts')
-        .eq('id', requestBody.notificationId).maybeSingle();
-      if (!queued) return json({ error: 'Queued notification not found' }, 404);
+      let queued = null;
+      let queueError = null;
+      for (let attempt = 0; attempt < 8 && !queued; attempt += 1) {
+        const result = await adminClient.rpc('internal_get_role_email', {
+          p_notification_id: requestBody.notificationId
+        });
+        queued = result.data?.[0] || null;
+        queueError = result.error;
+        if (!queued) await new Promise(resolve => setTimeout(resolve, 300));
+      }
+      if (!queued) return json({ error: queueError?.message || 'Queued notification not found' }, 404);
       if (queued.processed_at) return json({ ok: true, duplicate: true });
       queuedNotificationId = queued.id;
       memberId = queued.member_id;
       oldRole = queued.old_role || '';
+      queuedRole = queued.new_role || '';
     } else {
       const authorization = request.headers.get('Authorization') || '';
       if (!authorization) return json({ error: 'Authentication required' }, 401);
@@ -58,8 +67,11 @@ Deno.serve(async (request) => {
     }
     if (!targetUser?.email) return json({ error: 'Member not found' }, 404);
     const resolvedMemberId = targetUser.id;
-    const { data: profile } = await adminClient.from('member_profiles').select('role').eq('id', resolvedMemberId).maybeSingle();
-    const storedRole = profile?.role || '';
+    let storedRole = queuedRole;
+    if (!storedRole) {
+      const { data: profile } = await adminClient.from('member_profiles').select('role').eq('id', resolvedMemberId).maybeSingle();
+      storedRole = profile?.role || '';
+    }
     if (!allowedRoles.includes(storedRole)) return json({ error: 'Stored member role cannot be notified' }, 409);
 
     const metadata = targetUser.user_metadata || {};
@@ -75,10 +87,16 @@ Deno.serve(async (request) => {
     const emailResult = await emailResponse.text();
     if (!emailResponse.ok) {
       console.error('Role email webhook failed', emailResponse.status, emailResult.slice(0, 500));
-      if (queuedNotificationId) await adminClient.from('role_email_outbox').update({ attempts: 1, last_error: `HTTP ${emailResponse.status}` }).eq('id', queuedNotificationId);
+      if (queuedNotificationId) await adminClient.rpc('internal_finish_role_email', {
+        p_notification_id: queuedNotificationId,
+        p_error: `HTTP ${emailResponse.status}`
+      });
       return json({ error: `Email delivery failed (${emailResponse.status})` }, 502);
     }
-    if (queuedNotificationId) await adminClient.from('role_email_outbox').update({ processed_at: new Date().toISOString(), attempts: 1, last_error: null }).eq('id', queuedNotificationId);
+    if (queuedNotificationId) await adminClient.rpc('internal_finish_role_email', {
+      p_notification_id: queuedNotificationId,
+      p_error: null
+    });
     return json({ ok: true });
   } catch (error) {
     return json({ error: error instanceof Error ? error.message : 'Unexpected error' }, 500);
