@@ -73,6 +73,8 @@
     }
     const select = card.querySelector('.member-role-select');
     select.value = member.role;
+    const nameInput = card.querySelector('.member-name-input');
+    nameInput.value = displayName;
     const statusButton = card.querySelector('.member-status-button');
     statusButton.dataset.status = member.account_status;
     statusButton.textContent = member.account_status === 'suspended' ? '중지 상태' : '활성 상태';
@@ -83,7 +85,7 @@
       statusButton.textContent = next === 'suspended' ? '중지 예정' : '활성 예정';
       statusButton.classList.toggle('suspended', next === 'suspended');
     });
-    card.querySelector('.member-save').addEventListener('click', () => updateMember(member, select.value, statusButton.dataset.status));
+    card.querySelector('.member-save').addEventListener('click', () => updateMember(member, select.value, statusButton.dataset.status, nameInput.value));
     const resendButton = card.querySelector('.member-resend');
     resendButton.addEventListener('click', async () => {
       resendButton.disabled = true;
@@ -155,20 +157,35 @@
     throw new Error('메일 서버의 처리 결과가 확인되지 않았습니다. 서버 내부 호출 기록을 확인해 주세요.');
   };
 
-  const updateMember = async (member, nextRole, nextStatus) => {
+  const updateMember = async (member, nextRole, nextStatus, requestedName) => {
+    const nextName = requestedName.trim();
     const roleChanged = nextRole !== member.role;
     const statusChanged = nextStatus !== member.account_status;
-    if (!roleChanged && !statusChanged) {
+    const nameChanged = nextName !== (member.display_name || '');
+    if (!roleChanged && !statusChanged && !nameChanged) {
       setMessage('변경된 내용이 없습니다.', true);
       return;
     }
-    const detail = [roleChanged ? `${ROLE_LABELS[member.role]} → ${ROLE_LABELS[nextRole]}` : '', statusChanged ? `${member.account_status === 'active' ? '활성' : '중지'} → ${nextStatus === 'active' ? '활성' : '중지'}` : ''].filter(Boolean).join('\n');
+    if (nextName.length < 2 || nextName.length > 50) {
+      setMessage('회원 이름은 2자 이상 50자 이하로 입력해 주세요.', true);
+      return;
+    }
+    const detail = [nameChanged ? `회원 이름 → ${nextName}` : '', roleChanged ? `${ROLE_LABELS[member.role]} → ${ROLE_LABELS[nextRole]}` : '', statusChanged ? `${member.account_status === 'active' ? '활성' : '중지'} → ${nextStatus === 'active' ? '활성' : '중지'}` : ''].filter(Boolean).join('\n');
     if (!window.confirm(`${member.email} 회원을 다음과 같이 변경할까요?\n\n${detail}`)) return;
     setMessage(`${member.email} 회원 정보를 변경하고 있습니다.`);
-    const { error } = await client.rpc('admin_update_member', { p_member_id: member.id, p_role: nextRole, p_account_status: nextStatus });
-    if (error) {
-      setMessage(`변경에 실패했습니다: ${error.message}`, true);
-      return;
+    if (nameChanged) {
+      const { error: nameError } = await client.rpc('admin_update_member_name', { p_member_id: member.id, p_display_name: nextName });
+      if (nameError) {
+        setMessage(`이름 변경에 실패했습니다: ${nameError.message}`, true);
+        return;
+      }
+    }
+    if (roleChanged || statusChanged) {
+      const { error } = await client.rpc('admin_update_member', { p_member_id: member.id, p_role: nextRole, p_account_status: nextStatus });
+      if (error) {
+        setMessage(`변경에 실패했습니다: ${error.message}`, true);
+        return;
+      }
     }
     if (roleChanged) {
       setMessage('회원 등급이 변경되었으며 서버에서 안내메일을 자동 발송합니다.');
