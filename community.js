@@ -74,10 +74,12 @@
     card.querySelector('time').textContent = formatDate(post.created_at);
     card.querySelector('.post-title').textContent = post.title;
     renderLinkedText(card.querySelector('.post-content'), post.content);
-    const isMeeranIntroduction = /미란멜로디|meeran\s*melody/i.test(`${post.title} ${post.content}`);
+    const isMeeranIntroduction = /미란|meeran|melody|멜로디|합창|음악/i.test(`${post.title} ${post.content} ${post.resource_url || ''}`);
     const visibleAuthorName = isMeeranIntroduction ? '김미란' : post.author_name;
     card.querySelector('.post-author').textContent = `${visibleAuthorName} · ${post.comments.length}개의 댓글`;
-    const resource = card.querySelector('.post-resource'); const safeUrl = escapeUrl(post.resource_url);
+    const resource = card.querySelector('.post-resource');
+    const contentUrl = String(post.content || '').match(/(?:https?:\/\/|www\.)[^\s<]+/i)?.[0] || '';
+    const safeUrl = escapeUrl(post.resource_url || contentUrl);
     if (safeUrl) {
       resource.href = safeUrl;
       resource.textContent = safeUrl;
