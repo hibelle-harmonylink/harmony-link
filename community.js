@@ -78,6 +78,8 @@
     const resource = card.querySelector('.post-resource'); const safeUrl = escapeUrl(post.resource_url);
     if (safeUrl) {
       resource.href = safeUrl;
+      resource.textContent = safeUrl;
+      resource.setAttribute('aria-label', `관련 링크: ${safeUrl}`);
       resource.removeAttribute('target');
       resource.hidden = false;
       resource.addEventListener('click', event => { event.preventDefault(); window.location.assign(safeUrl); });
