@@ -1158,8 +1158,8 @@ const partnerResourceSections = [
   {no:'08',tier:20,icon:'🎬',title:'영상 강의',copy:'파트너의 수업과 사업 운영 역량을 높이는 콘텐츠',items:[['Canva 사용법'],['ChatGPT 활용법'],['강의 잘하는 방법'],['시니어 수업 노하우'],['기관 계약 방법'],['마케팅 방법']]},
   {no:'09',tier:20,icon:'⬇️',title:'다운로드 센터',copy:'로고·포스터·배너·문서 파일 모음',items:[['Harmony Link 로고','assets/harmony-logo.png','PNG'],['하이벨 디지털 이미지','assets/brands/hibelle-digital.jpg','JPG'],['하이벨 화상영어 이미지','assets/brands/hibelle-online-english.jpg','JPG'],['Meeran Melody 이미지','assets/brands/meeran-melody.jpg','JPG'],['입점 파트너 모집 포스터','assets/partners/partner-recruitment.png','PNG'],['PowerPoint'],['PDF']]},
   {no:'10',tier:50,icon:'⭐',title:'회원 혜택',copy:'PREMIUM 파트너 전용 신청 서비스',premium:true,items:[['홍보 디자인 신청'],['홈페이지 추천 노출 신청'],['프로그램 등록 신청'],['배너 제작 신청']]},
-  {no:'11',tier:0,icon:'📌',title:'공지사항',copy:'매칭·행사·교육 및 시스템 소식',items:[['파트너 공지사항 안내','downloads/HarmonyLink_Partner_Notice_Guide_v1.0.pdf','PDF'],['신규 기관·출강 모집 소식'],['교육·행사 일정'],['자료실 업데이트']]},
-  {no:'12',tier:0,icon:'💬',title:'커뮤니티',copy:'파트너끼리 경험과 정보를 나누는 공간',items:[['파트너 커뮤니티 이용 가이드','downloads/HarmonyLink_Partner_Community_Guide_v1.0.pdf','PDF'],['질문과 답변'],['강사 후기·성공 사례'],['파트너 자료 공유']]}
+  {no:'11',tier:0,icon:'📌',title:'공지사항',copy:'매칭·행사·교육 및 시스템 소식',items:[['최신 공지사항 보기','community.html?category=notice','바로가기','view'],['파트너 공지사항 안내','downloads/HarmonyLink_Partner_Notice_Guide_v1.0.pdf','PDF'],['교육·행사 일정'],['자료실 업데이트']]},
+  {no:'12',tier:0,icon:'💬',title:'커뮤니티',copy:'파트너끼리 경험과 정보를 나누는 공간',items:[['파트너 커뮤니티 입장','community.html','바로가기','view'],['커뮤니티 이용 가이드','downloads/HarmonyLink_Partner_Community_Guide_v1.0.pdf','PDF'],['질문·후기·자료 공유']]}
 ];
 if (downloads) {
   const resourceMarkup = partnerResourceSections.map((section,index) => `<article class="partner-resource-group${section.premium?' premium-resource':''}" data-resource-tier="${section.tier}">
