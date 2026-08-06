@@ -145,8 +145,14 @@
       const delivery = rows?.[0];
       if (delivery?.processed_at) return;
       if (delivery?.last_error) throw new Error(`실제 메일 발송 실패: ${delivery.last_error}`);
+      if (delivery?.response_error) throw new Error(`서버 내부 호출 실패: ${delivery.response_error}`);
+      if (delivery?.response_status >= 400) {
+        let serverDetail = delivery.response_content || `HTTP ${delivery.response_status}`;
+        try { serverDetail = JSON.parse(serverDetail)?.error || serverDetail; } catch { /* Keep text response. */ }
+        throw new Error(`메일 함수 오류: ${serverDetail}`);
+      }
     }
-    throw new Error('메일 서버의 처리 결과가 확인되지 않았습니다. 잠시 후 다시 시도해 주세요.');
+    throw new Error('메일 서버의 처리 결과가 확인되지 않았습니다. 서버 내부 호출 기록을 확인해 주세요.');
   };
 
   const updateMember = async (member, nextRole, nextStatus) => {
