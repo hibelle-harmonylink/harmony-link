@@ -120,7 +120,19 @@ function updateMemberRoleInSheet_(values, roleLabel) {
     (memberId && String(row[0]).trim() === memberId) ||
     (email && String(row[3]).trim().toLowerCase() === email)
   );
-  if (matchIndex < 0) throw new Error('회원가입 명단에서 해당 회원을 찾을 수 없습니다.');
+  if (matchIndex < 0) {
+    sheet.appendRow([
+      memberId,
+      new Date(),
+      String(values.member_name || '').trim(),
+      String(values.member_email || '').trim(),
+      '',
+      roleLabel,
+      '등급 변경 시 자동 추가'
+    ]);
+    SpreadsheetApp.flush();
+    return;
+  }
   const rowNumber = matchIndex + 2;
   sheet.getRange(rowNumber, 3).setValue(String(values.member_name || rows[matchIndex][2] || '').trim());
   sheet.getRange(rowNumber, 6).setValue(roleLabel);
