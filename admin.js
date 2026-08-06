@@ -134,8 +134,19 @@
   };
 
   const sendRoleNotification = async (member, oldRole = '') => {
-    const { error } = await client.rpc('admin_queue_role_email', { p_member_id: member.id });
+    const { data: notificationId, error } = await client.rpc('admin_queue_role_email', { p_member_id: member.id });
     if (error) throw new Error(error.message || '메일 발송 대기열 등록에 실패했습니다.');
+    for (let attempt = 0; attempt < 15; attempt += 1) {
+      await new Promise(resolve => window.setTimeout(resolve, 1000));
+      const { data: rows, error: statusError } = await client.rpc('admin_get_role_email_status', {
+        p_notification_id: notificationId
+      });
+      if (statusError) throw new Error(statusError.message || '메일 발송 상태를 확인하지 못했습니다.');
+      const delivery = rows?.[0];
+      if (delivery?.processed_at) return;
+      if (delivery?.last_error) throw new Error(`실제 메일 발송 실패: ${delivery.last_error}`);
+    }
+    throw new Error('메일 서버의 처리 결과가 확인되지 않았습니다. 잠시 후 다시 시도해 주세요.');
   };
 
   const updateMember = async (member, nextRole, nextStatus) => {
