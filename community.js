@@ -24,14 +24,14 @@
   const escapeUrl = value => { try { const raw = String(value || '').trim(); const parsed = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`); return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : ''; } catch { return ''; } };
   const renderLinkedText = (target, value) => {
     const text = String(value || '');
-    const pattern = /((?:https?:\/\/|www\.)[^\s<]+)/gi;
+    const pattern = /((?:https?:\/\/|www\.)[^\s<]+|(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s<]*)?)/gi;
     let cursor = 0;
     for (const match of text.matchAll(pattern)) {
       if (match.index > cursor) target.append(document.createTextNode(text.slice(cursor, match.index)));
       const trailing = match[0].match(/[),.!?]+$/)?.[0] || '';
       const rawUrl = trailing ? match[0].slice(0, -trailing.length) : match[0];
       const safeUrl = escapeUrl(rawUrl);
-      if (safeUrl) { const link = document.createElement('a'); link.href = safeUrl; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = rawUrl; target.append(link); }
+      if (safeUrl) { const link = document.createElement('a'); link.href = safeUrl; link.textContent = rawUrl; target.append(link); }
       else target.append(document.createTextNode(rawUrl));
       if (trailing) target.append(document.createTextNode(trailing));
       cursor = match.index + match[0].length;
@@ -75,7 +75,7 @@
     renderLinkedText(card.querySelector('.post-content'), post.content);
     card.querySelector('.post-author').textContent = `${post.author_name} · ${post.comments.length}개의 댓글`;
     const resource = card.querySelector('.post-resource'); const safeUrl = escapeUrl(post.resource_url);
-    if (safeUrl) { resource.href = safeUrl; resource.hidden = false; }
+    if (safeUrl) { resource.href = safeUrl; resource.removeAttribute('target'); resource.hidden = false; }
     const editable = post.author_id === user.id || profile.role === 'admin';
     card.querySelector('.post-actions').hidden = !editable;
     card.querySelector('.edit-post').addEventListener('click', () => openComposer(post));
