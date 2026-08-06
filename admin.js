@@ -134,20 +134,8 @@
   };
 
   const sendRoleNotification = async (member, oldRole = '') => {
-    const { data, error } = await client.functions.invoke('notify-role-change', {
-      body: { memberId: member.id || '', memberEmail: member.email || '', oldRole }
-    });
-    if (error) {
-      let detail = error.message || '메일 서버 호출에 실패했습니다.';
-      if (error.context) {
-        try {
-          const responseBody = await error.context.json();
-          detail = responseBody?.error || detail;
-        } catch { /* Use the SDK error when the response is not JSON. */ }
-      }
-      throw new Error(detail);
-    }
-    if (!data?.ok) throw new Error(data?.error || '메일 서버가 전송을 완료하지 못했습니다.');
+    const { error } = await client.rpc('admin_queue_role_email', { p_member_id: member.id });
+    if (error) throw new Error(error.message || '메일 발송 대기열 등록에 실패했습니다.');
   };
 
   const updateMember = async (member, nextRole, nextStatus) => {
@@ -166,13 +154,7 @@
       return;
     }
     if (roleChanged) {
-      setMessage('등급이 변경되었습니다. 회원 안내메일을 요청하고 있습니다.');
-      try {
-        await sendRoleNotification(member, member.role);
-        setMessage('회원 등급이 변경되었으며 안내메일 전송을 요청했습니다.');
-      } catch {
-        setMessage('등급은 변경되었지만 안내메일 요청에 실패했습니다. 다시 새로고침한 후 시도해 주세요.', true);
-      }
+      setMessage('회원 등급이 변경되었으며 서버에서 안내메일을 자동 발송합니다.');
     } else {
       setMessage('회원 정보가 안전하게 변경되었습니다.');
     }
