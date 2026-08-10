@@ -18,6 +18,11 @@
   let user = null;
   let profile = null;
   let posts = [];
+  const legacyPostLinks = {
+    '1일 무료 체험 후기': 'https://www.youtube.com/shorts/zr_CoDfcEbI',
+    '미란멜로디 소개합니다.': 'https://www.instagram.com/meeranmelody',
+    '미란멜로디 소개합니다': 'https://www.instagram.com/meeranmelody'
+  };
 
   const setMessage = (text, error = false) => { message.textContent = text; message.classList.toggle('error', error); };
   const showAccessMessage = (title, copy) => { access.querySelector('h1').textContent = title; access.querySelector('p').textContent = copy; access.hidden = false; app.hidden = true; };
@@ -86,7 +91,8 @@
     const visibleAuthorName = isExistingHarmonyLinkPost ? '하모니링크' : post.author_name;
     card.querySelector('.post-author').textContent = `${visibleAuthorName} · ${post.comments.length}개의 댓글`;
     const links = card.querySelector('.post-links');
-    const relatedUrls = [...new Set([...extractUrls(post.content), ...extractUrls(post.resource_url)])];
+    const fallbackUrl = legacyPostLinks[String(post.title || '').trim()] || '';
+    const relatedUrls = [...new Set([...extractUrls(post.content), ...extractUrls(post.resource_url), ...extractUrls(fallbackUrl)])];
     relatedUrls.forEach(safeUrl => {
       const anchor = document.createElement('a');
       const host = new URL(safeUrl).hostname.replace(/^www\./, '');
