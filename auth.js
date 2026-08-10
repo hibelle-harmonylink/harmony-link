@@ -459,6 +459,14 @@
       ));
       if (!confirmed) return;
       deleteButton.disabled = true;
+      const { error: rosterError } = await client.functions.invoke('notify-role-change', {
+        body: { action: 'member_withdrawal' }
+      });
+      if (rosterError) {
+        deleteButton.disabled = false;
+        window.alert(t('회원명단 변경에 실패하여 탈퇴를 중단했습니다. 잠시 후 다시 시도해 주세요.', 'The member roster could not be updated, so account deletion was stopped. Please try again.'));
+        return;
+      }
       const { error } = await client.rpc('delete_own_account');
       if (error) {
         deleteButton.disabled = false;

@@ -26,13 +26,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="community.css?v=20260806-269">
+  <link rel="stylesheet" href="community.css?v=20260809-270">
 </head>
 <body>
   <main>
     <section id="accessState" class="access-state" hidden><h1></h1><p></p></section>
     <section id="communityApp" class="community-app" hidden>
-      <div class="community-topbar"><a class="logo" href="./" aria-label="Harmony Link home"><span class="logo-mark brand-image"><img src="assets/harmony-logo.png" alt=""></span><span class="logo-name">Harmony <b>Link</b><small>이음문화센터</small></span></a><button id="signOutButton" type="button">로그아웃</button></div>
+      <div class="community-topbar"><a class="logo" href="./" aria-label="Harmony Link home"><span class="logo-mark brand-image"><img src="assets/harmony-logo.png" alt=""></span><span class="logo-name">Harmony <b>Link</b><small>이음문화센터</small></span></a><div class="community-account-actions"><a class="home-button" href="./">홈페이지</a><button id="signOutButton" type="button">로그아웃</button></div></div>
       <div class="community-hero"><div><p class="eyebrow">PARTNER COMMUNITY</p><h1>파트너 커뮤니티</h1><p>서로의 경험과 정보를 나누며 함께 성장하는 공간입니다.</p></div><button id="openComposer" class="primary-button" type="button">＋ 새 글 작성</button></div>
       <div class="community-summary"><span id="memberBadge">승인 파트너</span><strong id="welcomeName"></strong><p>개인정보나 수강생의 민감한 정보는 게시하지 마세요.</p></div>
       <div class="community-toolbar"><label><span>게시판 선택</span><select id="categoryFilter"><option value="">전체 게시글</option><option value="notice">공지사항</option><option value="intro">파트너 소개</option><option value="question">질문과 답변</option><option value="review">수업 후기·성공 사례</option><option value="resource">자료 공유</option></select></label><label><span>게시글 검색</span><input id="postSearch" type="search" placeholder="제목이나 내용을 검색하세요"></label><button id="refreshPosts" type="button">새로고침 ↻</button></div>
@@ -44,6 +44,6 @@
   <div id="composerModal" class="composer-modal" hidden><div class="modal-backdrop" data-close-composer></div><form id="postForm" class="composer-panel"><button class="modal-close" type="button" data-close-composer>×</button><p class="eyebrow">WRITE A POST</p><h2 id="composerTitle">새 글 작성</h2><input id="editingPostId" type="hidden"><label><span>게시판</span><select id="postCategory" required><option value="intro">파트너 소개</option><option value="question">질문과 답변</option><option value="review">수업 후기·성공 사례</option><option value="resource">자료 공유</option><option value="notice" data-admin-only>공지사항 (관리자)</option></select></label><label><span>제목</span><input id="postTitle" maxlength="120" required placeholder="내용을 알 수 있는 제목을 적어주세요"></label><label><span>내용</span><textarea id="postContent" maxlength="5000" required placeholder="파트너에게 도움이 될 내용을 나눠주세요"></textarea></label><label><span>관련 자료 링크 <small>(선택)</small></span><input id="postResourceUrl" type="url" placeholder="https://"></label><button class="primary-button submit-post" type="submit">게시하기</button><p id="composerMessage" class="community-message" role="status"></p></form></div>
   <template id="postTemplate"><article class="post-card"><header><span class="post-category"></span><time></time></header><h2 class="post-title"></h2><p class="post-content"></p><div class="post-links" hidden></div><div class="post-meta"><span class="post-author"></span><div class="post-actions"><button class="edit-post" type="button">수정</button><button class="delete-post" type="button">삭제</button></div></div><section class="comments"><button class="comment-toggle" type="button">댓글 <b>0</b></button><div class="comment-panel" hidden><div class="comment-list"></div><form class="comment-form"><input maxlength="1000" required placeholder="댓글을 입력하세요"><button type="submit">등록</button></form></div></section></article></template>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="community.js?v=20260806-269"></script>
+  <script src="community.js?v=20260809-270"></script>
 </body>
 </html>

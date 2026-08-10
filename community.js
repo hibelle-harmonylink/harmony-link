@@ -25,7 +25,10 @@
   const escapeUrl = value => { try { const raw = String(value || '').trim(); const parsed = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`); return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : ''; } catch { return ''; } };
   const extractUrls = value => {
     const matches = String(value || '').match(/(?:https?:\/\/|www\.)[^\s<]+|(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s<]*)?/gi) || [];
-    return matches.map(item => item.replace(/[),.!?]+$/, '')).map(escapeUrl).filter(Boolean);
+    const urls = matches.map(item => item.replace(/[),.!?]+$/, '')).map(escapeUrl).filter(Boolean);
+    const instagramHandles = [...String(value || '').matchAll(/(?:^|\s)@([a-z0-9._]{2,30})\b/gi)]
+      .map(match => `https://www.instagram.com/${match[1]}/`);
+    return [...urls, ...instagramHandles];
   };
   const renderLinkedText = (target, value) => {
     const text = String(value || '');
@@ -36,7 +39,7 @@
       const trailing = match[0].match(/[),.!?]+$/)?.[0] || '';
       const rawUrl = trailing ? match[0].slice(0, -trailing.length) : match[0];
       const safeUrl = escapeUrl(rawUrl);
-      if (safeUrl) { const link = document.createElement('a'); link.href = safeUrl; link.textContent = rawUrl; target.append(link); }
+      if (safeUrl) { const link = document.createElement('a'); link.href = safeUrl; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = rawUrl; target.append(link); }
       else target.append(document.createTextNode(rawUrl));
       if (trailing) target.append(document.createTextNode(trailing));
       cursor = match.index + match[0].length;
@@ -89,7 +92,7 @@
       const label = /youtu\.be|youtube\.com/i.test(host) ? 'YouTube' : /instagram\.com/i.test(host) ? 'Instagram' : host;
       const labelNode = document.createElement('b'); labelNode.textContent = `${label} 링크`;
       const urlNode = document.createElement('span'); urlNode.textContent = safeUrl;
-      anchor.className = 'post-link'; anchor.href = safeUrl; anchor.append(labelNode, urlNode);
+      anchor.className = 'post-link'; anchor.href = safeUrl; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer'; anchor.append(labelNode, urlNode);
       links.append(anchor);
     });
     links.hidden = relatedUrls.length === 0;

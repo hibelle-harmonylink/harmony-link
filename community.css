@@ -10,3 +10,7 @@
 .post-resource::before{content:'관련 링크: ';color:#3c5875;text-decoration:none}.post-resource{line-height:1.55}
 @media(max-width:700px){.community-topbar{min-height:52px}.community-topbar .logo{font-size:18px}.community-topbar .logo-mark{width:31px;height:31px}}
 body{font-family:"DM Sans","Noto Sans KR",sans-serif}.community-topbar .logo{font-size:20px;font-weight:600;letter-spacing:-.7px}.post-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:13px}.post-links[hidden]{display:none!important}.post-link{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:8px 11px;border:1px solid #bed5ef;border-radius:9px;background:#edf6ff;color:#075fc4;font-size:11px;font-weight:700;text-decoration:none}.post-link span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.post-link:hover{background:#dceeff}
+
+/* Compact community header and keep navigation actions together. */
+main{padding-top:0!important}.community-topbar{min-height:48px!important;margin-bottom:2px!important}.community-account-actions{display:flex;align-items:center;gap:8px}.community-topbar .home-button{border:1px solid #c7d9eb;border-radius:10px;background:#fff;color:#17416f;padding:8px 11px;font-size:11px;font-weight:800;text-decoration:none}
+@media(max-width:700px){.community-topbar{min-height:44px!important}.community-account-actions{gap:5px}.community-topbar .home-button,.community-topbar button{padding:7px 9px!important;font-size:9px!important}}

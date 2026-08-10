@@ -22,6 +22,29 @@ Deno.serve(async (request) => {
     const adminClient = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
     if (!webhookUrl || !webhookSecret) return json({ error: 'Notification service is not configured' }, 503);
     const requestBody = await request.json();
+    if (requestBody.action === 'member_withdrawal') {
+      const authorization = request.headers.get('Authorization') || '';
+      if (!authorization) return json({ error: 'Authentication required' }, 401);
+      const userClient = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authorization } } });
+      const { data: { user }, error: userError } = await userClient.auth.getUser();
+      if (userError || !user?.email) return json({ error: 'Authentication required' }, 401);
+      const { data: memberProfile } = await adminClient.from('member_profiles').select('display_name').eq('id', user.id).maybeSingle();
+      const metadata = user.user_metadata || {};
+      const memberName = memberProfile?.display_name || metadata.full_name || metadata.name || metadata.nickname || user.email.split('@')[0];
+      const formData = new FormData();
+      formData.set('action', 'member_withdrawal');
+      formData.set('webhook_secret', webhookSecret);
+      formData.set('member_id', user.id);
+      formData.set('member_email', user.email);
+      formData.set('member_name', memberName);
+      const rosterResponse = await fetch(webhookUrl, { method: 'POST', body: formData, redirect: 'follow' });
+      const rosterResult = await rosterResponse.text();
+      if (!rosterResponse.ok) {
+        console.error('Withdrawal roster webhook failed', rosterResponse.status, rosterResult.slice(0, 500));
+        return json({ error: `Roster update failed (${rosterResponse.status})` }, 502);
+      }
+      return json({ ok: true });
+    }
     let memberId = requestBody.memberId || '';
     let memberEmail = requestBody.memberEmail || '';
     let oldRole = requestBody.oldRole || '';
