@@ -1,0 +1,4 @@
+-- Version marker for a one-time, administrator-requested account removal.
+-- The identifying data and destructive statement are intentionally not kept
+-- in source control. The operation was applied directly with an exact-email,
+-- Google-provider, single-match guard.
