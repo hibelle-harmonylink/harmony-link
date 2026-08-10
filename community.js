@@ -149,12 +149,12 @@
   document.querySelectorAll('[data-close-composer]').forEach(button => button.addEventListener('click', closeComposer));
   document.getElementById('refreshPosts').addEventListener('click', loadPosts);
   categoryFilter.addEventListener('change', renderPosts); search.addEventListener('input', renderPosts);
-  document.getElementById('signOutButton').addEventListener('click', async () => { await client.auth.signOut(); location.replace('./'); });
+  document.getElementById('signOutButton').addEventListener('click', async () => { await client.auth.signOut(); location.replace('https://hibelleharmony.com/'); });
 
   const initialize = async () => {
     if (!client) return;
     const { data } = await client.auth.getSession(); user = data.session?.user;
-    if (!user) { window.location.replace('./?refresh=20260805-267#partner-center'); return; }
+    if (!user) { window.location.replace('https://hibelleharmony.com/?refresh=20260809-277#partner-center'); return; }
     const { data: member, error } = await client.from('member_profiles').select('role,account_status,display_name').eq('id', user.id).maybeSingle();
     if (error || !member || member.account_status !== 'active' || !['partner0','partner20','partner50','admin'].includes(member.role)) { showAccessMessage('승인된 파트너만 이용할 수 있습니다', '파트너 승인이 완료되면 커뮤니티를 이용할 수 있습니다.'); return; }
     profile = { ...member, display_name: member.display_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0] };
