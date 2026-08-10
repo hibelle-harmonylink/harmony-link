@@ -112,11 +112,11 @@ function sendRoleChangeEmail_(values) {
 function markMemberWithdrawn_(values) {
   const expectedSecret = PropertiesService.getScriptProperties().getProperty(MEMBER_SIGNUP.roleEmailSecretProperty);
   if (!expectedSecret || String(values.webhook_secret || '') !== expectedSecret) throw new Error('Authorized webhook required.');
-  updateMemberRoleInSheet_(values, '탈퇴');
+  updateMemberRoleInSheet_(values, '탈퇴', true);
   return ContentService.createTextOutput(JSON.stringify({ ok: true })).setMimeType(ContentService.MimeType.JSON);
 }
 
-function updateMemberRoleInSheet_(values, roleLabel) {
+function updateMemberRoleInSheet_(values, roleLabel, isWithdrawal) {
   const spreadsheetId = PropertiesService.getScriptProperties()
     .getProperty(MEMBER_SIGNUP.propertySpreadsheetId);
   if (!spreadsheetId) throw new Error('MEMBER_SPREADSHEET_ID가 설정되지 않았습니다.');
@@ -132,20 +132,29 @@ function updateMemberRoleInSheet_(values, roleLabel) {
     (email && String(row[3]).trim().toLowerCase() === email)
   );
   if (matchIndex < 0) {
+    if (isWithdrawal && (!memberId || !email)) {
+      throw new Error('탈퇴 회원을 명단에서 찾을 수 없고 회원 식별정보도 없습니다.');
+    }
     sheet.appendRow([
       memberId,
-      new Date(),
+      values.member_joined_at || new Date(),
       String(values.member_name || '').trim(),
       String(values.member_email || '').trim(),
-      '',
+      String(values.member_signup_method || '').trim(),
       roleLabel,
-      '등급 변경 시 자동 추가'
+      String(values.member_signup_path || (isWithdrawal ? '회원탈퇴 시 자동 기록' : '등급 변경 시 자동 추가')).trim()
     ]);
     SpreadsheetApp.flush();
     return;
   }
   const rowNumber = matchIndex + 2;
-  sheet.getRange(rowNumber, 3).setValue(String(values.member_name || rows[matchIndex][2] || '').trim());
+  const existing = rows[matchIndex];
+  if (!existing[0] && memberId) sheet.getRange(rowNumber, 1).setValue(memberId);
+  if (!existing[1] && values.member_joined_at) sheet.getRange(rowNumber, 2).setValue(values.member_joined_at);
+  if (!existing[2] && values.member_name) sheet.getRange(rowNumber, 3).setValue(String(values.member_name).trim());
+  if (!existing[3] && values.member_email) sheet.getRange(rowNumber, 4).setValue(String(values.member_email).trim());
+  if (!existing[4] && values.member_signup_method) sheet.getRange(rowNumber, 5).setValue(String(values.member_signup_method).trim());
+  if (!existing[6] && values.member_signup_path) sheet.getRange(rowNumber, 7).setValue(String(values.member_signup_path).trim());
   sheet.getRange(rowNumber, 6).setValue(roleLabel);
   SpreadsheetApp.flush();
 }

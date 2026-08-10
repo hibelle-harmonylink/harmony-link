@@ -37,6 +37,9 @@ Deno.serve(async (request) => {
       formData.set('member_id', user.id);
       formData.set('member_email', user.email);
       formData.set('member_name', memberName);
+      formData.set('member_joined_at', user.created_at || '');
+      formData.set('member_signup_method', String(user.app_metadata?.provider || user.app_metadata?.providers?.[0] || ''));
+      formData.set('member_signup_path', 'Harmony Link 홈페이지');
       const rosterResponse = await fetch(webhookUrl, { method: 'POST', body: formData, redirect: 'follow' });
       const rosterResult = await rosterResponse.text();
       if (!rosterResponse.ok) {
