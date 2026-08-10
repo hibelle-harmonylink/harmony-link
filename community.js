@@ -82,12 +82,23 @@
     card.querySelector('.post-title').textContent = post.title;
     const contentElement = card.querySelector('.post-content');
     renderLinkedText(contentElement, post.content);
+    const resourceUrls = [...new Set(extractUrls(post.resource_url))];
+    resourceUrls.forEach(safeUrl => {
+      const host = new URL(safeUrl).hostname.replace(/^www\./, '');
+      const label = /youtu\.be|youtube\.com/i.test(host) ? 'YouTube 영상 보기' : /instagram\.com/i.test(host) ? 'Instagram 보기' : '관련 링크 보기';
+      const inlineLink = document.createElement('a');
+      inlineLink.className = 'post-content-link';
+      inlineLink.href = safeUrl;
+      inlineLink.target = '_blank';
+      inlineLink.rel = 'noopener noreferrer';
+      inlineLink.innerHTML = `<b>${label} ↗</b><span>${safeUrl}</span>`;
+      contentElement.append(inlineLink);
+    });
     const isExistingHarmonyLinkPost = new Date(post.created_at) < new Date('2026-08-06T04:00:00Z');
     const visibleAuthorName = isExistingHarmonyLinkPost ? '하모니링크' : post.author_name;
     card.querySelector('.post-author').textContent = `${visibleAuthorName} · ${post.comments.length}개의 댓글`;
     const links = card.querySelector('.post-links');
     const relatedUrls = [...new Set([...extractUrls(post.content), ...extractUrls(post.resource_url)])];
-    const inlineResourceUrls = new Set(extractUrls(post.resource_url));
     relatedUrls.forEach(safeUrl => {
       const anchor = document.createElement('a');
       const host = new URL(safeUrl).hostname.replace(/^www\./, '');
@@ -97,15 +108,6 @@
       anchor.className = 'post-link'; anchor.href = safeUrl; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer'; anchor.append(labelNode, urlNode);
       links.append(anchor);
 
-      if (inlineResourceUrls.has(safeUrl)) {
-        const inlineLink = document.createElement('a');
-        inlineLink.className = 'post-content-link';
-        inlineLink.href = safeUrl;
-        inlineLink.target = '_blank';
-        inlineLink.rel = 'noopener noreferrer';
-        inlineLink.textContent = `${label}: ${safeUrl}`;
-        contentElement.append(document.createElement('br'), inlineLink);
-      }
     });
     links.hidden = true;
     const editable = post.author_id === user.id || profile.role === 'admin';
