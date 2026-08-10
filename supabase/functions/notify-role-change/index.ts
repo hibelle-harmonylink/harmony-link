@@ -42,9 +42,10 @@ Deno.serve(async (request) => {
       formData.set('member_signup_path', 'Harmony Link 홈페이지');
       const rosterResponse = await fetch(webhookUrl, { method: 'POST', body: formData, redirect: 'follow' });
       const rosterResult = await rosterResponse.text();
-      if (!rosterResponse.ok) {
+      const rosterJson = parseWebhookResult(rosterResult);
+      if (!rosterResponse.ok || rosterJson?.ok !== true) {
         console.error('Withdrawal roster webhook failed', rosterResponse.status, rosterResult.slice(0, 500));
-        return json({ error: `Roster update failed (${rosterResponse.status})` }, 502);
+        return json({ error: rosterJson?.error || `Roster update failed (${rosterResponse.status})` }, 502);
       }
       return json({ ok: true });
     }
@@ -113,13 +114,14 @@ Deno.serve(async (request) => {
     formData.set('new_role', storedRole);
     const emailResponse = await fetch(webhookUrl, { method: 'POST', body: formData, redirect: 'follow' });
     const emailResult = await emailResponse.text();
-    if (!emailResponse.ok) {
+    const emailJson = parseWebhookResult(emailResult);
+    if (!emailResponse.ok || emailJson?.ok !== true) {
       console.error('Role email webhook failed', emailResponse.status, emailResult.slice(0, 500));
       if (queuedNotificationId) await adminClient.rpc('internal_finish_role_email', {
         p_notification_id: queuedNotificationId,
-        p_error: `HTTP ${emailResponse.status}`
+        p_error: emailJson?.error || `HTTP ${emailResponse.status}`
       });
-      return json({ error: `Email delivery failed (${emailResponse.status})` }, 502);
+      return json({ error: emailJson?.error || `Email delivery failed (${emailResponse.status})` }, 502);
     }
     if (queuedNotificationId) await adminClient.rpc('internal_finish_role_email', {
       p_notification_id: queuedNotificationId,
@@ -133,4 +135,13 @@ Deno.serve(async (request) => {
 
 function json(body: Record<string, unknown>, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+}
+
+function parseWebhookResult(value: string): { ok?: boolean; error?: string } | null {
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === 'object' ? parsed : null;
+  } catch {
+    return null;
+  }
 }
