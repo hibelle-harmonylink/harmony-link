@@ -80,12 +80,14 @@
     const category = card.querySelector('.post-category'); category.textContent = labels[post.category]; category.classList.add(post.category);
     card.querySelector('time').textContent = formatDate(post.created_at);
     card.querySelector('.post-title').textContent = post.title;
-    renderLinkedText(card.querySelector('.post-content'), post.content);
+    const contentElement = card.querySelector('.post-content');
+    renderLinkedText(contentElement, post.content);
     const isExistingHarmonyLinkPost = new Date(post.created_at) < new Date('2026-08-06T04:00:00Z');
     const visibleAuthorName = isExistingHarmonyLinkPost ? '하모니링크' : post.author_name;
     card.querySelector('.post-author').textContent = `${visibleAuthorName} · ${post.comments.length}개의 댓글`;
     const links = card.querySelector('.post-links');
     const relatedUrls = [...new Set([...extractUrls(post.content), ...extractUrls(post.resource_url)])];
+    const inlineResourceUrls = new Set(extractUrls(post.resource_url));
     relatedUrls.forEach(safeUrl => {
       const anchor = document.createElement('a');
       const host = new URL(safeUrl).hostname.replace(/^www\./, '');
@@ -94,8 +96,18 @@
       const urlNode = document.createElement('span'); urlNode.textContent = safeUrl;
       anchor.className = 'post-link'; anchor.href = safeUrl; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer'; anchor.append(labelNode, urlNode);
       links.append(anchor);
+
+      if (inlineResourceUrls.has(safeUrl)) {
+        const inlineLink = document.createElement('a');
+        inlineLink.className = 'post-content-link';
+        inlineLink.href = safeUrl;
+        inlineLink.target = '_blank';
+        inlineLink.rel = 'noopener noreferrer';
+        inlineLink.textContent = `${label}: ${safeUrl}`;
+        contentElement.append(document.createElement('br'), inlineLink);
+      }
     });
-    links.hidden = relatedUrls.length === 0;
+    links.hidden = true;
     const editable = post.author_id === user.id || profile.role === 'admin';
     card.querySelector('.post-actions').hidden = !editable;
     card.querySelector('.edit-post').addEventListener('click', () => openComposer(post));

@@ -14,3 +14,7 @@ body{font-family:"DM Sans","Noto Sans KR",sans-serif}.community-topbar .logo{fon
 /* Compact community header and keep navigation actions together. */
 main{padding-top:0!important}.community-topbar{min-height:48px!important;margin-bottom:2px!important}.community-account-actions{display:flex;align-items:center;gap:8px}.community-topbar .home-button{border:1px solid #c7d9eb;border-radius:10px;background:#fff;color:#17416f;padding:8px 11px;font-size:11px;font-weight:800;text-decoration:none}
 @media(max-width:700px){.community-topbar{min-height:44px!important}.community-account-actions{gap:5px}.community-topbar .home-button,.community-topbar button{padding:7px 9px!important;font-size:9px!important}}
+
+/* Align the community header with the main website navigation. */
+main{width:min(1180px,calc(100% - 48px))!important;margin:0 auto!important;padding:0 0 70px!important}.community-topbar{height:70px!important;min-height:70px!important;margin:0!important}.community-hero{margin-top:0!important}.post-content-link{display:inline-block;margin-top:7px;color:#075fc4;font-weight:800;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+@media(max-width:700px){main{width:calc(100% - 24px)!important;padding:0 0 45px!important}.community-topbar{height:58px!important;min-height:58px!important}.post-content-link{font-size:11px}}
