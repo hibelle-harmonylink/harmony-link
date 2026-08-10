@@ -166,8 +166,6 @@ function ensureMemberRoleValidation_(sheet) {
     '무료 파트너',
     '$20 BASIC 파트너',
     '$50 PREMIUM 파트너',
-    '베이직회원',
-    '프리미엄회원',
     '탈퇴'
   ];
   const rule = SpreadsheetApp.newDataValidation()

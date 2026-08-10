@@ -157,6 +157,28 @@
     throw new Error('메일 서버의 처리 결과가 확인되지 않았습니다. 서버 내부 호출 기록을 확인해 주세요.');
   };
 
+  const waitForAutomaticRoleEmail = async (memberId, changedAfter) => {
+    for (let attempt = 0; attempt < 20; attempt += 1) {
+      await new Promise(resolve => window.setTimeout(resolve, 1000));
+      const { data: rows, error } = await client.rpc('admin_get_latest_role_email_status', {
+        p_member_id: memberId,
+        p_after: changedAfter
+      });
+      if (error) throw new Error(error.message || '메일 발송 상태를 확인하지 못했습니다.');
+      const delivery = rows?.[0];
+      if (!delivery) continue;
+      if (delivery.last_error) throw new Error(`실제 메일 발송 실패: ${delivery.last_error}`);
+      if (delivery.response_error) throw new Error(`서버 내부 호출 실패: ${delivery.response_error}`);
+      if (delivery.response_status >= 400) {
+        let serverDetail = delivery.response_content || `HTTP ${delivery.response_status}`;
+        try { serverDetail = JSON.parse(serverDetail)?.error || serverDetail; } catch { /* Keep text response. */ }
+        throw new Error(`메일 함수 오류: ${serverDetail}`);
+      }
+      if (delivery.processed_at) return;
+    }
+    throw new Error('등급은 변경됐지만 메일 발송 결과를 확인하지 못했습니다.');
+  };
+
   const updateMember = async (member, nextRole, nextStatus, requestedName) => {
     const nextName = requestedName.trim();
     const roleChanged = nextRole !== member.role;
@@ -180,6 +202,7 @@
         return;
       }
     }
+    const roleChangedAt = new Date(Date.now() - 2000).toISOString();
     if (roleChanged || statusChanged) {
       const { error } = await client.rpc('admin_update_member', { p_member_id: member.id, p_role: nextRole, p_account_status: nextStatus });
       if (error) {
@@ -188,7 +211,13 @@
       }
     }
     if (roleChanged) {
-      setMessage('회원 등급이 변경되었으며 서버에서 안내메일을 자동 발송합니다.');
+      setMessage('회원 등급이 변경되었습니다. 실제 메일 발송 결과를 확인하고 있습니다.');
+      try {
+        await waitForAutomaticRoleEmail(member.id, roleChangedAt);
+        setMessage('회원 등급 변경과 안내메일 발송이 모두 완료되었습니다.');
+      } catch (mailError) {
+        setMessage(`등급은 변경됐지만 안내메일은 발송되지 않았습니다: ${mailError.message}`, true);
+      }
     } else {
       setMessage('회원 정보가 안전하게 변경되었습니다.');
     }
