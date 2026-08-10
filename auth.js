@@ -528,6 +528,22 @@
     }
   });
 
+  let accessRefreshRunning = false;
+  const refreshAccessFromServer = async () => {
+    if (accessRefreshRunning) return;
+    accessRefreshRunning = true;
+    try {
+      const { data } = await client.auth.getSession();
+      await refreshMemberAccess(data.session || null);
+    } finally {
+      accessRefreshRunning = false;
+    }
+  };
+  window.addEventListener('focus', refreshAccessFromServer);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') void refreshAccessFromServer();
+  });
+
   new MutationObserver(updateLanguage).observe(document.documentElement, {
     attributes: true,
     attributeFilter: ['lang']

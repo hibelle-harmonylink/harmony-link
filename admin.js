@@ -179,6 +179,24 @@
     throw new Error('등급은 변경됐지만 메일 발송 결과를 확인하지 못했습니다.');
   };
 
+  const sendDirectRoleNotification = async (member, oldRole) => {
+    const { data, error } = await client.functions.invoke('notify-role-change', {
+      body: { memberId: member.id, memberEmail: member.email, oldRole }
+    });
+    if (error) {
+      let detail = error.message || '등급 변경 메일 서버 호출에 실패했습니다.';
+      try {
+        const response = error.context;
+        if (response && typeof response.clone === 'function') {
+          const payload = await response.clone().json();
+          detail = payload?.error || detail;
+        }
+      } catch { /* Keep the available error message. */ }
+      throw new Error(detail);
+    }
+    if (data?.error) throw new Error(data.error);
+  };
+
   const updateMember = async (member, nextRole, nextStatus, requestedName) => {
     const nextName = requestedName.trim();
     const roleChanged = nextRole !== member.role;
@@ -216,7 +234,13 @@
         await waitForAutomaticRoleEmail(member.id, roleChangedAt);
         setMessage('회원 등급 변경과 안내메일 발송이 모두 완료되었습니다.');
       } catch (mailError) {
-        setMessage(`등급은 변경됐지만 안내메일은 발송되지 않았습니다: ${mailError.message}`, true);
+        setMessage('자동 메일 결과를 확인하지 못해 안전한 직접 발송을 시도하고 있습니다.');
+        try {
+          await sendDirectRoleNotification({ ...member, role: nextRole }, member.role);
+          setMessage('회원 등급 변경과 안내메일 발송이 모두 완료되었습니다.');
+        } catch (directError) {
+          setMessage(`등급은 변경됐지만 안내메일은 발송되지 않았습니다: ${directError.message}`, true);
+        }
       }
     } else {
       setMessage('회원 정보가 안전하게 변경되었습니다.');
