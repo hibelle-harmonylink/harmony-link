@@ -92,10 +92,13 @@
     card.querySelector('.post-author').textContent = `${visibleAuthorName} · ${post.comments.length}개의 댓글`;
     const links = card.querySelector('.post-links');
     const normalizedTitle = String(post.title || '').trim();
-    const fallbackUrl = legacyPostLinks[normalizedTitle]
-      || (/1일\s*(무료\s*)?체험.*후기/.test(normalizedTitle) ? 'https://www.youtube.com/shorts/zr_CoDfcEbI' : '')
-      || (/미란멜로디.*소개/.test(normalizedTitle) ? 'https://www.instagram.com/meeranmelody/' : '');
-    const relatedUrls = [...new Set([...extractUrls(post.content), ...extractUrls(post.resource_url), ...extractUrls(fallbackUrl)])];
+    const fixedPostUrl = normalizedTitle.includes('1일 무료 체험 후기')
+      ? 'https://www.youtube.com/shorts/zr_CoDfcEbI'
+      : normalizedTitle.includes('미란멜로디') && normalizedTitle.includes('소개')
+        ? 'https://www.instagram.com/meeranmelody/'
+        : '';
+    const fallbackUrl = fixedPostUrl || legacyPostLinks[normalizedTitle] || '';
+    const relatedUrls = [...new Set([fallbackUrl, ...extractUrls(post.content), ...extractUrls(post.resource_url)].filter(Boolean))];
     relatedUrls.forEach(safeUrl => {
       const anchor = document.createElement('a');
       const host = new URL(safeUrl).hostname.replace(/^www\./, '');
