@@ -14,7 +14,7 @@
   const categoryFilter = document.getElementById('categoryFilter');
   const search = document.getElementById('postSearch');
   const labels = { notice: '공지사항', intro: '파트너 소개', question: '질문과 답변', review: '수업 후기·성공 사례', resource: '자료 공유' };
-  const roleLabels = { partner0: '무료 파트너', partner20: '$20 BASIC 파트너', partner50: '$50 PREMIUM 파트너', admin: '관리자' };
+  const roleLabels = { member: '회원 커뮤니티', partner0: '무료 파트너', partner20: '$20 BASIC 파트너', partner50: '$50 PREMIUM 파트너', admin: '관리자' };
   let user = null;
   let profile = null;
   let posts = [];
@@ -149,10 +149,10 @@
     if (!client) return;
     const { data } = await client.auth.getSession(); user = data.session?.user;
     if (!user) { window.location.replace('https://hibelleharmony.com/?refresh=20260809-277#partner-center'); return; }
-    const { data: member, error } = await client.from('member_profiles').select('role,account_status,display_name').eq('id', user.id).maybeSingle();
-    if (error || !member || member.account_status !== 'active' || !['partner0','partner20','partner50','admin'].includes(member.role)) { showAccessMessage('승인된 파트너만 이용할 수 있습니다', '파트너 승인이 완료되면 커뮤니티를 이용할 수 있습니다.'); return; }
+    const { data: member, error } = await client.from('member_profiles').select('role,account_status,display_name,member_type').eq('id', user.id).maybeSingle();
+    if (error || !member || member.account_status !== 'active' || !['member','partner0','partner20','partner50','admin'].includes(member.role)) { showAccessMessage('커뮤니티를 이용할 수 없습니다', '활성 상태의 Harmony Link 회원만 이용할 수 있습니다.'); return; }
     profile = { ...member, display_name: member.display_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0] };
-    document.querySelector('[data-admin-only]').hidden = profile.role !== 'admin'; document.getElementById('memberBadge').textContent = roleLabels[profile.role]; document.getElementById('welcomeName').textContent = `${profile.display_name}님, 반갑습니다.`;
+    document.querySelector('[data-admin-only]').hidden = profile.role !== 'admin'; document.getElementById('memberBadge').textContent = profile.role === 'member' ? (profile.member_type === 'student' ? '수강생 커뮤니티' : '일반회원 커뮤니티') : roleLabels[profile.role]; document.getElementById('welcomeName').textContent = `${profile.display_name}님, 반갑습니다.`;
     const requestedCategory = new URLSearchParams(location.search).get('category');
     if (Object.hasOwn(labels, requestedCategory)) categoryFilter.value = requestedCategory;
     access.hidden = true; app.hidden = false; await loadPosts();

@@ -89,11 +89,11 @@
   approvalGate.className = 'partner-auth-gate partner-approval-gate';
   approvalGate.hidden = true;
   approvalGate.innerHTML = `
-    <span class="partner-auth-icon" aria-hidden="true">⏳</span>
-    <p class="eyebrow">PARTNER RESOURCE CENTER</p>
-    <h3 data-ko="입점 파트너 전용 자료실" data-en="Partner-only resource center">입점 파트너 전용 자료실</h3>
-    <p data-ko="일반회원과 수강생은 별도 등급 없이 이용합니다. 입점 파트너로 신청하고 승인된 회원만 이 자료실을 이용할 수 있습니다." data-en="General members and learners do not need a partner tier. This resource center opens only for approved partners.">일반회원과 수강생은 별도 등급 없이 이용합니다. 입점 파트너로 신청하고 승인된 회원만 이 자료실을 이용할 수 있습니다.</p>
-    <a class="btn btn-primary" href="https://docs.google.com/forms/d/14CqT8WtIl8Fj2h-M08tNpY0lsXh-GgsBNq5p2tnNjzk/viewform" target="_blank" rel="noopener"><span data-ko="입점 파트너 신청하기" data-en="Apply as a Partner">입점 파트너 신청하기</span><b>→</b></a>`;
+    <span class="partner-auth-icon" aria-hidden="true">💬</span>
+    <p class="eyebrow">MEMBER COMMUNITY</p>
+    <h3 data-ko="회원 커뮤니티를 이용하세요" data-en="Enter the member community">회원 커뮤니티를 이용하세요</h3>
+    <p data-ko="일반회원과 수강생은 승인 대기 없이 가입 즉시 커뮤니티에서 공지와 게시글을 확인할 수 있습니다." data-en="General members and learners can enter the community immediately without waiting for approval.">일반회원과 수강생은 승인 대기 없이 가입 즉시 커뮤니티에서 공지와 게시글을 확인할 수 있습니다.</p>
+    <a class="btn btn-primary" href="community.html"><span data-ko="커뮤니티 입장" data-en="Enter Community">커뮤니티 입장</span><b>→</b></a>`;
   accessCard.insertBefore(approvalGate, downloads);
 
   const setAuthMode = mode => {
@@ -371,7 +371,7 @@
     signupRecord.set('이메일', profile.email);
     signupRecord.set('가입 방식', user.app_metadata?.provider || 'social');
     signupRecord.set('회원 유형', activeMemberType === 'student' ? '수강생' : '일반회원');
-    signupRecord.set('파트너 등급', '등급 없음');
+    signupRecord.set('파트너 등급', '');
     signupRecord.set('회원 구분', activeMemberType === 'student' ? '수강생' : '일반회원');
     signupRecord.set('가입 경로', 'Harmony Link 홈페이지');
 

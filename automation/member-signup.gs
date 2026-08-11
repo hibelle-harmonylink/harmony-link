@@ -8,14 +8,14 @@ const MEMBER_SIGNUP = {
 };
 
 const HEADERS = ['회원 ID', '가입시각', '이름', '이메일', '가입방식', '회원유형', '파트너등급', '가입경로'];
-const TYPE_LABELS = ['일반회원', '수강생', '입점 파트너', '관리자', '탈퇴'];
-const TIER_LABELS = ['등급 없음', '무료', '$20 BASIC', '$50 PREMIUM', '관리자', '탈퇴'];
+const TYPE_LABELS = ['일반회원', '수강생', '입점 파트너'];
+const TIER_LABELS = ['무료 파트너', '$20 베이직 파트너', '$50 프리미엄 파트너'];
 const ROLE_INFO = {
-  member: { type: '일반회원', tier: '등급 없음', label: '미승인 일반회원' },
-  partner0: { type: '입점 파트너', tier: '무료', label: '무료 파트너' },
-  partner20: { type: '입점 파트너', tier: '$20 BASIC', label: '$20 BASIC 파트너' },
-  partner50: { type: '입점 파트너', tier: '$50 PREMIUM', label: '$50 PREMIUM 파트너' },
-  admin: { type: '관리자', tier: '관리자', label: '관리자' }
+  member: { type: '일반회원', tier: '', label: '일반회원' },
+  partner0: { type: '입점 파트너', tier: '무료 파트너', label: '무료 파트너' },
+  partner20: { type: '입점 파트너', tier: '$20 베이직 파트너', label: '$20 베이직 파트너' },
+  partner50: { type: '입점 파트너', tier: '$50 프리미엄 파트너', label: '$50 프리미엄 파트너' },
+  admin: { type: '관리자', tier: '', label: '관리자' }
 };
 
 function doPost(e) {
@@ -108,7 +108,7 @@ function changeMemberType_(values) {
   requireWebhookSecret_(values);
   const type = normalizeType_(values.member_type);
   if (!['일반회원', '수강생'].includes(type)) throw new Error('Invalid member type.');
-  updateMember_(values, type, '등급 없음', false);
+  updateMember_(values, type, '', false);
   return json_({ ok: true });
 }
 
@@ -161,12 +161,19 @@ function ensureSchema_(sheet) {
   const rows = Math.max(sheet.getMaxRows() - 1, 1);
   sheet.getRange(2, 6, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(TYPE_LABELS, true).setAllowInvalid(false).build());
   sheet.getRange(2, 7, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(TIER_LABELS, true).setAllowInvalid(false).build());
+  const usedRows = Math.max(sheet.getLastRow() - 1, 0);
+  if (usedRows > 0) {
+    const membership = sheet.getRange(2, 6, usedRows, 2).getDisplayValues();
+    membership.forEach(function (row, index) {
+      if (row[0] === '관리자') sheet.getRange(index + 2, 6, 1, 2).clearDataValidations();
+    });
+  }
 }
 
 function legacyInfo_(value) {
   const label = text_(value);
   if (label === '관리자') return ROLE_INFO.admin;
-  if (label === '수강생') return { type: '수강생', tier: '등급 없음' };
+  if (label === '수강생') return { type: '수강생', tier: '' };
   if (label === '무료 파트너') return ROLE_INFO.partner0;
   if (label === '$20 BASIC 파트너' || label === '베이직회원') return ROLE_INFO.partner20;
   if (label === '$50 PREMIUM 파트너' || label === '프리미엄회원') return ROLE_INFO.partner50;
@@ -192,13 +199,14 @@ function normalizeType_(value) {
   const label = text_(value);
   if (label === 'student' || label === '수강생') return '수강생';
   if (label === 'partner' || label === '입점 파트너') return '입점 파트너';
-  if (label === 'admin' || label === '관리자') return '관리자';
   return '일반회원';
 }
 
 function normalizeTier_(value) {
   const label = text_(value);
-  return TIER_LABELS.includes(label) ? label : '등급 없음';
+  const aliases = { '무료': '무료 파트너', '$20 BASIC': '$20 베이직 파트너', '$50 PREMIUM': '$50 프리미엄 파트너' };
+  const normalized = aliases[label] || label;
+  return TIER_LABELS.includes(normalized) ? normalized : '';
 }
 
 function requireWebhookSecret_(values) {
