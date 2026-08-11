@@ -67,6 +67,7 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 @media(max-width:680px){
   .admin-summary{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px!important;margin:16px 0 14px!important}
   .admin-summary article{min-width:0!important;padding:9px 4px!important;border-radius:11px!important}
+  .admin-summary article:first-child{grid-column:auto!important;width:auto!important;justify-self:stretch!important}
   .admin-summary span{font-size:9px!important;line-height:1.25!important;white-space:normal!important;word-break:keep-all!important}
   .admin-summary strong{margin-top:3px!important;font-size:20px!important;line-height:1!important}
 }
