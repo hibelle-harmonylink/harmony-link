@@ -35,6 +35,8 @@ main{width:min(1160px,calc(100% - 48px))!important;padding-top:0!important}
 .post-title .post-links[hidden]{display:none!important}
 .post-title .post-link{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:auto;max-width:none;padding:7px 10px;border:1px solid #8fbdea;border-radius:8px;background:#e8f4ff;color:#075fc4;font-size:10px;font-weight:800;line-height:1.2;text-decoration:none;white-space:nowrap}
 .post-title .post-link:hover{background:#d5eaff}
+.access-state[hidden]{display:none!important;margin:0!important;min-height:0!important}
+.community-app{margin-top:0!important;padding-top:0!important}
 @media(max-width:700px){
   main{width:calc(100% - 32px)!important;padding-top:0!important}
   .community-topbar{height:42px!important;min-height:42px!important;margin:0!important}
