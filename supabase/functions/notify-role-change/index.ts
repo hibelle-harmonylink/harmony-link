@@ -28,7 +28,7 @@ Deno.serve(async (request) => {
       const userClient = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authorization } } });
       const { data: { user }, error: userError } = await userClient.auth.getUser();
       if (userError || !user?.email) return json({ error: 'Authentication required' }, 401);
-      const { data: memberProfile } = await adminClient.from('member_profiles').select('display_name').eq('id', user.id).maybeSingle();
+      const { data: memberProfile } = await adminClient.from('member_profiles').select('display_name,member_type,role').eq('id', user.id).maybeSingle();
       const metadata = user.user_metadata || {};
       const memberName = memberProfile?.display_name || metadata.full_name || metadata.name || metadata.nickname || user.email.split('@')[0];
       const formData = new FormData();
@@ -40,6 +40,8 @@ Deno.serve(async (request) => {
       formData.set('member_joined_at', user.created_at || '');
       formData.set('member_signup_method', String(user.app_metadata?.provider || user.app_metadata?.providers?.[0] || ''));
       formData.set('member_signup_path', 'Harmony Link 홈페이지');
+      formData.set('member_type', String(memberProfile?.member_type || 'general'));
+      formData.set('partner_tier', String(memberProfile?.role || 'member'));
       const rosterResponse = await fetch(webhookUrl, { method: 'POST', body: formData, redirect: 'follow' });
       const rosterResult = await rosterResponse.text();
       const rosterJson = parseWebhookResult(rosterResult);
@@ -49,6 +51,7 @@ Deno.serve(async (request) => {
       }
       return json({ ok: true });
     }
+    const isMemberTypeChange = requestBody.action === 'member_type_change';
     let memberId = requestBody.memberId || '';
     let memberEmail = requestBody.memberEmail || '';
     let oldRole = requestBody.oldRole || '';
@@ -95,9 +98,14 @@ Deno.serve(async (request) => {
     if (!targetUser?.email) return json({ error: 'Member not found' }, 404);
     const resolvedMemberId = targetUser.id;
     let storedRole = queuedRole;
+    let storedMemberType = 'general';
     if (!storedRole) {
-      const { data: profile } = await adminClient.from('member_profiles').select('role,display_name').eq('id', resolvedMemberId).maybeSingle();
+      const { data: profile } = await adminClient.from('member_profiles').select('role,display_name,member_type').eq('id', resolvedMemberId).maybeSingle();
       storedRole = profile?.role || '';
+      storedMemberType = profile?.member_type || 'general';
+    } else {
+      const { data: profile } = await adminClient.from('member_profiles').select('member_type').eq('id', resolvedMemberId).maybeSingle();
+      storedMemberType = profile?.member_type || 'general';
     }
     if (!allowedRoles.includes(storedRole)) return json({ error: 'Stored member role cannot be notified' }, 409);
 
@@ -105,13 +113,18 @@ Deno.serve(async (request) => {
     const { data: memberProfile } = await adminClient.from('member_profiles').select('display_name').eq('id', resolvedMemberId).maybeSingle();
     const memberName = memberProfile?.display_name || metadata.full_name || metadata.name || metadata.nickname || targetUser.email.split('@')[0];
     const formData = new FormData();
-    formData.set('action', 'role_change');
+    formData.set('action', isMemberTypeChange ? 'member_type_change' : 'role_change');
     formData.set('webhook_secret', webhookSecret);
     formData.set('member_id', resolvedMemberId);
     formData.set('member_email', targetUser.email);
     formData.set('member_name', memberName);
+    formData.set('member_joined_at', targetUser.created_at || '');
+    formData.set('member_signup_method', String(targetUser.app_metadata?.provider || targetUser.app_metadata?.providers?.[0] || ''));
+    formData.set('member_signup_path', 'Harmony Link 홈페이지');
     formData.set('old_role', allowedRoles.includes(oldRole) ? oldRole : '');
     formData.set('new_role', storedRole);
+    formData.set('member_type', storedMemberType);
+    formData.set('partner_tier', storedRole);
     const emailResponse = await fetch(webhookUrl, { method: 'POST', body: formData, redirect: 'follow' });
     const emailResult = await emailResponse.text();
     const emailJson = parseWebhookResult(emailResult);

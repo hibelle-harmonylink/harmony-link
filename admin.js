@@ -255,6 +255,13 @@
         setMessage(`회원 유형 변경에 실패했습니다: ${typeError.message}`, true);
         return;
       }
+      const { error: rosterError } = await client.functions.invoke('notify-role-change', {
+        body: { action: 'member_type_change', memberId: member.id }
+      });
+      if (rosterError) {
+        setMessage(`회원 유형은 변경됐지만 회원가입 명단 반영에 실패했습니다: ${rosterError.message}`, true);
+        return;
+      }
     }
     if (roleChanged) {
       setMessage('회원 등급이 변경되었습니다. 실제 메일 발송 결과를 확인하고 있습니다.');

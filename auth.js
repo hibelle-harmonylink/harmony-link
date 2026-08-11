@@ -370,6 +370,8 @@
     signupRecord.set('이름', profile.name);
     signupRecord.set('이메일', profile.email);
     signupRecord.set('가입 방식', user.app_metadata?.provider || 'social');
+    signupRecord.set('회원 유형', activeMemberType === 'student' ? '수강생' : '일반회원');
+    signupRecord.set('파트너 등급', '등급 없음');
     signupRecord.set('회원 구분', activeMemberType === 'student' ? '수강생' : '일반회원');
     signupRecord.set('가입 경로', 'Harmony Link 홈페이지');
 
