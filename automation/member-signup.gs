@@ -129,6 +129,7 @@ function updateMember_(values, memberType, partnerTier, withdrawal) {
     sheet.appendRow(record);
     row = sheet.getLastRow();
   } else updateIdentityAndMembership_(sheet, row, record);
+  if (withdrawal) sheet.getRange(row, 6, 1, 2).clearDataValidations();
   sheet.getRange(row, 6, 1, 2).setValues([[memberType, partnerTier]]);
   SpreadsheetApp.flush();
 }
@@ -165,7 +166,7 @@ function ensureSchema_(sheet) {
   if (usedRows > 0) {
     const membership = sheet.getRange(2, 6, usedRows, 2).getDisplayValues();
     membership.forEach(function (row, index) {
-      if (row[0] === '관리자') sheet.getRange(index + 2, 6, 1, 2).clearDataValidations();
+      if (row[0] === '관리자' || row[0] === '탈퇴') sheet.getRange(index + 2, 6, 1, 2).clearDataValidations();
     });
   }
 }

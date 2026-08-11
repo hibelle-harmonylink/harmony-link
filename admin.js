@@ -83,14 +83,20 @@
     select.value = member.role;
     const typeSelect = card.querySelector('.member-type-select');
     typeSelect.value = member.member_type || (member.role === 'member' ? 'general' : 'partner');
-    const syncTypeControl = () => {
-      const isNonPartner = select.value === 'member';
-      typeSelect.disabled = !isNonPartner;
-      if (isNonPartner && !['general', 'student'].includes(typeSelect.value)) typeSelect.value = 'general';
-      if (!isNonPartner) typeSelect.value = 'partner';
+    const syncFromType = () => {
+      const isPartner = typeSelect.value === 'partner';
+      select.disabled = !isPartner;
+      if (isPartner && select.value === 'member') select.value = 'partner0';
+      if (!isPartner) select.value = 'member';
     };
-    select.addEventListener('change', syncTypeControl);
-    syncTypeControl();
+    const syncFromRole = () => {
+      if (select.value !== 'member') typeSelect.value = 'partner';
+      syncFromType();
+    };
+    typeSelect.disabled = false;
+    typeSelect.addEventListener('change', syncFromType);
+    select.addEventListener('change', syncFromRole);
+    syncFromType();
     const nameInput = card.querySelector('.member-name-input');
     nameInput.value = displayName;
     const statusButton = card.querySelector('.member-status-button');
@@ -218,7 +224,7 @@
 
   const updateMember = async (member, nextRole, nextStatus, requestedName, requestedType) => {
     const nextName = requestedName.trim();
-    const nextType = nextRole === 'member' && requestedType === 'student' ? 'student' : nextRole === 'member' ? 'general' : 'partner';
+    const nextType = ['general', 'student', 'partner'].includes(requestedType) ? requestedType : 'general';
     const roleChanged = nextRole !== member.role;
     const typeChanged = nextType !== member.member_type;
     const statusChanged = nextStatus !== member.account_status;
@@ -242,6 +248,13 @@
       }
     }
     const roleChangedAt = new Date(Date.now() - 2000).toISOString();
+    if (typeChanged) {
+      const { error: typeError } = await client.rpc('admin_update_member_type', { p_member_id: member.id, p_member_type: nextType });
+      if (typeError) {
+        setMessage(`회원 유형 변경에 실패했습니다: ${typeError.message}`, true);
+        return;
+      }
+    }
     if (roleChanged || statusChanged) {
       const { error } = await client.rpc('admin_update_member', { p_member_id: member.id, p_role: nextRole, p_account_status: nextStatus });
       if (error) {
@@ -249,15 +262,8 @@
         return;
       }
     }
-    if (nextRole === 'member' && typeChanged) {
-      const { error: typeError } = await client.rpc('admin_update_member_type', { p_member_id: member.id, p_member_type: nextType });
-      if (typeError) {
-        setMessage(`회원 유형 변경에 실패했습니다: ${typeError.message}`, true);
-        return;
-      }
-      const { error: rosterError } = await client.functions.invoke('notify-role-change', {
-        body: { action: 'member_type_change', memberId: member.id }
-      });
+    if (typeChanged && !roleChanged) {
+      const { error: rosterError } = await client.functions.invoke('notify-role-change', { body: { action: 'member_type_change', memberId: member.id } });
       if (rosterError) {
         setMessage(`회원 유형은 변경됐지만 회원가입 명단 반영에 실패했습니다: ${rosterError.message}`, true);
         return;

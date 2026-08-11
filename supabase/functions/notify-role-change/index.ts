@@ -47,9 +47,9 @@ Deno.serve(async (request) => {
       const rosterJson = parseWebhookResult(rosterResult);
       if (!rosterResponse.ok || rosterJson?.ok !== true) {
         console.error('Withdrawal roster webhook failed', rosterResponse.status, rosterResult.slice(0, 500));
-        return json({ error: rosterJson?.error || `Roster update failed (${rosterResponse.status})` }, 502);
+        return json({ ok: true, rosterUpdated: false, warning: rosterJson?.error || `Roster update failed (${rosterResponse.status})` });
       }
-      return json({ ok: true });
+      return json({ ok: true, rosterUpdated: true });
     }
     const isMemberTypeChange = requestBody.action === 'member_type_change';
     let memberId = requestBody.memberId || '';

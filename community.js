@@ -97,13 +97,11 @@
       const anchor = document.createElement('a');
       const host = new URL(safeUrl).hostname.replace(/^www\./, '');
       const label = /youtu\.be|youtube\.com/i.test(host) ? 'YouTube' : /instagram\.com/i.test(host) ? 'Instagram' : host;
-      const labelNode = document.createElement('b'); labelNode.textContent = `${label} 링크`;
-      const urlNode = document.createElement('span'); urlNode.textContent = safeUrl;
-      anchor.className = 'post-link'; anchor.href = safeUrl; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer'; anchor.append(labelNode, urlNode);
-      links.append(anchor);
+      anchor.className = 'post-inline-link'; anchor.href = safeUrl; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer'; anchor.textContent = `${label} 바로가기: ${safeUrl}`;
+      contentElement.append(document.createElement('br'), anchor);
 
     });
-    links.hidden = relatedUrls.length === 0;
+    links.hidden = true;
     const editable = post.author_id === user.id || profile.role === 'admin';
     card.querySelector('.post-actions').hidden = !editable;
     card.querySelector('.edit-post').addEventListener('click', () => openComposer(post));
