@@ -32,6 +32,8 @@
   let activeMemberRole = 'guest';
   let activeMemberStatus = 'active';
   let activeMemberName = '';
+  let activeMemberType = 'general';
+  let selectedSignupType = 'general';
 
   const authSlot = document.createElement('div');
   authSlot.className = 'auth-nav-slot';
@@ -53,6 +55,13 @@
       </div>
       <h2 id="authTitle" data-ko="간편하게 로그인하세요" data-en="Sign in to Harmony Link">간편하게 로그인하세요</h2>
       <p data-ko="Google 또는 카카오 계정으로 안전하게 시작할 수 있습니다." data-en="Continue securely with your Google or Kakao account.">Google 또는 카카오 계정으로 안전하게 시작할 수 있습니다.</p>
+      <div class="auth-member-type" hidden>
+        <span data-ko="가입 유형을 선택해 주세요" data-en="Choose your membership type">가입 유형을 선택해 주세요</span>
+        <div>
+          <button type="button" class="active" data-signup-type="general"><b data-ko="일반회원" data-en="General member">일반회원</b><small data-ko="소식과 무료 프로그램 확인" data-en="News and free programs">소식과 무료 프로그램 확인</small></button>
+          <button type="button" data-signup-type="student"><b data-ko="수강생" data-en="Learner">수강생</b><small data-ko="교육 신청과 수강 안내" data-en="Learning requests and class updates">교육 신청과 수강 안내</small></button>
+        </div>
+      </div>
       <div class="auth-provider-list">
         <button type="button" class="auth-provider google" data-auth-provider="google"><img src="assets/auth/google.svg" alt="Google"><span data-ko="Google로 로그인" data-en="Continue with Google">Google로 로그인</span></button>
         <button type="button" class="auth-provider kakao" data-auth-provider="kakao"><img src="assets/auth/kakao.svg" alt="Kakao"><span data-ko="카카오로 로그인" data-en="Continue with Kakao">카카오로 로그인</span></button>
@@ -81,15 +90,17 @@
   approvalGate.hidden = true;
   approvalGate.innerHTML = `
     <span class="partner-auth-icon" aria-hidden="true">⏳</span>
-    <p class="eyebrow">PARTNER APPROVAL REQUIRED</p>
-    <h3 data-ko="입점 파트너 승인 대기 중" data-en="Partner approval pending">입점 파트너 승인 대기 중</h3>
-    <p data-ko="현재 일반회원입니다. 관리자가 입점 파트너로 승인하면 전용 자료실이 자동으로 열립니다." data-en="You are currently a general member. Partner resources will open automatically after administrator approval.">현재 일반회원입니다. 관리자가 입점 파트너로 승인하면 전용 자료실이 자동으로 열립니다.</p>
+    <p class="eyebrow">PARTNER RESOURCE CENTER</p>
+    <h3 data-ko="입점 파트너 전용 자료실" data-en="Partner-only resource center">입점 파트너 전용 자료실</h3>
+    <p data-ko="일반회원과 수강생은 별도 등급 없이 이용합니다. 입점 파트너로 신청하고 승인된 회원만 이 자료실을 이용할 수 있습니다." data-en="General members and learners do not need a partner tier. This resource center opens only for approved partners.">일반회원과 수강생은 별도 등급 없이 이용합니다. 입점 파트너로 신청하고 승인된 회원만 이 자료실을 이용할 수 있습니다.</p>
     <a class="btn btn-primary" href="https://docs.google.com/forms/d/14CqT8WtIl8Fj2h-M08tNpY0lsXh-GgsBNq5p2tnNjzk/viewform" target="_blank" rel="noopener"><span data-ko="입점 파트너 신청하기" data-en="Apply as a Partner">입점 파트너 신청하기</span><b>→</b></a>`;
   accessCard.insertBefore(approvalGate, downloads);
 
   const setAuthMode = mode => {
     activeAuthMode = mode === 'signup' ? 'signup' : 'login';
     const signup = activeAuthMode === 'signup';
+    const memberTypePicker = authModal.querySelector('.auth-member-type');
+    if (memberTypePicker) memberTypePicker.hidden = !signup;
     authModal.querySelector('.auth-panel')?.classList.toggle('signup-mode', signup);
     authModal.querySelectorAll('[data-auth-mode-tab]').forEach(tab => {
       const selected = tab.dataset.authModeTab === activeAuthMode;
@@ -175,7 +186,9 @@
             ? t('무료 파트너', 'Free Partner')
         : activeMemberRole === 'loading'
           ? t('회원 확인 중', 'Checking Membership')
-          : t('일반회원', 'General Member');
+          : activeMemberType === 'student'
+            ? t('수강생', 'Learner')
+            : t('일반회원', 'General Member');
     const wrapper = document.createElement('div');
     wrapper.className = `auth-user${activeMemberRole === 'admin' ? ' admin-auth-user' : ''}`;
     const avatar = safeAvatar(profile.avatar);
@@ -234,14 +247,14 @@
     const lock = partnerCenter.querySelector('.partner-lock');
 
     if (securityTitle) {
-      securityTitle.dataset.ko = !accountActive ? '계정 이용 중지' : isAdmin ? '관리자' : isPremiumPartner ? 'PREMIUM 파트너 · $50' : isBasicPartner ? 'BASIC 파트너 · $20' : isFreePartner ? '무료 파트너' : signedIn ? '일반회원' : '회원 로그인 필요';
-      securityTitle.dataset.en = !accountActive ? 'ACCOUNT SUSPENDED' : isAdmin ? 'ADMINISTRATOR' : isPremiumPartner ? 'PREMIUM PARTNER · $50' : isBasicPartner ? 'BASIC PARTNER · $20' : isFreePartner ? 'FREE PARTNER' : signedIn ? 'GENERAL MEMBER' : 'MEMBER SIGN-IN REQUIRED';
+      securityTitle.dataset.ko = !accountActive ? '계정 이용 중지' : isAdmin ? '관리자' : isPremiumPartner ? 'PREMIUM 파트너 · $50' : isBasicPartner ? 'BASIC 파트너 · $20' : isFreePartner ? '무료 파트너' : signedIn && activeMemberType === 'student' ? '수강생' : signedIn ? '일반회원' : '회원 로그인 필요';
+      securityTitle.dataset.en = !accountActive ? 'ACCOUNT SUSPENDED' : isAdmin ? 'ADMINISTRATOR' : isPremiumPartner ? 'PREMIUM PARTNER · $50' : isBasicPartner ? 'BASIC PARTNER · $20' : isFreePartner ? 'FREE PARTNER' : signedIn && activeMemberType === 'student' ? 'LEARNER' : signedIn ? 'GENERAL MEMBER' : 'MEMBER SIGN-IN REQUIRED';
       securityTitle.textContent = t(securityTitle.dataset.ko, securityTitle.dataset.en);
     }
     if (securityCopy) {
       const profile = signedIn ? getProfile(session.user) : null;
-      securityCopy.dataset.ko = !accountActive ? `${profile.name}님의 홈페이지 이용이 중지되었습니다. 관리자에게 문의해 주세요.` : isAdmin ? `${profile.name}님, 관리자 권한으로 접속했습니다.` : isPremiumPartner ? `${profile.name}님, $50 PREMIUM 파트너 자료실에 접속했습니다.` : isBasicPartner ? `${profile.name}님, $20 BASIC 파트너 자료실에 접속했습니다.` : isFreePartner ? `${profile.name}님, 무료 파트너 자료실에 접속했습니다.` : signedIn ? `${profile.name}님은 일반회원입니다. 파트너 승인 후 자료실을 이용할 수 있습니다.` : 'Google 또는 카카오 계정으로 로그인해 주세요.';
-      securityCopy.dataset.en = !accountActive ? `${profile.name}'s website access is suspended. Please contact an administrator.` : isAdmin ? `${profile.name} is signed in as an administrator.` : isPremiumPartner ? `Welcome ${profile.name}. Your $50 PREMIUM partner resources are available.` : isBasicPartner ? `Welcome ${profile.name}. Your $20 BASIC partner resources are available.` : isFreePartner ? `Welcome ${profile.name}. Your free partner resources are available.` : signedIn ? `${profile.name} is a general member. Partner approval is required for resource access.` : 'Sign in with your Google or Kakao account.';
+      securityCopy.dataset.ko = !accountActive ? `${profile.name}님의 홈페이지 이용이 중지되었습니다. 관리자에게 문의해 주세요.` : isAdmin ? `${profile.name}님, 관리자 권한으로 접속했습니다.` : isPremiumPartner ? `${profile.name}님, $50 PREMIUM 파트너 자료실에 접속했습니다.` : isBasicPartner ? `${profile.name}님, $20 BASIC 파트너 자료실에 접속했습니다.` : isFreePartner ? `${profile.name}님, 무료 파트너 자료실에 접속했습니다.` : signedIn && activeMemberType === 'student' ? `${profile.name}님은 수강생 회원입니다. 이 자료실은 승인된 입점 파트너 전용입니다.` : signedIn ? `${profile.name}님은 일반회원입니다. 이 자료실은 승인된 입점 파트너 전용입니다.` : 'Google 또는 카카오 계정으로 로그인해 주세요.';
+      securityCopy.dataset.en = !accountActive ? `${profile.name}'s website access is suspended. Please contact an administrator.` : isAdmin ? `${profile.name} is signed in as an administrator.` : isPremiumPartner ? `Welcome ${profile.name}. Your $50 PREMIUM partner resources are available.` : isBasicPartner ? `Welcome ${profile.name}. Your $20 BASIC partner resources are available.` : isFreePartner ? `Welcome ${profile.name}. Your free partner resources are available.` : signedIn && activeMemberType === 'student' ? `${profile.name} is a learner. This resource center is for approved partners.` : signedIn ? `${profile.name} is a general member. This resource center is for approved partners.` : 'Sign in with your Google or Kakao account.';
       securityCopy.textContent = t(securityCopy.dataset.ko, securityCopy.dataset.en);
     }
     const accessBadge = downloads.querySelector('.unlocked-badge');
@@ -295,14 +308,14 @@
     if (!session?.user) return { role: 'guest', status: 'active' };
     const { data, error } = await client
       .from('member_profiles')
-      .select('role,account_status,display_name')
+      .select('role,account_status,display_name,member_type')
       .eq('id', session.user.id)
       .maybeSingle();
     if (error) {
       console.error('Member access could not be loaded.', error);
-      return { role: 'member', status: 'active' };
+      return { role: 'member', status: 'active', type: 'general' };
     }
-    return { role: data?.role || 'member', status: data?.account_status || 'active', name: data?.display_name || '' };
+    return { role: data?.role || 'member', status: data?.account_status || 'active', name: data?.display_name || '', type: data?.member_type || 'general' };
   };
 
   const refreshMemberAccess = async session => {
@@ -310,7 +323,17 @@
     activeMemberRole = access.role;
     activeMemberStatus = access.status;
     activeMemberName = access.name || '';
+    activeMemberType = access.type || 'general';
     render(session);
+  };
+
+  const applyPendingMemberType = async session => {
+    if (!session?.user) return;
+    const pendingType = localStorage.getItem('harmonyPendingMemberType');
+    if (pendingType !== 'general' && pendingType !== 'student') return;
+    const { error } = await client.rpc('set_own_member_type', { p_member_type: pendingType });
+    if (!error) localStorage.removeItem('harmonyPendingMemberType');
+    else console.error('Member type could not be saved.', error);
   };
 
   const isNewSignup = user => {
@@ -347,7 +370,7 @@
     signupRecord.set('이름', profile.name);
     signupRecord.set('이메일', profile.email);
     signupRecord.set('가입 방식', user.app_metadata?.provider || 'social');
-    signupRecord.set('회원 구분', '일반회원');
+    signupRecord.set('회원 구분', activeMemberType === 'student' ? '수강생' : '일반회원');
     signupRecord.set('가입 경로', 'Harmony Link 홈페이지');
 
     try {
@@ -399,6 +422,7 @@
     }
     status.textContent = t('로그인 화면으로 이동합니다…', 'Opening secure sign-in…');
     localStorage.setItem('harmonyAuthReturn', 'partner-center');
+    if (activeAuthMode === 'signup') localStorage.setItem('harmonyPendingMemberType', selectedSignupType);
     const redirectTo = `${window.location.origin}${window.location.pathname}`;
     const oauthOptions = { redirectTo };
     if (provider === 'kakao') {
@@ -412,6 +436,13 @@
   };
 
   document.addEventListener('click', async event => {
+    const signupTypeButton = event.target.closest('[data-signup-type]');
+    if (signupTypeButton) {
+      event.preventDefault();
+      selectedSignupType = signupTypeButton.dataset.signupType === 'student' ? 'student' : 'general';
+      authModal.querySelectorAll('[data-signup-type]').forEach(button => button.classList.toggle('active', button === signupTypeButton));
+      return;
+    }
     const modeTab = event.target.closest('[data-auth-mode-tab]');
     if (modeTab) {
       setAuthMode(modeTab.dataset.authModeTab);
@@ -510,6 +541,7 @@
     activeMemberRole = data.session ? 'loading' : 'guest';
     activeMemberStatus = data.session ? 'loading' : 'active';
     render(data.session);
+    await applyPendingMemberType(data.session);
     await refreshMemberAccess(data.session);
     if (data.session && localStorage.getItem('harmonyAuthReturn') === 'partner-center') {
       localStorage.removeItem('harmonyAuthReturn');
@@ -517,14 +549,15 @@
     }
   });
 
-  client.auth.onAuthStateChange((event, session) => {
+  client.auth.onAuthStateChange(async (event, session) => {
     activeMemberRole = session ? 'loading' : 'guest';
     activeMemberStatus = session ? 'loading' : 'active';
     render(session);
-    void refreshMemberAccess(session);
+    await applyPendingMemberType(session);
+    await refreshMemberAccess(session);
     if (event === 'SIGNED_IN') {
       setModalOpen(false);
-      void notifyAdminOfNewSignup(session?.user);
+      await notifyAdminOfNewSignup(session?.user);
     }
   });
 

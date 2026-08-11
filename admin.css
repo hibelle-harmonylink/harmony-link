@@ -52,5 +52,15 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .member-name-field{grid-column:1/3}
 .member-actions input{width:100%;min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px 11px;color:var(--admin-ink);font-size:13px;outline:none}
 .member-actions input:focus{border-color:var(--admin-blue);box-shadow:0 0 0 3px rgba(23,104,213,.12)}
+
+/* Separate membership purpose from partner access tier. */
+.admin-summary{grid-template-columns:repeat(6,minmax(105px,138px))}
+.admin-toolbar{grid-template-columns:minmax(220px,1fr) 190px 220px auto}
+.member-actions{grid-template-columns:minmax(135px,1fr) minmax(125px,1fr)}
+.member-actions .member-name-field{grid-column:1/3}
+.member-actions .member-save,.member-actions .member-resend{grid-column:1/3}
+.member-type-select:disabled{background:#eef3f8;color:#718198;cursor:not-allowed}
+@media(max-width:1000px){.admin-toolbar{grid-template-columns:1fr 1fr}.admin-toolbar>label:first-child{grid-column:1/3}.admin-toolbar .btn{grid-column:1/3}.member-actions{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){.admin-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-toolbar,.admin-toolbar>label:first-child,.admin-toolbar .btn{grid-column:auto}.admin-toolbar{grid-template-columns:1fr}.member-actions{grid-template-columns:1fr 1fr}.member-actions label{grid-column:auto}.member-actions .member-name-field,.member-actions .member-save,.member-actions .member-resend,.member-status-button{grid-column:1/3}}
 @media(max-width:1000px){.member-name-field{grid-column:1/4}}
 @media(max-width:680px){.member-name-field{grid-column:1/3}}

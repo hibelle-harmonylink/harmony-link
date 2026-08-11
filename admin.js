@@ -17,13 +17,15 @@
   const template = document.getElementById('memberCardTemplate');
   const filters = document.getElementById('adminFilters');
   const search = document.getElementById('memberSearch');
+  const typeFilter = document.getElementById('typeFilter');
   const roleFilter = document.getElementById('roleFilter');
   const refreshButton = document.getElementById('adminRefresh');
   const signOutButton = document.getElementById('adminSignOut');
 
   const ROLE_LABELS = {
-    member: '미승인 일반회원', partner0: '무료 파트너', partner20: '$20 BASIC 파트너', partner50: '$50 PREMIUM 파트너', admin: '관리자'
+    member: '파트너 등급 없음', partner0: '무료 파트너', partner20: '$20 BASIC 파트너', partner50: '$50 PREMIUM 파트너', admin: '관리자'
   };
+  const TYPE_LABELS = { general: '일반회원', student: '수강생', partner: '입점 파트너', admin: '관리자' };
   let currentUserId = '';
   let currentUserName = '';
   let allMembers = [];
@@ -45,8 +47,12 @@
     deniedMessage.textContent = text;
   };
   const setCounts = members => {
-    const counts = { all: members.length, member: 0, partner0: 0, partner20: 0, partner50: 0 };
-    members.forEach(member => { if (Object.hasOwn(counts, member.role)) counts[member.role] += 1; });
+    const counts = { all: members.length, general: 0, student: 0, partner0: 0, partner20: 0, partner50: 0 };
+    members.forEach(member => {
+      if (member.member_type === 'general') counts.general += 1;
+      if (member.member_type === 'student') counts.student += 1;
+      if (Object.hasOwn(counts, member.role)) counts[member.role] += 1;
+    });
     Object.entries(counts).forEach(([key, value]) => {
       const target = document.querySelector(`[data-count="${key}"]`);
       if (target) target.textContent = String(value);
@@ -60,7 +66,9 @@
     card.querySelector('.member-email').textContent = member.email || '이메일 없음';
     card.querySelector('.member-id').textContent = member.id;
     const badge = card.querySelector('.member-role-badge');
-    badge.textContent = `${ROLE_LABELS[member.role] || member.role} · ${displayName}`;
+    const typeLabel = TYPE_LABELS[member.member_type] || (member.role === 'member' ? '일반회원' : '입점 파트너');
+    const tierLabel = member.role === 'member' || member.role === 'admin' ? '' : ` · ${ROLE_LABELS[member.role]}`;
+    badge.textContent = `${typeLabel}${tierLabel} · ${displayName}`;
     badge.classList.add(member.role);
     card.querySelectorAll('[data-field]').forEach(field => {
       field.innerHTML = formatDate(member[field.dataset.field]);
@@ -73,6 +81,16 @@
     }
     const select = card.querySelector('.member-role-select');
     select.value = member.role;
+    const typeSelect = card.querySelector('.member-type-select');
+    typeSelect.value = member.member_type || (member.role === 'member' ? 'general' : 'partner');
+    const syncTypeControl = () => {
+      const isNonPartner = select.value === 'member';
+      typeSelect.disabled = !isNonPartner;
+      if (isNonPartner && !['general', 'student'].includes(typeSelect.value)) typeSelect.value = 'general';
+      if (!isNonPartner) typeSelect.value = 'partner';
+    };
+    select.addEventListener('change', syncTypeControl);
+    syncTypeControl();
     const nameInput = card.querySelector('.member-name-input');
     nameInput.value = displayName;
     const statusButton = card.querySelector('.member-status-button');
@@ -85,7 +103,7 @@
       statusButton.textContent = next === 'suspended' ? '중지 예정' : '활성 예정';
       statusButton.classList.toggle('suspended', next === 'suspended');
     });
-    card.querySelector('.member-save').addEventListener('click', () => updateMember(member, select.value, statusButton.dataset.status, nameInput.value));
+    card.querySelector('.member-save').addEventListener('click', () => updateMember(member, select.value, statusButton.dataset.status, nameInput.value, typeSelect.value));
     const resendButton = card.querySelector('.member-resend');
     resendButton.addEventListener('click', async () => {
       resendButton.disabled = true;
@@ -131,8 +149,9 @@
 
   const applyFilters = () => {
     const term = search.value.trim().toLowerCase();
+    const type = typeFilter.value;
     const role = roleFilter.value;
-    renderMembers(allMembers.filter(member => (!term || (member.email || '').toLowerCase().includes(term)) && (!role || member.role === role)));
+    renderMembers(allMembers.filter(member => (!term || (member.email || '').toLowerCase().includes(term)) && (!type || member.member_type === type) && (!role || member.role === role)));
   };
 
   const sendRoleNotification = async (member, oldRole = '') => {
@@ -197,12 +216,14 @@
     if (data?.error) throw new Error(data.error);
   };
 
-  const updateMember = async (member, nextRole, nextStatus, requestedName) => {
+  const updateMember = async (member, nextRole, nextStatus, requestedName, requestedType) => {
     const nextName = requestedName.trim();
+    const nextType = nextRole === 'member' && requestedType === 'student' ? 'student' : nextRole === 'member' ? 'general' : 'partner';
     const roleChanged = nextRole !== member.role;
+    const typeChanged = nextType !== member.member_type;
     const statusChanged = nextStatus !== member.account_status;
     const nameChanged = nextName !== (member.display_name || '');
-    if (!roleChanged && !statusChanged && !nameChanged) {
+    if (!roleChanged && !typeChanged && !statusChanged && !nameChanged) {
       setMessage('변경된 내용이 없습니다.', true);
       return;
     }
@@ -210,7 +231,7 @@
       setMessage('회원 이름은 2자 이상 50자 이하로 입력해 주세요.', true);
       return;
     }
-    const detail = [nameChanged ? `회원 이름 → ${nextName}` : '', roleChanged ? `${ROLE_LABELS[member.role]} → ${ROLE_LABELS[nextRole]}` : '', statusChanged ? `${member.account_status === 'active' ? '활성' : '중지'} → ${nextStatus === 'active' ? '활성' : '중지'}` : ''].filter(Boolean).join('\n');
+    const detail = [nameChanged ? `회원 이름 → ${nextName}` : '', typeChanged ? `회원 유형 → ${TYPE_LABELS[nextType]}` : '', roleChanged ? `${ROLE_LABELS[member.role]} → ${ROLE_LABELS[nextRole]}` : '', statusChanged ? `${member.account_status === 'active' ? '활성' : '중지'} → ${nextStatus === 'active' ? '활성' : '중지'}` : ''].filter(Boolean).join('\n');
     if (!window.confirm(`${member.email} 회원을 다음과 같이 변경할까요?\n\n${detail}`)) return;
     setMessage(`${member.email} 회원 정보를 변경하고 있습니다.`);
     if (nameChanged) {
@@ -225,6 +246,13 @@
       const { error } = await client.rpc('admin_update_member', { p_member_id: member.id, p_role: nextRole, p_account_status: nextStatus });
       if (error) {
         setMessage(`변경에 실패했습니다: ${error.message}`, true);
+        return;
+      }
+    }
+    if (nextRole === 'member' && typeChanged) {
+      const { error: typeError } = await client.rpc('admin_update_member_type', { p_member_id: member.id, p_member_type: nextType });
+      if (typeError) {
+        setMessage(`회원 유형 변경에 실패했습니다: ${typeError.message}`, true);
         return;
       }
     }
@@ -250,6 +278,7 @@
 
   filters.addEventListener('submit', event => { event.preventDefault(); applyFilters(); });
   roleFilter.addEventListener('change', applyFilters);
+  typeFilter.addEventListener('change', applyFilters);
   search.addEventListener('input', applyFilters);
   refreshButton.addEventListener('click', loadMembers);
   signOutButton.addEventListener('click', async () => { await client.auth.signOut(); window.location.replace('./'); });
