@@ -93,7 +93,7 @@
     <p class="eyebrow">MEMBER COMMUNITY</p>
     <h3 data-ko="회원 커뮤니티를 이용하세요" data-en="Enter the member community">회원 커뮤니티를 이용하세요</h3>
     <p data-ko="일반회원과 수강생은 승인 대기 없이 가입 즉시 커뮤니티에서 공지와 게시글을 확인할 수 있습니다." data-en="General members and learners can enter the community immediately without waiting for approval.">일반회원과 수강생은 승인 대기 없이 가입 즉시 커뮤니티에서 공지와 게시글을 확인할 수 있습니다.</p>
-    <a class="btn btn-primary" href="community.html?refresh=20260811-294"><span data-ko="커뮤니티 입장" data-en="Enter Community">커뮤니티 입장</span><b>→</b></a>`;
+    <a class="btn btn-primary" href="community.html?refresh=20260811-295"><span data-ko="커뮤니티 입장" data-en="Enter Community">커뮤니티 입장</span><b>→</b></a>`;
   accessCard.insertBefore(approvalGate, downloads);
 
   const setAuthMode = mode => {
