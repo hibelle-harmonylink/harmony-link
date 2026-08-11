@@ -20,7 +20,7 @@ main{width:min(1180px,calc(100% - 48px))!important;margin:0 auto!important;paddi
 @media(max-width:700px){main{width:calc(100% - 24px)!important;padding:0 0 45px!important}.community-topbar{height:50px!important;min-height:50px!important}.post-content-link{font-size:11px}}
 
 /* Keep the brand clear of the title and place related links inside each post body. */
-.community-topbar{height:62px!important;min-height:62px!important;margin-bottom:10px!important}
+.community-topbar{height:52px!important;min-height:52px!important;margin-bottom:2px!important}
 .community-hero{margin-top:0!important}
 .post-inline-link{display:inline-block;margin-top:7px;color:#075fc4;font-weight:800;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
-@media(max-width:700px){.community-topbar{height:58px!important;min-height:58px!important;margin-bottom:8px!important}}
+@media(max-width:700px){.community-topbar{height:50px!important;min-height:50px!important;margin-bottom:2px!important}}

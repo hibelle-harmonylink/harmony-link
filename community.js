@@ -91,7 +91,10 @@
     const visibleAuthorName = isExistingHarmonyLinkPost ? '하모니링크' : post.author_name;
     card.querySelector('.post-author').textContent = `${visibleAuthorName} · ${post.comments.length}개의 댓글`;
     const links = card.querySelector('.post-links');
-    const fallbackUrl = legacyPostLinks[String(post.title || '').trim()] || '';
+    const normalizedTitle = String(post.title || '').trim();
+    const fallbackUrl = legacyPostLinks[normalizedTitle]
+      || (/1일\s*(무료\s*)?체험.*후기/.test(normalizedTitle) ? 'https://www.youtube.com/shorts/zr_CoDfcEbI' : '')
+      || (/미란멜로디.*소개/.test(normalizedTitle) ? 'https://www.instagram.com/meeranmelody/' : '');
     const relatedUrls = [...new Set([...extractUrls(post.content), ...extractUrls(post.resource_url), ...extractUrls(fallbackUrl)])];
     relatedUrls.forEach(safeUrl => {
       const anchor = document.createElement('a');

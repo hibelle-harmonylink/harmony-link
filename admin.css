@@ -71,8 +71,10 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .admin-header .admin-brand .logo-name small{display:block;font-size:8px;letter-spacing:.7px;color:#7d8b9e;font-weight:500;margin-top:4px}
 .admin-page main{padding-top:18px}
 .admin-title-row{margin-top:12px;margin-inline:18px}
+.admin-page main{background:linear-gradient(180deg,#0b5fc2 0 118px,transparent 118px)}
 @media(max-width:680px){
   .admin-header .admin-brand{font-size:18px}
   .admin-page main{padding-top:12px!important}
   .admin-title-row{margin:10px 10px 18px!important}
+  .admin-page main{background:linear-gradient(180deg,#0b5fc2 0 104px,transparent 104px)!important}
 }

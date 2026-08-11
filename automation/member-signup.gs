@@ -8,7 +8,7 @@ const MEMBER_SIGNUP = {
 };
 
 const HEADERS = ['회원 ID', '가입시각', '이름', '이메일', '가입방식', '회원유형', '파트너등급', '가입경로'];
-const TYPE_LABELS = ['일반회원', '수강생', '입점 파트너'];
+const TYPE_LABELS = ['일반회원', '수강생', '입점 파트너', '탈퇴'];
 const TIER_LABELS = ['무료 파트너', '$20 베이직 파트너', '$50 프리미엄 파트너'];
 const ROLE_INFO = {
   member: { type: '일반회원', tier: '', label: '일반회원' },
@@ -114,7 +114,7 @@ function changeMemberType_(values) {
 
 function markMemberWithdrawn_(values) {
   requireWebhookSecret_(values);
-  updateMember_(values, '탈퇴', '탈퇴', true);
+  updateMember_(values, '탈퇴', '', true);
   return json_({ ok: true });
 }
 
@@ -129,7 +129,6 @@ function updateMember_(values, memberType, partnerTier, withdrawal) {
     sheet.appendRow(record);
     row = sheet.getLastRow();
   } else updateIdentityAndMembership_(sheet, row, record);
-  if (withdrawal) sheet.getRange(row, 6, 1, 2).clearDataValidations();
   sheet.getRange(row, 6, 1, 2).setValues([[memberType, partnerTier]]);
   SpreadsheetApp.flush();
 }
@@ -166,7 +165,7 @@ function ensureSchema_(sheet) {
   if (usedRows > 0) {
     const membership = sheet.getRange(2, 6, usedRows, 2).getDisplayValues();
     membership.forEach(function (row, index) {
-      if (row[0] === '관리자' || row[0] === '탈퇴') sheet.getRange(index + 2, 6, 1, 2).clearDataValidations();
+      if (row[0] === '관리자') sheet.getRange(index + 2, 6, 1, 2).clearDataValidations();
     });
   }
 }
@@ -178,7 +177,7 @@ function legacyInfo_(value) {
   if (label === '무료 파트너') return ROLE_INFO.partner0;
   if (label === '$20 BASIC 파트너' || label === '베이직회원') return ROLE_INFO.partner20;
   if (label === '$50 PREMIUM 파트너' || label === '프리미엄회원') return ROLE_INFO.partner50;
-  if (label === '탈퇴') return { type: '탈퇴', tier: '탈퇴' };
+  if (label === '탈퇴') return { type: '탈퇴', tier: '' };
   return ROLE_INFO.member;
 }
 
