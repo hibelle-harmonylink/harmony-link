@@ -24,3 +24,22 @@ main{width:min(1180px,calc(100% - 48px))!important;margin:0 auto!important;paddi
 .community-hero{margin-top:0!important}
 .post-inline-link{display:inline-block;margin-top:7px;color:#075fc4;font-weight:800;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
 @media(max-width:700px){.community-topbar{height:50px!important;min-height:50px!important;margin-bottom:2px!important}}
+
+/* Match the main homepage header alignment and keep post links beside titles. */
+main{width:min(1160px,calc(100% - 48px))!important;padding-top:0!important}
+.community-topbar{height:48px!important;min-height:48px!important;margin:0!important}
+.community-hero{margin-top:0!important}
+.post-title-row{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:13px 0 8px}
+.post-title-row .post-title{min-width:0;margin:0}
+.post-title-row .post-links{display:flex;flex:0 0 auto;flex-wrap:wrap;justify-content:flex-end;gap:6px;margin:0}
+.post-title-row .post-links[hidden]{display:none!important}
+.post-title-row .post-link{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;width:auto;max-width:none;padding:7px 10px;border:1px solid #8fbdea;border-radius:8px;background:#e8f4ff;color:#075fc4;font-size:10px;font-weight:800;line-height:1.2;text-decoration:none;white-space:nowrap}
+.post-title-row .post-link:hover{background:#d5eaff}
+@media(max-width:700px){
+  main{width:calc(100% - 32px)!important;padding-top:0!important}
+  .community-topbar{height:46px!important;min-height:46px!important;margin:0!important}
+  .post-title-row{align-items:flex-start;gap:8px;margin:11px 0 7px}
+  .post-title-row .post-title{font-size:18px;line-height:1.35}
+  .post-title-row .post-links{max-width:46%;gap:4px}
+  .post-title-row .post-link{padding:6px 8px;font-size:9px}
+}

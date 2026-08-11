@@ -100,11 +100,11 @@
       const anchor = document.createElement('a');
       const host = new URL(safeUrl).hostname.replace(/^www\./, '');
       const label = /youtu\.be|youtube\.com/i.test(host) ? 'YouTube' : /instagram\.com/i.test(host) ? 'Instagram' : host;
-      anchor.className = 'post-inline-link'; anchor.href = safeUrl; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer'; anchor.textContent = `${label} 바로가기: ${safeUrl}`;
-      contentElement.append(document.createElement('br'), anchor);
+      anchor.className = 'post-link'; anchor.href = safeUrl; anchor.target = '_blank'; anchor.rel = 'noopener noreferrer'; anchor.textContent = `${label} 보기 ↗`;
+      links.append(anchor);
 
     });
-    links.hidden = true;
+    links.hidden = relatedUrls.length === 0;
     const editable = post.author_id === user.id || profile.role === 'admin';
     card.querySelector('.post-actions').hidden = !editable;
     card.querySelector('.edit-post').addEventListener('click', () => openComposer(post));
