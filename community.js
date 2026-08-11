@@ -104,7 +104,14 @@
         ? 'https://www.instagram.com/meeranmelody/'
         : '';
     const fallbackUrl = fixedPostUrl || legacyPostLinks[normalizedTitle] || '';
-    const relatedUrls = [...new Set([fallbackUrl, ...extractUrls(post.content), ...extractUrls(post.resource_url)].filter(Boolean))];
+    const relatedUrls = [...new Map(
+      [fallbackUrl, ...extractUrls(post.content), ...extractUrls(post.resource_url)]
+        .filter(Boolean)
+        .map(url => {
+          const safeUrl = escapeUrl(url);
+          return [safeUrl.replace(/\/$/, ''), safeUrl];
+        })
+    ).values()];
     relatedUrls.forEach(safeUrl => {
       const anchor = document.createElement('a');
       const host = new URL(safeUrl).hostname.replace(/^www\./, '');
