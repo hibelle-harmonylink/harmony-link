@@ -84,7 +84,7 @@
     const card = template.content.firstElementChild.cloneNode(true);
     const category = card.querySelector('.post-category'); category.textContent = labels[post.category]; category.classList.add(post.category);
     card.querySelector('time').textContent = formatDate(post.created_at);
-    card.querySelector('.post-title').textContent = post.title;
+    card.querySelector('.post-title-text').textContent = post.title;
     const contentElement = card.querySelector('.post-content');
     renderLinkedText(contentElement, post.content);
     const isExistingHarmonyLinkPost = new Date(post.created_at) < new Date('2026-08-06T04:00:00Z');
