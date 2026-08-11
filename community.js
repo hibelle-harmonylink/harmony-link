@@ -1,8 +1,8 @@
 (() => {
   'use strict';
-  const URL = 'https://ricndeoiomzjacmrsjtg.supabase.co';
+  const SUPABASE_URL = 'https://ricndeoiomzjacmrsjtg.supabase.co';
   const KEY = 'sb_publishable_cGiclRJGjTqHBPVZqgTiQA_tvGKSQ60';
-  const client = window.supabase?.createClient(URL, KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+  const client = window.supabase?.createClient(SUPABASE_URL, KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
   const access = document.getElementById('accessState');
   const app = document.getElementById('communityApp');
   const list = document.getElementById('postList');
@@ -134,9 +134,24 @@
 
   const loadPosts = async () => {
     setMessage('게시글을 불러오고 있습니다.');
-    const { data: functionData, error } = await client.functions.invoke('community-posts', { body: {} });
+    const { data: sessionData } = await client.auth.getSession();
+    const accessToken = sessionData.session?.access_token;
+    if (!accessToken) { setMessage('로그인 정보를 다시 확인해 주세요.', true); return; }
+    let response;
+    let functionData;
+    try {
+      response = await fetch(`${SUPABASE_URL}/functions/v1/community-posts`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${accessToken}`, apikey: KEY, 'Content-Type': 'application/json' },
+        body: '{}',
+      });
+      functionData = await response.json();
+    } catch (error) {
+      setMessage(`게시글 연결 실패: ${error instanceof Error ? error.message : '네트워크 오류'}`, true);
+      return;
+    }
+    if (!response.ok) { setMessage(`게시글을 불러오지 못했습니다: ${functionData?.error || response.status}`, true); return; }
     const data = functionData?.posts;
-    if (error) { setMessage(`게시글을 불러오지 못했습니다: ${error.message}`, true); return; }
     if (!Array.isArray(data)) { setMessage('게시글 응답 형식이 올바르지 않습니다.', true); return; }
     posts = (data || []).map(post => ({ ...post, comments: (post.comments || []).sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) })); renderPosts(); setMessage(`최근 게시글 ${posts.length}건을 표시합니다.`);
   };

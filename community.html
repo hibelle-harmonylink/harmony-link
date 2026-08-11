@@ -8,7 +8,7 @@
   <meta http-equiv="Expires" content="0">
   <script>
     (() => {
-      const pageVersion = '20260811-293';
+      const pageVersion = '20260811-294';
       const requestedVersion = new URL(window.location.href).searchParams.get('refresh');
       if (window.location.protocol !== 'file:' && requestedVersion !== pageVersion) {
         const currentUrl = new URL(window.location.href);
@@ -17,7 +17,7 @@
         return;
       }
       if (window.location.protocol === 'file:') {
-        window.location.replace('https://hibelleharmony.com/community.html?refresh=20260811-293');
+        window.location.replace('https://hibelleharmony.com/community.html?refresh=20260811-294');
         return;
       }
       fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
@@ -37,7 +37,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="community.css?v=20260811-293">
+  <link rel="stylesheet" href="community.css?v=20260811-294">
   <style>
     html,body{margin:0!important;padding:0!important}
     body>main{padding-top:0!important;margin-top:0!important}
@@ -66,6 +66,6 @@
   <div id="composerModal" class="composer-modal" hidden><div class="modal-backdrop" data-close-composer></div><form id="postForm" class="composer-panel"><button class="modal-close" type="button" data-close-composer>×</button><p class="eyebrow">WRITE A POST</p><h2 id="composerTitle">새 글 작성</h2><input id="editingPostId" type="hidden"><label><span>게시판</span><select id="postCategory" required><option value="intro">파트너 소개</option><option value="question">질문과 답변</option><option value="review">수업 후기·성공 사례</option><option value="resource">자료 공유</option><option value="notice" data-admin-only>공지사항 (관리자)</option></select></label><label><span>제목</span><input id="postTitle" maxlength="120" required placeholder="내용을 알 수 있는 제목을 적어주세요"></label><label><span>내용</span><textarea id="postContent" maxlength="5000" required placeholder="파트너에게 도움이 될 내용을 나눠주세요"></textarea></label><label><span>관련 자료 링크 <small>(선택)</small></span><input id="postResourceUrl" type="url" placeholder="https://"></label><button class="primary-button submit-post" type="submit">게시하기</button><p id="composerMessage" class="community-message" role="status"></p></form></div>
   <template id="postTemplate"><article class="post-card"><header><span class="post-category"></span><time></time></header><h2 class="post-title"><span class="post-title-text"></span><span class="post-links" hidden></span></h2><p class="post-content"></p><div class="post-meta"><span class="post-author"></span><div class="post-actions"><button class="edit-post" type="button">수정</button><button class="delete-post" type="button">삭제</button></div></div><section class="comments"><button class="comment-toggle" type="button">댓글 <b>0</b></button><div class="comment-panel" hidden><div class="comment-list"></div><form class="comment-form"><input maxlength="1000" required placeholder="댓글을 입력하세요"><button type="submit">등록</button></form></div></section></article></template>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="community.js?v=20260811-293"></script>
+  <script src="community.js?v=20260811-294"></script>
 </body>
 </html>
