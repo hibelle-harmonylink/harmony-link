@@ -77,6 +77,7 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 /* Match the main-site brand and keep balanced space around the blue title panel. */
 .admin-header .admin-brand{font-family:"DM Sans","Noto Sans KR",sans-serif;font-size:20px;font-weight:600;letter-spacing:-.7px;gap:10px}
 .admin-header .admin-brand .logo-name{display:flex;flex-direction:column;line-height:1.05}
+.admin-header .admin-brand .logo-name b{font-weight:600!important}
 .admin-header .admin-brand .logo-name small{display:block;font-size:8px;letter-spacing:.7px;color:#7d8b9e;font-weight:500;margin-top:4px}
 .admin-page main{padding-top:18px}
 .admin-title-row{margin-top:12px;margin-inline:18px}

@@ -134,11 +134,10 @@
 
   const loadPosts = async () => {
     setMessage('게시글을 불러오고 있습니다.');
-    let { data, error } = await client.rpc('get_community_posts');
-    if (error && /function public\.get_community_posts/i.test(error.message || '')) {
-      ({ data, error } = await client.from('partner_community_posts').select('*,comments:partner_community_comments(*)').order('created_at', { ascending: false }));
-    }
+    const { data: functionData, error } = await client.functions.invoke('community-posts', { body: {} });
+    const data = functionData?.posts;
     if (error) { setMessage(`게시글을 불러오지 못했습니다: ${error.message}`, true); return; }
+    if (!Array.isArray(data)) { setMessage('게시글 응답 형식이 올바르지 않습니다.', true); return; }
     posts = (data || []).map(post => ({ ...post, comments: (post.comments || []).sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) })); renderPosts(); setMessage(`최근 게시글 ${posts.length}건을 표시합니다.`);
   };
 
