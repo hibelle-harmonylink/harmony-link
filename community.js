@@ -84,13 +84,19 @@
     const card = template.content.firstElementChild.cloneNode(true);
     const category = card.querySelector('.post-category'); category.textContent = labels[post.category]; category.classList.add(post.category);
     card.querySelector('time').textContent = formatDate(post.created_at);
-    card.querySelector('.post-title-text').textContent = post.title;
+    const titleText = card.querySelector('.post-title-text') || card.querySelector('.post-title');
+    titleText.textContent = post.title;
     const contentElement = card.querySelector('.post-content');
     renderLinkedText(contentElement, post.content);
     const isExistingHarmonyLinkPost = new Date(post.created_at) < new Date('2026-08-06T04:00:00Z');
     const visibleAuthorName = isExistingHarmonyLinkPost ? '하모니링크' : post.author_name;
     card.querySelector('.post-author').textContent = `${visibleAuthorName} · ${post.comments.length}개의 댓글`;
-    const links = card.querySelector('.post-links');
+    let links = card.querySelector('.post-links');
+    if (!links) {
+      links = document.createElement('span');
+      links.className = 'post-links';
+      titleText.parentElement.append(links);
+    }
     const normalizedTitle = String(post.title || '').trim();
     const fixedPostUrl = normalizedTitle.includes('1일 무료 체험 후기')
       ? 'https://www.youtube.com/shorts/zr_CoDfcEbI'
