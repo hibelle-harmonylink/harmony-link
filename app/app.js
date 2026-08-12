@@ -180,7 +180,7 @@ $("#newsPopupAction").addEventListener("click",()=>{
   }
   const contactMode=item.badgeKo==="지역사회 봉사"?"volunteer":"general";
   const topic=item.badgeKo==="파트너 모집"?"partner":"";
-  const query=item.screen==="contact"?`?v=71&popup=off&contact=${contactMode}${topic?`&topic=${topic}`:""}`:"?v=71&popup=off";
+  const query=item.screen==="contact"?`?v=72&popup=off&contact=${contactMode}${topic?`&topic=${topic}`:""}`:"?v=72&popup=off";
   window.open(`${location.pathname}${query}#${item.screen}`,"_blank","noopener,noreferrer");
 });
 $("#hidePopupToday").addEventListener("click",()=>{
@@ -232,7 +232,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true});
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker.js?v=71",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v72.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;

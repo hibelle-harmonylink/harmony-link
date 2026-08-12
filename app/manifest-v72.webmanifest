@@ -1,0 +1,20 @@
+{
+  "name": "Harmony Link · 이음문화센터",
+  "short_name": "Harmony Link",
+  "id": "/app/harmony-link",
+  "description": "배움과 사람을 잇는 하모니링크 앱",
+  "lang": "ko",
+  "start_url": "/app/?source=pwa",
+  "scope": "/app/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#dbeaff",
+  "theme_color": "#061d45",
+  "categories": ["education", "lifestyle"],
+  "prefer_related_applications": false,
+  "icons": [
+    {"src": "/app/icon-192-v71.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "/app/icon-512-v71.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "/app/icon-512-v71.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
