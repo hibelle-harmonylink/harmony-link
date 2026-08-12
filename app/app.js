@@ -180,7 +180,7 @@ $("#newsPopupAction").addEventListener("click",()=>{
   }
   const contactMode=item.badgeKo==="지역사회 봉사"?"volunteer":"general";
   const topic=item.badgeKo==="파트너 모집"?"partner":"";
-  const query=item.screen==="contact"?`?v=70&popup=off&contact=${contactMode}${topic?`&topic=${topic}`:""}`:"?v=70&popup=off";
+  const query=item.screen==="contact"?`?v=71&popup=off&contact=${contactMode}${topic?`&topic=${topic}`:""}`:"?v=71&popup=off";
   window.open(`${location.pathname}${query}#${item.screen}`,"_blank","noopener,noreferrer");
 });
 $("#hidePopupToday").addEventListener("click",()=>{
@@ -215,12 +215,24 @@ $("#contactForm").addEventListener("submit",async event=>{
   }finally{button.disabled=false}
 });
 window.addEventListener("beforeinstallprompt",event=>{event.preventDefault();installPrompt=event;$("#installButton").hidden=false});
-$("#installButton").addEventListener("click",async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;$("#installButton").hidden=true});
+$("#installButton").addEventListener("click",async()=>{
+  if(window.matchMedia("(display-mode: standalone)").matches){
+    alert(language==="ko"?"이미 Harmony Link 앱으로 설치되어 있습니다.":"Harmony Link is already installed.");
+    return;
+  }
+  if(!installPrompt){
+    alert(language==="ko"?"Chrome에서 화면을 한 번 누른 뒤 30초 정도 기다리고 다시 ‘앱 설치’를 눌러 주세요. 기존에 Google 표시가 붙은 바로가기가 있으면 먼저 삭제해 주세요.":"Tap the page, wait about 30 seconds, then press Install App again. Remove any old Chrome shortcut first.");
+    return;
+  }
+  installPrompt.prompt();
+  const choice=await installPrompt.userChoice;
+  if(choice.outcome==="accepted") installPrompt=null;
+});
 window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true});
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker.js?v=70",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker.js?v=71",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;
