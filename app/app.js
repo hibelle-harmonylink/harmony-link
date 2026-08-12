@@ -214,7 +214,14 @@ $("#contactForm").addEventListener("submit",async event=>{
     status.innerHTML=language==="ko"?'전송하지 못했습니다. <a href="mailto:hibelle@hibelleconsulting.com">이메일로 문의해 주세요.</a>':'Could not send. Please <a href="mailto:hibelle@hibelleconsulting.com">email us</a>.';
   }finally{button.disabled=false}
 });
-window.addEventListener("beforeinstallprompt",event=>{event.preventDefault();installPrompt=event;$("#installButton").hidden=false});
+window.addEventListener("beforeinstallprompt",event=>{
+  event.preventDefault();
+  installPrompt=event;
+  $("#installButton").hidden=false;
+  if(new URLSearchParams(location.search).get("install")==="1"){
+    setTimeout(()=>$("#installButton").focus(),150);
+  }
+});
 $("#installButton").addEventListener("click",async()=>{
   if(window.matchMedia("(display-mode: standalone)").matches){
     alert(language==="ko"?"이미 Harmony Link 앱으로 설치되어 있습니다.":"Harmony Link is already installed.");
@@ -248,6 +255,15 @@ if("serviceWorker" in navigator){
 }
 applyLanguage();
 const initialParams=new URLSearchParams(location.search);
+if(initialParams.get("install")==="1"){
+  const installButton=$("#installButton");
+  installButton.hidden=false;
+  installButton.classList.add("install-highlight");
+  const isIos=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  if(isIos&&!window.matchMedia("(display-mode: standalone)").matches){
+    setTimeout(()=>alert("iPhone에서는 Safari 아래의 공유 버튼을 누른 뒤 ‘홈 화면에 추가’를 선택해 주세요."),500);
+  }
+}
 if("scrollRestoration" in history) history.scrollRestoration="manual";
 const initialScreen=location.hash.slice(1)&&$(`[data-screen="${location.hash.slice(1)}"]`)?location.hash.slice(1):"home";
 const initialContactMode=initialParams.get("contact")==="volunteer"?"volunteer":"general";

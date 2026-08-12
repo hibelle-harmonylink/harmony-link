@@ -364,3 +364,5 @@
     padding-top: 45px !important;
   }
 }
+.install-button.install-highlight{animation:installPulse 1.3s ease-in-out infinite;box-shadow:0 0 0 5px rgba(66,153,255,.2)}
+@keyframes installPulse{50%{transform:scale(1.06);box-shadow:0 0 0 9px rgba(66,153,255,.1)}}

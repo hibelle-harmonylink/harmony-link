@@ -1,5 +1,5 @@
-const CACHE="harmony-link-app-v72";
-const ASSETS=["./","./index.html","./app.css?v=61","./overrides.css?v=70","./app.js?v=72","./manifest-v72.webmanifest","./icon-192-v71.png","./icon-512-v71.png","../assets/harmony-logo.png","../assets/volunteer/digital-volunteer.png","../assets/events/one-day-class.jpg","../assets/events/finance-ai-seminar.jpg","../assets/partners/partner-recruitment.png"];
+const CACHE="harmony-link-app-v73";
+const ASSETS=["./","./index.html","./app.css?v=61","./overrides.css?v=73","./app.js?v=73","./manifest-v72.webmanifest","./icon-192-v71.png","./icon-512-v71.png","../assets/harmony-logo.png","../assets/volunteer/digital-volunteer.png","../assets/events/one-day-class.jpg","../assets/events/finance-ai-seminar.jpg","../assets/partners/partner-recruitment.png"];
 self.addEventListener("install",event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener("activate",event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
 self.addEventListener("fetch",event=>{
