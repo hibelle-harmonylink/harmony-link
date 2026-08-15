@@ -780,28 +780,20 @@ footer .footer-bottom{padding-top:11px!important}
 }
 .partner-upgrade-guide{margin-top:28px;padding:28px;border:1px solid #c9dff5;border-radius:20px;background:#fff;box-shadow:0 14px 38px rgba(14,66,130,.08)}.partner-guide-head{text-align:center}.partner-guide-head .eyebrow{margin-bottom:5px}.partner-guide-head h3{margin:0;color:#0a2f61;font-size:25px}.partner-guide-head>p:last-child{margin:6px 0 0;color:#607995;font-size:12px}.partner-upgrade-guide ol{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;list-style:none;padding:0;margin:24px 0}.partner-upgrade-guide li{min-width:0;padding:16px 13px;border-radius:14px;background:#eef6ff}.partner-upgrade-guide li>b{display:block;color:#0b65c8;font-size:11px}.partner-upgrade-guide li>span{display:block;margin:7px 0 5px;color:#092f61;font-size:14px;font-weight:900}.partner-upgrade-guide li>small{display:block;color:#59728e;font-size:10px;line-height:1.55}.partner-guide-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}.partner-guide-actions .btn{min-height:42px;padding:10px 16px;font-size:11px}@media(max-width:760px){.partner-upgrade-guide{width:calc(100% - 24px);margin-top:20px;padding:20px 15px}.partner-guide-head h3{font-size:21px}.partner-upgrade-guide ol{grid-template-columns:1fr;margin:18px 0}.partner-upgrade-guide li{display:grid;grid-template-columns:38px 1fr;column-gap:8px;padding:13px}.partner-upgrade-guide li>b{grid-row:1/3;align-self:center}.partner-upgrade-guide li>span{margin:0}.partner-upgrade-guide li>small{grid-column:2}.partner-guide-actions{display:grid}.partner-guide-actions .btn{width:100%}}
 
-/* Jangsu Daycare popup logo: box-sizing is border-box site-wide, so padding eats into the visible mark inside a fixed-size box. Grow the media column/row itself (not just the image box) so a clearly bigger logo still has room to breathe without the popup's overflow:hidden clipping it. Scoped to this item only. */
+/* Jangsu Daycare popup logo: the popup panel itself must stay the same size as every other rotating news item (no dedicated panel/media height or grid-template override here), so only the image box is sized as large as safely fits inside the shared, unmodified media area. box-sizing is border-box site-wide, so padding eats into the visible mark inside that box. Scoped to this item only. */
 .promotion-news-media[data-item="jangsu"]{background:#fff!important}
 .promotion-news-media[data-item="jangsu"] img{width:210px!important;height:210px!important;max-width:210px!important;max-height:210px!important;padding:24px!important;object-fit:contain!important;transform:none!important}
-@media(max-width:680px){
-  .promotion-news-panel[data-item="jangsu"]{height:460px!important;min-height:460px!important;max-height:460px!important;grid-template-rows:205px 255px!important}
-  .promotion-news-panel[data-item="jangsu"] .promotion-news-media{height:205px!important;min-height:205px!important}
-  .promotion-news-panel[data-item="jangsu"] .promotion-news-copy{height:255px!important;min-height:255px!important}
-  .promotion-news-media[data-item="jangsu"] img{width:180px!important;height:180px!important;max-width:180px!important;max-height:180px!important;padding:20px!important}
-}
-@media(min-width:681px){
-  .promotion-news-panel[data-item="jangsu"]{grid-template-columns:300px 400px!important}
-  .promotion-news-media[data-item="jangsu"] img{width:275px!important;height:275px!important;max-width:275px!important;max-height:275px!important;padding:28px!important}
-}
+@media(max-width:680px){.promotion-news-media[data-item="jangsu"] img{width:168px!important;height:168px!important;max-width:168px!important;max-height:168px!important;padding:18px!important}}
+@media(min-width:681px){.promotion-news-media[data-item="jangsu"] img{width:250px!important;height:250px!important;max-width:250px!important;max-height:250px!important;padding:22px!important}}
 
-/* Jangsu Daycare community-partner card description: card height must match AALEAC's exactly, so the longer sentence is sized small enough to wrap within the same fixed-height copy box without the action button overlapping it. Matches the .is-korean/.is-english specificity used by the shared aaleac-logo-wrap mobile rules so this reliably wins. Scoped to this card only via its logo file path (its display name changes with language, so an alt-text selector can't be used here). */
+/* Jangsu Daycare community-partner card description: kept as one line like AALEAC's (no forced break), sized as large as still fits on a single line at each breakpoint's card width — 9.5px desktop, 7.5px mobile — so the text-to-button gap ends up identical to AALEAC's without a dedicated button-position override. Matches the .is-korean/.is-english specificity used by the shared aaleac-logo-wrap mobile rules so this reliably wins. Scoped to this card only via its logo file path (its display name changes with language, so an alt-text selector can't be used here). */
 .ad-directory-list .ad-partner-card:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy{padding-left:14px!important;padding-right:14px!important}
-.ad-directory-list .ad-partner-card:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy>p{font-size:10px!important;line-height:1.6!important;letter-spacing:-.1px!important}
+.ad-directory-list .ad-partner-card:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy>p{font-size:9.5px!important;line-height:1.6!important;letter-spacing:-.1px!important}
 @media(max-width:760px){
   .ad-directory-list .ad-partner-card.is-korean:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy,
   .ad-directory-list .ad-partner-card.is-english:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy{padding-left:12px!important;padding-right:12px!important}
   .ad-directory-list .ad-partner-card.is-korean:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy>p,
-  .ad-directory-list .ad-partner-card.is-english:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy>p{font-size:7.5px!important;line-height:1.3!important;margin:2px 0!important}
+  .ad-directory-list .ad-partner-card.is-english:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy>p{font-size:7.5px!important;line-height:1.4!important;margin:2px 0!important}
 }
 
 /* Jangsu Daycare card must match AALEAC's card height/bottom line exactly (no dedicated height override here) — the description font is instead sized small enough to fit inside AALEAC's unmodified copy box without the button overlapping. */
@@ -810,8 +802,8 @@ footer .footer-bottom{padding-top:11px!important}
 @media(max-width:680px){.jangsu-popup-break-desktop{display:none}}
 @media(min-width:681px){.jangsu-popup-break-mobile{display:none}}
 
-/* Jangsu Daycare card button (desktop): its two-line description leaves the action button noticeably closer to the card's bottom border than AALEAC's shorter one-line description does, even though both cards share the same translateY nudge. Lift Jangsu's button a bit more to give it comparable breathing room. Scoped to this card only. */
-@media(min-width:761px){
-  .ad-directory-list .ad-partner-card.is-korean:has(img[src*="jangsu-daycare-logo"]) .ad-partner-actions,
-  .ad-directory-list .ad-partner-card.is-english:has(img[src*="jangsu-daycare-logo"]) .ad-partner-actions{transform:translateY(-2px)!important}
-}
+/* The description is now single-line like AALEAC's, so no per-item button-position override is needed here anymore — both cards share the exact same spacing. */
+
+/* Jangsu Daycare card logo: clicking it opens its promotional banner in the existing image-gallery modal (reused from the imageOnly advertiser cards), without changing the card's own layout. Only elements with data-banner get the pointer cursor, so this affects Jangsu's logo only. */
+.ad-partner-image[data-banner]{cursor:pointer}
+
