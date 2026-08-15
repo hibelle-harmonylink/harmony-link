@@ -786,15 +786,13 @@ footer .footer-bottom{padding-top:11px!important}
 @media(max-width:680px){.promotion-news-media[data-item="jangsu"] img{width:168px!important;height:168px!important;max-width:168px!important;max-height:168px!important;padding:18px!important}}
 @media(min-width:681px){.promotion-news-media[data-item="jangsu"] img{width:250px!important;height:250px!important;max-width:250px!important;max-height:250px!important;padding:22px!important}}
 
-/* Jangsu Daycare community-partner card description: kept as one line like AALEAC's (no forced break), sized as large as still fits on a single line at each breakpoint's card width — 9.5px desktop, 7.5px mobile — so the text-to-button gap ends up identical to AALEAC's without a dedicated button-position override. Matches the .is-korean/.is-english specificity used by the shared aaleac-logo-wrap mobile rules so this reliably wins. Scoped to this card only via its logo file path (its display name changes with language, so an alt-text selector can't be used here). */
-.ad-directory-list .ad-partner-card:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy{padding-left:14px!important;padding-right:14px!important}
-.ad-directory-list .ad-partner-card:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy>p{font-size:9.5px!important;line-height:1.6!important;letter-spacing:-.1px!important}
-@media(max-width:760px){
-  .ad-directory-list .ad-partner-card.is-korean:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy,
-  .ad-directory-list .ad-partner-card.is-english:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy{padding-left:12px!important;padding-right:12px!important}
-  .ad-directory-list .ad-partner-card.is-korean:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy>p,
-  .ad-directory-list .ad-partner-card.is-english:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy>p{font-size:7.5px!important;line-height:1.4!important;margin:2px 0!important}
+/* Jangsu Daycare community-partner card description: desktop keeps the sentence on one line (no forced break), sized as large as still fits — 9.5px, set via a min-width:761px rule below so it only wins on desktop. Mobile instead breaks before "데이케어 센터입니다." and merges the phone number onto that same second line (via the jangsu-card-break-mobile/-desktop hideable breaks), and intentionally has NO Jangsu-specific font-size/padding override on mobile, so its paragraph falls through to the exact same .is-korean:has(.aaleac-logo-wrap) rule AALEAC's card uses (that rule is more specific than a plain :has(), so it already wins here without help) — matching line count at matching font metrics makes the text-to-button gap match AALEAC's automatically. Scoped to this card only via its logo file path (its display name changes with language, so an alt-text selector can't be used here). */
+@media(min-width:761px){
+  .ad-directory-list .ad-partner-card:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy{padding-left:14px!important;padding-right:14px!important}
+  .ad-directory-list .ad-partner-card:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy>p{font-size:9.5px!important;line-height:1.6!important;letter-spacing:-.1px!important}
+  .jangsu-card-break-mobile{display:none}
 }
+@media(max-width:760px){.jangsu-card-break-desktop{display:none}}
 
 /* Jangsu Daycare card must match AALEAC's card height/bottom line exactly (no dedicated height override here) — the description font is instead sized small enough to fit inside AALEAC's unmodified copy box without the button overlapping. */
 
@@ -805,5 +803,8 @@ footer .footer-bottom{padding-top:11px!important}
 /* The description is now single-line like AALEAC's, so no per-item button-position override is needed here anymore — both cards share the exact same spacing. */
 
 /* Jangsu Daycare card logo: clicking it opens its promotional banner in the existing image-gallery modal (reused from the imageOnly advertiser cards), without changing the card's own layout. Only elements with data-banner get the pointer cursor, so this affects Jangsu's logo only. */
-.ad-partner-image[data-banner]{cursor:pointer}
+.ad-partner-image[data-banner]{cursor:pointer;position:relative}
+/* Same dark "로고 클릭 · 배너 크게 보기" badge the premium imageOnly advertiser cards (Yura Kim, OrganicOne) already show, reused here for Jangsu's logo on both desktop and mobile. Scoped to [data-banner] so AALEAC's logo is untouched. */
+.ad-partner-image[data-banner] .ad-partner-banner-hint{position:absolute;right:10px;bottom:10px;padding:7px 10px;border-radius:30px;background:rgba(4,32,70,.88);color:#fff;font-size:9px;font-weight:800;letter-spacing:0;pointer-events:none}
+@media(max-width:760px){.ad-partner-image[data-banner] .ad-partner-banner-hint{right:6px;bottom:6px;padding:5px 8px;font-size:7px}}
 
