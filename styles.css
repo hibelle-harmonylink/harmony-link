@@ -804,3 +804,6 @@ footer .footer-bottom{padding-top:11px!important}
 
 /* The description is now single-line like AALEAC's, so no per-item button-position override is needed here anymore — both cards share the exact same spacing. */
 
+/* Jangsu Daycare card logo: clicking it opens its promotional banner in the existing image-gallery modal (reused from the imageOnly advertiser cards), without changing the card's own layout. Only elements with data-banner get the pointer cursor, so this affects Jangsu's logo only. */
+.ad-partner-image[data-banner]{cursor:pointer}
+
