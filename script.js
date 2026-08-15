@@ -958,7 +958,13 @@ if (advertisingArea) {
   const adHeading=advertisingArea.querySelector('.section-heading h2');
   if(adHeading){adHeading.dataset.ko='업체 광고·제휴 공간';adHeading.dataset.en='Business Advertising & Partnerships';adHeading.textContent=currentLanguage==='en'?adHeading.dataset.en:adHeading.dataset.ko;}
   const adGrid=advertisingArea.querySelector('.ad-grid');
-  if(adGrid)adGrid.innerHTML=`<button type="button" data-ad-room="premium"><span>AD 01</span><b data-ko="프리미엄 광고" data-en="Premium Advertising">프리미엄 광고</b><small data-ko="업체 둘러보기 →" data-en="View businesses →">업체 둘러보기 →</small></button><button type="button" data-ad-room="community"><span>PARTNERS</span><b data-ko="협력 업체" data-en="Community Partners">협력 업체</b><small data-ko="협력 업체 둘러보기 →" data-en="View partners →">협력 업체 둘러보기 →</small></button><button type="button" data-ad-room="culture"><span>AD 03</span><b data-ko="문화·교육 제휴" data-en="Culture & Education">문화·교육 제휴</b><small data-ko="제휴 업체 둘러보기 →" data-en="View partners →">제휴 업체 둘러보기 →</small></button>`;
+  if(adGrid){
+    adGrid.innerHTML=`<button type="button" data-ad-room="premium"><span>AD 01</span><b data-ko="프리미엄 광고" data-en="Premium Advertising">프리미엄 광고</b><small data-ko="업체 둘러보기 →" data-en="View businesses →">업체 둘러보기 →</small></button><button type="button" data-ad-room="community"><span>PARTNERS</span><b data-ko="협력 업체" data-en="Community Partners">협력 업체</b><small data-ko="협력 업체 둘러보기 →" data-en="View partners →">협력 업체 둘러보기 →</small></button><button type="button" data-ad-room="culture"><span>AD 03</span><b data-ko="문화·교육 제휴" data-en="Culture & Education">문화·교육 제휴</b><small data-ko="제휴 업체 둘러보기 →" data-en="View partners →">제휴 업체 둘러보기 →</small></button>`;
+    const adSizeGuide=document.createElement('section');
+    adSizeGuide.className='ad-size-guide';
+    adSizeGuide.innerHTML=`<div class="ad-size-guide-copy"><span>BANNER GUIDE</span><h3 data-ko="광고 배너 등록 안내" data-en="Advertising Banner Guide">광고 배너 등록 안내</h3><p data-ko="권장 크기와 파일 형식을 확인한 뒤 배너를 준비해 주세요." data-en="Check the recommended size and file format before preparing your banner.">권장 크기와 파일 형식을 확인한 뒤 배너를 준비해 주세요.</p><button type="button" data-ad-guide-open><span data-ko="안내 이미지 크게 보기" data-en="View Guide Larger">안내 이미지 크게 보기</span><b>↗</b></button></div><button type="button" class="ad-size-guide-image" data-ad-guide-open aria-label="광고 배너 사이즈 안내 크게 보기"><img src="assets/ads/banner-size-guide.png" alt="하모니링크 광고 배너 사이즈 안내"></button>`;
+    adGrid.before(adSizeGuide);
+  }
 }
 
 const adDirectoryModal=document.createElement('div');adDirectoryModal.className='ad-directory-modal';adDirectoryModal.hidden=true;
@@ -967,6 +973,15 @@ const adImageModal=document.createElement('div');adImageModal.className='ad-imag
 adImageModal.innerHTML=`<div class="ad-image-backdrop" data-ad-image-close></div><section class="ad-image-panel" role="dialog" aria-modal="true" aria-label="광고 배너 크게 보기"><button type="button" class="ad-image-close" data-ad-image-close aria-label="닫기">×</button><div class="ad-image-gallery"><img src="" alt=""><img src="" alt="" hidden></div></section>`;document.body.appendChild(adImageModal);
 const closeAdImage=()=>{adImageModal.hidden=true;};
 adImageModal.querySelectorAll('[data-ad-image-close]').forEach(button=>button.addEventListener('click',closeAdImage));
+document.addEventListener('click',event=>{
+  if(!event.target.closest('[data-ad-guide-open]'))return;
+  const images=adImageModal.querySelectorAll('.ad-image-gallery img');
+  images[0].src='assets/ads/banner-size-guide.png';
+  images[0].alt='하모니링크 광고 배너 사이즈 안내';
+  images[1].removeAttribute('src');
+  images[1].hidden=true;
+  adImageModal.hidden=false;
+});
 const adRooms={
   premium:{ko:'프리미엄 광고 업체',en:'Premium Advertisers',label:'PREMIUM ADVERTISER',slots:4,items:[{name:'Yura Kim · High Line Residential',copy:'뉴욕 부동산 에이전트 유라 김<br>좋은 매물 선정부터 계약과 입주까지 함께합니다.<br>연락처 516-390-1383',copyEn:'New York real estate agent Yura Kim<br>Property selection through closing and move-in.<br>Contact 516-390-1383',image:'assets/ads/highline-hl-symbol.png',banner:'assets/ads/highline-residential-ko.png',bannerEn:'assets/ads/highline-residential-ko.png',chatUrl:'https://open.kakao.com/me/hlresy',brokerUrl:'https://www.hlres.com/yura-kim',imageOnly:true},{name:'OrganicOne',copy:'유아동 식품·유기농 건강식품·한국 전통 식품을<br>팰팍과 플러싱 매장에서 만나보세요.<br>연락처 팰팍 201-585-0958 · 플러싱 929-845-0958',copyEn:'Organic children’s foods, health foods, and Korean traditional foods.<br>Available in Palisades Park and Flushing.<br>Contact<br>Palisades Park 201-585-0958 / Flushing 929-845-0958',image:'assets/ads/organic-one/logo-green.png',banner:'assets/ads/organic-one/family-products.png',secondaryBanner:'assets/ads/organic-one/traditional-foods.png',chatUrl:'https://www.instagram.com/organicone_/',brokerUrl:'https://www.organiconestore.com/',imageOnly:true}]},
   community:{ko:'협력 업체',en:'Community Partners',label:'COMMUNITY PARTNER',slots:4,items:[{name:'AALEAC',displayNameKo:'아시안 아메리칸 사법 경찰자문위원회',displayNameEn:'Asian American Law Enforcement Advisory Council',copy:'아시안 커뮤니티와 사법기관의 소통과 협력을 지원합니다.<br>연락처 646-996-8093',copyEn:'Supporting communication and cooperation between<br>Asian American communities and law enforcement.<br>Contact 646-996-8093',url:'https://aaleac.org/',image:'assets/partners/aaleac-shield.png?v=20260720-46'},{name:'Jangsu Daycare',displayNameKo:'장수 데이케어',displayNameEn:'Jangsu Daycare',copy:'어르신 한 분 한 분을 가족처럼 모시며 건강하고 행복한 하루를 함께하는<br class="jangsu-card-break-mobile"> 데이케어 센터입니다.<br class="jangsu-card-break-desktop"> 연락처 718-799-0133 · 718-864-6430',popupCopy:'어르신 한 분 한 분을 가족처럼 모시며 <br class="jangsu-popup-break-desktop">건강하고 행복한 하루를 함께하는 <br class="jangsu-popup-break-mobile">데이케어 센터입니다.<br>연락처 718-799-0133 · 718-864-6430',copyEn:'A daycare center caring for each senior like family, supporting a healthy and happy day together.<br>Phone 718-799-0133 · 718-864-6430',url:'mailto:Jangsuadc1@gmail.com',image:'assets/partners/jangsu-daycare-logo.png?v=20260815-304',banner:'assets/partners/jangsu-daycare-banner.png'}]},
