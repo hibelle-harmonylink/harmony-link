@@ -575,6 +575,15 @@ html[lang="en"] #events .event-poster:after{content:"Click to view the full flye
 .contact-info-stack .contact-info-card.response>b{background:#fff3d8!important}
 @media(max-width:760px){.ad-directory-list .ad-partner-card,.ad-directory-list .ad-slot-card{height:360px!important;min-height:360px!important}.contact-info-stack .contact-info-card{padding:18px!important}}
 /* Balanced advertising cards */
+.ad-size-guide{display:grid;grid-template-columns:minmax(240px,.72fr) minmax(0,1.28fr);align-items:center;gap:24px;margin:34px 0 28px;padding:24px;border:1px solid rgba(83,136,202,.25);border-radius:24px;background:rgba(255,255,255,.78);box-shadow:0 16px 38px rgba(19,73,139,.12)}
+.ad-size-guide-copy span{display:block;font-size:9px;font-weight:800;letter-spacing:1.8px;color:var(--blue)}
+.ad-size-guide-copy h3{margin:7px 0 8px;font-size:25px;line-height:1.25;color:var(--deep)}
+.ad-size-guide-copy p{margin:0;color:var(--muted);font-size:12px;line-height:1.65}
+.ad-size-guide-copy button{display:inline-flex;align-items:center;justify-content:space-between;gap:20px;min-width:190px;margin-top:17px;padding:12px 15px;border:0;border-radius:11px;background:var(--blue);color:#fff;font-size:11px;font-weight:800;cursor:pointer;box-shadow:0 9px 20px rgba(10,92,190,.2)}
+.ad-size-guide-copy button span{color:#fff;font-size:11px;letter-spacing:0}
+.ad-size-guide-image{display:block;width:100%;padding:0;border:0;border-radius:17px;overflow:hidden;background:#eaf3ff;cursor:zoom-in;box-shadow:0 9px 26px rgba(15,62,119,.14)}
+.ad-size-guide-image img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+@media(max-width:760px){.ad-size-guide{grid-template-columns:1fr;gap:15px;margin:24px 0 20px;padding:16px;border-radius:18px}.ad-size-guide-copy h3{font-size:20px}.ad-size-guide-copy p{font-size:10px}.ad-size-guide-copy button{width:100%;min-height:45px;margin-top:13px}.ad-size-guide-image{border-radius:13px}.ad-size-guide-image img{aspect-ratio:16/9}}
 .ad-directory-list .ad-partner-card,.ad-directory-list .ad-slot-card{height:360px!important;min-height:360px!important}
 .ad-directory-list .ad-partner-image,.ad-directory-list .ad-slot-visual{flex:0 0 180px!important;height:180px!important}
 .ad-directory-list .ad-partner-copy,.ad-directory-list .ad-slot-card>div:last-child{height:180px!important;min-height:180px!important;padding:15px 18px 17px!important;overflow:hidden!important}
