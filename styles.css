@@ -809,3 +809,9 @@ footer .footer-bottom{padding-top:11px!important}
 /* Jangsu Daycare popup description: desktop breaks before "건강하고" (jangsu-popup-break-desktop), phones break before "데이케어" instead (jangsu-popup-break-mobile) so "데이케어 센터입니다." lands on its own line; the phone-number line keeps its own line throughout. */
 @media(max-width:680px){.jangsu-popup-break-desktop{display:none}}
 @media(min-width:681px){.jangsu-popup-break-mobile{display:none}}
+
+/* Jangsu Daycare card button (desktop): its two-line description leaves the action button noticeably closer to the card's bottom border than AALEAC's shorter one-line description does, even though both cards share the same translateY nudge. Lift Jangsu's button a bit more to give it comparable breathing room. Scoped to this card only. */
+@media(min-width:761px){
+  .ad-directory-list .ad-partner-card.is-korean:has(img[src*="jangsu-daycare-logo"]) .ad-partner-actions,
+  .ad-directory-list .ad-partner-card.is-english:has(img[src*="jangsu-daycare-logo"]) .ad-partner-actions{transform:translateY(-2px)!important}
+}
