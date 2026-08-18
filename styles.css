@@ -797,20 +797,50 @@ footer .footer-bottom{padding-top:11px!important}
 
 /* Phone popup partner logos: match Yura's visual footprint without cropping. */
 @media(max-width:680px){
+  .promotion-news-panel[data-item="jangsu"],
+  .promotion-news-panel[data-item="aaleac"]{
+    width:min(320px,calc(100vw - 24px))!important;
+    height:420px!important;
+    min-height:420px!important;
+    max-height:420px!important;
+    grid-template-rows:180px 240px!important;
+  }
   .promotion-news-panel[data-item="jangsu"]>.promotion-news-media,
+  .promotion-news-panel[data-item="aaleac"]>.promotion-news-media{
+    height:180px!important;
+    min-height:180px!important;
+    transform:none!important;
+  }
   .promotion-news-panel[data-item="jangsu"]>.promotion-news-copy,
-  .promotion-news-panel[data-item="aaleac"]>.promotion-news-media,
   .promotion-news-panel[data-item="aaleac"]>.promotion-news-copy{
-    transform:translateY(90px)!important;
+    position:static!important;
+    height:240px!important;
+    min-height:240px!important;
+    padding:10px 12px 9px!important;
+    overflow:hidden!important;
+    transform:none!important;
+  }
+  .promotion-news-panel[data-item="jangsu"] .promotion-action,
+  .promotion-news-panel[data-item="aaleac"] .promotion-action{
+    position:static!important;
+    width:100%!important;
+    min-height:38px!important;
+    margin-top:auto!important;
+  }
+  .promotion-news-panel[data-item="jangsu"] .promotion-news-nav,
+  .promotion-news-panel[data-item="aaleac"] .promotion-news-nav{
+    position:static!important;
+    width:100%!important;
+    margin:6px 0 0!important;
   }
   .promotion-news-media[data-item="jangsu"] img,
   .promotion-news-media[data-item="aaleac"] img,
   .promotion-news-panel[data-item="aaleac"] .promotion-news-media img{
     display:block!important;
-    width:168px!important;
-    height:168px!important;
-    max-width:168px!important;
-    max-height:168px!important;
+    width:132px!important;
+    height:132px!important;
+    max-width:132px!important;
+    max-height:132px!important;
     padding:2px!important;
     object-fit:contain!important;
     object-position:center!important;
