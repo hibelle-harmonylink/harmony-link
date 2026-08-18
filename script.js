@@ -983,6 +983,15 @@ const adRooms={
   community:{ko:'협력 업체',en:'Community Partners',label:'COMMUNITY PARTNER',slots:4,items:[{name:'AALEAC',displayNameKo:'아시안 아메리칸 사법 경찰자문위원회',displayNameEn:'Asian American Law Enforcement Advisory Council',copy:'아시안 커뮤니티와 사법기관의 소통과 협력을 지원합니다.<br>연락처 646-996-8093',copyEn:'Supporting communication and cooperation between<br>Asian American communities and law enforcement.<br>Contact 646-996-8093',url:'https://aaleac.org/',image:'assets/partners/aaleac-shield.png?v=20260720-46'},{name:'Jangsu Daycare',displayNameKo:'장수 데이케어',displayNameEn:'Jangsu Daycare',copy:'어르신 한 분 한 분을 가족처럼 모시며 건강하고 행복한 하루를 함께하는<br class="jangsu-card-break-mobile"> 데이케어 센터입니다.<br class="jangsu-card-break-desktop"> 연락처 718-799-0133 · 718-864-6430',popupCopy:'어르신 한 분 한 분을 가족처럼 모시며 <br class="jangsu-popup-break-desktop">건강하고 행복한 하루를 함께하는 <br class="jangsu-popup-break-mobile">데이케어 센터입니다.<br>연락처 718-799-0133 · 718-864-6430',copyEn:'A daycare center caring for each senior like family, supporting a healthy and happy day together.<br>Phone 718-799-0133 · 718-864-6430',url:'mailto:Jangsuadc1@gmail.com',image:'assets/partners/jangsu-daycare-logo.png?v=20260815-304',banner:'assets/partners/jangsu-daycare-banner.png'}]},
   culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',label:'CULTURE & EDUCATION PARTNER',slots:4,items:[]}
 };
+const hole19Advertiser=adRooms.premium.items.find(item=>item.name==='HOLE19 Golf Lounge');
+if(hole19Advertiser){
+  hole19Advertiser.chatUrl='https://www.instagram.com/hole19_golflounge/';
+  hole19Advertiser.brokerUrl='https://www.facebook.com/hole19golflounge/?ref=PROFILE_EDIT_xav_ig_profile_page_web#';
+  hole19Advertiser.primaryLabelKo='인스타그램 ↗';
+  hole19Advertiser.primaryLabelEn='Instagram ↗';
+  hole19Advertiser.secondaryLabelKo='페이스북 ↗';
+  hole19Advertiser.secondaryLabelEn='Facebook ↗';
+}
 
 // Build the main news popup from the same approved program and partner registries used on the page.
 // Popup policy: directly/co-operated programs and advertisers remain visible; only $50 PREMIUM listing partners qualify.
