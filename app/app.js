@@ -1,4 +1,4 @@
-const programs = [
+const basePrograms = [
   {id:"digital",emoji:"💻",ko:"디지털 교육",en:"Digital Learning",category:"디지털",tagsKo:"스마트폰 · 키오스크 · AI 활용",tagsEn:"Smartphones · Kiosks · AI",color:"#dbeaff"},
   {id:"english",emoji:"🌍",ko:"언어 교육",en:"Language Education",category:"언어",tagsKo:"영어 · 생활 회화 · 일본어",tagsEn:"English · Conversation · Japanese",color:"#bcd9e8"},
   {id:"music",emoji:"🎵",ko:"음악 교육",en:"Music Education",category:"음악",tagsKo:"합창 · 발성 · 악기",tagsEn:"Choir · Voice · Instruments",color:"#f2c7ad"},
@@ -12,17 +12,21 @@ const programs = [
   {id:"travel",emoji:"🗺️",ko:"여행·체험",en:"Travel & Experiences",category:"여행",tagsKo:"뉴욕 체험 · 문화 탐방 · 맞춤 여행",tagsEn:"New York · Culture trips · Custom trips",color:"#cbd8e5"},
   {id:"career",emoji:"💼",ko:"자격증·직업교육",en:"Career & Certification",category:"직업",tagsKo:"자격증 · 취업 · 창업",tagsEn:"Certificates · Employment · Business",color:"#cbd8e5"}
 ];
+const sharedContent=window.HARMONY_LINK_SHARED_CONTENT||{};
+const programs=[...(sharedContent.featuredPrograms||[]),...basePrograms];
 const categoryNames={전체:"All",디지털:"Digital",언어:"Language",음악:"Music",댄스:"Dance",금융:"Finance",취미:"Art",건강:"Wellness",문화:"Culture",상담:"Counseling",여행:"Travel",직업:"Career"};
-const popupNews=[
+const fallbackPopupNews=[
   {badgeKo:"무료강좌",badgeEn:"FREE CLASS",titleKo:"무료 원데이 클래스",titleEn:"Free One-Day Class",textKo:"관심있는 배움을 가볍게 경험해 보세요.<br>새로운 일정은 앱에서 가장 먼저 안내합니다.",textEn:"Try a new learning experience.<br>New dates are announced in the app first.",image:"../assets/events/one-day-class.jpg",actionKo:"신청하기",actionEn:"Apply",url:"https://forms.gle/8b88T3zSsfPUxu128",screen:"events"},
   {badgeKo:"지역사회 봉사",badgeEn:"COMMUNITY SUPPORT",titleKo:"무료 방문 디지털 지원",titleEn:"Free in-home digital support",textKo:"스마트폰과 디지털 기기 사용이 어려운 이웃을<br>직접 찾아가 친절하게 도와드립니다.",textEn:"Friendly volunteers visit neighbors who need help<br>using smartphones and digital devices.",image:"../assets/volunteer/digital-volunteer.png",actionKo:"신청하기",actionEn:"Apply",screen:"contact"},
   {badgeKo:"파트너 모집",badgeEn:"PARTNER RECRUITMENT",titleKo:"입점 파트너 모집",titleEn:"Partner Recruitment",textKo:"전문 강사와 교육업체의 좋은 프로그램이 더 많은<br>사람과 만날 수 있도록 연결합니다.",textEn:"We connect trusted instructors and education providers<br>with more learners and organizations.",image:"../assets/partners/partner-recruitment.png",actionKo:"문의하기",actionEn:"Contact us",screen:"contact"}
 ];
+const popupNews=sharedContent.promotions?.length?sharedContent.promotions:fallbackPopupNews;
 let language=localStorage.getItem("hl-language")||"ko";
 let activeCategory="전체";
 let saved=new Set(JSON.parse(localStorage.getItem("hl-saved")||"[]"));
 let installPrompt=null;
-let popupIndex=0;
+let popupIndex=Math.floor(Math.random()*popupNews.length);
+let popupTimer=null;
 let activeContactMode="general";
 
 const $=(selector,root=document)=>root.querySelector(selector);
@@ -31,14 +35,14 @@ const $$=(selector,root=document)=>[...root.querySelectorAll(selector)];
 function programCard(program){
   const title=language==="ko"?program.ko:program.en;
   const tags=language==="ko"?program.tagsKo:program.tagsEn;
-  return `<article class="program-card" data-id="${program.id}">
-    <div class="program-art" style="background:${program.color}">${program.emoji}</div>
+  return `<article class="program-card" data-id="${program.id}"${program.url?` data-program-url="${program.url}" tabindex="0"`:""}>
+    <div class="program-art" style="background:${program.color}">${program.image?`<img src="${program.image}" alt="">`:program.emoji}</div>
     <div><h3>${title}</h3><p>${tags}</p></div>
     <button class="save-button ${saved.has(program.id)?"saved":""}" type="button" data-save="${program.id}" aria-label="${saved.has(program.id)?"Remove from saved":"Save program"}">${saved.has(program.id)?"♥":"♡"}</button>
   </article>`;
 }
 function renderRecommended(){
-  $("#recommendedPrograms").innerHTML=programs.slice(0,4).map(p=>`<article class="program-mini" data-open-program="${p.id}"><div class="program-art" style="background:${p.color}">${p.emoji}</div><div><h3>${language==="ko"?p.ko:p.en}</h3><p>${language==="ko"?p.tagsKo:p.tagsEn}</p></div></article>`).join("");
+  $("#recommendedPrograms").innerHTML=programs.slice(0,4).map(p=>`<article class="program-mini" data-open-program="${p.id}"><div class="program-art" style="background:${p.color}">${p.image?`<img src="${p.image}" alt="">`:p.emoji}</div><div><h3>${language==="ko"?p.ko:p.en}</h3><p>${language==="ko"?p.tagsKo:p.tagsEn}</p></div></article>`).join("");
 }
 function renderFilters(){
   $("#categoryFilters").innerHTML=Object.keys(categoryNames).map(name=>`<button type="button" class="${activeCategory===name?"active":""}" data-filter="${name}">${language==="ko"?name:categoryNames[name]}</button>`).join("");
@@ -56,9 +60,9 @@ function renderSaved(){
 }
 function renderPopup(){
   const item=popupNews[popupIndex];
-  $("#newsPopup").classList.toggle("one-day-popup",popupIndex===0);
-  $("#newsPopup").classList.toggle("volunteer-popup",popupIndex===1);
-  $("#newsPopup").classList.toggle("partner-popup",popupIndex===2);
+  $("#newsPopup").classList.toggle("one-day-popup",item.kind==="benefit"||popupIndex===0&&!item.kind);
+  $("#newsPopup").classList.toggle("volunteer-popup",item.kind==="community"||popupIndex===1&&!item.kind);
+  $("#newsPopup").classList.toggle("partner-popup",item.kind==="advertising"||item.kind==="program"||popupIndex===2&&!item.kind);
   $("#newsPopupImage").src=item.image;
   $("#newsPopupImage").alt=language==="ko"?item.titleKo:item.titleEn;
   $("#newsPopupBadge").textContent=language==="ko"?item.badgeKo:item.badgeEn;
@@ -70,6 +74,8 @@ function renderPopup(){
 function closePopup(){
   $("#newsPopup").hidden=true;
   document.body.style.overflow="";
+  window.clearInterval(popupTimer);
+  popupTimer=null;
 }
 function setContactMode(mode="general"){
   const title=$("#contactTitle"),description=$("#contactDescription"),select=$("#contactSubject"),submitLabel=$("#contactSubmitLabel");
@@ -99,9 +105,12 @@ function setContactMode(mode="general"){
   $$("option[data-ko]",select).forEach(option=>{option.textContent=option.dataset[language]});
 }
 function openPopup(){
+  popupIndex=Math.floor(Math.random()*popupNews.length);
   renderPopup();
   $("#newsPopup").hidden=false;
   document.body.style.overflow="hidden";
+  window.clearInterval(popupTimer);
+  popupTimer=window.setInterval(()=>{popupIndex=(popupIndex+1)%popupNews.length;renderPopup()},7000);
 }
 function applyLanguage(){
   document.documentElement.lang=language;
@@ -142,8 +151,10 @@ document.addEventListener("click",event=>{
   if(category){activeCategory=category.dataset.category;navigate("programs");renderFilters();renderPrograms()}
   const saveButton=event.target.closest("[data-save]");
   if(saveButton) toggleSaved(saveButton.dataset.save);
+  const linkedProgram=event.target.closest("[data-program-url]");
+  if(linkedProgram&&!saveButton) window.open(linkedProgram.dataset.programUrl,"_blank","noopener,noreferrer");
   const mini=event.target.closest("[data-open-program]");
-  if(mini){activeCategory="전체";navigate("programs");$("#programSearch").value=language==="ko"?programs.find(p=>p.id===mini.dataset.openProgram).ko:programs.find(p=>p.id===mini.dataset.openProgram).en;renderFilters();renderPrograms()}
+  if(mini){const program=programs.find(p=>p.id===mini.dataset.openProgram);if(program.url){window.open(program.url,"_blank","noopener,noreferrer")}else{activeCategory="전체";navigate("programs");$("#programSearch").value=language==="ko"?program.ko:program.en;renderFilters();renderPrograms()}}
 });
 $("#programSearch").addEventListener("input",renderPrograms);
 $("#languageButton").addEventListener("click",()=>{language=language==="ko"?"en":"ko";applyLanguage()});
@@ -166,7 +177,6 @@ $$("[data-lightbox-close]").forEach(button=>button.addEventListener("click",clos
 $("#brandHome").addEventListener("click",event=>{
   event.preventDefault();
   navigate("home");
-  popupIndex=0;
   openPopup();
 });
 $$("[data-popup-close]").forEach(button=>button.addEventListener("click",closePopup));
@@ -180,11 +190,11 @@ $("#newsPopupAction").addEventListener("click",()=>{
   }
   const contactMode=item.badgeKo==="지역사회 봉사"?"volunteer":"general";
   const topic=item.badgeKo==="파트너 모집"?"partner":"";
-  const query=item.screen==="contact"?`?v=72&popup=off&contact=${contactMode}${topic?`&topic=${topic}`:""}`:"?v=72&popup=off";
+  const query=item.screen==="contact"?`?v=74&popup=off&contact=${contactMode}${topic?`&topic=${topic}`:""}`:"?v=74&popup=off";
   window.open(`${location.pathname}${query}#${item.screen}`,"_blank","noopener,noreferrer");
 });
 $("#hidePopupToday").addEventListener("click",()=>{
-  localStorage.setItem("hl-popup-hidden-date-v2",new Date().toLocaleDateString("en-CA"));
+  localStorage.setItem("hl-popup-hidden-date-v3",new Date().toLocaleDateString("en-CA"));
   closePopup();
 });
 $("#contactSubject").addEventListener("change",event=>{
@@ -204,13 +214,22 @@ $("#contactSubject").addEventListener("change",event=>{
 $("#contactForm").addEventListener("submit",async event=>{
   event.preventDefault();
   const form=event.currentTarget,status=$("#formStatus"),button=$(".submit-button",form);
-  status.textContent=language==="ko"?"전송 중입니다…":"Sending…";button.disabled=true;
+  const toast=$("#contactToast"),selectedSubject=$("#contactSubject").value;
+  status.className="form-status";status.textContent=language==="ko"?"전송 중입니다…":"Sending…";button.disabled=true;
   try{
-    const response=await fetch("https://formsubmit.co/ajax/hibelle@hibelleconsulting.com",{method:"POST",headers:{Accept:"application/json"},body:new FormData(form)});
+    const formData=new FormData(form);
+    formData.set("_subject",`[Harmony Link] ${selectedSubject}`);
+    formData.set("문의 분야",selectedSubject);
+    const response=await fetch("https://formsubmit.co/ajax/hibelle@hibelleconsulting.com",{method:"POST",headers:{Accept:"application/json"},body:formData});
     if(!response.ok) throw new Error("send failed");
     status.textContent=language==="ko"?"문의가 접수되었습니다. 확인 후 연락드리겠습니다.":"Your inquiry was received. We will be in touch.";
+    status.className="form-status success";
+    toast.querySelector("span").textContent=language==="ko"?"접수가 완료되었습니다. 확인 후 연락드리겠습니다.":"Your inquiry has been received.";
+    toast.hidden=false;
+    window.setTimeout(()=>{toast.hidden=true},4500);
     form.reset();
   }catch{
+    status.className="form-status error";
     status.innerHTML=language==="ko"?'전송하지 못했습니다. <a href="mailto:hibelle@hibelleconsulting.com">이메일로 문의해 주세요.</a>':'Could not send. Please <a href="mailto:hibelle@hibelleconsulting.com">email us</a>.';
   }finally{button.disabled=false}
 });
@@ -239,7 +258,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true});
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v72.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v74.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;
@@ -286,5 +305,5 @@ if(initialScreen==="contact"&&initialParams.get("topic")==="partner"){
   submitLabel.textContent=submitLabel.dataset[language];
 }
 if(initialParams.get("popup")==="off") closePopup();
-else if(localStorage.getItem("hl-popup-hidden-date-v2")!==new Date().toLocaleDateString("en-CA")) openPopup();
+else if(localStorage.getItem("hl-popup-hidden-date-v3")!==new Date().toLocaleDateString("en-CA")) openPopup();
 else closePopup();
