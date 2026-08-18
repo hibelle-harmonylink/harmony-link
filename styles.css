@@ -794,6 +794,9 @@ footer .footer-bottom{padding-top:11px!important}
 
 /* Jangsu Daycare popup logo: the popup panel itself must stay the same size as every other rotating news item (no dedicated panel/media height or grid-template override here), so only the image box is sized as large as safely fits inside the shared, unmodified media area. box-sizing is border-box site-wide, so padding eats into the visible mark inside that box. Scoped to this item only. */
 .promotion-news-media[data-item="jangsu"]{background:#fff!important}
+.promotion-news-media[data-item="hole19"]{background:#fff!important}
+.promotion-news-media[data-item="hole19"] img{width:92%!important;height:92%!important;max-width:260px!important;max-height:190px!important;object-fit:contain!important;transform:scale(1.18)!important}
+@media(max-width:760px){.promotion-news-media[data-item="hole19"] img{width:88%!important;height:88%!important;max-width:225px!important;max-height:150px!important;transform:scale(1.14)!important}.ad-directory-list .ad-partner-card:has(img[alt="HOLE19 Golf Lounge logo"]) .ad-partner-image img{transform:scale(1.2)!important}}
 .promotion-news-media[data-item="jangsu"] img{width:210px!important;height:210px!important;max-width:210px!important;max-height:210px!important;padding:24px!important;object-fit:contain!important;transform:none!important}
 @media(max-width:680px){.promotion-news-media[data-item="jangsu"] img{width:168px!important;height:168px!important;max-width:168px!important;max-height:168px!important;padding:18px!important}}
 @media(min-width:681px){.promotion-news-media[data-item="jangsu"] img{width:250px!important;height:250px!important;max-width:250px!important;max-height:250px!important;padding:22px!important}}
