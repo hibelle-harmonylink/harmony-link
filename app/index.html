@@ -11,7 +11,7 @@
   <link rel="icon" type="image/png" href="icon-192-v71.png">
   <link rel="apple-touch-icon" href="icon-192-v71.png">
   <link rel="stylesheet" href="app.css?v=61">
-  <link rel="stylesheet" href="overrides.css?v=75">
+  <link rel="stylesheet" href="overrides.css?v=76">
 </head>
 <body>
   <div class="app-shell">
@@ -53,7 +53,7 @@
             <span class="badge" data-ko="무료 방문 지원" data-en="FREE HOME VISIT">무료 방문 지원</span>
             <h2 data-ko="디지털이 어려운 이웃을 직접 찾아갑니다" data-en="We bring friendly digital help to your home">디지털이 어려운 이웃을 직접 찾아갑니다</h2>
           </div>
-          <img src="../assets/volunteer/digital-volunteer.png" alt="무료 방문 디지털 지원">
+          <img id="volunteerImage" src="../assets/volunteer/digital-volunteer.png" alt="무료 방문 디지털 지원" role="button" tabindex="0">
         </section>
 
         <section class="home-programs">
@@ -156,6 +156,7 @@
     <div class="image-lightbox" id="imageLightbox" hidden role="dialog" aria-modal="true" aria-label="전단지 크게 보기">
       <button class="lightbox-backdrop" type="button" data-lightbox-close aria-label="크게 보기 닫기"></button>
       <img id="lightboxImage" src="" alt="">
+      <button class="lightbox-action" id="lightboxAction" type="button" hidden><span></span><b>→</b></button>
       <button class="lightbox-close" type="button" data-lightbox-close aria-label="닫기">×</button>
     </div>
 
@@ -167,7 +168,7 @@
       <button type="button" data-go="contact"><span>✉</span><small data-ko="문의" data-en="Contact">문의</small></button>
     </nav>
   </div>
-  <script src="../shared-content.js?v=74"></script>
-  <script src="app.js?v=75"></script>
+  <script src="../shared-content.js?v=75"></script>
+  <script src="app.js?v=76"></script>
 </body>
 </html>

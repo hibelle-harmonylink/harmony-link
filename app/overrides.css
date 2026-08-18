@@ -1,5 +1,19 @@
+/* #contact{display:flex} in app.css is an ID selector, so it beats the plain
+   .screen{display:none} class rule even when #contact isn't the active screen. */
+#contact:not(.active) {
+  display: none !important;
+}
+
 #newsPopup.one-day-popup .news-media {
   padding: 52px 6px 0 !important;
+  background: #63a9e8 !important;
+}
+
+/* The Hibelle "hi" mark's second letter is a near-white tint meant to sit on a
+   deep blue background (see the main-site popup); outline it so it still reads
+   against this lighter panel instead of disappearing. */
+#newsPopup.one-day-popup .news-media img {
+  filter: drop-shadow(1.5px 0 #0b1830) drop-shadow(-1.5px 0 #0b1830) drop-shadow(0 1.5px #0b1830) drop-shadow(0 -1.5px #0b1830);
 }
 
 #newsPopup.volunteer-popup .news-media {
@@ -93,6 +107,31 @@
   color: #061d45;
   font-size: 27px;
   line-height: 1;
+}
+
+.lightbox-action {
+  position: relative;
+  z-index: 1;
+  width: min(92vw, 760px);
+  height: 52px;
+  margin-top: 16px;
+  border: 0;
+  border-radius: 26px;
+  padding: 0 22px;
+  background: #061d45;
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lightbox-action[hidden] {
+  display: none;
+}
+
+.app-shell #home .feature-card img {
+  cursor: pointer;
 }
 
 #newsPopup .news-media .zoom-hint {
@@ -363,6 +402,27 @@
     height: 190px !important;
     padding-top: 45px !important;
   }
+}
+
+/* AALEAC's long Korean title otherwise wraps mid-word onto a second line. */
+#newsPopup[data-item="aaleac"] .news-copy h2 {
+  font-size: 17px !important;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+#newsPopup[data-item="aaleac"] .news-copy > p:not(.eyebrow) {
+  margin-top: -2px !important;
+}
+
+/* OrganicOne's wordmark sits low in the media box by default; lift it and
+   keep it centered instead of bottom-anchored like the other flyers. */
+#newsPopup[data-item="organic"] .news-media {
+  align-items: center;
+}
+
+#newsPopup[data-item="organic"] .news-media img {
+  object-position: center !important;
 }
 .install-button.install-highlight{animation:installPulse 1.3s ease-in-out infinite;box-shadow:0 0 0 5px rgba(66,153,255,.2)}
 @keyframes installPulse{50%{transform:scale(1.06);box-shadow:0 0 0 9px rgba(66,153,255,.1)}}
