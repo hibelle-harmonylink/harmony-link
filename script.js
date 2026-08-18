@@ -990,17 +990,33 @@ const adRooms={
 
 // Build the main news popup from the same approved program and partner registries used on the page.
 // Popup policy: directly/co-operated programs and advertisers remain visible; only $50 PREMIUM listing partners qualify.
-const premiumPartnerNews=registeredPartners.filter(partner=>partner.membership==='premium').map(partner=>({typeKo:'PREMIUM 입점 파트너',typeEn:'PREMIUM EDUCATION PARTNER',titleKo:partner.name,titleEn:partner.name,copyKo:`${partner.type} · PREMIUM 파트너`,copyEn:`${partner.type} · PREMIUM partner`,image:partner.logo,target:'#programs',actionKo:'파트너 보기',actionEn:'View Partner'}));
+const promotionPublishedDates={
+  'specialty:digital':'2026-07-18T09:00:00-04:00',
+  'specialty:english':'2026-07-18T09:05:00-04:00',
+  'specialty:melody':'2026-07-18T09:10:00-04:00',
+  'advertising:Yura Kim · High Line Residential':'2026-07-20T09:00:00-04:00',
+  'advertising:AALEAC':'2026-07-21T09:00:00-04:00',
+  'advertising:OrganicOne':'2026-07-22T09:00:00-04:00',
+  'advertising:Jangsu Daycare':'2026-08-15T09:00:00-04:00'
+};
+let promotionFallbackSequence=0;
+const promotionSortKey=key=>promotionPublishedDates[key]
+  ? Date.parse(promotionPublishedDates[key])
+  : Date.now()+promotionFallbackSequence++;
+const premiumPartnerNews=registeredPartners.filter(partner=>partner.membership==='premium').map(partner=>({typeKo:'PREMIUM 입점 파트너',typeEn:'PREMIUM EDUCATION PARTNER',titleKo:partner.name,titleEn:partner.name,copyKo:`${partner.type} · PREMIUM 파트너`,copyEn:`${partner.type} · PREMIUM partner`,image:partner.logo,target:'#programs',actionKo:'파트너 보기',actionEn:'View Partner',sortKey:promotionSortKey(`partner:${partner.name}`)}));
 const specialtyPopupCopy={
   digital:{ko:'AI와 스마트폰을 실생활에서 자신 있게 활용하도록 돕는<br>맞춤형 디지털 교육입니다.<br>연락처 929-603-0052',en:'Practical digital education for using AI and<br>smartphones with confidence in daily life.<br>Contact 929-603-0052'},
   english:{ko:'시간과 장소의 제약 없이 수준과 목표에 맞춰 진행하는<br>1:1 실용 화상영어입니다.<br>연락처 929-603-0052',en:'Personalized one-to-one practical English lessons tailored<br>to each learner’s level and goals.<br>Contact 929-603-0052'},
   melody:{ko:'노래·발성·호흡과 다양한 음악 활동으로 마음과 공동체를 잇는<br>힐링 프로그램입니다.<br>연락처 817-905-3468',en:'A healing music program connecting hearts and<br>community through singing, breathing, and music activities.<br>Contact 817-905-3468'}
 };
+const recentPromotionNews=[
+  ...specialtyPrograms.map((program,index)=>({typeKo:'전문 수업 안내',typeEn:'SPECIALTY PROGRAM',titleKo:program.titleKo,titleEn:program.titleEn,copyKo:specialtyPopupCopy[program.id].ko,copyEn:specialtyPopupCopy[program.id].en,image:registeredPartners[index]?.logo||program.image,target:'#specialty-banners',specialtyId:program.id,actionKo:'수업 보기',actionEn:'View Program',sortKey:promotionSortKey(`specialty:${program.id}`)})),
+  ...premiumPartnerNews,
+  ...Object.entries(adRooms).flatMap(([roomKey,room])=>room.items.map(item=>({typeKo:roomKey==='premium'?'프리미엄 광고 등록':'협력업체 등록',typeEn:roomKey==='premium'?'NEW PREMIUM ADVERTISER':'NEW COMMUNITY PARTNER',titleKo:item.name.includes('Yura Kim')?'Yura Kim':item.name==='Jangsu Daycare'?(item.displayNameKo||item.name):item.name,titleEn:item.name.includes('Yura Kim')?'Yura Kim':item.name,subtitleKo:item.name.includes('Yura Kim')?'High Line Residential':item.name==='AALEAC'?'아시안 아메리칸 사법 경찰자문위원회':'',subtitleEn:item.name.includes('Yura Kim')?'High Line Residential':item.name==='AALEAC'?'Asian American Law Enforcement':'',copyKo:item.popupCopy||item.copy,copyEn:item.copyEn||item.copy,image:item.image,target:item.name==='Jangsu Daycare'?'tel:+17187990133':(item.brokerUrl||item.url||item.chatUrl||'#advertising'),actionKo:item.name==='Jangsu Daycare'?'전화 바로걸기':'업체 바로가기',actionEn:item.name==='Jangsu Daycare'?'Call Now':'Visit Business',sortKey:promotionSortKey(`advertising:${item.name}`)})))
+].sort((a,b)=>b.sortKey-a.sortKey);
 const promotionNews=[
   {typeKo:'기간 한정 혜택',typeEn:'LIMITED BENEFIT',titleKo:'PREMIUM 파트너',titleEn:'PREMIUM Partners',subtitleKo:'3개월 등록비 면제',subtitleEn:'3 Months Fee Waived',copyKo:'2026년 8월 31일까지 프리미엄 파트너로 접수하면 3개월 등록비 면제 혜택을 드립니다.',copyEn:'Apply as a PREMIUM partner by August 31, 2026 to receive a three-month registration fee waiver.',image:'assets/harmony-logo.png',target:'#community',actionKo:'함께하기',actionEn:'Join Us'},
-  ...specialtyPrograms.map((program,index)=>({typeKo:'전문 수업 안내',typeEn:'SPECIALTY PROGRAM',titleKo:program.titleKo,titleEn:program.titleEn,copyKo:specialtyPopupCopy[program.id].ko,copyEn:specialtyPopupCopy[program.id].en,image:registeredPartners[index]?.logo||program.image,target:'#specialty-banners',specialtyId:program.id,actionKo:'수업 보기',actionEn:'View Program'})),
-  ...premiumPartnerNews,
-  ...Object.entries(adRooms).flatMap(([roomKey,room])=>room.items.map(item=>({typeKo:roomKey==='premium'?'프리미엄 광고 등록':'협력업체 등록',typeEn:roomKey==='premium'?'NEW PREMIUM ADVERTISER':'NEW COMMUNITY PARTNER',titleKo:item.name.includes('Yura Kim')?'Yura Kim':item.name==='Jangsu Daycare'?(item.displayNameKo||item.name):item.name,titleEn:item.name.includes('Yura Kim')?'Yura Kim':item.name,subtitleKo:item.name.includes('Yura Kim')?'High Line Residential':item.name==='AALEAC'?'아시안 아메리칸 사법 경찰자문위원회':'',subtitleEn:item.name.includes('Yura Kim')?'High Line Residential':item.name==='AALEAC'?'Asian American Law Enforcement':'',copyKo:item.popupCopy||item.copy,copyEn:item.copyEn||item.copy,image:item.image,target:item.name==='Jangsu Daycare'?'tel:+17187990133':(item.brokerUrl||item.url||item.chatUrl||'#advertising'),actionKo:item.name==='Jangsu Daycare'?'전화 바로걸기':'업체 바로가기',actionEn:item.name==='Jangsu Daycare'?'Call Now':'Visit Business'})))
+  ...recentPromotionNews
 ];
 let promotionNewsIndex=0;
 let promotionNewsTimer;
