@@ -795,6 +795,30 @@ footer .footer-bottom{padding-top:11px!important}
 @media(max-width:680px){.promotion-news-media[data-item="jangsu"] img{width:168px!important;height:168px!important;max-width:168px!important;max-height:168px!important;padding:18px!important}}
 @media(min-width:681px){.promotion-news-media[data-item="jangsu"] img{width:250px!important;height:250px!important;max-width:250px!important;max-height:250px!important;padding:22px!important}}
 
+/* Phone popup partner logos: match Yura's visual footprint without cropping. */
+@media(max-width:680px){
+  .promotion-news-panel[data-item="jangsu"]>.promotion-news-media,
+  .promotion-news-panel[data-item="jangsu"]>.promotion-news-copy,
+  .promotion-news-panel[data-item="aaleac"]>.promotion-news-media,
+  .promotion-news-panel[data-item="aaleac"]>.promotion-news-copy{
+    transform:translateY(90px)!important;
+  }
+  .promotion-news-media[data-item="jangsu"] img,
+  .promotion-news-media[data-item="aaleac"] img,
+  .promotion-news-panel[data-item="aaleac"] .promotion-news-media img{
+    display:block!important;
+    width:168px!important;
+    height:168px!important;
+    max-width:168px!important;
+    max-height:168px!important;
+    padding:2px!important;
+    object-fit:contain!important;
+    object-position:center!important;
+    transform:none!important;
+    background:#fff!important;
+  }
+}
+
 /* Jangsu Daycare community-partner card description: desktop keeps the sentence on one line (no forced break), sized as large as still fits — 9.5px, set via a min-width:761px rule below so it only wins on desktop. Mobile instead breaks before "데이케어 센터입니다." and merges the phone number onto that same second line (via the jangsu-card-break-mobile/-desktop hideable breaks), and intentionally has NO Jangsu-specific font-size/padding override on mobile, so its paragraph falls through to the exact same .is-korean:has(.aaleac-logo-wrap) rule AALEAC's card uses (that rule is more specific than a plain :has(), so it already wins here without help) — matching line count at matching font metrics makes the text-to-button gap match AALEAC's automatically. Scoped to this card only via its logo file path (its display name changes with language, so an alt-text selector can't be used here). */
 @media(min-width:761px){
   .ad-directory-list .ad-partner-card:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy{padding-left:14px!important;padding-right:14px!important}
