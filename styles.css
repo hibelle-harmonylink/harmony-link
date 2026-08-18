@@ -891,3 +891,23 @@ footer .footer-bottom{padding-top:11px!important}
 .ad-partner-image[data-banner] .ad-partner-banner-hint{position:absolute;right:10px;bottom:10px;padding:7px 10px;border-radius:30px;background:rgba(4,32,70,.88);color:#fff;font-size:9px;font-weight:800;letter-spacing:0;pointer-events:none}
 @media(max-width:760px){.ad-partner-image[data-banner] .ad-partner-banner-hint{right:6px;bottom:6px;padding:5px 8px;font-size:7px}}
 
+/* Homepage app-install banner: sits below the fixed header (margin-top matches .site-header's own height so it never overlaps), dismissible and remembered via localStorage. */
+.app-install-banner{margin-top:82px;background:linear-gradient(120deg,#0b5fc2,#083a86);color:#fff}
+.app-install-banner[hidden]{display:none}
+.app-install-banner-inner{display:flex;align-items:center;gap:14px;padding:12px 0}
+.app-install-icon{flex:0 0 auto;font-size:22px;line-height:1}
+.app-install-banner-inner p{flex:1 1 auto;min-width:0;margin:0;display:flex;flex-direction:column;gap:2px;font-size:12px;line-height:1.4;color:#dce8ff}
+.app-install-banner-inner p strong{font-size:13px;font-weight:800;color:#fff}
+.app-install-banner-cta{flex:0 0 auto;padding:9px 16px;border-radius:10px;background:#fff;color:#0b5fc2;font-weight:800;font-size:12px;white-space:nowrap}
+.app-install-banner-close{flex:0 0 auto;width:28px;height:28px;border:0;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-size:17px;line-height:1;cursor:pointer;display:grid;place-items:center}
+.app-install-banner-close:hover{background:rgba(255,255,255,.3)}
+@media(max-width:760px){
+  .app-install-banner{margin-top:70px}
+  .app-install-banner-inner{padding:10px 0;gap:10px}
+  .app-install-icon{font-size:19px}
+  .app-install-banner-inner p{font-size:10.5px}
+  .app-install-banner-inner p strong{font-size:12px}
+  .app-install-banner-cta{padding:8px 12px;font-size:11px}
+  .app-install-banner-close{width:26px;height:26px;font-size:15px}
+}
+

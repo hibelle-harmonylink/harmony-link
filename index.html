@@ -27,7 +27,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260817-329">
+  <link rel="stylesheet" href="styles.css?v=20260817-330">
 </head>
 <body>
   <a class="skip-link" href="#main" data-ko="본문으로 이동" data-en="Skip to content">본문으로 이동</a>
@@ -51,6 +51,15 @@
       </nav>
     </div>
   </header>
+
+  <div class="app-install-banner" id="appInstallBanner" role="region" aria-label="앱 설치 안내">
+    <div class="container app-install-banner-inner">
+      <span class="app-install-icon" aria-hidden="true">📲</span>
+      <p><strong data-ko="Harmony Link 앱으로 더 편하게" data-en="Enjoy Harmony Link as an app">Harmony Link 앱으로 더 편하게</strong><span data-ko="홈 화면에 추가하고 새 소식도 빠르게 받아보세요." data-en="Add it to your home screen for quick, easy access.">홈 화면에 추가하고 새 소식도 빠르게 받아보세요.</span></p>
+      <a class="app-install-banner-cta" href="app/?install=1" data-ko="앱 설치하기" data-en="Install App">앱 설치하기</a>
+      <button class="app-install-banner-close" id="appInstallBannerClose" type="button" aria-label="닫기">×</button>
+    </div>
+  </div>
 
   <main id="main">
     <section class="hero">
@@ -239,7 +248,7 @@
 
   <footer><div class="container footer-top"><a class="logo logo-light" href="#top"><span class="logo-mark brand-image footer-brand-image"><img src="assets/harmony-logo.png" alt=""></span><span class="logo-name">Harmony <b>Link</b><small data-ko="이음문화센터" data-en="E-eum Culture Center">이음문화센터</small></span></a><p data-ko="하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다." data-en="A cultural and educational project operated<br class='mobile-en-only-break'>by Hibelle Consulting.">하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다.</p><div class="footer-nav"><a href="#about" data-ko="회사 소개" data-en="About">회사 소개</a><a href="#digital-why" data-ko="전문 교육" data-en="Specialty Programs">전문 교육</a><a href="#events" data-ko="무료 강좌" data-en="Free Events">무료 강좌</a><a href="#contact" data-ko="문의하기" data-en="Contact">문의하기</a></div></div><div class="container footer-bottom"><span>© 2026 Hibelle Consulting · Harmony Link / 이음문화센터</span><div><a href="#" data-ko="개인정보처리방침" data-en="Privacy Policy">개인정보처리방침</a><a href="#" data-ko="이용약관" data-en="Terms">이용약관</a><button id="footerDeleteAccount" type="button" class="auth-delete footer-account-delete" data-ko="회원 탈퇴" data-en="Delete Account">회원 탈퇴</button></div></div></footer>
   <button class="to-top" type="button" aria-label="맨 위로">↑</button>
-  <script src="script.js?v=20260817-329"></script>
+  <script src="script.js?v=20260817-330"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="auth.js?v=20260815-301"></script>
   <script>
