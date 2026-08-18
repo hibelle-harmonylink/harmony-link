@@ -372,7 +372,9 @@
 @media (display-mode:standalone){#installButton{display:none!important}.member-button{display:flex}}
 
 /* Shared featured program logos. */
-.program-art img{display:block;width:100%;height:100%;object-fit:contain;padding:10px;border-radius:inherit}
+/* .program-art is a place-items:center grid, so a plain height:100% on the image doesn't resolve against its fixed height (align-items:center means the item isn't stretched) — the browser falls back to the image's intrinsic aspect ratio instead, letting it spill out of the box and overlap the title below. Absolute-position it against the box instead so it's always exactly the container's size regardless of grid alignment. */
+.program-art{position:relative;overflow:hidden}
+.program-art img{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:10px;border-radius:inherit}
 .program-mini .program-art img{padding:12px}
 
 /* Volunteer card: one-line heading above a full-width image. */
@@ -388,3 +390,19 @@
 .contact-toast[hidden]{display:none}.contact-toast b{width:26px;height:26px;border-radius:50%;background:#79b7ff;display:grid;place-items:center}
 
 @media(max-width:380px){.app-shell #home .feature-card h2{font-size:16px}.member-button{padding:0 10px;font-size:11px}}
+
+/* Home: 협력업체·광고 (partners/ads) list reuses the .program-mini card look, and the community CTA reuses the feature-card look. .program-mini is now sometimes an <a> (external partner links) instead of an <article>, so reset link styling explicitly. */
+a.program-mini{color:inherit;text-decoration:none}
+a.program-mini h3{color:inherit;text-decoration:none}
+.community-card{margin:30px 20px 0;background:var(--mint,#dbeaff);border-radius:24px;padding:22px;display:grid;gap:14px}
+.community-card h2{font-size:19px;line-height:1.4;margin:0 0 8px}
+.community-card p{color:var(--muted,#65738a);font-size:13px;line-height:1.6;margin:0}
+.community-card-link{display:flex;align-items:center;justify-content:space-between;height:48px;padding:0 20px;border-radius:24px;background:#061d45;color:#fff;font-weight:700;text-decoration:none}
+@media(max-width:380px){.community-card h2{font-size:17px}}
+
+/* Events: upcoming classes show first; past ones collapse under a toggle so new dates always surface automatically. */
+.past-events-toggle{display:flex;align-items:center;justify-content:center;gap:8px;width:calc(100% - 40px);margin:0 20px 20px;height:44px;border:1px dashed var(--line,#dce6f3);border-radius:16px;background:none;color:var(--muted,#65738a);font-weight:700;font-size:13px}
+.past-events-toggle b{font-weight:400;font-size:15px;transition:transform .2s}
+.past-events-toggle.open b{transform:rotate(180deg)}
+.past-events-list[hidden]{display:none}
+.past-events-list .event-card{opacity:.72}
