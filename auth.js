@@ -139,6 +139,11 @@
     }
   };
 
+  const requestedAuthMode = new URLSearchParams(location.search).get('auth');
+  if (requestedAuthMode === 'signup' || requestedAuthMode === 'login') {
+    window.setTimeout(() => setModalOpen(true, requestedAuthMode), 250);
+  }
+
   const getProfile = user => {
     const metadata = user?.user_metadata || {};
     const name = activeMemberName || metadata.full_name || metadata.name || metadata.nickname || user?.email?.split('@')[0] || t('회원', 'Member');

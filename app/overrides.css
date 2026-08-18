@@ -366,3 +366,25 @@
 }
 .install-button.install-highlight{animation:installPulse 1.3s ease-in-out infinite;box-shadow:0 0 0 5px rgba(66,153,255,.2)}
 @keyframes installPulse{50%{transform:scale(1.06);box-shadow:0 0 0 9px rgba(66,153,255,.1)}}
+
+/* Installed app: membership replaces the no-longer-useful install action. */
+.member-button{display:none;height:38px;padding:0 13px;border-radius:20px;background:#061d45;color:#fff;text-decoration:none;align-items:center;font-size:12px;font-weight:800;white-space:nowrap}
+@media (display-mode:standalone){#installButton{display:none!important}.member-button{display:flex}}
+
+/* Shared featured program logos. */
+.program-art img{display:block;width:100%;height:100%;object-fit:contain;padding:10px;border-radius:inherit}
+.program-mini .program-art img{padding:12px}
+
+/* Volunteer card: one-line heading above a full-width image. */
+.app-shell #home .feature-card{grid-template-columns:1fr;padding:20px;gap:14px}
+.app-shell #home .feature-card>div{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.app-shell #home .feature-card h2{width:100%;margin:4px 0 2px;font-size:18px;line-height:1.35;white-space:nowrap;letter-spacing:-.045em}
+.app-shell #home .feature-card img{grid-column:1;width:100%;height:190px;object-fit:contain;border-radius:18px;background:#eef5ff}
+
+/* Strong, visible inquiry result feedback. */
+.form-status.success{padding:10px 12px;border-radius:12px;background:#e8f7ef;color:#12623c;font-weight:800}
+.form-status.error{padding:10px 12px;border-radius:12px;background:#fff0f0;color:#9b1c1c;font-weight:700}
+.contact-toast{position:fixed;left:50%;bottom:98px;z-index:120;transform:translateX(-50%);width:min(calc(100% - 32px),480px);padding:15px 17px;border-radius:16px;background:#061d45;color:#fff;box-shadow:0 18px 45px rgba(6,29,69,.28);display:flex;align-items:center;gap:11px;font-size:14px;font-weight:800}
+.contact-toast[hidden]{display:none}.contact-toast b{width:26px;height:26px;border-radius:50%;background:#79b7ff;display:grid;place-items:center}
+
+@media(max-width:380px){.app-shell #home .feature-card h2{font-size:16px}.member-button{padding:0 10px;font-size:11px}}

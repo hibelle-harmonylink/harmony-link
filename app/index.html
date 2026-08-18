@@ -11,7 +11,7 @@
   <link rel="icon" type="image/png" href="icon-192-v71.png">
   <link rel="apple-touch-icon" href="icon-192-v71.png">
   <link rel="stylesheet" href="app.css?v=61">
-  <link rel="stylesheet" href="overrides.css?v=73">
+  <link rel="stylesheet" href="overrides.css?v=74">
 </head>
 <body>
   <div class="app-shell">
@@ -23,6 +23,7 @@
       <div class="top-actions">
         <button id="languageButton" class="round-button" type="button" aria-label="언어 변경">EN</button>
         <button id="installButton" class="install-button" type="button">앱 설치</button>
+        <a id="memberButton" class="member-button" href="../?auth=signup" target="_blank" rel="noopener" data-ko="가입·로그인" data-en="Join">가입·로그인</a>
       </div>
     </header>
 
@@ -33,7 +34,7 @@
           <div class="hero-copy">
             <p class="eyebrow" data-ko="오늘의 배움" data-en="LEARN SOMETHING TODAY">오늘의 배움</p>
             <h1 data-ko="배움으로 이어지는<br><em>더 나은 일상</em>" data-en="A better everyday life,<br><em>connected by learning</em>">배움으로 이어지는<br><em>더 나은 일상</em></h1>
-            <p data-ko="내게 맞는 수업과 지역 프로그램을 쉽고 빠르게 찾아보세요." data-en="Quickly discover classes and community programs that fit you.">내게 맞는 수업과 지역 프로그램을 쉽고 빠르게 찾아보세요.</p>
+            <p data-ko="나에게 맞는 수업과 지역 프로그램을<br>쉽고 빠르게 찾아보세요." data-en="Discover classes and community programs that fit you<br>quickly and easily.">나에게 맞는 수업과 지역 프로그램을<br>쉽고 빠르게 찾아보세요.</p>
             <button class="primary-action" type="button" data-go="programs"><span data-ko="프로그램 찾기" data-en="Find a program">프로그램 찾기</span><b>→</b></button>
           </div>
           <div class="hero-mark" aria-hidden="true"><span>H</span><i></i><b></b></div>
@@ -54,7 +55,7 @@
         <section class="feature-card">
           <div>
             <span class="badge" data-ko="무료 방문 지원" data-en="FREE HOME VISIT">무료 방문 지원</span>
-            <h2 data-ko="디지털이 어려운 이웃을<br>직접 찾아갑니다" data-en="We bring friendly digital help<br>to your home">디지털이 어려운 이웃을<br>직접 찾아갑니다</h2>
+            <h2 data-ko="디지털이 어려운 이웃을 직접 찾아갑니다" data-en="We bring friendly digital help to your home">디지털이 어려운 이웃을 직접 찾아갑니다</h2>
             <button type="button" data-go="contact" data-subject="무료 방문 디지털 지원"><span data-ko="지원 문의" data-en="Ask for support">지원 문의</span> ↗</button>
           </div>
           <img src="../assets/volunteer/digital-volunteer.png" alt="무료 방문 디지털 지원">
@@ -125,6 +126,7 @@
           <button class="submit-button" type="submit"><span id="contactSubmitLabel" data-ko="문의 보내기" data-en="Send inquiry">문의 보내기</span><b>→</b></button>
           <p class="form-status" id="formStatus" role="status"></p>
         </form>
+        <div class="contact-toast" id="contactToast" role="alert" hidden><b>✓</b><span></span></div>
       </section>
     </main>
 
@@ -165,6 +167,7 @@
       <button type="button" data-go="contact"><span>✉</span><small data-ko="문의" data-en="Contact">문의</small></button>
     </nav>
   </div>
-  <script src="app.js?v=73"></script>
+  <script src="../shared-content.js?v=74"></script>
+  <script src="app.js?v=74"></script>
 </body>
 </html>

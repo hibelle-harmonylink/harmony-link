@@ -1030,10 +1030,16 @@ const recentPromotionNews=[
   ...premiumPartnerNews,
   ...Object.entries(adRooms).flatMap(([roomKey,room])=>room.items.map(item=>({typeKo:roomKey==='premium'?'프리미엄 광고 등록':'협력업체 등록',typeEn:roomKey==='premium'?'NEW PREMIUM ADVERTISER':'NEW COMMUNITY PARTNER',titleKo:item.name.includes('Yura Kim')?'Yura Kim':item.name==='OrganicOne'?'올가닉 원 유기농원':item.name==='AALEAC'?(item.displayNameKo||item.name):item.name==='Jangsu Daycare'?(item.displayNameKo||item.name):item.name,titleEn:item.name.includes('Yura Kim')?'Yura Kim':item.name==='AALEAC'?(item.displayNameEn||item.name):item.name,subtitleKo:item.name.includes('Yura Kim')?'High Line Residential':item.name==='AALEAC'?'AALEAC':'',subtitleEn:item.name.includes('Yura Kim')?'High Line Residential':item.name==='AALEAC'?'AALEAC':'',copyKo:item.popupCopy||item.copy,copyEn:item.copyEn||item.copy,image:item.image,target:item.name==='HOLE19 Golf Lounge'?item.chatUrl:item.name==='Jangsu Daycare'?'tel:+17187990133':(item.brokerUrl||item.url||item.chatUrl||'#advertising'),actionKo:item.name==='HOLE19 Golf Lounge'?'인스타그램 보기':item.name==='Jangsu Daycare'?'전화 바로걸기':'업체 바로가기',actionEn:item.name==='HOLE19 Golf Lounge'?'View Instagram':item.name==='Jangsu Daycare'?'Call Now':'Visit Business',sortKey:promotionSortKey(`advertising:${item.name}`)})))
 ].sort((a,b)=>b.sortKey-a.sortKey);
-const promotionNews=[
+const generatedPromotionNews=[
   {typeKo:'기간 한정 혜택',typeEn:'LIMITED BENEFIT',titleKo:'PREMIUM 파트너',titleEn:'PREMIUM Partners',subtitleKo:'3개월 등록비 면제',subtitleEn:'3 Months Fee Waived',copyKo:'2026년 8월 31일까지 프리미엄 파트너로 접수하면 3개월 등록비 면제 혜택을 드립니다.',copyEn:'Apply as a PREMIUM partner by August 31, 2026 to receive a three-month registration fee waiver.',image:'assets/harmony-logo.png',target:'#community',actionKo:'함께하기',actionEn:'Join Us'},
   ...recentPromotionNews
 ];
+const sharedPromotionNews=window.HARMONY_LINK_SHARED_CONTENT?.promotions?.map(item=>({
+  typeKo:item.badgeKo,typeEn:item.badgeEn,titleKo:item.titleKo,titleEn:item.titleEn,
+  copyKo:item.textKo,copyEn:item.textEn,image:item.image,target:item.url,
+  actionKo:item.actionKo,actionEn:item.actionEn
+}))||[];
+const promotionNews=sharedPromotionNews.length?sharedPromotionNews:generatedPromotionNews;
 let promotionNewsIndex=0;
 let promotionNewsTimer;
 let promotionRenderToken=0;
