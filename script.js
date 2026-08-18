@@ -634,7 +634,7 @@ if (currentEventGrid) {
     currentEventGrid.querySelector('.paid-grid').innerHTML=`<article class="event-card event-coming"><div class="event-coming-icon">＋</div><div class="event-info"><span class="event-badge" data-ko="유료 수업 준비 중" data-en="PAID CLASS COMING SOON">유료 수업 준비 중</span><h3><span data-ko="새로운 유료 1회 수업" data-en="A new paid one-time class">새로운 유료 1회 수업</span><br><span data-ko="준비하고 있습니다" data-en="is coming soon">준비하고 있습니다</span></h3><p data-ko="관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다." data-en="Try a topic in a single paid session without committing to a regular course.">관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다.</p></div></article>`;
   }
   const datedCards = currentEventGrid.querySelectorAll('.event-card:not(.event-coming)');
-  const endDates = ['2026-07-24T17:00:00-04:00','2026-08-01T13:00:00-04:00'];
+  const endDates = ['2026-07-24T17:00:00-04:00','2026-11-23T00:00:00-05:00'];
   datedCards.forEach((card,index) => card.dataset.eventEnd = endDates[index]);
   // Any event address written in the location row automatically receives a Google Maps link.
   datedCards.forEach(card => {
@@ -1172,7 +1172,7 @@ const datedEventGrid=document.querySelector('#events .event-grid');
 if(datedEventGrid){
   const eventRules=[
     {image:'finance-ai-seminar.jpg',end:'2026-07-25T00:00:00-04:00'},
-    {image:'one-day-class.jpg',end:'2026-08-02T00:00:00-04:00'}
+    {image:'free-music-class-20260822.png',end:'2026-11-23T00:00:00-05:00'}
   ];
   const eventCards=[...datedEventGrid.querySelectorAll('.event-card')];
   eventCards.forEach(card=>{const source=card.querySelector('img')?.getAttribute('src')||'';const rule=eventRules.find(item=>source.includes(item.image));if(rule)card.dataset.eventEnd=rule.end;});
@@ -1209,11 +1209,11 @@ if (downloads) {
     panel.hidden=!open;button.setAttribute('aria-expanded',String(open));button.querySelector('i').textContent=open?'−':'＋';
   }));
 }
-document.querySelectorAll('#events .event-card:not(.event-coming)').forEach((card,index)=>{
+document.querySelectorAll('#events .event-card:not(.event-coming)').forEach(card=>{
   const heading=card.querySelector('.event-info h3');
   const poster=card.querySelector('.event-poster');
   if(!heading||!poster||heading.parentElement?.classList.contains('event-title-row'))return;
-  if(index===0){
+  if(poster.href.includes('finance-ai-seminar.jpg')){
     heading.dataset.ko='재정과 AI의 협력,<br>더 나은 미래 설계';
     heading.dataset.en='Finance and AI:<br>Designing a Better Future';
     heading.innerHTML=heading.dataset[currentLanguage];
@@ -1233,7 +1233,7 @@ document.querySelectorAll('#events .event-card:not(.event-coming)').forEach((car
   row.appendChild(flyerButton);
 });
 const mobileTrialHeading=document.querySelector('#events .trial-type .event-title-row h3');
-if(mobileTrialHeading)mobileTrialHeading.dataset.en='Music & Digital<br class="mobile-only-break">One-Day Experience';
+if(mobileTrialHeading)mobileTrialHeading.dataset.en='Three-Month Free<br class="mobile-only-break">Music Class';
 const seminarDateCopy=document.querySelector('#events .seminar-type .event-card dd');
 if(seminarDateCopy)seminarDateCopy.dataset.ko='2026년 7월 10일·24일(금)  <br class="mobile-only-break">오후 4시';
 const mobilePaidHeading=document.querySelector('#events .paid-type .event-card h3 span:first-child');
