@@ -1215,8 +1215,9 @@ document.querySelectorAll('#events .event-card:not(.event-coming)').forEach(card
   const poster=card.querySelector('.event-poster');
   if(!heading||!poster||heading.parentElement?.classList.contains('event-title-row'))return;
   if(poster.href.includes('finance-ai-seminar.jpg')){
-    heading.dataset.ko='재정과 AI의 협력,<br>더 나은 미래 설계';
-    heading.dataset.en='Finance and AI:<br>Designing a Better Future';
+    card.classList.add('finance-seminar-card');
+    heading.dataset.ko='재정과 AI의 협력, 더 나은 미래 설계';
+    heading.dataset.en='Finance and AI: Designing a Better Future';
     heading.innerHTML=heading.dataset[currentLanguage];
   }
   const row=document.createElement('div');
@@ -1235,8 +1236,8 @@ document.querySelectorAll('#events .event-card:not(.event-coming)').forEach(card
 });
 const mobileTrialHeading=document.querySelector('#events .trial-type .event-title-row h3');
 if(mobileTrialHeading)mobileTrialHeading.dataset.en='Three-Month Free Music Class';
-const seminarDateCopy=document.querySelector('#events .seminar-type .event-card dd');
-if(seminarDateCopy)seminarDateCopy.dataset.ko='2026년 7월 10일·24일(금)  <br class="mobile-only-break">오후 4시';
+const seminarDateCopy=document.querySelector('#events .finance-seminar-card dd');
+if(seminarDateCopy)seminarDateCopy.dataset.ko='2026년 7월 10일·24일(금) 오후 4시';
 const mobilePaidHeading=document.querySelector('#events .paid-type .event-card h3 span:first-child');
 if(mobilePaidHeading)mobilePaidHeading.dataset.en='A new paid<br class="mobile-only-break">one-time class';
 const eventFlyerModal=document.createElement('div');

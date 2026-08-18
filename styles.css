@@ -646,6 +646,8 @@ footer .footer-top{padding-top:13px!important}footer .footer-top>.logo{transform
 @media(max-width:760px){
 html[lang="ko"] #events .event-flyer-button{top:7px!important}
 @media(max-width:760px){html[lang="ko"] #events .trial-type .event-title-row h3{white-space:nowrap!important;font-size:15px!important;letter-spacing:-.65px!important}}
+#events .finance-seminar-card .event-title-row h3{white-space:nowrap!important;font-size:15px!important;letter-spacing:-.7px!important}
+@media(max-width:760px){#events .finance-seminar-card .event-title-row h3{font-size:13px!important;letter-spacing:-.85px!important}}
 #volunteer .volunteer-image-link>span{display:block!important;visibility:visible!important;opacity:1!important;z-index:5!important;right:7px!important;bottom:7px!important}
 #events .past-events-toggle{white-space:nowrap!important;gap:7px!important;padding:9px 10px!important;font-size:10px!important}
 }
