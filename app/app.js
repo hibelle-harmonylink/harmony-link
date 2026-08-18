@@ -21,6 +21,13 @@ const fallbackPopupNews=[
   {badgeKo:"파트너 모집",badgeEn:"PARTNER RECRUITMENT",titleKo:"입점 파트너 모집",titleEn:"Partner Recruitment",textKo:"전문 강사와 교육업체의 좋은 프로그램이 더 많은<br>사람과 만날 수 있도록 연결합니다.",textEn:"We connect trusted instructors and education providers<br>with more learners and organizations.",image:"../assets/partners/partner-recruitment.png",actionKo:"문의하기",actionEn:"Contact us",screen:"contact"}
 ];
 const popupNews=sharedContent.promotions?.length?sharedContent.promotions:fallbackPopupNews;
+// TODO: replace these placeholder dates (relative to today, so they never show as
+// incorrectly expired) with the real class dates once confirmed.
+const daysFromNow=n=>new Date(Date.now()+n*86400000).toISOString().slice(0,10);
+const events=(sharedContent.events?.length?sharedContent.events:[
+  {id:"one-day-class",date:daysFromNow(20),badgeKo:"참가비 무료",badgeEn:"FREE",titleKo:"무료 원데이 클래스",titleEn:"Free One-Day Class",textKo:"관심 분야를 부담 없이 경험해 보세요. 새 일정은 앱에서 가장 먼저 안내합니다.",textEn:"Try a new topic with no commitment. New dates will appear here first.",image:"../assets/events/one-day-class.jpg"},
+  {id:"finance-ai-seminar",date:daysFromNow(35),badgeKo:"특별 세미나",badgeEn:"SPECIAL SEMINAR",badgeDark:true,titleKo:"생활 금융 × AI",titleEn:"Everyday Finance × AI",textKo:"실생활에 바로 쓰는 금융 정보와 AI 활용법을 함께 배웁니다.",textEn:"Learn practical financial information and useful AI skills together.",image:"../assets/events/finance-ai-seminar.jpg"}
+]);
 let language=localStorage.getItem("hl-language")||"ko";
 let activeCategory="전체";
 let saved=new Set(JSON.parse(localStorage.getItem("hl-saved")||"[]"));
@@ -28,6 +35,7 @@ let installPrompt=null;
 let popupIndex=Math.floor(Math.random()*popupNews.length);
 let popupTimer=null;
 let activeContactMode="general";
+let pastEventsOpen=false;
 
 const $=(selector,root=document)=>root.querySelector(selector);
 const $$=(selector,root=document)=>[...root.querySelectorAll(selector)];
@@ -44,12 +52,40 @@ function programCard(program){
 function renderRecommended(){
   $("#recommendedPrograms").innerHTML=programs.slice(0,4).map(p=>`<article class="program-mini" data-open-program="${p.id}"><div class="program-art" style="background:${p.color}">${p.image?`<img src="${p.image}" alt="">`:p.emoji}</div><div><h3>${language==="ko"?p.ko:p.en}</h3><p>${language==="ko"?p.tagsKo:p.tagsEn}</p></div></article>`).join("");
 }
+function renderPartners(){
+  const container=$("#partnerPrograms");
+  if(!container)return;
+  const partners=(sharedContent.promotions||[]).filter(item=>item.kind==="advertising"||item.kind==="community");
+  container.innerHTML=partners.map(item=>`<a class="program-mini" href="${item.url}" target="_blank" rel="noopener noreferrer"><div class="program-art" style="background:#eef5ff"><img src="${item.image}" alt=""></div><div><h3>${language==="ko"?item.titleKo:item.titleEn}</h3><p>${language==="ko"?item.badgeKo:item.badgeEn}</p></div></a>`).join("");
+}
+function eventCard(item){
+  const title=language==="ko"?item.titleKo:item.titleEn;
+  const text=language==="ko"?item.textKo:item.textEn;
+  const badge=language==="ko"?item.badgeKo:item.badgeEn;
+  return `<article class="event-card"><img src="${item.image}" alt="${title}"><div><span class="badge${item.badgeDark?" dark":""}">${badge}</span><h2>${title}</h2><p>${text}</p></div></article>`;
+}
+function renderEvents(){
+  const today=new Date().toISOString().slice(0,10);
+  const upcoming=events.filter(e=>e.date>=today).sort((a,b)=>a.date<b.date?-1:1);
+  const past=events.filter(e=>e.date<today).sort((a,b)=>a.date>b.date?-1:1);
+  $("#upcomingEventsList").innerHTML=upcoming.map(eventCard).join("");
+  const toggle=$("#pastEventsToggle");
+  toggle.hidden=past.length===0;
+  toggle.classList.toggle("open",pastEventsOpen);
+  $("#pastEventsList").innerHTML=past.map(eventCard).join("");
+  $("#pastEventsList").hidden=!pastEventsOpen;
+}
 function renderFilters(){
   $("#categoryFilters").innerHTML=Object.keys(categoryNames).map(name=>`<button type="button" class="${activeCategory===name?"active":""}" data-filter="${name}">${language==="ko"?name:categoryNames[name]}</button>`).join("");
 }
 function renderPrograms(){
   const query=$("#programSearch").value.trim().toLowerCase();
-  const filtered=programs.filter(p=>(activeCategory==="전체"||p.category===activeCategory)&&[p.ko,p.en,p.tagsKo,p.tagsEn].join(" ").toLowerCase().includes(query));
+  // The "전체" (all) browse view with no search stays to the 12 general category
+  // cards only — featured businesses (하이벨 디지털, 화상영어, 미란멜로디, and any
+  // future ones with a matching category) appear once their category is picked,
+  // shown together with that category's card instead of cluttering the top list.
+  const pool=(activeCategory==="전체"&&!query)?basePrograms:programs;
+  const filtered=pool.filter(p=>(activeCategory==="전체"||p.category===activeCategory)&&[p.ko,p.en,p.tagsKo,p.tagsEn].join(" ").toLowerCase().includes(query));
   $("#programList").innerHTML=filtered.map(programCard).join("");
   $("#programEmpty").hidden=filtered.length>0;
 }
@@ -118,7 +154,7 @@ function applyLanguage(){
   $$("[data-ko-placeholder]").forEach(el=>{el.placeholder=el.dataset[`${language}Placeholder`]});
   $("#languageButton").textContent=language==="ko"?"EN":"한";
   localStorage.setItem("hl-language",language);
-  renderRecommended();renderFilters();renderPrograms();renderSaved();renderPopup();
+  renderRecommended();renderPartners();renderFilters();renderPrograms();renderSaved();renderEvents();renderPopup();
 }
 function navigate(screen,contactMode="general",historyAction="push"){
   const resetScroll=()=>window.scrollTo({top:0,left:0,behavior:"auto"});
@@ -157,6 +193,7 @@ document.addEventListener("click",event=>{
   if(mini){const program=programs.find(p=>p.id===mini.dataset.openProgram);if(program.url){window.open(program.url,"_blank","noopener,noreferrer")}else{activeCategory="전체";navigate("programs");$("#programSearch").value=language==="ko"?program.ko:program.en;renderFilters();renderPrograms()}}
 });
 $("#programSearch").addEventListener("input",renderPrograms);
+$("#pastEventsToggle").addEventListener("click",()=>{pastEventsOpen=!pastEventsOpen;renderEvents()});
 $("#languageButton").addEventListener("click",()=>{language=language==="ko"?"en":"ko";applyLanguage()});
 function openImageLightbox(){
   $("#lightboxImage").src=$("#newsPopupImage").src;
@@ -258,7 +295,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true});
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v74.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v75.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;
