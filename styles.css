@@ -904,3 +904,51 @@ footer .footer-bottom{padding-top:11px!important}
   .app-install-banner-close{width:26px;height:26px;font-size:15px}
 }
 
+/* Desktop promotion popup: the action button/nav were pinned to the bottom of
+   the fixed-height copy panel, which left a large empty gap above them for
+   items with shorter descriptions (Jangsu, HOLE19, etc.) while Yura's longer
+   copy filled the space naturally. Let the button follow the text directly
+   with a small fixed gap instead, like Yura already shows. */
+@media(min-width:681px){
+  .promotion-news-copy{
+    padding-bottom:20px!important;
+  }
+  .promotion-news-panel .promotion-action{
+    position:static!important;
+    left:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    width:100%!important;
+    margin:16px 0 0!important;
+  }
+  .promotion-news-nav{
+    position:static!important;
+    left:auto!important;
+    right:auto!important;
+    bottom:auto!important;
+    width:100%!important;
+    margin:10px 0 0!important;
+  }
+}
+
+/* HOLE19's and Meeran Melody's desktop popup logos rendered noticeably larger
+   than the other flyers (HOLE19 had an extra 1.18x zoom on top of a bigger
+   box, Meeran a 1.12x zoom); match Jangsu's plain 250px box instead. */
+@media(min-width:681px){
+  .promotion-news-media[data-item="hole19"] img{
+    width:250px!important;
+    height:250px!important;
+    max-width:250px!important;
+    max-height:250px!important;
+    padding:22px!important;
+    transform:none!important;
+  }
+  .promotion-news-media[data-item="melody"] img{
+    width:250px!important;
+    height:250px!important;
+    max-width:250px!important;
+    max-height:250px!important;
+    transform:none!important;
+  }
+}
+
