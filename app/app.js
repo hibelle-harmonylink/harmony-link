@@ -100,6 +100,7 @@ function renderPopup(){
   $("#newsPopup").classList.toggle("volunteer-popup",item.kind==="community"||popupIndex===1&&!item.kind);
   $("#newsPopup").classList.toggle("partner-popup",item.kind==="advertising"||item.kind==="program"||popupIndex===2&&!item.kind);
   $("#newsPopup").dataset.item=item.image?.includes("hibelle-digital")?"digital":item.image?.includes("hibelle-online-english")?"english":item.image?.includes("meeran-melody")?"melody":item.image?.includes("highline-hl-symbol")?"yura":item.image?.includes("organic-one")?"organic":item.image?.includes("hole19")?"hole19":item.image?.includes("aaleac-shield")?"aaleac":item.image?.includes("jangsu-daycare")?"jangsu":"";
+  $("#newsPopup").dataset.kind=item.kind||"";
   $("#newsPopupImage").src=item.image;
   $("#newsPopupImage").alt=language==="ko"?item.titleKo:item.titleEn;
   $("#newsPopupBadge").textContent=language==="ko"?item.badgeKo:item.badgeEn;
