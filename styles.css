@@ -933,21 +933,21 @@ footer .footer-bottom{padding-top:11px!important}
 
 /* HOLE19's and Meeran Melody's desktop popup logos rendered noticeably larger
    than the other flyers (HOLE19 had an extra 1.18x zoom on top of a bigger
-   box, Meeran a 1.12x zoom); match Jangsu's plain 250px box instead. */
+   box, Meeran a 1.12x zoom); shrink them well below Jangsu's 250px box. */
 @media(min-width:681px){
   .promotion-news-media[data-item="hole19"] img{
-    width:250px!important;
-    height:250px!important;
-    max-width:250px!important;
-    max-height:250px!important;
+    width:190px!important;
+    height:190px!important;
+    max-width:190px!important;
+    max-height:190px!important;
     padding:22px!important;
     transform:none!important;
   }
   .promotion-news-media[data-item="melody"] img{
-    width:250px!important;
-    height:250px!important;
-    max-width:250px!important;
-    max-height:250px!important;
+    width:190px!important;
+    height:190px!important;
+    max-width:190px!important;
+    max-height:190px!important;
     transform:none!important;
   }
 }
