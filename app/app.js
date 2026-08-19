@@ -50,7 +50,8 @@ function programCard(program){
   </article>`;
 }
 function renderRecommended(){
-  $("#recommendedPrograms").innerHTML=programs.slice(0,4).map(p=>`<article class="program-mini" data-open-program="${p.id}"><div class="program-art" style="background:${p.color}">${p.image?`<img src="${p.image}" alt="">`:p.emoji}</div><div><h3>${language==="ko"?p.ko:p.en}</h3><p>${language==="ko"?p.tagsKo:p.tagsEn}</p></div></article>`).join("");
+  const featured=sharedContent.featuredPrograms||[];
+  $("#recommendedPrograms").innerHTML=featured.map(p=>`<article class="program-mini" data-open-program="${p.id}"><div class="program-art" style="background:${p.color}">${p.image?`<img src="${p.image}" alt="">`:p.emoji}</div><div><h3>${language==="ko"?p.ko:p.en}</h3><p>${language==="ko"?p.tagsKo:p.tagsEn}</p></div></article>`).join("");
 }
 function renderPartners(){
   const container=$("#partnerPrograms");
@@ -197,21 +198,38 @@ document.addEventListener("click",event=>{
 $("#programSearch").addEventListener("input",renderPrograms);
 $("#pastEventsToggle").addEventListener("click",()=>{pastEventsOpen=!pastEventsOpen;renderEvents()});
 $("#languageButton").addEventListener("click",()=>{language=language==="ko"?"en":"ko";applyLanguage()});
-function openImageLightbox(){
-  $("#lightboxImage").src=$("#newsPopupImage").src;
-  $("#lightboxImage").alt=$("#newsPopupImage").alt;
+function openImageLightbox(src,alt,action){
+  $("#lightboxImage").src=src;
+  $("#lightboxImage").alt=alt;
+  const actionButton=$("#lightboxAction");
+  actionButton.hidden=!action;
+  if(action){
+    actionButton.querySelector("span").textContent=action.label;
+    actionButton.onclick=action.onClick;
+  }
   $("#imageLightbox").hidden=false;
 }
 function closeImageLightbox(){
   $("#imageLightbox").hidden=true;
 }
-$("#newsPopupImage").addEventListener("click",openImageLightbox);
+$("#newsPopupImage").addEventListener("click",()=>openImageLightbox($("#newsPopupImage").src,$("#newsPopupImage").alt));
 $("#newsPopupImage").addEventListener("keydown",event=>{
   if(event.key==="Enter"||event.key===" "){
     event.preventDefault();
-    openImageLightbox();
+    openImageLightbox($("#newsPopupImage").src,$("#newsPopupImage").alt);
   }
 });
+const volunteerImage=$("#volunteerImage");
+if(volunteerImage){
+  const openVolunteerLightbox=()=>openImageLightbox(volunteerImage.src,volunteerImage.alt,{
+    label:language==="ko"?"신청하기":"Apply",
+    onClick:()=>{closeImageLightbox();navigate("contact","volunteer")}
+  });
+  volunteerImage.addEventListener("click",openVolunteerLightbox);
+  volunteerImage.addEventListener("keydown",event=>{
+    if(event.key==="Enter"||event.key===" "){event.preventDefault();openVolunteerLightbox()}
+  });
+}
 $$("[data-lightbox-close]").forEach(button=>button.addEventListener("click",closeImageLightbox));
 $("#brandHome").addEventListener("click",event=>{
   event.preventDefault();
@@ -297,7 +315,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true});
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v75.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v77.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;

@@ -1,5 +1,19 @@
+/* #contact{display:flex} in app.css is an ID selector, so it beats the plain
+   .screen{display:none} class rule even when #contact isn't the active screen. */
+#contact:not(.active) {
+  display: none !important;
+}
+
 #newsPopup.one-day-popup .news-media {
   padding: 52px 6px 0 !important;
+  background: #63a9e8 !important;
+}
+
+/* The Hibelle "hi" mark's second letter is a near-white tint meant to sit on a
+   deep blue background (see the main-site popup); outline it so it still reads
+   against this lighter panel instead of disappearing. */
+#newsPopup.one-day-popup .news-media img {
+  filter: drop-shadow(1.5px 0 #0b1830) drop-shadow(-1.5px 0 #0b1830) drop-shadow(0 1.5px #0b1830) drop-shadow(0 -1.5px #0b1830);
 }
 
 #newsPopup.volunteer-popup .news-media {
@@ -89,6 +103,31 @@
   color: #061d45;
   font-size: 27px;
   line-height: 1;
+}
+
+.lightbox-action {
+  position: relative;
+  z-index: 1;
+  width: min(92vw, 760px);
+  height: 52px;
+  margin-top: 16px;
+  border: 0;
+  border-radius: 26px;
+  padding: 0 22px;
+  background: #061d45;
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lightbox-action[hidden] {
+  display: none;
+}
+
+.app-shell #home .feature-card img {
+  cursor: pointer;
 }
 
 #newsPopup .news-media .zoom-hint {
@@ -360,6 +399,7 @@
     padding-top: 45px !important;
   }
 }
+
 .install-button.install-highlight{animation:installPulse 1.3s ease-in-out infinite;box-shadow:0 0 0 5px rgba(66,153,255,.2)}
 @keyframes installPulse{50%{transform:scale(1.06);box-shadow:0 0 0 9px rgba(66,153,255,.1)}}
 
@@ -390,6 +430,9 @@
 /* Home: 협력업체·광고 (partners/ads) list reuses the .program-mini card look, and the community CTA reuses the feature-card look. .program-mini is now sometimes an <a> (external partner links) instead of an <article>, so reset link styling explicitly. */
 a.program-mini{color:inherit;text-decoration:none}
 a.program-mini h3{color:inherit;text-decoration:none}
+/* Yura Kim's title carries a "High Line Residential" sub-line via <small>; without
+   this it runs into the name on one line instead of dropping underneath it. */
+.program-mini h3 small{display:block;margin-top:2px;font-size:.6em;font-weight:600;color:var(--muted,#65738a)}
 .community-card{margin:30px 20px 0;background:var(--mint,#dbeaff);border-radius:24px;padding:22px;display:grid;gap:14px}
 .community-card h2{font-size:19px;line-height:1.4;margin:0 0 8px}
 .community-card p{color:var(--muted,#65738a);font-size:13px;line-height:1.6;margin:0}
@@ -402,7 +445,6 @@ a.program-mini h3{color:inherit;text-decoration:none}
 .past-events-toggle.open b{transform:rotate(180deg)}
 .past-events-list[hidden]{display:none}
 .past-events-list .event-card{opacity:.72}
-
 /* Popup logo backdrop: match the homepage popup's per-kind treatment (styles.css .promotion-news-media[data-kind]),
    rather than forcing every partner onto the same color. Advertising/community logos sit on the homepage's
    default light-blue gradient with their own white background removed; program (digital/english/melody) logos

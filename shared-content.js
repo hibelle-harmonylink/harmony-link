@@ -1,8 +1,8 @@
 // Homepage and app shared content. Add new popup news here once so both surfaces update together.
 window.HARMONY_LINK_SHARED_CONTENT = {
   featuredPrograms: [
-    {id:"hibelle-digital",emoji:"💻",ko:"하이벨 디지털",en:"Hibelle Digital",category:"디지털",tagsKo:"스마트폰 · AI · 컴퓨터 교육",tagsEn:"Smartphone · AI · Computer",color:"#dbeaff",image:"/assets/brands/hibelle-digital.jpg",url:"/#specialty-banners"},
-    {id:"hibelle-english",emoji:"🌍",ko:"하이벨 화상영어",en:"Hibelle Online English",category:"언어",tagsKo:"1:1 맞춤 화상영어 · 전문 강사진",tagsEn:"Personalized 1:1 online English",color:"#ffe3cf",image:"/assets/brands/hibelle-online-english.jpg",url:"/#specialty-banners"},
+    {id:"hibelle-digital",emoji:"💻",ko:"하이벨 디지털",en:"Hibelle Digital",category:"디지털",tagsKo:"스마트폰 · AI · 컴퓨터 교육",tagsEn:"Smartphone · AI · Computer",color:"#dbeaff",image:"/assets/brands/hibelle-digital.png?v=20260819-2",url:"/#specialty-banners"},
+    {id:"hibelle-english",emoji:"🌍",ko:"하이벨 화상영어",en:"Hibelle Online English",category:"언어",tagsKo:"1:1 맞춤 화상영어 · 전문 강사진",tagsEn:"Personalized 1:1 online English",color:"#ffe3cf",image:"/assets/brands/hibelle-online-english.png?v=20260819-2",url:"/#specialty-banners"},
     {id:"meeran-melody",emoji:"🎵",ko:"미란멜로디",en:"Meeran Melody",category:"음악",tagsKo:"합창 · 발성 · 음악 교육",tagsEn:"Choir · Voice · Music",color:"#f8dce8",image:"/assets/brands/meeran-melody-logo.png?v=20260819-1",url:"/#specialty-banners"}
   ],
   promotions: [
