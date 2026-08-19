@@ -27,7 +27,7 @@
 }
 
 #newsPopup .news-copy {
-  flex: 0 0 auto !important;
+  flex: 1 1 auto !important;
   padding-top: 22px !important;
   padding-bottom: 6px !important;
 }
@@ -107,11 +107,10 @@
   pointer-events: none;
 }
 
-/* Compact phone popup layout: height follows each partner's own content (now normalized to
-   within ~40px of each other) so the box never leaves dead space below the footer buttons. */
+/* Compact phone popup layout: fixed box size so it stays identical across every partner. */
 #newsPopup .news-panel {
   width: min(100%, 390px) !important;
-  height: auto !important;
+  height: min(480px, calc(100dvh - 24px)) !important;
   max-height: calc(100dvh - 24px) !important;
 }
 
@@ -423,3 +422,7 @@ a.program-mini h3{color:inherit;text-decoration:none}
 /* Meeran Melody: no text-included logo file available, so add the wordmark under the icon to match. */
 #newsPopup[data-item="melody"] .news-media img{height:calc(100% - 32px)!important}
 #newsPopup[data-item="melody"] .news-media:after{content:"Meeran Melody";position:absolute;left:0;right:0;bottom:10px;text-align:center;font-family:Georgia,"Times New Roman",serif;font-size:16px;letter-spacing:.05em;color:#7a2432}
+
+/* Yura Kim: caption the HL mark with the brokerage name, matching the homepage popup treatment. */
+#newsPopup[data-item="yura"] .news-media img{height:calc(100% - 40px)!important}
+#newsPopup[data-item="yura"] .news-media:after{content:"HIGHLINE\A RESIDENTIAL";position:absolute;left:0;right:0;bottom:10px;text-align:center;white-space:pre;color:#5c6b80;font-size:11px;font-weight:700;letter-spacing:.09em;line-height:1.35}
