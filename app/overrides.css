@@ -107,10 +107,11 @@
   pointer-events: none;
 }
 
-/* Compact phone popup layout: fixed box size so it never grows or shrinks between partners. */
+/* Compact phone popup layout: height follows each partner's own content (now normalized to
+   within ~40px of each other) so the box never leaves dead space below the footer buttons. */
 #newsPopup .news-panel {
   width: min(100%, 390px) !important;
-  height: min(500px, calc(100dvh - 24px)) !important;
+  height: auto !important;
   max-height: calc(100dvh - 24px) !important;
 }
 
@@ -415,3 +416,10 @@ a.program-mini h3{color:inherit;text-decoration:none}
 
 /* OrganicOne: the wordmark is short and wide, so center it instead of pinning it to the bottom. */
 #newsPopup[data-item="organic"] .news-media img{object-position:center!important}
+
+/* AALEAC: nudge the shield up a little instead of sitting flush on the bottom edge. */
+#newsPopup[data-item="aaleac"] .news-media img{object-position:center 75%!important}
+
+/* Meeran Melody: no text-included logo file available, so add the wordmark under the icon to match. */
+#newsPopup[data-item="melody"] .news-media img{height:calc(100% - 32px)!important}
+#newsPopup[data-item="melody"] .news-media:after{content:"Meeran Melody";position:absolute;left:0;right:0;bottom:10px;text-align:center;font-family:Georgia,"Times New Roman",serif;font-size:16px;letter-spacing:.05em;color:#7a2432}
