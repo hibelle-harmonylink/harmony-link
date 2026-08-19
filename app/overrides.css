@@ -40,12 +40,8 @@
   cursor: zoom-in;
 }
 
-#newsPopup .news-panel {
-  height: auto !important;
-}
-
 #newsPopup .news-copy {
-  flex: 0 0 auto !important;
+  flex: 1 1 auto !important;
   padding-top: 22px !important;
   padding-bottom: 6px !important;
 }
@@ -150,11 +146,11 @@
   pointer-events: none;
 }
 
-/* Compact phone popup layout: keep every line visible without crowding. */
+/* Compact phone popup layout: fixed box size so it stays identical across every partner. */
 #newsPopup .news-panel {
   width: min(100%, 390px) !important;
+  height: min(480px, calc(100dvh - 24px)) !important;
   max-height: calc(100dvh - 24px) !important;
-  height: auto !important;
 }
 
 #newsPopup .news-media {
@@ -176,7 +172,7 @@
 
 #newsPopup .news-copy {
   padding: 15px 20px 8px !important;
-  overflow: visible !important;
+  overflow-y: auto !important;
 }
 
 #newsPopup .news-copy .eyebrow {
@@ -404,26 +400,6 @@
   }
 }
 
-/* AALEAC's long Korean title otherwise wraps mid-word onto a second line. */
-#newsPopup[data-item="aaleac"] .news-copy h2 {
-  font-size: 17px !important;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-}
-
-#newsPopup[data-item="aaleac"] .news-copy > p:not(.eyebrow) {
-  margin-top: -2px !important;
-}
-
-/* OrganicOne's wordmark sits low in the media box by default; lift it and
-   keep it centered instead of bottom-anchored like the other flyers. */
-#newsPopup[data-item="organic"] .news-media {
-  align-items: center;
-}
-
-#newsPopup[data-item="organic"] .news-media img {
-  object-position: center !important;
-}
 .install-button.install-highlight{animation:installPulse 1.3s ease-in-out infinite;box-shadow:0 0 0 5px rgba(66,153,255,.2)}
 @keyframes installPulse{50%{transform:scale(1.06);box-shadow:0 0 0 9px rgba(66,153,255,.1)}}
 
@@ -454,6 +430,9 @@
 /* Home: 협력업체·광고 (partners/ads) list reuses the .program-mini card look, and the community CTA reuses the feature-card look. .program-mini is now sometimes an <a> (external partner links) instead of an <article>, so reset link styling explicitly. */
 a.program-mini{color:inherit;text-decoration:none}
 a.program-mini h3{color:inherit;text-decoration:none}
+/* Yura Kim's title carries a "High Line Residential" sub-line via <small>; without
+   this it runs into the name on one line instead of dropping underneath it. */
+.program-mini h3 small{display:block;margin-top:2px;font-size:.6em;font-weight:600;color:var(--muted,#65738a)}
 .community-card{margin:30px 20px 0;background:var(--mint,#dbeaff);border-radius:24px;padding:22px;display:grid;gap:14px}
 .community-card h2{font-size:19px;line-height:1.4;margin:0 0 8px}
 .community-card p{color:var(--muted,#65738a);font-size:13px;line-height:1.6;margin:0}
@@ -466,3 +445,30 @@ a.program-mini h3{color:inherit;text-decoration:none}
 .past-events-toggle.open b{transform:rotate(180deg)}
 .past-events-list[hidden]{display:none}
 .past-events-list .event-card{opacity:.72}
+/* Popup logo backdrop: match the homepage popup's per-kind treatment (styles.css .promotion-news-media[data-kind]),
+   rather than forcing every partner onto the same color. Advertising/community logos sit on the homepage's
+   default light-blue gradient with their own white background removed; program (digital/english/melody) logos
+   keep the homepage's white card, since those logo files are designed for a white backdrop. */
+#newsPopup .news-media{background:linear-gradient(145deg,#e8f3ff,#cfe5ff)!important}
+#newsPopup .news-media img{background:transparent!important}
+#newsPopup[data-kind="benefit"] .news-media{background:#63a9e8!important}
+#newsPopup[data-kind="program"] .news-media{background:#fff!important}
+#newsPopup[data-kind="program"] .news-media img{background:#fff!important}
+
+/* Yura Kim: show the brokerage name under her own name, matching the homepage popup. */
+#newsPopup .news-copy h2 small{display:block;margin-top:4px;font-size:.55em;font-weight:600;color:#3f5876}
+
+/* AALEAC: force the long council name onto one line so the contact line below it doesn't get pushed down,
+   push "지원합니다" onto its own line, and nudge the shield up instead of sitting flush on the bottom edge. */
+#newsPopup[data-item="aaleac"] .news-copy h2{font-size:17px!important;line-height:1.3!important;white-space:nowrap!important}
+#newsPopup[data-item="aaleac"] .news-media img{object-position:center 75%!important}
+
+/* OrganicOne: the wordmark is short and wide, so center it instead of pinning it to the bottom. */
+#newsPopup[data-item="organic"] .news-media img{object-position:center!important}
+
+/* Yura Kim: reproduce the homepage's exact treatment — the HL mark on its own gray tile with a
+   HIGHLINE / RESIDENTIAL caption beneath it, instead of a plain image floating in the media area. */
+#newsPopup[data-item="yura"] .news-media{flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:12px!important;padding:0!important}
+#newsPopup[data-item="yura"] .news-media img{display:none!important}
+#newsPopup[data-item="yura"] .news-media:before{content:"";display:block;width:120px;height:120px;border-radius:10px;background:#b8b8b6 url("../assets/ads/highline-hl-symbol.png") center/cover no-repeat}
+#newsPopup[data-item="yura"] .news-media:after{content:"HIGHLINE\A RESIDENTIAL";white-space:pre;text-align:center;color:#8a939f;font-size:12px;font-weight:700;letter-spacing:.08em;line-height:1.3}
