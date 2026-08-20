@@ -416,8 +416,8 @@
 /* Yura Kim's partner card: match the homepage/popup treatment — the HL mark on
    its own gray tile with a caption underneath, on the same sky-blue card
    background every other partner logo uses here. */
-.program-mini .program-art.yura-mini-logo:before{content:"";position:absolute;top:12px;left:50%;transform:translateX(-50%);width:46px;height:46px;border-radius:7px;background:#b8b8b6 url("../assets/ads/highline-hl-symbol.png") center/cover no-repeat}
-.program-mini .program-art.yura-mini-logo:after{content:"HIGHLINE\A RESIDENTIAL";white-space:pre;position:absolute;left:0;right:0;bottom:10px;text-align:center;color:#6b7684;font-size:8px;font-weight:700;letter-spacing:.05em;line-height:1.35}
+.program-mini .program-art.yura-mini-logo:before{content:"";position:absolute;top:8px;left:50%;transform:translateX(-50%);width:68px;height:68px;border-radius:9px;background:#b8b8b6 url("../assets/ads/highline-hl-symbol.png") center/cover no-repeat}
+.program-mini .program-art.yura-mini-logo:after{content:"HIGHLINE\A RESIDENTIAL";white-space:pre;position:absolute;left:0;right:0;bottom:6px;text-align:center;color:#6b7684;font-size:8px;font-weight:700;letter-spacing:.05em;line-height:1.3}
 
 /* Volunteer card: one-line heading above a full-width image. */
 .app-shell #home .feature-card{grid-template-columns:1fr;padding:20px;gap:14px}
