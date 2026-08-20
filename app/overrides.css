@@ -466,6 +466,5 @@ a.program-mini h3{color:inherit;text-decoration:none}
 /* OrganicOne: the wordmark is short and wide, so center it instead of pinning it to the bottom. */
 #newsPopup[data-item="organic"] .news-media img{object-position:center!important}
 
-/* Yura Kim: plain HL mark like the other partner logos — sized down a little
-   since the mark is simple and reads clearly even smaller. */
-#newsPopup[data-item="yura"] .news-media img{width:70%!important;height:70%!important;object-position:center!important}
+/* Yura Kim: plain HL mark like the other partner logos, same full size as everyone else. */
+#newsPopup[data-item="yura"] .news-media img{object-position:center!important}
