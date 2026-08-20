@@ -297,6 +297,10 @@ html[lang="ko"] h1,html[lang="ko"] h2,html[lang="ko"] h3,html[lang="ko"] p,html[
 .promotion-news-media[data-item="aaleac"]{background:#fff!important;border-color:transparent!important}
 .promotion-news-media[data-item="aaleac"] img{border:0!important;box-shadow:none!important;background:#fff!important}
 .ad-partner-card .ad-partner-image{border:0;background:#fff}
+/* Yura Kim's HL mark is plain white with no color of its own, so it's invisible
+   on the white card background every other logo uses here. */
+.ad-directory-list .ad-partner-image.yura-logo-wrap{background:#b8b8b6!important}
+.ad-directory-list .ad-partner-image.yura-logo-wrap img{background:transparent!important}
 .ad-partner-card .ad-partner-image img{width:100%;height:100%;padding:18px;object-fit:contain;object-position:center;transform:none}
 .ad-partner-copy>span{display:block;white-space:nowrap;margin-bottom:5px}
 .ad-partner-name h3{line-height:1.25}
