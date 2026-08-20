@@ -466,6 +466,14 @@ a.program-mini h3{color:inherit;text-decoration:none}
 /* OrganicOne: the wordmark is short and wide, so center it instead of pinning it to the bottom. */
 #newsPopup[data-item="organic"] .news-media img{object-position:center!important}
 
+/* OrganicOne, HOLE19, AALEAC, Jangsu: match the homepage popup, which gives these four
+   a white card instead of the default light-blue gradient (melody/yura/digital/english/
+   the PREMIUM card already match the homepage and are untouched here). */
+#newsPopup[data-item="organic"] .news-media,
+#newsPopup[data-item="hole19"] .news-media,
+#newsPopup[data-item="aaleac"] .news-media,
+#newsPopup[data-item="jangsu"] .news-media{background:#fff!important}
+
 /* Yura Kim: reproduce the homepage's exact treatment — the HL mark on its own
    small gray tile (not a full-bleed backdrop) with a HIGHLINE / RESIDENTIAL
    caption underneath it, on a plain white panel. */
