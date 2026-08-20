@@ -875,6 +875,18 @@ footer .footer-bottom{padding-top:11px!important}
   }
 }
 
+/* Keep the complete Highline Residential mark visible in the desktop
+   premium-ad card. The shared ad-image height previously clipped its caption. */
+@media(min-width:761px){
+  .ad-directory-list .ad-image-expand:has(img[alt^="Yura Kim"]){
+    height:160px!important;
+    min-height:160px!important;
+    flex:0 0 160px!important;
+    grid-template-rows:120px 26px!important;
+    overflow:hidden!important;
+  }
+}
+
 /* Jangsu Daycare community-partner card description: desktop keeps the sentence on one line (no forced break), sized as large as still fits — 9.5px, set via a min-width:761px rule below so it only wins on desktop. Mobile instead breaks before "데이케어 센터입니다." and merges the phone number onto that same second line (via the jangsu-card-break-mobile/-desktop hideable breaks), and intentionally has NO Jangsu-specific font-size/padding override on mobile, so its paragraph falls through to the exact same .is-korean:has(.aaleac-logo-wrap) rule AALEAC's card uses (that rule is more specific than a plain :has(), so it already wins here without help) — matching line count at matching font metrics makes the text-to-button gap match AALEAC's automatically. Scoped to this card only via its logo file path (its display name changes with language, so an alt-text selector can't be used here). */
 @media(min-width:761px){
   .ad-directory-list .ad-partner-card:has(img[src*="jangsu-daycare-logo"]) .ad-partner-copy{padding-left:14px!important;padding-right:14px!important}
