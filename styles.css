@@ -891,3 +891,11 @@ footer .footer-bottom{padding-top:11px!important}
 .ad-partner-image[data-banner] .ad-partner-banner-hint{position:absolute;right:10px;bottom:10px;padding:7px 10px;border-radius:30px;background:rgba(4,32,70,.88);color:#fff;font-size:9px;font-weight:800;letter-spacing:0;pointer-events:none}
 @media(max-width:760px){.ad-partner-image[data-banner] .ad-partner-banner-hint{right:6px;bottom:6px;padding:5px 8px;font-size:7px}}
 
+/* Desktop Yura Kim advertiser logo: use the same visual treatment as the main update popup. */
+@media(min-width:761px){
+  .ad-directory-list .ad-image-expand:has(img[alt^="Yura Kim"]){display:grid!important;grid-template-rows:120px auto!important;align-content:center!important;justify-items:center!important;gap:5px!important;padding:8px 0 10px!important;background:#fff!important}
+  .ad-directory-list .ad-image-expand:has(img[alt^="Yura Kim"]) img{position:static!important;inset:auto!important;width:120px!important;height:120px!important;object-fit:cover!important;object-position:center!important;padding:0!important;transform:none!important}
+  .ad-directory-list .ad-image-expand:has(img[alt^="Yura Kim"])::after{content:"HIGHLINE\A RESIDENTIAL";white-space:pre;text-align:center;color:#aaa;font-size:12px;font-weight:600;line-height:1.05;letter-spacing:-.3px}
+  .ad-directory-list .ad-image-expand:has(img[alt^="Yura Kim"])>span{top:8px!important;right:8px!important;bottom:auto!important}
+}
+
