@@ -9,11 +9,11 @@
   background: #63a9e8 !important;
 }
 
-/* The Hibelle "hi" mark's second letter is a near-white tint meant to sit on a
-   deep blue background (see the main-site popup); outline it so it still reads
-   against this lighter panel instead of disappearing. */
+/* No outline needed here: the "hi" mark's near-white half already reads fine
+   against this panel's blue background, so the drop-shadow this used to carry
+   just showed up as an unwanted dark border around the logo. */
 #newsPopup.one-day-popup .news-media img {
-  filter: drop-shadow(1.5px 0 #0b1830) drop-shadow(-1.5px 0 #0b1830) drop-shadow(0 1.5px #0b1830) drop-shadow(0 -1.5px #0b1830);
+  filter: none !important;
 }
 
 #newsPopup.volunteer-popup .news-media {
@@ -455,8 +455,8 @@ a.program-mini h3{color:inherit;text-decoration:none}
 #newsPopup[data-kind="program"] .news-media{background:#fff!important}
 #newsPopup[data-kind="program"] .news-media img{background:#fff!important}
 
-/* Yura Kim: show the brokerage name under her own name, matching the homepage popup. */
-#newsPopup .news-copy h2 small{display:block;margin-top:4px;font-size:.55em;font-weight:600;color:#3f5876}
+/* Yura Kim: show the brokerage name right beside her own name, small and inline. */
+#newsPopup .news-copy h2 small{display:inline;margin-left:6px;font-size:.5em;font-weight:600;color:#3f5876}
 
 /* AALEAC: force the long council name onto one line so the contact line below it doesn't get pushed down,
    push "지원합니다" onto its own line, and nudge the shield up instead of sitting flush on the bottom edge. */
@@ -466,9 +466,6 @@ a.program-mini h3{color:inherit;text-decoration:none}
 /* OrganicOne: the wordmark is short and wide, so center it instead of pinning it to the bottom. */
 #newsPopup[data-item="organic"] .news-media img{object-position:center!important}
 
-/* Yura Kim: reproduce the homepage's exact treatment — the HL mark on its own gray tile with a
-   HIGHLINE / RESIDENTIAL caption beneath it, instead of a plain image floating in the media area. */
-#newsPopup[data-item="yura"] .news-media{flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:12px!important;padding:0!important}
-#newsPopup[data-item="yura"] .news-media img{display:none!important}
-#newsPopup[data-item="yura"] .news-media:before{content:"";display:block;width:120px;height:120px;border-radius:10px;background:#b8b8b6 url("../assets/ads/highline-hl-symbol.png") center/cover no-repeat}
-#newsPopup[data-item="yura"] .news-media:after{content:"HIGHLINE\A RESIDENTIAL";white-space:pre;text-align:center;color:#8a939f;font-size:12px;font-weight:700;letter-spacing:.08em;line-height:1.3}
+/* Yura Kim: plain HL mark like the other partner logos — sized down a little
+   since the mark is simple and reads clearly even smaller. */
+#newsPopup[data-item="yura"] .news-media img{width:70%!important;height:70%!important;object-position:center!important}
