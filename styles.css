@@ -647,7 +647,7 @@ footer .footer-top{padding-top:13px!important}footer .footer-top>.logo{transform
   .ad-directory-list .ad-image-expand:has(img[alt^="Yura Kim"]) img{display:none!important}
   .ad-directory-list .ad-image-expand:has(img[alt^="Yura Kim"])::before{content:"HL";display:grid;place-items:center;width:120px;height:120px;background:#b8b8b6;color:#fff;font-family:"DM Sans",sans-serif;font-size:58px;font-weight:500;line-height:1;letter-spacing:-7px;padding-right:7px}
   .ad-directory-list .ad-image-expand:has(img[alt^="Yura Kim"])::after{content:"HIGHLINE\A RESIDENTIAL";white-space:pre;text-align:center;color:#aaa;font-size:12px;font-weight:600;line-height:1.05;letter-spacing:-.3px}
-  .ad-directory-list .ad-image-expand:has(img[alt^="Yura Kim"])>span{top:8px!important;right:8px!important;bottom:auto!important}
+  .ad-directory-list .ad-image-expand:has(img[alt^="Yura Kim"])>span{top:auto!important;right:8px!important;bottom:8px!important}
 }
 @media(max-width:760px){
 #events .event-title-row{position:relative!important;display:block!important;min-height:52px!important;padding-right:92px!important}#events .event-title-row h3{display:block!important;min-height:0!important;padding-top:2px!important}#events .event-flyer-button{position:absolute!important;right:0!important;top:0!important;margin:0!important}
