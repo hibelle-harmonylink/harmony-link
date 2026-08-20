@@ -59,7 +59,7 @@ function renderPartners(){
   const partners=(sharedContent.promotions||[]).filter(item=>item.kind==="advertising"||item.kind==="community");
   container.innerHTML=partners.map(item=>{
     const isYura=item.image?.includes("highline-hl-symbol");
-    return `<a class="program-mini" href="${item.url}" target="_blank" rel="noopener noreferrer"><div class="program-art" style="background:${isYura?"#b8b8b6":"#eef5ff"}"><img src="${item.image}" alt=""></div><div><h3>${language==="ko"?item.titleKo:item.titleEn}</h3><p>${language==="ko"?item.badgeKo:item.badgeEn}</p></div></a>`;
+    return `<a class="program-mini" href="${item.url}" target="_blank" rel="noopener noreferrer"><div class="program-art${isYura?" yura-mini-logo":""}" style="background:#eef5ff">${isYura?"":`<img src="${item.image}" alt="">`}</div><div><h3>${language==="ko"?item.titleKo:item.titleEn}</h3><p>${language==="ko"?item.badgeKo:item.badgeEn}</p></div></a>`;
   }).join("");
 }
 function eventCard(item){
