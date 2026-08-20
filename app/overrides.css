@@ -466,5 +466,8 @@ a.program-mini h3{color:inherit;text-decoration:none}
 /* OrganicOne: the wordmark is short and wide, so center it instead of pinning it to the bottom. */
 #newsPopup[data-item="organic"] .news-media img{object-position:center!important}
 
-/* Yura Kim: plain HL mark like the other partner logos, same full size as everyone else. */
+/* Yura Kim: the HL mark is plain white with no color of its own, so it all but
+   disappears on the pale default gradient — give it the same gray backdrop the
+   homepage popup uses for this logo so it actually has contrast to read against. */
+#newsPopup[data-item="yura"] .news-media{background:#b8b8b6!important}
 #newsPopup[data-item="yura"] .news-media img{object-position:center!important}
