@@ -640,6 +640,14 @@ html[lang="en"] #events .event-poster:after{content:"Click to view the full flye
 .contact-consent-list label{display:flex!important;align-items:center!important;justify-content:flex-start!important;width:100%!important;gap:3px!important}.contact-consent-list label>span{flex:0 1 auto!important;width:auto!important}.contact-consent-list .consent-view{flex:0 0 auto!important;margin:0!important;padding-left:1px!important}
 footer .footer-top{padding-top:13px!important}footer .footer-top>.logo{transform:translateY(-7px)!important}
 }
+
+/* Desktop Yura Kim advertiser logo: use the same visual treatment as the main update popup. */
+@media(min-width:761px){
+  .ad-directory-list .ad-image-expand:has(img[alt^="Yura Kim"]){display:grid!important;grid-template-rows:120px auto!important;align-content:center!important;justify-items:center!important;gap:5px!important;padding:8px 0 10px!important;background:#fff!important}
+  .ad-directory-list .ad-image-expand:has(img[alt^="Yura Kim"]) img{position:static!important;inset:auto!important;width:120px!important;height:120px!important;object-fit:cover!important;object-position:center!important;padding:0!important;transform:none!important}
+  .ad-directory-list .ad-image-expand:has(img[alt^="Yura Kim"])::after{content:"HIGHLINE\A RESIDENTIAL";white-space:pre;text-align:center;color:#aaa;font-size:12px;font-weight:600;line-height:1.05;letter-spacing:-.3px}
+  .ad-directory-list .ad-image-expand:has(img[alt^="Yura Kim"])>span{top:8px!important;right:8px!important;bottom:auto!important}
+}
 @media(max-width:760px){
 #events .event-title-row{position:relative!important;display:block!important;min-height:52px!important;padding-right:92px!important}#events .event-title-row h3{display:block!important;min-height:0!important;padding-top:2px!important}#events .event-flyer-button{position:absolute!important;right:0!important;top:0!important;margin:0!important}
 #volunteer .volunteer-image-link{margin-bottom:0!important}#volunteer .volunteer-program-grid{margin-top:11px!important}
