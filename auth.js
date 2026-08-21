@@ -167,12 +167,17 @@
     if (!session?.user) {
       footerDeleteButton.hidden = false;
       footerDeleteButton.textContent = t('회원 탈퇴', 'Delete Account');
+      const signupButton = document.createElement('button');
+      signupButton.type = 'button';
+      signupButton.className = 'header-signup auth-open';
+      signupButton.dataset.authMode = 'signup';
+      signupButton.innerHTML = `<span data-ko="가입" data-en="Join">${t('가입', 'Join')}</span>`;
       const loginButton = document.createElement('button');
       loginButton.type = 'button';
       loginButton.className = 'header-login auth-open';
       loginButton.dataset.authMode = 'login';
       loginButton.innerHTML = `<span data-ko="로그인" data-en="Sign In">${t('로그인', 'Sign In')}</span>`;
-      authSlot.append(loginButton);
+      authSlot.append(signupButton, loginButton);
       return;
     }
 
