@@ -221,6 +221,7 @@ function setLanguage(language) {
   langButton.setAttribute('aria-label', language === 'ko' ? 'Switch to English' : '한국어로 전환');
   menuButton.setAttribute('aria-label', language === 'ko' ? '메뉴 열기' : 'Open menu');
   toTop.setAttribute('aria-label', language === 'ko' ? '맨 위로' : 'Back to top');
+  document.getElementById('appInstallBannerClose')?.setAttribute('aria-label', language === 'ko' ? '닫기' : 'Close');
   document.title = language === 'ko' ? 'Harmony Link | 배움으로 이어지는 우리' : 'Harmony Link | Connected through learning';
   localStorage.setItem('harmonyLanguage', language);
 }
@@ -242,6 +243,15 @@ window.addEventListener('scroll', () => {
 });
 
 toTop.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
+
+const appInstallBanner = document.getElementById('appInstallBanner');
+if (appInstallBanner) {
+  if (localStorage.getItem('appInstallBannerDismissed') === '1') appInstallBanner.hidden = true;
+  document.getElementById('appInstallBannerClose')?.addEventListener('click', () => {
+    appInstallBanner.hidden = true;
+    localStorage.setItem('appInstallBannerDismissed', '1');
+  });
+}
 
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
