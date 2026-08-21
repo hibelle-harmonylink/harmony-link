@@ -5,6 +5,11 @@ window.HARMONY_LINK_SHARED_CONTENT = {
     {id:"hibelle-english",emoji:"🌍",ko:"하이벨 화상영어",en:"Hibelle Online English",category:"언어",tagsKo:"1:1 맞춤 화상영어 · 전문 강사진",tagsEn:"Personalized 1:1 online English",color:"#ffe3cf",image:"/assets/brands/hibelle-online-english.png?v=20260819-2",url:"/#specialty-banners"},
     {id:"meeran-melody",emoji:"🎵",ko:"미란멜로디",en:"Meeran Melody",category:"음악",tagsKo:"합창 · 발성 · 음악 교육",tagsEn:"Choir · Voice · Music",color:"#f8dce8",image:"/assets/brands/meeran-melody-logo.png?v=20260819-1",url:"/#specialty-banners"}
   ],
+  events: [
+    {id:"free-music-class",date:"2026-08-22",endDate:"2026-11-22",badgeKo:"무료 체험",badgeEn:"FREE TRIAL",titleKo:"3개월 무료 음악 클래스",titleEn:"Three-Month Free Music Class",textKo:"매주 토요일 오전 10시, 할렐루야 교회에서 진행합니다.",textEn:"Every Saturday at 10 AM at Hallelujah Church.",image:"/assets/events/free-music-class-20260822.png"},
+    {id:"one-day-class",date:"2026-08-01",endDate:"2026-08-01",badgeKo:"지난 무료 체험",badgeEn:"PAST FREE TRIAL",titleKo:"음악과 디지털 1일 체험 클래스",titleEn:"Music & Digital One-Day Experience",textKo:"2026년 8월 1일 진행된 무료 체험 클래스입니다.",textEn:"A free trial class held on August 1, 2026.",image:"/assets/events/one-day-class.jpg"},
+    {id:"finance-ai-seminar",date:"2026-07-10",endDate:"2026-07-24",badgeKo:"지난 무료 세미나",badgeEn:"PAST FREE SEMINAR",badgeDark:true,titleKo:"재정과 AI의 협력, 더 나은 미래 설계",titleEn:"Finance and AI: Designing a Better Future",textKo:"2026년 7월에 진행된 무료 세미나입니다.",textEn:"A free seminar held in July 2026.",image:"/assets/events/finance-ai-seminar.jpg"}
+  ],
   promotions: [
     {kind:"benefit",badgeKo:"기간 한정 혜택",badgeEn:"LIMITED BENEFIT",titleKo:"PREMIUM 파트너",titleEn:"PREMIUM Partners",textKo:"2026년 8월 31일까지 프리미엄 파트너로 접수하면<br>3개월 등록비 면제 혜택을 드립니다.",textEn:"Apply as a PREMIUM partner by August 31, 2026.<br>Receive a three-month registration fee waiver.",image:"/assets/harmony-logo.png",url:"/#community",actionKo:"함께하기",actionEn:"Join Us"},
     {kind:"program",badgeKo:"전문 수업 안내",badgeEn:"SPECIALTY PROGRAM",titleKo:"하이벨 디지털",titleEn:"Hibelle Digital",textKo:"AI와 스마트폰을 실생활에서 자신 있게 활용하도록 돕는<br>맞춤형 디지털 교육입니다. 연락처 929-603-0052",textEn:"Practical digital education for using AI and smartphones.<br>Contact 929-603-0052",image:"/assets/brands/hibelle-digital.png?v=20260819-2",url:"/#specialty-banners",actionKo:"수업 보기",actionEn:"View Program"},
