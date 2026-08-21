@@ -64,7 +64,8 @@ function eventCard(item){
   const title=language==="ko"?item.titleKo:item.titleEn;
   const text=language==="ko"?item.textKo:item.textEn;
   const badge=language==="ko"?item.badgeKo:item.badgeEn;
-  return `<article class="event-card"><img src="${item.image}" alt="${title}"><div><span class="badge${item.badgeDark?" dark":""}">${badge}</span><h2>${title}</h2><p>${text}</p></div></article>`;
+  const zoomLabel=language==="ko"?"이미지 클릭 시 크게 보기":"Tap image to enlarge";
+  return `<article class="event-card"><button class="event-image-open" type="button" data-event-image="${item.image}" data-event-alt="${title}" aria-label="${zoomLabel}"><img src="${item.image}" alt="${title}"><span>${zoomLabel}</span></button><div><span class="badge${item.badgeDark?" dark":""}">${badge}</span><h2>${title}</h2><p>${text}</p></div></article>`;
 }
 function renderEvents(){
   const today=new Date().toISOString().slice(0,10);
@@ -179,6 +180,11 @@ function toggleSaved(id){
 }
 
 document.addEventListener("click",event=>{
+  const eventImage=event.target.closest("[data-event-image]");
+  if(eventImage){
+    openImageLightbox(eventImage.dataset.eventImage,eventImage.dataset.eventAlt||"");
+    return;
+  }
   const go=event.target.closest("[data-go]");
   if(go){
     const subject=go.dataset.subject;
@@ -196,6 +202,13 @@ document.addEventListener("click",event=>{
   if(linkedProgram&&!saveButton) window.open(linkedProgram.dataset.programUrl,"_blank","noopener,noreferrer");
   const mini=event.target.closest("[data-open-program]");
   if(mini){const program=programs.find(p=>p.id===mini.dataset.openProgram);if(program.url){window.open(program.url,"_blank","noopener,noreferrer")}else{activeCategory="전체";navigate("programs");$("#programSearch").value=language==="ko"?program.ko:program.en;renderFilters();renderPrograms()}}
+});
+document.addEventListener("keydown",event=>{
+  const eventImage=event.target.closest?.("[data-event-image]");
+  if(eventImage&&(event.key==="Enter"||event.key===" ")){
+    event.preventDefault();
+    openImageLightbox(eventImage.dataset.eventImage,eventImage.dataset.eventAlt||"");
+  }
 });
 $("#programSearch").addEventListener("input",renderPrograms);
 $("#pastEventsToggle").addEventListener("click",()=>{pastEventsOpen=!pastEventsOpen;renderEvents()});
@@ -317,7 +330,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true});
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v78.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v79.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;
