@@ -221,7 +221,6 @@ function setLanguage(language) {
   langButton.setAttribute('aria-label', language === 'ko' ? 'Switch to English' : '한국어로 전환');
   menuButton.setAttribute('aria-label', language === 'ko' ? '메뉴 열기' : 'Open menu');
   toTop.setAttribute('aria-label', language === 'ko' ? '맨 위로' : 'Back to top');
-  document.getElementById('appInstallBannerClose')?.setAttribute('aria-label', language === 'ko' ? '닫기' : 'Close');
   document.title = language === 'ko' ? 'Harmony Link | 배움으로 이어지는 우리' : 'Harmony Link | Connected through learning';
   localStorage.setItem('harmonyLanguage', language);
 }
@@ -243,15 +242,6 @@ window.addEventListener('scroll', () => {
 });
 
 toTop.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
-
-const appInstallBanner = document.getElementById('appInstallBanner');
-if (appInstallBanner) {
-  if (localStorage.getItem('appInstallBannerDismissed') === '1') appInstallBanner.hidden = true;
-  document.getElementById('appInstallBannerClose')?.addEventListener('click', () => {
-    appInstallBanner.hidden = true;
-    localStorage.setItem('appInstallBannerDismissed', '1');
-  });
-}
 
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
@@ -622,8 +612,15 @@ if (currentEventGrid) {
   const originalComingCard = currentEventGrid.querySelector('.event-coming');
   currentEventGrid.classList.add('event-type-layout');
   currentEventGrid.innerHTML = `<section class="event-type-block seminar-type"><div class="event-type-head"><span>01</span><div><p data-ko="무료 세미나" data-en="FREE SEMINARS">무료 세미나</p><small data-ko="지식과 정보를 나누는 무료 교육" data-en="Free educational seminars">지식과 정보를 나누는 무료 교육</small></div></div><div class="event-type-grid seminar-grid"></div></section><section class="event-type-block trial-type"><div class="event-type-head"><span>02</span><div><p data-ko="무료 체험" data-en="FREE TRIAL CLASSES">무료 체험</p><small data-ko="처음 경험하는 분을 위한 체험 수업" data-en="Trial sessions for first-time learners">처음 경험하는 분을 위한 체험 수업</small></div></div><div class="event-type-grid trial-grid"></div></section><section class="event-type-block paid-type"><div class="event-type-head"><span>03</span><div><p data-ko="유료 1회 수업" data-en="PAID ONE-TIME CLASSES">유료 1회 수업</p><small data-ko="정규과정 부담 없이 참여하는 단회 수업" data-en="Single paid sessions without a full-course commitment">정규과정 부담 없이 참여하는 단회 수업</small></div></div><div class="event-type-grid paid-grid"></div></section>`;
-  if(originalEventCards[0]) currentEventGrid.querySelector('.seminar-grid').appendChild(originalEventCards[0]);
-  originalEventCards.slice(1).forEach(card => currentEventGrid.querySelector('.trial-grid').appendChild(card));
+  const eventDateKey = card => card.dataset.eventStart || card.dataset.eventEnd || '9999-12-31';
+  const eventTarget = card => card.dataset.eventCategory === 'seminar'
+    ? currentEventGrid.querySelector('.seminar-grid')
+    : card.dataset.eventCategory === 'paid'
+      ? currentEventGrid.querySelector('.paid-grid')
+      : currentEventGrid.querySelector('.trial-grid');
+  originalEventCards
+    .sort((a, b) => eventDateKey(a).localeCompare(eventDateKey(b)))
+    .forEach(card => eventTarget(card).appendChild(card));
   if(originalComingCard){
     originalComingCard.querySelector('.event-badge').dataset.ko='유료 수업 준비 중';
     originalComingCard.querySelector('.event-badge').dataset.en='PAID CLASS COMING SOON';
@@ -643,9 +640,7 @@ if (currentEventGrid) {
   } else {
     currentEventGrid.querySelector('.paid-grid').innerHTML=`<article class="event-card event-coming"><div class="event-coming-icon">＋</div><div class="event-info"><span class="event-badge" data-ko="유료 수업 준비 중" data-en="PAID CLASS COMING SOON">유료 수업 준비 중</span><h3><span data-ko="새로운 유료 1회 수업" data-en="A new paid one-time class">새로운 유료 1회 수업</span><br><span data-ko="준비하고 있습니다" data-en="is coming soon">준비하고 있습니다</span></h3><p data-ko="관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다." data-en="Try a topic in a single paid session without committing to a regular course.">관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다.</p></div></article>`;
   }
-  const datedCards = currentEventGrid.querySelectorAll('.event-card:not(.event-coming)');
-  const endDates = ['2026-07-24T17:00:00-04:00','2026-11-23T00:00:00-05:00','2026-08-01T13:00:00-04:00'];
-  datedCards.forEach((card,index) => card.dataset.eventEnd = endDates[index]);
+  const datedCards = originalEventCards.filter(card => card.dataset.eventEnd);
   // Any event address written in the location row automatically receives a Google Maps link.
   datedCards.forEach(card => {
     const locationRow = [...card.querySelectorAll('dl>div')].find(row => {
@@ -668,10 +663,12 @@ if (currentEventGrid) {
   currentEventGrid.insertAdjacentHTML('afterend', `<section class="past-events"><div class="past-events-head"><div><p class="eyebrow">PAST EVENTS</p><h3 data-ko="지난 무료강좌" data-en="Past Free Events">지난 무료강좌</h3></div><button class="past-events-toggle" type="button" aria-expanded="false"><span data-ko="지난 강좌 보기" data-en="View Past Events">지난 강좌 보기</span><b>＋</b></button></div><div class="past-event-grid" hidden></div><p class="past-events-empty" data-ko="아직 지난 강좌가 없습니다." data-en="There are no past events yet.">아직 지난 강좌가 없습니다.</p></section>`);
   const pastSection = currentEventGrid.nextElementSibling;
   const pastGrid = pastSection.querySelector('.past-event-grid');
-  const today = new Date();
-  datedCards.forEach(card => {
-    if (today > new Date(card.dataset.eventEnd)) pastGrid.appendChild(card);
-  });
+  const localDateKey = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  const todayKey = localDateKey(new Date());
+  datedCards
+    .filter(card => card.dataset.eventEnd < todayKey)
+    .sort((a, b) => b.dataset.eventEnd.localeCompare(a.dataset.eventEnd))
+    .forEach(card => pastGrid.appendChild(card));
   const comingCard = ({badgeKo,badgeEn,titleKo,titleEn,titleLineKo,titleLineEn,copyKo,copyEn}) => `<article class="event-card event-coming"><div class="event-coming-icon">＋</div><span class="event-badge" data-ko="${badgeKo}" data-en="${badgeEn}">${badgeKo}</span><h3><span data-ko="${titleKo}" data-en="${titleEn}">${titleKo}</span><span class="paid-coming-line" data-ko="${titleLineKo}" data-en="${titleLineEn}">${titleLineKo}</span></h3><p data-ko="${copyKo}" data-en="${copyEn}">${copyKo}</p></article>`;
   const seminarGrid = currentEventGrid.querySelector('.seminar-grid');
   const trialGrid = currentEventGrid.querySelector('.trial-grid');
@@ -1189,19 +1186,6 @@ document.querySelectorAll('.contact-form-open').forEach(button => button.addEven
 }));
 
 // Partner-only resource library. Available files download immediately; planned files are clearly labeled.
-// Dated seminars/classes are sorted chronologically and hidden at midnight after their final date.
-const datedEventGrid=document.querySelector('#events .event-grid');
-if(datedEventGrid){
-  const eventRules=[
-    {image:'finance-ai-seminar.jpg',end:'2026-07-25T00:00:00-04:00'},
-    {image:'free-music-class-20260822.png',end:'2026-11-23T00:00:00-05:00'},
-    {image:'one-day-class.jpg',end:'2026-08-02T00:00:00-04:00'}
-  ];
-  const eventCards=[...datedEventGrid.querySelectorAll('.event-card')];
-  eventCards.forEach(card=>{const source=card.querySelector('img')?.getAttribute('src')||'';const rule=eventRules.find(item=>source.includes(item.image));if(rule)card.dataset.eventEnd=rule.end;});
-  eventCards.forEach(card=>{card.hidden=Boolean(card.dataset.eventEnd)&&Date.now()>=Date.parse(card.dataset.eventEnd);});
-}
-
 const partnerResourceSections = [
   {no:'01',tier:0,icon:'🚀',title:'시작하기 (필수)',copy:'입점 후 가장 먼저 확인하는 필수 안내 자료',items:[['입점 파트너 시작 안내서','downloads/HarmonyLink_Partner_Getting_Started.pdf','PDF'],['플랫폼 이용 및 운영 정책','downloads/HarmonyLink_Partner_Policy_v1.0.pdf','PDF'],['입점 파트너 계약서','downloads/HarmonyLink_Partner_Agreement_v2.0.pdf','PDF'],['강사 활동 가이드','downloads/HarmonyLink_Instructor_Activity_Guide_v1.0.pdf','PDF'],['자주 묻는 질문 (FAQ)','downloads/HarmonyLink_Partner_FAQ_v1.0.pdf','PDF']]},
   {no:'02',tier:20,icon:'📘',title:'운영 매뉴얼',copy:'기관 출강과 실제 수업 운영을 위한 기준',items:[['기관 수업 진행 방법'],['출강 체크리스트'],['첫 수업 준비 방법'],['수업 종료 후 해야 할 일'],['강사 매너·복장 가이드'],['안전 수칙']]},
