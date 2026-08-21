@@ -410,6 +410,11 @@
 .events-main-title{font-size:28px!important;line-height:1.25!important;letter-spacing:-.055em!important;white-space:nowrap}
 @media(max-width:410px){.events-main-title{font-size:24px!important}}
 
+.event-card .event-image-open{display:block;position:relative;width:100%;padding:0;border:0;background:#eef5ff;cursor:zoom-in;text-align:center}
+.event-card .event-image-open img{display:block;width:100%;height:240px;object-fit:cover}
+.event-card .event-image-open span{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);padding:7px 13px;border-radius:16px;background:rgba(6,29,69,.9);color:#fff;font-size:11px;font-weight:800;white-space:nowrap;box-shadow:0 5px 16px rgba(6,29,69,.2)}
+.event-card .event-image-open:focus-visible{outline:3px solid #2d7be8;outline-offset:-3px}
+
 /* Shared featured program logos. */
 /* .program-art is a place-items:center grid, so a plain height:100% on the image doesn't resolve against its fixed height (align-items:center means the item isn't stretched) — the browser falls back to the image's intrinsic aspect ratio instead, letting it spill out of the box and overlap the title below. Absolute-position it against the box instead so it's always exactly the container's size regardless of grid alignment. */
 .program-art{position:relative;overflow:hidden}
