@@ -11,7 +11,7 @@
   <link rel="icon" type="image/png" href="icon-192-v71.png">
   <link rel="apple-touch-icon" href="icon-192-v71.png">
   <link rel="stylesheet" href="app.css?v=61">
-  <link rel="stylesheet" href="overrides.css?v=77">
+  <link rel="stylesheet" href="overrides.css?v=78">
 </head>
 <body>
   <div class="app-shell">
@@ -22,8 +22,8 @@
       </a>
       <div class="top-actions">
         <button id="languageButton" class="round-button" type="button" aria-label="언어 변경">EN</button>
-        <button id="installButton" class="install-button" type="button">앱 설치</button>
-        <a id="memberButton" class="member-button" href="../?auth=signup" target="_blank" rel="noopener" data-ko="가입·로그인" data-en="Join">가입·로그인</a>
+        <button id="installButton" class="install-button" type="button" hidden aria-hidden="true">앱 설치</button>
+        <a id="memberButton" class="member-button" href="../?auth=signup" target="_blank" rel="noopener" data-ko="가입 · 로그인" data-en="Join · Sign In">가입 · 로그인</a>
       </div>
     </header>
 
@@ -90,7 +90,7 @@
       <section class="screen" id="events" data-screen="events">
         <div class="page-heading">
           <p class="eyebrow">EVENTS</p>
-          <h1 data-ko="가볍게 시작하는<br>무료 강좌와 이벤트" data-en="Free classes and events<br>to get you started">가볍게 시작하는<br>무료 강좌와 이벤트</h1>
+          <h1 class="events-main-title" data-ko="가볍게 시작하는 무료 강좌와 이벤트" data-en="Free classes and events to get you started">가볍게 시작하는 무료 강좌와 이벤트</h1>
         </div>
         <div id="upcomingEventsList"></div>
         <button type="button" class="past-events-toggle" id="pastEventsToggle" hidden>
@@ -168,7 +168,7 @@
       <button type="button" data-go="contact"><span>✉</span><small data-ko="문의" data-en="Contact">문의</small></button>
     </nav>
   </div>
-  <script src="../shared-content.js?v=76"></script>
-  <script src="app.js?v=77"></script>
+  <script src="../shared-content.js?v=78"></script>
+  <script src="app.js?v=78"></script>
 </body>
 </html>
