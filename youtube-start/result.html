@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>진단 결과 | HarmonyLink YouTube Income Lab</title>
+<meta name="description" content="답변을 바탕으로 나에게 맞는 유튜브 채널 방향과 프로그램을 확인해보세요.">
+<link rel="icon" type="image/png" href="../assets/harmony-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1">
+</head>
+<body class="ytlab-page">
+
+  <header class="ytlab-topbar">
+    <div class="ytlab-container-wide ytlab-topbar-inner">
+      <a class="ytlab-brand" href="index.html"><img src="../assets/harmony-logo.png" alt=""><span>유튜브 수익화 랩<small>HarmonyLink YouTube Income Lab</small></span></a>
+      <a class="ytlab-home-link" href="../index.html">HarmonyLink 홈으로</a>
+    </div>
+  </header>
+
+  <section class="ytlab-result-hero">
+    <div class="ytlab-container-wide">
+      <p class="ytlab-eyebrow" style="color:#8cb8ff">진단 결과</p>
+      <h1 style="margin:0 0 10px;font-size:clamp(24px,4vw,32px)">답변을 바탕으로 진단 결과를 정리했습니다</h1>
+      <p>아래 점수는 "성공 확률"이 아니라 <b>현재 답변하신 조건과의 적합도</b>입니다. 유튜브 성과는 콘텐츠와 실행에 따라 달라질 수 있습니다.</p>
+    </div>
+  </section>
+
+  <main>
+    <section class="ytlab-section" id="planSection">
+      <div class="ytlab-container-wide">
+        <p class="ytlab-eyebrow">STEP 1 · 추천 프로그램</p>
+        <h2>지금 단계에 가장 적합한 프로그램</h2>
+        <p class="ytlab-section-lead">답변하신 목표 · 경험 · 예산 · 가능 시간을 바탕으로 추천 순위를 매겼습니다.</p>
+        <div id="planPrimary"></div>
+        <div id="planSecondary"></div>
+        <div class="ytlab-btn-row" style="margin-top:24px">
+          <a class="ytlab-btn ytlab-btn-primary" href="#" id="ctaConsult">무료 상담 신청하기</a>
+          <a class="ytlab-btn ytlab-btn-outline" href="index.html#plans" id="ctaPlans">프로그램 자세히 보기</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="ytlab-section ytlab-section-alt" id="channelSection">
+      <div class="ytlab-container-wide">
+        <p class="ytlab-eyebrow">STEP 2 · 추천 채널 유형</p>
+        <h2>나에게 맞는 유튜브 채널 방향</h2>
+        <p class="ytlab-section-lead">아래는 현재 답변 조건과의 적합도이며, 성공을 보장하는 점수가 아닙니다.</p>
+        <div id="channelPrimary"></div>
+
+        <h3 style="margin:32px 0 14px;font-size:19px">함께 고려해볼 수 있는 대안 유형</h3>
+        <div class="ytlab-channel-alt" id="channelAlts"></div>
+      </div>
+    </section>
+
+    <section class="ytlab-section" id="disclaimerSection">
+      <div class="ytlab-container-wide">
+        <div class="ytlab-disclaimer">
+          <h3>꼭 확인해주세요</h3>
+          <ul id="cautionList"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="ytlab-section ytlab-section-alt">
+      <div class="ytlab-container-wide">
+        <div class="ytlab-consult">
+          <p class="ytlab-eyebrow" style="color:#8cb8ff">다음 단계</p>
+          <h2>구체적인 방향을 상담받아보세요</h2>
+          <p class="ytlab-section-lead">진단 결과를 바탕으로 담당자가 1:1로 안내해드립니다. 결제는 상담 이후 진행됩니다.</p>
+          <span class="ytlab-recommend-tag" id="consultRecommendTag" hidden></span>
+          <form class="ytlab-form" id="consultForm">
+            <input type="hidden" name="_subject" value="[유튜브 수익화 랩] 진단 결과 상담 신청">
+            <input type="hidden" name="추천 프로그램" id="hiddenPlan" value="">
+            <input type="hidden" name="추천 채널 유형" id="hiddenChannel" value="">
+            <div>
+              <label for="cName">이름 *</label>
+              <input id="cName" name="이름" required>
+            </div>
+            <div>
+              <label for="cContact">연락처 또는 이메일 *</label>
+              <input id="cContact" name="연락처_이메일" required>
+            </div>
+            <div>
+              <label for="cMessage">궁금한 점 (선택)</label>
+              <textarea id="cMessage" name="문의내용" rows="3"></textarea>
+            </div>
+            <button class="ytlab-btn ytlab-btn-primary ytlab-btn-block" type="submit">무료 상담 신청하기</button>
+            <p class="ytlab-form-status" id="consultStatus" role="status"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="ytlab-footer">
+    <div class="ytlab-container-wide">
+      <p>HarmonyLink 유튜브 수익화 랩은 하이벨컨설팅이 운영하는 Harmony Link 이음문화센터의 교육 프로그램입니다.</p>
+      <p><a href="index.html">프로그램 소개로 돌아가기</a> · <a href="../index.html">HarmonyLink 홈</a></p>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="result.js"></script>
+</body>
+</html>

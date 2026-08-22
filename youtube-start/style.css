@@ -1,0 +1,183 @@
+/* HarmonyLink YouTube Income Lab - shared styles
+   Namespaced with .ytlab- to avoid any collision with the main site's styles.css.
+   Font sizes are intentionally larger than the main site for mobile/senior readability. */
+
+:root{
+  --yt-blue:#1155d9;
+  --yt-deep:#082c68;
+  --yt-navy:#061d45;
+  --yt-pale:#eef5ff;
+  --yt-sky:#dbeaff;
+  --yt-text:#10213b;
+  --yt-muted:#4d5b74;
+  --yt-line:#dce6f3;
+  --yt-shadow:0 22px 60px rgba(18,65,132,.13);
+  --yt-radius:20px;
+  --yt-green:#13834f;
+  --yt-amber:#8a5a00;
+  --yt-amber-bg:#fff6e5;
+}
+
+.ytlab-page{font-family:"DM Sans","Noto Sans KR",sans-serif;color:var(--yt-text);background:#fff;line-height:1.7;font-size:18px;margin:0}
+.ytlab-page *{box-sizing:border-box}
+.ytlab-page a{color:inherit}
+.ytlab-page button,.ytlab-page input,.ytlab-page select,.ytlab-page textarea{font:inherit}
+.ytlab-container{width:min(880px,calc(100% - 40px));margin:0 auto}
+.ytlab-container-wide{width:min(1100px,calc(100% - 40px));margin:0 auto}
+
+/* ---------- top bar ---------- */
+.ytlab-topbar{padding:18px 0;border-bottom:1px solid var(--yt-line)}
+.ytlab-topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.ytlab-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;text-decoration:none}
+.ytlab-brand img{width:32px;height:32px;border-radius:8px}
+.ytlab-brand small{display:block;font-weight:500;font-size:12px;color:var(--yt-muted)}
+.ytlab-home-link{font-size:14px;font-weight:600;color:var(--yt-blue);text-decoration:none;white-space:nowrap}
+
+/* ---------- buttons ---------- */
+.ytlab-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:14px;padding:16px 24px;font-weight:700;font-size:17px;border:0;cursor:pointer;text-decoration:none;min-height:52px;line-height:1.3}
+.ytlab-btn-primary{background:var(--yt-blue);color:#fff;box-shadow:0 12px 28px rgba(17,85,217,.25)}
+.ytlab-btn-primary:hover{background:var(--yt-deep)}
+.ytlab-btn-outline{background:#fff;color:var(--yt-navy);border:2px solid var(--yt-line)}
+.ytlab-btn-outline:hover{border-color:var(--yt-blue);color:var(--yt-blue)}
+.ytlab-btn-block{width:100%}
+.ytlab-btn[disabled]{opacity:.45;cursor:not-allowed}
+.ytlab-btn-row{display:flex;gap:14px;flex-wrap:wrap}
+
+/* ---------- hero ---------- */
+.ytlab-hero{padding:56px 0 44px;background:linear-gradient(140deg,#f7fbff 0%,#fff 55%,#eef5ff 100%)}
+.ytlab-eyebrow{color:var(--yt-blue);font-weight:800;font-size:14px;letter-spacing:1.5px;margin:0 0 14px}
+.ytlab-hero h1{font-size:clamp(28px,5vw,44px);line-height:1.25;letter-spacing:-.5px;margin:0 0 18px}
+.ytlab-hero h1 em{font-style:normal;color:var(--yt-blue)}
+.ytlab-hero p{font-size:19px;color:var(--yt-muted);max-width:620px;margin:0 0 30px}
+
+/* ---------- sections ---------- */
+.ytlab-section{padding:56px 0;border-top:1px solid var(--yt-line)}
+.ytlab-section:first-child{border-top:0}
+.ytlab-section h2{font-size:clamp(24px,3.6vw,32px);line-height:1.3;margin:0 0 12px}
+.ytlab-section-lead{color:var(--yt-muted);font-size:18px;max-width:680px;margin:0 0 32px}
+.ytlab-section-alt{background:#f7fafd}
+
+/* ---------- grids / cards ---------- */
+.ytlab-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.ytlab-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.ytlab-card{background:#fff;border:1px solid var(--yt-line);border-radius:var(--yt-radius);padding:28px}
+.ytlab-card h3{font-size:20px;margin:0 0 10px}
+.ytlab-card p{color:var(--yt-muted);font-size:16px;margin:0}
+.ytlab-icon-badge{width:52px;height:52px;border-radius:14px;background:var(--yt-pale);color:var(--yt-blue);display:grid;place-items:center;font-size:26px;margin-bottom:16px}
+
+/* ---------- fit-for list ---------- */
+.ytlab-fit-list{list-style:none;padding:0;margin:0;display:grid;gap:14px}
+.ytlab-fit-list li{display:flex;gap:14px;align-items:flex-start;font-size:18px;padding:16px 18px;background:#fff;border:1px solid var(--yt-line);border-radius:14px}
+.ytlab-fit-list b{color:var(--yt-blue);flex:none}
+
+/* ---------- process steps ---------- */
+.ytlab-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:step}
+.ytlab-step{background:#fff;border:1px solid var(--yt-line);border-radius:16px;padding:22px 20px;text-align:center}
+.ytlab-step span{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--yt-navy);color:#fff;font-weight:700;margin-bottom:12px}
+.ytlab-step h4{margin:0 0 6px;font-size:17px}
+.ytlab-step p{margin:0;font-size:14px;color:var(--yt-muted)}
+
+/* ---------- pricing comparison ---------- */
+.ytlab-plans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+.ytlab-plan{border:2px solid var(--yt-line);border-radius:var(--yt-radius);padding:28px;background:#fff;display:flex;flex-direction:column}
+.ytlab-plan.is-build{border-color:var(--yt-blue);box-shadow:0 20px 50px rgba(17,85,217,.14);position:relative}
+.ytlab-plan-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--yt-blue);color:#fff;font-size:12px;font-weight:700;padding:5px 14px;border-radius:100px}
+.ytlab-plan-key{font-size:13px;font-weight:800;letter-spacing:1.5px;color:var(--yt-blue);margin:0 0 6px}
+.ytlab-plan h3{font-size:20px;margin:0 0 12px}
+.ytlab-plan-price{font-size:30px;font-weight:800;color:var(--yt-navy);margin:0 0 4px}
+.ytlab-plan-price-note{font-size:13px;color:var(--yt-muted);margin:0 0 18px}
+.ytlab-plan-bestfor{font-size:14px;color:var(--yt-muted);margin:0 0 18px;min-height:42px}
+.ytlab-plan ul{list-style:none;padding:0;margin:0 0 22px;flex:1}
+.ytlab-plan li{display:flex;gap:8px;align-items:flex-start;font-size:15px;padding:6px 0}
+.ytlab-plan li b{color:var(--yt-green);flex:none}
+.ytlab-plan-includes-note{font-size:13px;color:var(--yt-blue);font-weight:700;margin:0 0 10px}
+
+/* ---------- FAQ ---------- */
+.ytlab-faq{display:grid;gap:12px}
+.ytlab-faq details{border:1px solid var(--yt-line);border-radius:14px;padding:18px 20px;background:#fff}
+.ytlab-faq summary{font-weight:700;font-size:17px;cursor:pointer;list-style:none}
+.ytlab-faq summary::-webkit-details-marker{display:none}
+.ytlab-faq summary:before{content:"Q. ";color:var(--yt-blue)}
+.ytlab-faq p{margin:12px 0 0;color:var(--yt-muted);font-size:16px}
+
+/* ---------- disclaimer box ---------- */
+.ytlab-disclaimer{background:var(--yt-amber-bg);border:1px solid #f0dfae;color:var(--yt-amber);border-radius:16px;padding:22px 24px;font-size:15px;line-height:1.75}
+.ytlab-disclaimer h3{margin:0 0 10px;font-size:17px;color:#6b4400}
+.ytlab-disclaimer ul{margin:0;padding-left:20px}
+.ytlab-disclaimer li{margin:4px 0}
+
+/* ---------- consult form ---------- */
+.ytlab-consult{background:var(--yt-navy);color:#fff;border-radius:24px;padding:40px 32px}
+.ytlab-consult h2{color:#fff}
+.ytlab-consult .ytlab-section-lead{color:#c3d1e8}
+.ytlab-form{display:grid;gap:16px;max-width:560px}
+.ytlab-form label{display:block;font-size:14px;font-weight:700;margin-bottom:6px;color:#fff}
+.ytlab-form input,.ytlab-form select,.ytlab-form textarea{width:100%;border:0;border-radius:10px;padding:14px 16px;font-size:16px;color:var(--yt-text)}
+.ytlab-form-status{min-height:22px;font-size:15px;font-weight:600}
+.ytlab-recommend-tag{display:inline-block;background:rgba(255,255,255,.14);border-radius:100px;padding:8px 16px;font-size:14px;margin-bottom:6px}
+
+/* ---------- footer ---------- */
+.ytlab-footer{padding:32px 0 44px;color:var(--yt-muted);font-size:14px;text-align:center}
+.ytlab-footer a{color:var(--yt-blue);font-weight:600;text-decoration:none}
+
+/* ================= assessment ================= */
+.ytlab-assess-wrap{min-height:calc(100vh - 90px);display:flex;flex-direction:column}
+.ytlab-progress-track{background:var(--yt-line);height:10px;border-radius:100px;overflow:hidden;margin:24px 0 8px}
+.ytlab-progress-fill{background:var(--yt-blue);height:100%;transition:width .3s ease;border-radius:100px}
+.ytlab-progress-label{font-size:14px;color:var(--yt-muted);font-weight:600}
+.ytlab-question{flex:1;padding:28px 0 40px;max-width:720px;margin:0 auto;width:100%}
+.ytlab-question h2{font-size:clamp(22px,4.2vw,30px);line-height:1.35;margin:0 0 10px}
+.ytlab-question-help{color:var(--yt-muted);font-size:16px;margin:0 0 26px}
+.ytlab-options{display:grid;gap:14px}
+.ytlab-option{display:flex;align-items:center;gap:16px;border:2px solid var(--yt-line);border-radius:16px;padding:18px 20px;cursor:pointer;font-size:18px;font-weight:600;transition:.15s;background:#fff}
+.ytlab-option:hover{border-color:#a9c4f2}
+.ytlab-option input{width:22px;height:22px;flex:none;accent-color:var(--yt-blue)}
+.ytlab-option.is-checked{border-color:var(--yt-blue);background:var(--yt-pale)}
+.ytlab-assess-nav{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--yt-line);padding:16px 0;margin-top:auto}
+.ytlab-assess-nav-inner{display:flex;justify-content:space-between;align-items:center;gap:12px;max-width:720px;margin:0 auto;width:min(880px,calc(100% - 40px))}
+
+/* ================= result page ================= */
+.ytlab-result-hero{background:var(--yt-navy);color:#fff;padding:40px 0}
+.ytlab-result-hero p{color:#c3d1e8;font-size:17px;margin:0}
+.ytlab-primary-plan{border:3px solid var(--yt-blue);border-radius:28px;padding:36px;background:#fff;box-shadow:0 24px 60px rgba(17,85,217,.16);position:relative}
+.ytlab-primary-plan .ytlab-plan-tag{display:inline-block;background:var(--yt-blue);color:#fff;font-size:13px;font-weight:800;letter-spacing:1px;padding:6px 16px;border-radius:100px;margin-bottom:16px}
+.ytlab-primary-plan h3{font-size:30px;margin:0 0 6px}
+.ytlab-primary-plan .ytlab-plan-price{font-size:34px}
+.ytlab-reason-list{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:10px}
+.ytlab-reason-list li{display:flex;gap:10px;font-size:16px;padding:12px 14px;background:var(--yt-pale);border-radius:12px}
+.ytlab-reason-list b{color:var(--yt-blue);flex:none}
+.ytlab-secondary-plan{border:1px solid var(--yt-line);border-radius:20px;padding:24px;background:#f9fbfe;margin-top:20px}
+.ytlab-secondary-plan h4{margin:0 0 8px;font-size:17px;color:var(--yt-muted)}
+
+.ytlab-channel-primary{border:3px solid var(--yt-navy);border-radius:28px;padding:36px;background:#fff}
+.ytlab-channel-primary .ytlab-score{display:inline-flex;align-items:baseline;gap:6px;background:var(--yt-pale);border-radius:100px;padding:8px 18px;font-weight:800;color:var(--yt-navy);margin-bottom:14px}
+.ytlab-channel-primary .ytlab-score b{font-size:26px}
+.ytlab-score-note{font-size:13px;color:var(--yt-muted);margin:0 0 20px}
+.ytlab-channel-primary h3{font-size:26px;margin:6px 0 10px}
+.ytlab-meta-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:24px}
+.ytlab-meta-block h5{margin:0 0 8px;font-size:14px;color:var(--yt-blue);letter-spacing:.5px}
+.ytlab-meta-block ul{margin:0;padding-left:20px;font-size:15px;color:var(--yt-text)}
+.ytlab-channel-alt{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:20px}
+.ytlab-channel-alt-card{border:1px solid var(--yt-line);border-radius:16px;padding:20px;background:#fff}
+.ytlab-channel-alt-card h4{margin:0 0 6px;font-size:17px}
+.ytlab-channel-alt-card .ytlab-score-small{font-size:13px;color:var(--yt-blue);font-weight:700}
+
+.ytlab-timeline{display:grid;gap:10px}
+.ytlab-timeline li{display:flex;gap:12px;font-size:16px;background:#fff;border:1px solid var(--yt-line);border-radius:12px;padding:12px 16px}
+.ytlab-timeline b{flex:none;color:var(--yt-blue);min-width:64px}
+
+.ytlab-idea-list{list-style:decimal;padding-left:22px;display:grid;gap:8px;font-size:16px}
+
+/* ---------- responsive ---------- */
+@media (max-width:860px){
+  .ytlab-grid-3,.ytlab-plans{grid-template-columns:1fr}
+  .ytlab-grid-2,.ytlab-meta-grid,.ytlab-channel-alt{grid-template-columns:1fr}
+  .ytlab-steps{grid-template-columns:1fr 1fr}
+  .ytlab-hero{padding:36px 0 28px}
+  .ytlab-section{padding:40px 0}
+}
+@media (max-width:520px){
+  .ytlab-page{font-size:17px}
+  .ytlab-steps{grid-template-columns:1fr}
+  .ytlab-option{font-size:17px;padding:16px}
+}
