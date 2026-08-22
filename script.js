@@ -472,7 +472,7 @@ if (specialtyScroll) {
 const registeredPartners = [
   {category:0,name:'하이벨 디지털',type:'스마트폰·AI·컴퓨터 교육',status:'직영',featured:true,logo:'assets/brands/hibelle-digital.jpg'},
   {category:1,name:'하이벨 화상영어',type:'1:1 맞춤 화상영어',status:'직영',featured:true,logo:'assets/brands/hibelle-online-english.jpg'},
-  {category:2,name:'미란멜로디',type:'합창·발성·음악 교육',status:'공동 운영',featured:true,logo:'assets/brands/meeran-melody-logo.png?v=20260819-1'}
+  {category:2,name:'미란멜로디',type:'합창·발성·음악 교육',status:'공동 운영',featured:true,logo:'assets/brands/meeran-melody-logo.png?v=20260822-1'}
 ];
 Object.assign(registeredPartners[0],{nameEn:'Hibelle Digital',typeEn:'Smartphone, AI & Computer Education',statusEn:'DIRECTLY OPERATED'});
 Object.assign(registeredPartners[1],{nameEn:'Hibelle Online English',typeEn:'Personalized 1:1 Online English',statusEn:'DIRECTLY OPERATED'});
