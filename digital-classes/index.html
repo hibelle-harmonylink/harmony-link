@@ -48,7 +48,8 @@
   <script src="data.js"></script>
   <script>
     document.getElementById('categoryGrid').innerHTML = window.DIGITAL_CATEGORIES.all.map(function (c) {
-      return '<a class="dclass-card" href="category.html?id=' + c.id + '">' +
+      var href = c.id === 'youtube' ? '../youtube-start/index.html' : 'category.html?id=' + c.id;
+      return '<a class="dclass-card" href="' + href + '">' +
         '<div class="dclass-card-image"><img src="' + c.image + '" alt="' + c.title + '"></div>' +
         '<div class="dclass-card-body">' +
         '<div class="dclass-card-icon">' + c.icon + '</div>' +
