@@ -977,3 +977,18 @@ footer .footer-bottom{padding-top:11px!important}
   }
 }
 
+/* Current public program and community focus */
+.program-grid .program-card.coming-soon{display:none!important}
+.nav-community{color:var(--blue)!important;font-weight:800!important}
+.community-spotlight{padding:72px 0;background:linear-gradient(135deg,#075bb5,#073d82);color:#fff}
+.community-spotlight-wrap{display:flex;align-items:center;justify-content:space-between;gap:36px}
+.community-spotlight .eyebrow{color:#bfe0ff}
+.community-spotlight h2{margin:6px 0 12px;color:#fff;font-size:34px;line-height:1.25}
+.community-spotlight p:not(.eyebrow){margin:0;color:#d9ebff}
+.community-spotlight .btn-light{flex:0 0 auto;background:#fff;color:#075bb5}
+.event-type-layout{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.event-type-block{min-width:0}
+.event-type-grid{display:block}
+.event-type-grid .event-card{height:100%}
+@media(max-width:900px){.event-type-layout{grid-template-columns:1fr!important}.community-spotlight-wrap{align-items:flex-start;flex-direction:column}.community-spotlight h2{font-size:29px}}
+@media(max-width:600px){.community-spotlight{padding:52px 0}.community-spotlight h2{font-size:25px}.community-spotlight .btn-light{width:100%;justify-content:center}}

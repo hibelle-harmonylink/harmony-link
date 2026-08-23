@@ -111,12 +111,6 @@ if (primaryNav) {
     communityNavLink.dataset.en = 'Join Us';
     communityNavLink.textContent = '함께하기';
     freeEventsLink.before(communityNavLink);
-    const storeNavLink = document.createElement('a');
-    storeNavLink.href = '#digital-store';
-    storeNavLink.dataset.ko = '디지털 스토어';
-    storeNavLink.dataset.en = 'Digital Store';
-    storeNavLink.textContent = '디지털 스토어';
-    freeEventsLink.after(storeNavLink);
   }
 }
 
@@ -128,13 +122,6 @@ aboutSection?.insertAdjacentHTML('afterend', `
       <a class="intro-video-frame video-watch-link" href="https://www.youtube.com/watch?v=7jo7Ovnq7Ew" target="_blank" rel="noopener noreferrer" aria-label="Harmony Link 소개영상 유튜브에서 보기"><img src="https://i.ytimg.com/vi/7jo7Ovnq7Ew/maxresdefault.jpg" alt="Harmony Link 소개영상 미리보기"><span class="video-play"><b>▶</b><em data-ko="소개영상 재생" data-en="Play introduction video">소개영상 재생</em></span></a>
     </div>
   </section>`);
-
-const digitalStoreSection = document.createElement('section');
-digitalStoreSection.className = 'digital-store section';
-digitalStoreSection.id = 'digital-store';
-digitalStoreSection.innerHTML = `<div class="container digital-store-wrap reveal"><div class="store-icon" aria-hidden="true">🎨</div><div><p class="eyebrow">HARMONY LINK DIGITAL STORE</p><h2 data-ko="배움에서 탄생한 작품을 새로운 가치로 연결합니다" data-en="Connecting creations from learning with new value">배움에서 탄생한 작품을 새로운 가치로 연결합니다</h2><p data-ko="그림과 공예 작품, 디지털 창작물을 소개하고 판매하는 온라인 스토어를 준비하고 있습니다." data-en="An online store for artwork, crafts, and digital creations is coming soon.">그림과 공예 작품, 디지털 창작물을 소개하고 판매하는 온라인 스토어를 준비하고 있습니다.</p></div><span class="store-status" data-ko="오픈 준비 중" data-en="COMING SOON">오픈 준비 중</span></div>`;
-const eventsForStore = document.getElementById('events');
-if (eventsForStore) eventsForStore.after(digitalStoreSection);
 
 function connectForm(link, url) {
   link.href = url;
@@ -611,7 +598,7 @@ if (membershipSection) {
   if(promptButton){promptButton.dataset.ko='파트너 요금제 비교';promptButton.dataset.en='Compare Partner Plans';}
   const plans = membershipSection.querySelectorAll('.paid-plan');
   if(plans[0]) plans[0].innerHTML = `<span data-ko="BASIC 파트너" data-en="BASIC PARTNER">BASIC 파트너</span><h3><b>$20</b><small data-ko="/ 월" data-en="/ month">/ 월</small></h3><ul><li data-ko="업체·강사 기본 프로필 등록" data-en="Basic provider profile listing">업체·강사 기본 프로필 등록</li><li data-ko="관련 교육 카테고리에 노출" data-en="Listing in relevant education categories">관련 교육 카테고리에 노출</li><li data-ko="기관·수강 의뢰 매칭 안내" data-en="Organization and learner inquiry matching">기관·수강 의뢰 매칭 안내</li><li data-ko="프로그램 정보 월 1회 수정" data-en="One program information update per month">프로그램 정보 월 1회 수정</li><li data-ko="기본 심사 및 운영 상담" data-en="Standard review and support">기본 심사 및 운영 상담</li></ul><a href="#contact" class="btn btn-outline"><span data-ko="BASIC 입점 상담" data-en="Ask about BASIC">BASIC 입점 상담</span><b>→</b></a>`;
-  if(plans[1]) plans[1].innerHTML = `<span data-ko="PREMIUM 파트너" data-en="PREMIUM PARTNER">PREMIUM 파트너</span><h3><b>$50</b><small data-ko="/ 월" data-en="/ month">/ 월</small></h3><ul><li data-ko="BASIC 파트너의 모든 혜택" data-en="Everything in BASIC">BASIC 파트너의 모든 혜택</li><li data-ko="하이벨의 홍보 전단·배너 디자인 지원" data-en="Promotional flyer and banner design by Hibelle">하이벨의 홍보 전단·배너 디자인 지원</li><li data-ko="전문교육 섹션 프리미엄 배너 노출" data-en="Premium specialty-section placement">전문교육 섹션 프리미엄 배너 노출</li><li data-ko="입점·프로그램 심사 우선 처리" data-en="Priority provider and program review">입점·프로그램 심사 우선 처리</li><li data-ko="디지털 스토어 판매 수수료 할인" data-en="Reduced digital-store commission">디지털 스토어 판매 수수료 할인</li><li data-ko="메인·카테고리 추천 영역 우선 노출" data-en="Priority featured placement">메인·카테고리 추천 영역 우선 노출</li></ul><a href="#contact" class="btn btn-primary"><span data-ko="PREMIUM 입점 상담" data-en="Ask about PREMIUM">PREMIUM 입점 상담</span><b>→</b></a>`;
+  if(plans[1]) plans[1].innerHTML = `<span data-ko="PREMIUM 파트너" data-en="PREMIUM PARTNER">PREMIUM 파트너</span><h3><b>$50</b><small data-ko="/ 월" data-en="/ month">/ 월</small></h3><ul><li data-ko="BASIC 파트너의 모든 혜택" data-en="Everything in BASIC">BASIC 파트너의 모든 혜택</li><li data-ko="하이벨의 홍보 전단·배너 디자인 지원" data-en="Promotional flyer and banner design by Hibelle">하이벨의 홍보 전단·배너 디자인 지원</li><li data-ko="전문교육 섹션 프리미엄 배너 노출" data-en="Premium specialty-section placement">전문교육 섹션 프리미엄 배너 노출</li><li data-ko="입점·프로그램 심사 우선 처리" data-en="Priority provider and program review">입점·프로그램 심사 우선 처리</li><li data-ko="홍보 콘텐츠 우선 제작 지원" data-en="Priority promotional content support">홍보 콘텐츠 우선 제작 지원</li><li data-ko="메인·카테고리 추천 영역 우선 노출" data-en="Priority featured placement">메인·카테고리 추천 영역 우선 노출</li></ul><a href="#contact" class="btn btn-primary"><span data-ko="PREMIUM 입점 상담" data-en="Ask about PREMIUM">PREMIUM 입점 상담</span><b>→</b></a>`;
   membershipSection.insertAdjacentHTML('beforeend', `<div class="container member-portal-preview reveal visible"><div><p class="eyebrow">MEMBER COMMUNITY</p><h3 data-ko="회원 로그인과 커뮤니티 공간" data-en="Member Login & Community">회원 로그인과 커뮤니티 공간</h3><p data-ko="로그인 후 희망 프로그램을 남기고 공지와 게시판을 이용하는 회원 공간을 준비하고 있습니다. 안전한 계정 시스템 연결 후 오픈됩니다." data-en="A secure member area for program requests, notices, and community boards is being prepared.">로그인 후 희망 프로그램을 남기고 공지와 게시판을 이용하는 회원 공간을 준비하고 있습니다. 안전한 계정 시스템 연결 후 오픈됩니다.</p></div><button type="button" disabled><span data-ko="로그인·게시판 준비 중" data-en="Login & Board Coming Soon">로그인·게시판 준비 중</span></button></div>`);
   membershipSection.querySelector('.signup-layout')?.insertAdjacentHTML('afterend', `<aside class="learner-fee-notice"><b data-ko="꼭 확인해 주세요" data-en="PLEASE NOTE">꼭 확인해 주세요</b><p data-ko="무료인 것은 Harmony Link 플랫폼의 가입과 이용입니다. 프로그램별 수업료는 강사 또는 교육업체가 수강자와 직접 상담한 후 결정합니다. Harmony Link는 강사를 직접 고용·파견하는 교육기관이 아니라, 검토된 파트너와 수강자·기관을 연결하고 프로그램 정보를 안내하는 플랫폼입니다." data-en="Free access applies only to joining and using the Harmony Link platform. Tuition is discussed and determined directly between the learner and the instructor or education provider. Harmony Link does not employ or dispatch instructors; it is a platform that connects reviewed partners with learners and organizations and provides program information.">무료인 것은 Harmony Link 플랫폼의 가입과 이용입니다. 프로그램별 수업료는 강사 또는 교육업체가 수강자와 직접 상담한 후 결정합니다. Harmony Link는 강사를 직접 고용·파견하는 교육기관이 아니라, 검토된 파트너와 수강자·기관을 연결하고 프로그램 정보를 안내하는 플랫폼입니다.</p></aside>`);
 }
@@ -626,34 +613,20 @@ if (currentEventGrid) {
   const originalEventCards = [...currentEventGrid.querySelectorAll('.event-card:not(.event-coming)')];
   const originalComingCard = currentEventGrid.querySelector('.event-coming');
   currentEventGrid.classList.add('event-type-layout');
-  currentEventGrid.innerHTML = `<section class="event-type-block seminar-type"><div class="event-type-head"><span>01</span><div><p data-ko="무료 세미나" data-en="FREE SEMINARS">무료 세미나</p><small data-ko="지식과 정보를 나누는 무료 교육" data-en="Free educational seminars">지식과 정보를 나누는 무료 교육</small></div></div><div class="event-type-grid seminar-grid"></div></section><section class="event-type-block trial-type"><div class="event-type-head"><span>02</span><div><p data-ko="무료 체험" data-en="FREE TRIAL CLASSES">무료 체험</p><small data-ko="처음 경험하는 분을 위한 체험 수업" data-en="Trial sessions for first-time learners">처음 경험하는 분을 위한 체험 수업</small></div></div><div class="event-type-grid trial-grid"></div></section><section class="event-type-block paid-type"><div class="event-type-head"><span>03</span><div><p data-ko="유료 1회 수업" data-en="PAID ONE-TIME CLASSES">유료 1회 수업</p><small data-ko="정규과정 부담 없이 참여하는 단회 수업" data-en="Single paid sessions without a full-course commitment">정규과정 부담 없이 참여하는 단회 수업</small></div></div><div class="event-type-grid paid-grid"></div></section>`;
+  currentEventGrid.innerHTML = `<section class="event-type-block local-type"><div class="event-type-head"><span>01</span><div><p data-ko="지역 행사" data-en="LOCAL EVENTS">지역 행사</p><small data-ko="우리 지역에서 함께 즐기는 행사" data-en="Events happening in our community">우리 지역에서 함께 즐기는 행사</small></div></div><div class="event-type-grid local-grid"></div></section><section class="event-type-block free-type"><div class="event-type-head"><span>02</span><div><p data-ko="무료 수업" data-en="FREE CLASSES">무료 수업</p><small data-ko="부담 없이 시작하는 배움" data-en="Learning opportunities at no cost">부담 없이 시작하는 배움</small></div></div><div class="event-type-grid free-grid"></div></section><section class="event-type-block special-type"><div class="event-type-head"><span>03</span><div><p data-ko="세미나·특강" data-en="SEMINARS & TALKS">세미나·특강</p><small data-ko="새로운 정보와 영감을 만나는 시간" data-en="Fresh ideas, information and inspiration">새로운 정보와 영감을 만나는 시간</small></div></div><div class="event-type-grid special-grid"></div></section>`;
   const eventDateKey = card => card.dataset.eventStart || card.dataset.eventEnd || '9999-12-31';
-  const eventTarget = card => card.dataset.eventCategory === 'seminar'
-    ? currentEventGrid.querySelector('.seminar-grid')
-    : card.dataset.eventCategory === 'paid'
-      ? currentEventGrid.querySelector('.paid-grid')
-      : currentEventGrid.querySelector('.trial-grid');
+  const eventTarget = card => card.dataset.eventCategory === 'local'
+    ? currentEventGrid.querySelector('.local-grid')
+    : card.dataset.eventCategory === 'free'
+      ? currentEventGrid.querySelector('.free-grid')
+      : currentEventGrid.querySelector('.special-grid');
   originalEventCards
     .sort((a, b) => eventDateKey(a).localeCompare(eventDateKey(b)))
     .forEach(card => eventTarget(card).appendChild(card));
   if(originalComingCard){
-    originalComingCard.querySelector('.event-badge').dataset.ko='유료 수업 준비 중';
-    originalComingCard.querySelector('.event-badge').dataset.en='PAID CLASS COMING SOON';
-    originalComingCard.querySelector('h3').dataset.ko='새로운 유료 1회 수업을 준비하고 있습니다';
-    originalComingCard.querySelector('h3').dataset.en='A new paid one-time class is coming soon';
-    const paidComingTitle=originalComingCard.querySelector('h3');
-    paidComingTitle.removeAttribute('data-ko');
-    paidComingTitle.removeAttribute('data-en');
-    paidComingTitle.innerHTML='<span data-ko="새로운 유료 1회 수업" data-en="A new paid one-time class">새로운 유료 1회 수업</span><span class="paid-coming-line" data-ko="준비하고 있습니다" data-en="is coming soon">준비하고 있습니다</span>';
-    originalComingCard.querySelector('p').dataset.ko='관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다.';
-    originalComingCard.querySelector('p').dataset.en='Try a topic in a single paid session without committing to a regular course.';
-    const paidComingCopy=originalComingCard.querySelector('p');
-    paidComingCopy.removeAttribute('data-ko');
-    paidComingCopy.removeAttribute('data-en');
-    paidComingCopy.innerHTML='<span data-ko="관심 있는 수업을 한 번만 부담 없이<br>경험할 수 있는" data-en="Try a topic once without committing to a full course.">관심 있는 수업을 한 번만 부담 없이<br>경험할 수 있는</span><span data-ko="단회 프로그램이 공개됩니다." data-en="A paid one-time program is coming soon.">단회 프로그램이 공개됩니다.</span>';
-    currentEventGrid.querySelector('.paid-grid').appendChild(originalComingCard);
+    currentEventGrid.querySelector('.special-grid').appendChild(originalComingCard);
   } else {
-    currentEventGrid.querySelector('.paid-grid').innerHTML=`<article class="event-card event-coming"><div class="event-coming-icon">＋</div><div class="event-info"><span class="event-badge" data-ko="유료 수업 준비 중" data-en="PAID CLASS COMING SOON">유료 수업 준비 중</span><h3><span data-ko="새로운 유료 1회 수업" data-en="A new paid one-time class">새로운 유료 1회 수업</span><br><span data-ko="준비하고 있습니다" data-en="is coming soon">준비하고 있습니다</span></h3><p data-ko="관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다." data-en="Try a topic in a single paid session without committing to a regular course.">관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다.</p></div></article>`;
+    currentEventGrid.querySelector('.special-grid').innerHTML=`<article class="event-card event-coming"><div class="event-coming-icon">✦</div><div class="event-info"><span class="event-badge" data-ko="세미나·특강" data-en="SEMINARS & TALKS">세미나·특강</span><h3 data-ko="새로운 세미나와 특별 강좌 소식을 준비하고 있습니다" data-en="New seminars and special classes are on the way">새로운 세미나와 특별 강좌 소식을 준비하고 있습니다</h3><p data-ko="일정이 확정되는 즉시 이곳과 앱에서 가장 먼저 안내해 드립니다." data-en="Confirmed dates will be announced here and in the app first.">일정이 확정되는 즉시 이곳과 앱에서 가장 먼저 안내해 드립니다.</p></div></article>`;
   }
   const datedCards = originalEventCards.filter(card => card.dataset.eventEnd);
   // Any event address written in the location row automatically receives a Google Maps link.
@@ -675,7 +648,7 @@ if (currentEventGrid) {
     mapLink.textContent = currentLanguage === 'en' ? mapLink.dataset.en : mapLink.dataset.ko;
     locationCopy.appendChild(mapLink);
   });
-  currentEventGrid.insertAdjacentHTML('afterend', `<section class="past-events"><div class="past-events-head"><div><p class="eyebrow">PAST EVENTS</p><h3 data-ko="지난 무료강좌" data-en="Past Free Events">지난 무료강좌</h3></div><button class="past-events-toggle" type="button" aria-expanded="false"><span data-ko="지난 강좌 보기" data-en="View Past Events">지난 강좌 보기</span><b>＋</b></button></div><div class="past-event-grid" hidden></div><p class="past-events-empty" data-ko="아직 지난 강좌가 없습니다." data-en="There are no past events yet.">아직 지난 강좌가 없습니다.</p></section>`);
+  currentEventGrid.insertAdjacentHTML('afterend', `<section class="past-events"><div class="past-events-head"><div><p class="eyebrow">PAST EVENTS</p><h3 data-ko="지난 강좌·행사" data-en="Past Classes & Events">지난 강좌·행사</h3></div><button class="past-events-toggle" type="button" aria-expanded="false"><span data-ko="지난 일정 보기" data-en="View Past Events">지난 일정 보기</span><b>＋</b></button></div><div class="past-event-grid" hidden></div><p class="past-events-empty" data-ko="아직 지난 일정이 없습니다." data-en="There are no past events yet.">아직 지난 일정이 없습니다.</p></section>`);
   const pastSection = currentEventGrid.nextElementSibling;
   const pastGrid = pastSection.querySelector('.past-event-grid');
   const localDateKey = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -685,10 +658,10 @@ if (currentEventGrid) {
     .sort((a, b) => b.dataset.eventEnd.localeCompare(a.dataset.eventEnd))
     .forEach(card => pastGrid.appendChild(card));
   const comingCard = ({badgeKo,badgeEn,titleKo,titleEn,titleLineKo,titleLineEn,copyKo,copyEn}) => `<article class="event-card event-coming"><div class="event-coming-icon">＋</div><span class="event-badge" data-ko="${badgeKo}" data-en="${badgeEn}">${badgeKo}</span><h3><span data-ko="${titleKo}" data-en="${titleEn}">${titleKo}</span><span class="paid-coming-line" data-ko="${titleLineKo}" data-en="${titleLineEn}">${titleLineKo}</span></h3><p data-ko="${copyKo}" data-en="${copyEn}">${copyKo}</p></article>`;
-  const seminarGrid = currentEventGrid.querySelector('.seminar-grid');
-  const trialGrid = currentEventGrid.querySelector('.trial-grid');
-  if (!seminarGrid.querySelector('.event-card')) seminarGrid.innerHTML = comingCard({badgeKo:'무료 세미나 준비 중',badgeEn:'FREE SEMINAR COMING SOON',titleKo:'새로운 무료 세미나를',titleEn:'A new free seminar',titleLineKo:'준비하고 있습니다',titleLineEn:'is coming soon',copyKo:'새로운 일정과 장소가 확정되면 안내해 드립니다.',copyEn:'A new date and location will be announced here.'});
-  if (!trialGrid.querySelector('.event-card')) trialGrid.innerHTML = comingCard({badgeKo:'무료 체험 준비 중',badgeEn:'FREE TRIAL COMING SOON',titleKo:'새로운 무료 체험을',titleEn:'A new free trial class',titleLineKo:'준비하고 있습니다',titleLineEn:'is coming soon',copyKo:'새로운 체험 프로그램이 확정되면 안내해 드립니다.',copyEn:'A new trial program will be announced here.'});
+  const localGrid = currentEventGrid.querySelector('.local-grid');
+  const freeGrid = currentEventGrid.querySelector('.free-grid');
+  if (!localGrid.querySelector('.event-card')) localGrid.innerHTML = comingCard({badgeKo:'지역 행사',badgeEn:'LOCAL EVENTS',titleKo:'새로운 지역 행사를',titleEn:'A new local event',titleLineKo:'준비하고 있습니다',titleLineEn:'is coming soon',copyKo:'새로운 일정과 장소가 확정되면 안내해 드립니다.',copyEn:'A new date and location will be announced here.'});
+  if (!freeGrid.querySelector('.event-card')) freeGrid.innerHTML = comingCard({badgeKo:'무료 수업',badgeEn:'FREE CLASSES',titleKo:'새로운 무료 수업을',titleEn:'A new free class',titleLineKo:'준비하고 있습니다',titleLineEn:'is coming soon',copyKo:'새로운 수업 일정이 확정되면 안내해 드립니다.',copyEn:'A new class will be announced here.'});
   pastSection.querySelector('.past-events-empty').hidden = pastGrid.children.length > 0;
   const toggle = pastSection.querySelector('.past-events-toggle');
   toggle.addEventListener('click', () => {
