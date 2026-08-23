@@ -18,6 +18,27 @@
     '<p>' + category.shortDesc + '</p>';
 
   document.getElementById('programList').innerHTML = category.programs.map(function (program) {
+    if (program.highlight) {
+      var ctaHtml = '';
+      if (program.cta) {
+        var target = program.cta.type === 'form' ? ' target="_blank" rel="noopener noreferrer"' : '';
+        ctaHtml += '<a class="dclass-btn dclass-btn-primary" href="' + program.cta.url + '"' + target + '>' + program.cta.label + '</a>';
+      }
+      if (program.secondaryCta) {
+        var target2 = program.secondaryCta.type === 'form' ? ' target="_blank" rel="noopener noreferrer"' : '';
+        ctaHtml += '<a class="dclass-btn dclass-btn-outline" href="' + program.secondaryCta.url + '"' + target2 + '>' + program.secondaryCta.label + '</a>';
+      }
+      return '' +
+        '<article class="dclass-highlight-band">' +
+        (program.badge ? '<span class="dclass-highlight-badge">' + program.badge + '</span>' : '') +
+        '<h3>' + program.tagline + '</h3>' +
+        '<p class="intro">' + program.intro + '</p>' +
+        (program.disclaimer ? '<p class="dclass-highlight-disclaimer">' + program.disclaimer + '</p>' : '') +
+        '<div class="dclass-btn-row">' + ctaHtml + '</div>' +
+        '<a class="dclass-highlight-more" href="program.html?category=' + category.id + '&program=' + program.id + '">' + program.title + ' 커리큘럼 자세히 보기 →</a>' +
+        '</article>';
+    }
+
     var badgeHtml = program.status === 'comingSoon'
       ? '<span class="dclass-comingsoon-badge">준비 중 · COMING SOON</span>'
       : (program.badge ? '<span class="dclass-program-badge">' + program.badge + '</span>' : '');

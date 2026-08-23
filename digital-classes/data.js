@@ -11,7 +11,7 @@ window.DIGITAL_CATEGORIES = (function () {
       id: 'device',
       title: '기기활용',
       icon: '📱',
-      image: '../assets/digital/device-class.png',
+      image: '../assets/digital-classes/device-class.png',
       shortDesc: '스마트폰부터 컴퓨터까지, 기초부터 차근차근 익히는 기기 활용 수업',
       accent: '#1155d9',
       programs: [
@@ -36,7 +36,7 @@ window.DIGITAL_CATEGORIES = (function () {
       id: 'documents',
       title: '문서작성',
       icon: '📝',
-      image: '../assets/digital/document-class.png',
+      image: '../assets/digital-classes/document-class.png',
       shortDesc: '한글 입력부터 표 만들기, 저장과 공유까지 실습으로 배우는 문서작성',
       accent: '#0c4a9e',
       programs: [
@@ -64,7 +64,7 @@ window.DIGITAL_CATEGORIES = (function () {
       id: 'design',
       title: '디자인',
       icon: '🎨',
-      image: '../assets/digital/design-class.png',
+      image: '../assets/digital-classes/design-class.png',
       shortDesc: 'Canva로 쉽고 예쁘게! 전단지부터 SNS 이미지까지 직접 만드는 디자인 수업',
       accent: '#7c3aed',
       programs: [
@@ -90,7 +90,7 @@ window.DIGITAL_CATEGORIES = (function () {
       id: 'youtube',
       title: '유튜브',
       icon: '▶️',
-      image: '../assets/digital/youtube-class.png',
+      image: '../assets/digital-classes/youtube-class.png',
       shortDesc: '기본 활용부터 나만의 콘텐츠 제작까지, 목적에 맞는 유튜브 프로그램',
       accent: '#e02424',
       programs: [
@@ -116,16 +116,17 @@ window.DIGITAL_CATEGORIES = (function () {
         {
           id: 'youtube-business',
           title: '유튜브 콘텐츠 비즈니스 프로그램',
-          tagline: '나의 지식 · 경험 · 정보를 콘텐츠로 만드는 실행 프로그램',
-          intro: '유튜브 활용반을 넘어, 자신의 지식과 경험을 실제 채널과 콘텐츠로 연결하고 싶은 분을 위한 프로그램입니다.',
+          tagline: '유튜브로 콘텐츠를 만들고 수익화까지 배우고 싶다면?',
+          intro: '유튜브 활용반을 넘어, 자신의 지식과 경험을 실제 채널과 콘텐츠로 연결하고 싶은 분을 위한 HarmonyLink YouTube Income Lab 프로그램입니다.',
           badge: '콘텐츠 비즈니스 과정',
           status: 'ready',
+          highlight: true,
           steps: [
             { title: '프로그램에서 다루는 내용', items: ['채널 주제 설정', '콘텐츠 아이디어 찾기', '채널 개설 및 기본 세팅', 'AI를 활용한 콘텐츠 기획', 'Canva 활용', '영상 제작 및 편집 기초', 'Shorts 제작', '업로드 루틴', '채널 성장 기초', '콘텐츠를 서비스 · 교육 · 상담 등 자신의 사업과 연결하는 방법'] }
           ],
           audience: ['본인의 지식 · 경험 · 전문성을 콘텐츠로 연결하고 싶은 분', 'AI를 활용해 콘텐츠 제작 시간을 줄이고 싶은 분', '얼굴을 공개하지 않고 채널을 운영하고 싶은 분', '소상공인, 강사, 자영업자 등 콘텐츠로 서비스를 알리고 싶은 분'],
           disclaimer: '"쉽게 돈 벌기", "수익 보장", "월 ○○ 수익" 같은 표현은 사용하지 않습니다. 유튜브 수익은 채널 주제, 콘텐츠 품질, 시청자 반응, 실행 지속성, YouTube 정책 등에 따라 달라집니다.',
-          cta: { type: 'external', url: '../youtube-start/index.html', label: '프로그램 알아보기' },
+          cta: { type: 'external', url: '../youtube-start/index.html', label: '유튜브 콘텐츠 비즈니스 프로그램 알아보기' },
           secondaryCta: { type: 'external', url: '../youtube-start/assessment.html', label: '무료 진단 시작하기' }
         }
       ]
@@ -134,7 +135,7 @@ window.DIGITAL_CATEGORIES = (function () {
       id: 'apps',
       title: 'SNS·실생활 앱',
       icon: '💬',
-      image: '../assets/digital/apps-class.png',
+      image: '../assets/digital-classes/apps-class.png',
       shortDesc: '카카오톡부터 모바일 뱅킹까지, 생활에 꼭 필요한 앱을 배우는 수업',
       accent: '#0f9d78',
       programs: [
@@ -162,21 +163,38 @@ window.DIGITAL_CATEGORIES = (function () {
       id: 'ai',
       title: 'AI',
       icon: '🤖',
-      image: '../assets/digital/ai-class.png',
+      image: '../assets/digital-classes/ai-class.png',
       shortDesc: 'AI 첫걸음부터 바이브코딩, 홈페이지 제작까지 - 계속 늘어나는 AI 프로그램',
       accent: '#4338ca',
       programs: [
         {
           id: 'ai-start',
-          title: 'AI 시작하기 (기초반)',
-          tagline: '생활과 업무 속에서 AI를 자신 있게 활용하는 첫걸음',
-          intro: 'AI가 낯선 분도 ChatGPT 같은 도구를 직접 사용해보며 기초부터 차근차근 익히는 수업입니다.',
+          title: 'AI 활용반',
+          tagline: 'AI를 알면 생각이 넓어지고, 일상이 쉬워집니다!',
+          intro: 'ChatGPT를 비롯한 다양한 AI 도구를 쉽고 안전하게 배우고, 글쓰기, 검색, 이미지, 문서작성, 아이디어 정리까지 실생활에 바로 활용하는 수업입니다.',
           status: 'ready',
           steps: [
-            { title: '기초 과정', items: ['AI란 무엇인지 이해', 'ChatGPT 시작하기', '질문하는 방법', '글쓰기 및 요약', '검색과 정보 정리', '이미지 활용', '생활 속 AI 활용', '업무 속 AI 활용'] }
+            { title: 'AI 기초 이해', items: ['AI란 무엇인가?', 'AI의 원리와 종류', '생활 속 AI 활용 사례', '안전하게 사용하는 방법'] },
+            { title: 'ChatGPT 활용', items: ['ChatGPT 시작하기', '질문 잘하는 방법', '글쓰기 및 요약하기', '번역, 정보 검색하기', '아이디어 정리하기'] },
+            { title: '문서 · 업무 활용', items: ['보고서 초안 작성', '이메일 작성 도우미', '회의록 및 요약 정리', '표 및 목록 만들기', '문서 수정 및 교정하기'] },
+            { title: '이미지 · 디자인 활용', items: ['AI 이미지 생성', '그림 스타일 변경', '간단한 디자인 만들기', '썸네일 · 카드뉴스 제작', '무료 도구 활용법'] },
+            { title: '실생활 AI 활용', items: ['일정 · 계획 세우기', '여행 · 맛집 추천 받기', '건강 · 운동 정보 찾기', '학습 · 자기계발 도우미', '다양한 AI 앱 소개'] },
+            { title: '나만의 AI 활용 습관', items: ['나에게 맞는 AI 찾기', '반복 작업 자동화', '시간 절약 노하우', 'AI와 함께 성장하기', '책임감 있게 사용하기'] }
           ],
-          audience: ['AI를 처음 접해보는 분', 'ChatGPT를 생활 속에서 활용하고 싶은 분', '업무에 AI를 적용해보고 싶은 분'],
+          audience: ['AI가 무엇인지 궁금한 분', 'ChatGPT를 사용해보고 싶은 분', '글쓰기나 문서 작성이 어려운 분', '업무 효율을 높이고 싶은 분', '이미지 만들기나 디자인이 필요한 분', '최신 기술을 배우고 싶은 모든 분'],
+          note: '직접 AI 도구를 사용하면서 배우는 실습 중심 수업입니다. 개인의 수준에 맞춰 천천히 진행합니다.',
           cta: { type: 'form', url: DIGITAL_FORM_URL, label: '수업 문의 및 신청' }
+        },
+        {
+          id: 'ai-chatgpt',
+          title: 'ChatGPT 활용',
+          tagline: '질문하는 방법부터 실전 업무 활용까지, ChatGPT 집중반',
+          intro: 'AI 활용반의 ChatGPT 파트를 더 깊이 있게 다루는 심화 프로그램입니다.',
+          status: 'comingSoon',
+          steps: [
+            { title: '과정 구성 (예정)', items: ['질문(프롬프트) 설계 방법', '글쓰기 · 요약 · 번역 심화', '이미지 · 음성 기능 활용', '업무별 활용 템플릿'] }
+          ],
+          audience: ['ChatGPT를 더 능숙하게 쓰고 싶은 분', '업무에 바로 적용할 템플릿이 필요한 분']
         },
         {
           id: 'ai-vibecoding',
@@ -199,6 +217,17 @@ window.DIGITAL_CATEGORIES = (function () {
             { title: '과정 구성 (예정)', items: ['AI를 활용한 홈페이지 기획', '메뉴와 페이지 구성', '디자인 방향 정하기', '콘텐츠 작성', '홈페이지 제작', '수정 및 관리', '기본 배포 이해'] }
           ],
           audience: ['개인 · 소상공인 홈페이지를 직접 만들어보고 싶은 분', '홈페이지 제작 과정을 이해하고 싶은 분']
+        },
+        {
+          id: 'ai-business',
+          title: '업무용 AI 활용',
+          tagline: '보고서, 이메일, 회의록까지 - 업무 생산성을 높이는 AI',
+          intro: '직장과 업무 현장에서 AI를 활용해 반복 업무 시간을 줄이는 방법을 다루는 프로그램입니다.',
+          status: 'comingSoon',
+          steps: [
+            { title: '과정 구성 (예정)', items: ['업무 문서 자동 초안 작성', '회의록 · 보고서 요약', '데이터 정리와 표 작성', '반복 업무 자동화 아이디어'] }
+          ],
+          audience: ['업무에 AI를 본격적으로 적용하고 싶은 분', '문서 작업 시간을 줄이고 싶은 분']
         }
       ]
     }
