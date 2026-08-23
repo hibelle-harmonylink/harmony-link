@@ -52,4 +52,14 @@
     }
   }
   document.getElementById('ctaArea').innerHTML = ctaHtml;
+
+  var upcoming = category.programs.filter(function (p) { return p.status === 'comingSoon' && p.id !== program.id; });
+  var upcomingEl = document.getElementById('upcomingArea');
+  if (upcomingEl) {
+    upcomingEl.innerHTML = upcoming.length
+      ? '<div class="dclass-note"><b>세부 프로그램은 순차적으로 추가됩니다.</b><ul style="margin:10px 0 0;padding-left:20px">' +
+        upcoming.map(function (p) { return '<li>' + p.title + ' <span style="color:var(--dc-muted)">(준비 중)</span></li>'; }).join('') +
+        '</ul></div>'
+      : '';
+  }
 })();
