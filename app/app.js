@@ -67,7 +67,8 @@ function eventCard(item){
   const badge=language==="ko"?item.badgeKo:item.badgeEn;
   const zoomLabel=language==="ko"?"이미지 클릭 시 크게 보기":"Tap image to enlarge";
   const category=language==="ko"?(item.categoryKo||badge):(item.categoryEn||badge);
-  return `<article class="event-card"><button class="event-image-open" type="button" data-event-image="${item.image}" data-event-alt="${title}" aria-label="${zoomLabel}"><img src="${item.image}" alt="${title}"><span>${zoomLabel}</span></button><div><span class="badge${item.badgeDark?" dark":""}">${category}</span><h2>${title}</h2><p>${text}</p></div></article>`;
+  const media=item.isPlaceholder?`<div class="event-placeholder-art" aria-hidden="true">✦</div>`:`<button class="event-image-open" type="button" data-event-image="${item.image}" data-event-alt="${title}" aria-label="${zoomLabel}"><img src="${item.image}" alt="${title}"><span>${zoomLabel}</span></button>`;
+  return `<article class="event-card${item.isPlaceholder?" event-placeholder":""}">${media}<div><span class="badge${item.badgeDark?" dark":""}">${category}</span><h2>${title}</h2><p>${text}</p></div></article>`;
 }
 function renderEvents(){
   const today=new Date().toISOString().slice(0,10);
@@ -333,7 +334,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true});
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v86.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v87.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;
