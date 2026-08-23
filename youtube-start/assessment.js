@@ -2,22 +2,16 @@
   var QUESTIONS = window.YTLAB.QUESTIONS;
   var STORAGE_KEY = 'ytlabAnswers';
   var current = 0;
-  var answers = loadSaved();
+  // Every load of this page is a fresh "무료 진단 시작하기" entry point (there's no
+  // in-page resume link), so always start blank instead of restoring a previous run.
+  var answers = {};
+  try { sessionStorage.removeItem(STORAGE_KEY); } catch (e) {}
 
   var questionArea = document.getElementById('questionArea');
   var progressFill = document.getElementById('progressFill');
   var progressLabel = document.getElementById('progressLabel');
   var prevBtn = document.getElementById('prevBtn');
   var nextBtn = document.getElementById('nextBtn');
-
-  function loadSaved() {
-    try {
-      var raw = sessionStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : {};
-    } catch (e) {
-      return {};
-    }
-  }
 
   function save() {
     try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify(answers)); } catch (e) {}
