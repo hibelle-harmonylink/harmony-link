@@ -14,7 +14,8 @@ const basePrograms = [
 ];
 const sharedContent=window.HARMONY_LINK_SHARED_CONTENT||{};
 const programs=[...(sharedContent.featuredPrograms||[]),...basePrograms];
-const categoryNames={전체:"All",디지털:"Digital",언어:"Language",음악:"Music",댄스:"Dance",금융:"Finance",취미:"Art",건강:"Wellness",문화:"Culture",상담:"Counseling",여행:"Travel",직업:"Career"};
+const categoryNames={전체:"All",디지털:"Digital",언어:"Language",음악:"Music"};
+const currentBasePrograms=basePrograms.filter(program=>Object.hasOwn(categoryNames,program.category));
 const fallbackPopupNews=[
   {badgeKo:"무료강좌",badgeEn:"FREE CLASS",titleKo:"무료 원데이 클래스",titleEn:"Free One-Day Class",textKo:"관심있는 배움을 가볍게 경험해 보세요.<br>새로운 일정은 앱에서 가장 먼저 안내합니다.",textEn:"Try a new learning experience.<br>New dates are announced in the app first.",image:"../assets/events/one-day-class.jpg",actionKo:"신청하기",actionEn:"Apply",url:"https://forms.gle/8b88T3zSsfPUxu128",screen:"events"},
   {badgeKo:"지역사회 봉사",badgeEn:"COMMUNITY SUPPORT",titleKo:"무료 방문 디지털 지원",titleEn:"Free in-home digital support",textKo:"스마트폰과 디지털 기기 사용이 어려운 이웃을<br>직접 찾아가 친절하게 도와드립니다.",textEn:"Friendly volunteers visit neighbors who need help<br>using smartphones and digital devices.",image:"../assets/volunteer/digital-volunteer.png",actionKo:"신청하기",actionEn:"Apply",screen:"contact"},
@@ -65,7 +66,8 @@ function eventCard(item){
   const text=language==="ko"?item.textKo:item.textEn;
   const badge=language==="ko"?item.badgeKo:item.badgeEn;
   const zoomLabel=language==="ko"?"이미지 클릭 시 크게 보기":"Tap image to enlarge";
-  return `<article class="event-card"><button class="event-image-open" type="button" data-event-image="${item.image}" data-event-alt="${title}" aria-label="${zoomLabel}"><img src="${item.image}" alt="${title}"><span>${zoomLabel}</span></button><div><span class="badge${item.badgeDark?" dark":""}">${badge}</span><h2>${title}</h2><p>${text}</p></div></article>`;
+  const category=language==="ko"?(item.categoryKo||badge):(item.categoryEn||badge);
+  return `<article class="event-card"><button class="event-image-open" type="button" data-event-image="${item.image}" data-event-alt="${title}" aria-label="${zoomLabel}"><img src="${item.image}" alt="${title}"><span>${zoomLabel}</span></button><div><span class="badge${item.badgeDark?" dark":""}">${category}</span><h2>${title}</h2><p>${text}</p></div></article>`;
 }
 function renderEvents(){
   const today=new Date().toISOString().slice(0,10);
@@ -88,7 +90,8 @@ function renderPrograms(){
   // cards only — featured businesses (하이벨 디지털, 화상영어, 미란멜로디, and any
   // future ones with a matching category) appear once their category is picked,
   // shown together with that category's card instead of cluttering the top list.
-  const pool=(activeCategory==="전체"&&!query)?basePrograms:programs;
+  const visiblePrograms=programs.filter(program=>Object.hasOwn(categoryNames,program.category));
+  const pool=(activeCategory==="전체"&&!query)?currentBasePrograms:visiblePrograms;
   const filtered=pool.filter(p=>(activeCategory==="전체"||p.category===activeCategory)&&[p.ko,p.en,p.tagsKo,p.tagsEn].join(" ").toLowerCase().includes(query));
   $("#programList").innerHTML=filtered.map(programCard).join("");
   $("#programEmpty").hidden=filtered.length>0;
@@ -330,7 +333,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true});
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v85.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v86.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;
