@@ -18,8 +18,10 @@
   --yt-amber-bg:#fff6e5;
 }
 
-.ytlab-page{font-family:"DM Sans","Noto Sans KR",sans-serif;color:var(--yt-text);background:#fff;line-height:1.7;font-size:18px;margin:0}
+.ytlab-page{font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--yt-text);background:#fff;line-height:1.7;font-size:18px;margin:0;word-break:keep-all;overflow-wrap:break-word}
 .ytlab-page *{box-sizing:border-box}
+.ytlab-page h1,.ytlab-page h2{font-weight:700}
+.ytlab-page h3,.ytlab-page h4,.ytlab-page h5{font-weight:700}
 .ytlab-page a{color:inherit}
 .ytlab-page button,.ytlab-page input,.ytlab-page select,.ytlab-page textarea{font:inherit}
 .ytlab-container{width:min(880px,calc(100% - 40px));margin:0 auto}
@@ -85,6 +87,7 @@
 .ytlab-plan-key{font-size:13px;font-weight:800;letter-spacing:1.5px;color:var(--yt-blue);margin:0 0 6px}
 .ytlab-plan h3{font-size:20px;margin:0 0 12px}
 .ytlab-plan-price{font-size:30px;font-weight:800;color:var(--yt-navy);margin:0 0 4px}
+.ytlab-plan-price small{font-size:16px;font-weight:600;color:var(--yt-muted);margin-left:6px}
 .ytlab-plan-price-note{font-size:13px;color:var(--yt-muted);margin:0 0 18px}
 .ytlab-plan-bestfor{font-size:14px;color:var(--yt-muted);margin:0 0 18px;min-height:42px}
 .ytlab-plan ul{list-style:none;padding:0;margin:0 0 22px;flex:1}
@@ -116,7 +119,7 @@
 .ytlab-form input,.ytlab-form select,.ytlab-form textarea{width:100%;border:0;border-radius:10px;padding:16px 18px;font-size:16px;color:var(--yt-text)}
 .ytlab-form-status{min-height:22px;font-size:15px;font-weight:600}
 .ytlab-consult .ytlab-form button[type=submit]{padding:19px 24px;font-size:18px;box-shadow:0 16px 34px rgba(0,0,0,.28)}
-.ytlab-consult-info{background:var(--yt-pale);color:var(--yt-text);border-radius:18px;padding:30px 28px;align-self:stretch}
+.ytlab-consult-info{background:var(--yt-pale);color:var(--yt-text);border-radius:18px;padding:26px 28px;align-self:start;height:auto}
 .ytlab-consult-info h3{margin:0 0 18px;font-size:19px;color:var(--yt-navy)}
 .ytlab-consult-info ul{list-style:none;margin:0;padding:0;display:grid;gap:14px}
 .ytlab-consult-info li{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.6}

@@ -28,8 +28,8 @@
       '<div class="ytlab-primary-plan">' +
       '<span class="ytlab-plan-tag">1순위 추천 · ' + top.plan.key + '</span>' +
       '<h3>' + top.plan.nameKo + '</h3>' +
-      '<p class="ytlab-plan-price">' + planPriceLabel(top.plan) + '</p>' +
-      '<p class="ytlab-plan-price-note">' + YTLAB.PRICING.note + '</p>' +
+      '<p class="ytlab-plan-price">' + planPriceLabel(top.plan) + ' <small>' + top.plan.priceUnitKo + '</small></p>' +
+      '<p class="ytlab-plan-price-note">' + top.plan.priceNoteKo + '</p>' +
       (top.plan.includesNote ? '<p class="ytlab-plan-includes-note">' + top.plan.includesNote + '</p>' : '') +
       '<ul class="ytlab-fit-list" style="margin-top:6px">' +
       top.plan.includes.slice(0, 6).map(function (item) { return '<li><b>✓</b><span>' + item + '</span></li>'; }).join('') +
@@ -42,7 +42,7 @@
 
     var secondaryHtml = second ? (
       '<div class="ytlab-secondary-plan">' +
-      '<h4>2순위 대안 · ' + second.plan.key + ' — ' + second.plan.nameKo + ' (' + planPriceLabel(second.plan) + ')</h4>' +
+      '<h4>2순위 대안 · ' + second.plan.key + ' — ' + second.plan.nameKo + ' (' + planPriceLabel(second.plan) + ' ' + second.plan.priceUnitKo + ')</h4>' +
       '<ul class="ytlab-reason-list">' +
       second.reasons.slice(0, 3).map(function (r) { return '<li><b>•</b><span>' + r + '</span></li>'; }).join('') +
       '</ul>' +
@@ -128,9 +128,12 @@
       var submitBtn = form.querySelector('button[type=submit]');
       submitBtn.disabled = true;
 
+      var applicantName = document.getElementById('cName').value || '신청자';
+      form.querySelector('input[name="_subject"]').value = '[YouTube Income Lab] 무료 상담 신청 - ' + applicantName;
+
       var formData = new FormData(form);
       formData.set('접수 경로', 'YouTube Income Lab 진단 결과 페이지');
-      formData.set('접수 시각', new Date().toISOString());
+      formData.set('신청 날짜와 시간', new Date().toLocaleString('ko-KR'));
 
       fetch(YTLAB.BRAND.formsubmitEndpoint, {
         method: 'POST',
@@ -143,7 +146,7 @@
         form.reset();
       }).catch(function () {
         status.style.color = '#ffb4b4';
-        status.textContent = '전송하지 못했습니다. ' + YTLAB.BRAND.contactEmail + ' 로 직접 문의해 주세요.';
+        status.textContent = '상담 신청을 전송하지 못했습니다. 잠시 후 다시 시도해 주세요.';
       }).finally(function () {
         submitBtn.disabled = false;
       });

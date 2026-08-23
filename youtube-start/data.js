@@ -30,6 +30,8 @@ window.YTLAB = (function () {
         priceMin: 49,
         priceMax: 79,
         priceLabel: '$49 ~ $79',
+        priceUnitKo: '/ 프로그램',
+        priceNoteKo: '제안 가격 · 상담 후 최종 확정',
         bestForKo: '이제 막 시작하려는 분, 방향부터 잡고 싶은 분',
         includes: [
           '채널 주제 선정',
@@ -49,6 +51,8 @@ window.YTLAB = (function () {
         priceMin: 149,
         priceMax: 249,
         priceLabel: '$149 ~ $249',
+        priceUnitKo: '/ 프로그램',
+        priceNoteKo: '제안 가격 · 상담 후 최종 확정',
         bestForKo: '실제로 채널을 세팅하고 꾸준히 운영해보고 싶은 분',
         includesNote: 'START 프로그램 전체 포함',
         includes: [
@@ -71,6 +75,8 @@ window.YTLAB = (function () {
         priceMin: 399,
         priceMax: null,
         priceLabel: '$399~',
+        priceUnitKo: '/ 코칭 프로그램',
+        priceNoteKo: '범위와 기간에 따라 상담 후 확정',
         bestForKo: '개인 채널을 직접 진단받고 첫 영상까지 완성하고 싶은 분',
         includesNote: 'BUILD 프로그램 전체 포함',
         includes: [
