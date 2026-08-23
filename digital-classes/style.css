@@ -18,7 +18,7 @@
 
 .dclass-page{font-family:"Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:var(--dc-text);background:#fff;line-height:1.7;font-size:18px;margin:0;word-break:keep-all;overflow-wrap:break-word}
 .dclass-page *{box-sizing:border-box}
-.dclass-page a{color:inherit}
+.dclass-page a:not(.dclass-btn):not(.dclass-highlight-more){color:inherit}
 .dclass-page button,.dclass-page input,.dclass-page select,.dclass-page textarea{font:inherit}
 .dclass-page h1,.dclass-page h2,.dclass-page h3,.dclass-page h4{font-weight:700}
 .dclass-container{width:min(1100px,calc(100% - 40px));margin:0 auto}
