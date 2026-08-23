@@ -141,7 +141,8 @@
         body: formData
       }).then(function (res) {
         if (!res.ok) throw new Error('failed');
-        status.style.color = '#8be0b3';
+        status.style.color = '#ffffff';
+        status.style.fontWeight = '700';
         status.textContent = '상담 신청이 접수되었습니다. 확인 후 연락드리겠습니다.';
         form.reset();
       }).catch(function () {
