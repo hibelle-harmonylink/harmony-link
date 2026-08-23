@@ -21,12 +21,10 @@ const fallbackPopupNews=[
   {badgeKo:"파트너 모집",badgeEn:"PARTNER RECRUITMENT",titleKo:"입점 파트너 모집",titleEn:"Partner Recruitment",textKo:"전문 강사와 교육업체의 좋은 프로그램이 더 많은<br>사람과 만날 수 있도록 연결합니다.",textEn:"We connect trusted instructors and education providers<br>with more learners and organizations.",image:"../assets/partners/partner-recruitment.png",actionKo:"문의하기",actionEn:"Contact us",screen:"contact"}
 ];
 const popupNews=sharedContent.promotions?.length?sharedContent.promotions:fallbackPopupNews;
-// TODO: replace these placeholder dates (relative to today, so they never show as
-// incorrectly expired) with the real class dates once confirmed.
-const daysFromNow=n=>new Date(Date.now()+n*86400000).toISOString().slice(0,10);
 const events=(sharedContent.events?.length?sharedContent.events:[
-  {id:"one-day-class",date:daysFromNow(20),badgeKo:"참가비 무료",badgeEn:"FREE",titleKo:"무료 원데이 클래스",titleEn:"Free One-Day Class",textKo:"관심 분야를 부담 없이 경험해 보세요. 새 일정은 앱에서 가장 먼저 안내합니다.",textEn:"Try a new topic with no commitment. New dates will appear here first.",image:"../assets/events/one-day-class.jpg"},
-  {id:"finance-ai-seminar",date:daysFromNow(35),badgeKo:"특별 세미나",badgeEn:"SPECIAL SEMINAR",badgeDark:true,titleKo:"생활 금융 × AI",titleEn:"Everyday Finance × AI",textKo:"실생활에 바로 쓰는 금융 정보와 AI 활용법을 함께 배웁니다.",textEn:"Learn practical financial information and useful AI skills together.",image:"../assets/events/finance-ai-seminar.jpg"}
+  {id:"free-music-class",date:"2026-08-22",endDate:"2026-11-22",badgeKo:"무료 체험",badgeEn:"FREE TRIAL",titleKo:"3개월 무료 음악 클래스",titleEn:"Three-Month Free Music Class",textKo:"매주 토요일 오전 10시, 할렐루야 교회에서 진행합니다.",textEn:"Every Saturday at 10 AM at Hallelujah Church.",image:"../assets/events/free-music-class-20260822.png"},
+  {id:"one-day-class",date:"2026-08-01",endDate:"2026-08-01",badgeKo:"지난 무료 체험",badgeEn:"PAST FREE TRIAL",titleKo:"음악과 디지털 1일 체험 클래스",titleEn:"Music & Digital One-Day Experience",textKo:"2026년 8월 1일 진행된 무료 체험 클래스입니다.",textEn:"A free trial class held on August 1, 2026.",image:"../assets/events/one-day-class.jpg"},
+  {id:"finance-ai-seminar",date:"2026-07-10",endDate:"2026-07-24",badgeKo:"지난 무료 세미나",badgeEn:"PAST FREE SEMINAR",badgeDark:true,titleKo:"재정과 AI의 협력, 더 나은 미래 설계",titleEn:"Finance and AI: Designing a Better Future",textKo:"2026년 7월에 진행된 무료 세미나입니다.",textEn:"A free seminar held in July 2026.",image:"../assets/events/finance-ai-seminar.jpg"}
 ]);
 let language=localStorage.getItem("hl-language")||"ko";
 let activeCategory="전체";
@@ -57,18 +55,23 @@ function renderPartners(){
   const container=$("#partnerPrograms");
   if(!container)return;
   const partners=(sharedContent.promotions||[]).filter(item=>item.kind==="advertising"||item.kind==="community");
-  container.innerHTML=partners.map(item=>`<a class="program-mini" href="${item.url}" target="_blank" rel="noopener noreferrer"><div class="program-art" style="background:#eef5ff"><img src="${item.image}" alt=""></div><div><h3>${language==="ko"?item.titleKo:item.titleEn}</h3><p>${language==="ko"?item.badgeKo:item.badgeEn}</p></div></a>`).join("");
+  container.innerHTML=partners.map(item=>{
+    const isYura=item.image?.includes("highline-hl-symbol");
+    return `<a class="program-mini" href="${item.url}" target="_blank" rel="noopener noreferrer"><div class="program-art${isYura?" yura-mini-logo":""}" style="background:#eef5ff">${isYura?"":`<img src="${item.image}" alt="">`}</div><div><h3>${language==="ko"?item.titleKo:item.titleEn}</h3><p>${language==="ko"?item.badgeKo:item.badgeEn}</p></div></a>`;
+  }).join("");
 }
 function eventCard(item){
   const title=language==="ko"?item.titleKo:item.titleEn;
   const text=language==="ko"?item.textKo:item.textEn;
   const badge=language==="ko"?item.badgeKo:item.badgeEn;
-  return `<article class="event-card"><img src="${item.image}" alt="${title}"><div><span class="badge${item.badgeDark?" dark":""}">${badge}</span><h2>${title}</h2><p>${text}</p></div></article>`;
+  const zoomLabel=language==="ko"?"이미지 클릭 시 크게 보기":"Tap image to enlarge";
+  return `<article class="event-card"><button class="event-image-open" type="button" data-event-image="${item.image}" data-event-alt="${title}" aria-label="${zoomLabel}"><img src="${item.image}" alt="${title}"><span>${zoomLabel}</span></button><div><span class="badge${item.badgeDark?" dark":""}">${badge}</span><h2>${title}</h2><p>${text}</p></div></article>`;
 }
 function renderEvents(){
   const today=new Date().toISOString().slice(0,10);
-  const upcoming=events.filter(e=>e.date>=today).sort((a,b)=>a.date<b.date?-1:1);
-  const past=events.filter(e=>e.date<today).sort((a,b)=>a.date>b.date?-1:1);
+  const eventEnd=e=>e.endDate||e.date;
+  const upcoming=events.filter(e=>eventEnd(e)>=today).sort((a,b)=>a.date<b.date?-1:1);
+  const past=events.filter(e=>eventEnd(e)<today).sort((a,b)=>eventEnd(a)>eventEnd(b)?-1:1);
   $("#upcomingEventsList").innerHTML=upcoming.map(eventCard).join("");
   const toggle=$("#pastEventsToggle");
   toggle.hidden=past.length===0;
@@ -177,6 +180,11 @@ function toggleSaved(id){
 }
 
 document.addEventListener("click",event=>{
+  const eventImage=event.target.closest("[data-event-image]");
+  if(eventImage){
+    openImageLightbox(eventImage.dataset.eventImage,eventImage.dataset.eventAlt||"");
+    return;
+  }
   const go=event.target.closest("[data-go]");
   if(go){
     const subject=go.dataset.subject;
@@ -194,6 +202,13 @@ document.addEventListener("click",event=>{
   if(linkedProgram&&!saveButton) window.open(linkedProgram.dataset.programUrl,"_blank","noopener,noreferrer");
   const mini=event.target.closest("[data-open-program]");
   if(mini){const program=programs.find(p=>p.id===mini.dataset.openProgram);if(program.url){window.open(program.url,"_blank","noopener,noreferrer")}else{activeCategory="전체";navigate("programs");$("#programSearch").value=language==="ko"?program.ko:program.en;renderFilters();renderPrograms()}}
+});
+document.addEventListener("keydown",event=>{
+  const eventImage=event.target.closest?.("[data-event-image]");
+  if(eventImage&&(event.key==="Enter"||event.key===" ")){
+    event.preventDefault();
+    openImageLightbox(eventImage.dataset.eventImage,eventImage.dataset.eventAlt||"");
+  }
 });
 $("#programSearch").addEventListener("input",renderPrograms);
 $("#pastEventsToggle").addEventListener("click",()=>{pastEventsOpen=!pastEventsOpen;renderEvents()});
@@ -315,7 +330,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true});
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v77.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v85.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;

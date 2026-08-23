@@ -9,11 +9,11 @@
   background: #63a9e8 !important;
 }
 
-/* The Hibelle "hi" mark's second letter is a near-white tint meant to sit on a
-   deep blue background (see the main-site popup); outline it so it still reads
-   against this lighter panel instead of disappearing. */
+/* No outline needed here: the "hi" mark's near-white half already reads fine
+   against this panel's blue background, so the drop-shadow this used to carry
+   just showed up as an unwanted dark border around the logo. */
 #newsPopup.one-day-popup .news-media img {
-  filter: drop-shadow(1.5px 0 #0b1830) drop-shadow(-1.5px 0 #0b1830) drop-shadow(0 1.5px #0b1830) drop-shadow(0 -1.5px #0b1830);
+  filter: none !important;
 }
 
 #newsPopup.volunteer-popup .news-media {
@@ -404,14 +404,29 @@
 @keyframes installPulse{50%{transform:scale(1.06);box-shadow:0 0 0 9px rgba(66,153,255,.1)}}
 
 /* Installed app: membership replaces the no-longer-useful install action. */
-.member-button{display:none;height:38px;padding:0 13px;border-radius:20px;background:#061d45;color:#fff;text-decoration:none;align-items:center;font-size:12px;font-weight:800;white-space:nowrap}
-@media (display-mode:standalone){#installButton{display:none!important}.member-button{display:flex}}
+.member-button{display:flex;height:38px;padding:0 13px;border-radius:20px;background:#061d45;color:#fff;text-decoration:none;align-items:center;font-size:12px;font-weight:800;white-space:nowrap}
+#installButton{display:none!important}
+
+.events-main-title{font-size:28px!important;line-height:1.25!important;letter-spacing:-.055em!important;white-space:nowrap}
+@media(max-width:410px){.events-main-title{font-size:24px!important}}
+
+.event-card .event-image-open{display:block;position:relative;width:100%;padding:0;border:0;background:#eef5ff;cursor:zoom-in;text-align:center}
+.event-card .event-image-open img{display:block;width:100%;height:240px;object-fit:cover}
+.event-card .event-image-open span{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);padding:7px 13px;border-radius:16px;background:rgba(6,29,69,.9);color:#fff;font-size:11px;font-weight:800;white-space:nowrap;box-shadow:0 5px 16px rgba(6,29,69,.2)}
+.event-card .event-image-open:focus-visible{outline:3px solid #2d7be8;outline-offset:-3px}
 
 /* Shared featured program logos. */
 /* .program-art is a place-items:center grid, so a plain height:100% on the image doesn't resolve against its fixed height (align-items:center means the item isn't stretched) — the browser falls back to the image's intrinsic aspect ratio instead, letting it spill out of the box and overlap the title below. Absolute-position it against the box instead so it's always exactly the container's size regardless of grid alignment. */
 .program-art{position:relative;overflow:hidden}
 .program-art img{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:10px;border-radius:inherit}
 .program-mini .program-art img{padding:12px}
+
+/* Yura Kim's partner card: match the homepage/popup treatment — the HL mark on
+   its own gray tile with a caption underneath, on the same sky-blue card
+   background every other partner logo uses here. */
+.program-mini .program-art.yura-mini-logo{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.program-mini .program-art.yura-mini-logo:before{content:"";display:block;width:66px;height:66px;border-radius:9px;background:#b8b8b6 url("../assets/ads/highline-hl-symbol.png") center/cover no-repeat}
+.program-mini .program-art.yura-mini-logo:after{content:"HIGHLINE\A RESIDENTIAL";white-space:pre;text-align:center;color:#6b7684;font-size:8px;font-weight:700;letter-spacing:.05em;line-height:1.3}
 
 /* Volunteer card: one-line heading above a full-width image. */
 .app-shell #home .feature-card{grid-template-columns:1fr;padding:20px;gap:14px}
@@ -455,8 +470,8 @@ a.program-mini h3{color:inherit;text-decoration:none}
 #newsPopup[data-kind="program"] .news-media{background:#fff!important}
 #newsPopup[data-kind="program"] .news-media img{background:#fff!important}
 
-/* Yura Kim: show the brokerage name under her own name, matching the homepage popup. */
-#newsPopup .news-copy h2 small{display:block;margin-top:4px;font-size:.55em;font-weight:600;color:#3f5876}
+/* Yura Kim: show the brokerage name right beside her own name, small and inline. */
+#newsPopup .news-copy h2 small{display:inline;margin-left:6px;font-size:.5em;font-weight:600;color:#3f5876}
 
 /* AALEAC: force the long council name onto one line so the contact line below it doesn't get pushed down,
    push "지원합니다" onto its own line, and nudge the shield up instead of sitting flush on the bottom edge. */
@@ -466,9 +481,18 @@ a.program-mini h3{color:inherit;text-decoration:none}
 /* OrganicOne: the wordmark is short and wide, so center it instead of pinning it to the bottom. */
 #newsPopup[data-item="organic"] .news-media img{object-position:center!important}
 
-/* Yura Kim: reproduce the homepage's exact treatment — the HL mark on its own gray tile with a
-   HIGHLINE / RESIDENTIAL caption beneath it, instead of a plain image floating in the media area. */
-#newsPopup[data-item="yura"] .news-media{flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:12px!important;padding:0!important}
+/* OrganicOne, HOLE19, AALEAC, Jangsu: match the homepage popup, which gives these four
+   a white card instead of the default light-blue gradient (melody/yura/digital/english/
+   the PREMIUM card already match the homepage and are untouched here). */
+#newsPopup[data-item="organic"] .news-media,
+#newsPopup[data-item="hole19"] .news-media,
+#newsPopup[data-item="aaleac"] .news-media,
+#newsPopup[data-item="jangsu"] .news-media{background:#fff!important}
+
+/* Yura Kim: reproduce the homepage's exact treatment — the HL mark on its own
+   small gray tile (not a full-bleed backdrop) with a HIGHLINE / RESIDENTIAL
+   caption underneath it, on a plain white panel. */
+#newsPopup[data-item="yura"] .news-media{background:#fff!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:12px!important;padding:0!important}
 #newsPopup[data-item="yura"] .news-media img{display:none!important}
-#newsPopup[data-item="yura"] .news-media:before{content:"";display:block;width:120px;height:120px;border-radius:10px;background:#b8b8b6 url("../assets/ads/highline-hl-symbol.png") center/cover no-repeat}
-#newsPopup[data-item="yura"] .news-media:after{content:"HIGHLINE\A RESIDENTIAL";white-space:pre;text-align:center;color:#8a939f;font-size:12px;font-weight:700;letter-spacing:.08em;line-height:1.3}
+#newsPopup[data-item="yura"] .news-media:before{content:"";display:block;width:130px;height:130px;border-radius:10px;background:#b8b8b6 url("../assets/ads/highline-hl-symbol.png") center/cover no-repeat}
+#newsPopup[data-item="yura"] .news-media:after{content:"HIGHLINE\A RESIDENTIAL";white-space:pre;text-align:center;color:#6b7684;font-size:13px;font-weight:700;letter-spacing:.08em;line-height:1.4}

@@ -368,7 +368,12 @@ if (oldSpecialtyStart) {
   const specialtySection = document.createElement('section');
   specialtySection.className = 'specialty-banners section';
   specialtySection.id = 'specialty-banners';
-  specialtySection.innerHTML = `<div class="container"><div class="section-heading centered reveal"><p class="eyebrow">PREMIUM SPECIALTY PROGRAMS</p><h2 data-ko="전문 교육 프로그램" data-en="Specialty Programs">전문 교육 프로그램</h2><p data-ko="Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요." data-en="Explore specialty programs operated directly or jointly by Harmony Link.">Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요.</p></div><div class="specialty-banner-grid">${specialtyPrograms.map((program,index)=>`<article class="specialty-banner-card ${program.tone} specialty-${program.id} reveal delay-${Math.min(index,2)}"><a class="specialty-poster-preview" href="${program.image}" target="_blank" rel="noopener noreferrer" aria-label="${program.titleKo} 전단지 크게 보기"><img src="${program.image}" alt="${program.titleKo} 프로그램 전단지"><span data-ko="전단지 크게 보기 ↗" data-en="View Flyer ↗">전단지 크게 보기 ↗</span></a><div class="specialty-banner-info"><span class="specialty-operation-badge" data-ko="${program.operationKo}" data-en="${program.operationEn}">${program.operationKo}</span><h3 data-ko="${program.titleKo}" data-en="${program.titleEn}">${program.titleKo}</h3><button type="button" class="btn specialty-open" data-specialty="${program.id}"><span data-ko="프로그램 보기" data-en="View Program">프로그램 보기</span><b>↗</b></button></div></article>`).join('')}</div></div>`;
+  specialtySection.innerHTML = `<div class="container"><div class="section-heading centered reveal"><p class="eyebrow">PREMIUM SPECIALTY PROGRAMS</p><h2 data-ko="전문 교육 프로그램" data-en="Specialty Programs">전문 교육 프로그램</h2><p data-ko="Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요." data-en="Explore specialty programs operated directly or jointly by Harmony Link.">Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요.</p></div><div class="specialty-banner-grid">${specialtyPrograms.map((program,index)=>{
+    const actionHtml = program.id === 'digital'
+      ? `<a class="btn specialty-programs-link" href="digital-classes/index.html"><span data-ko="프로그램 보기" data-en="View Programs">프로그램 보기</span><b>→</b></a>`
+      : `<button type="button" class="btn specialty-open" data-specialty="${program.id}"><span data-ko="프로그램 보기" data-en="View Program">프로그램 보기</span><b>↗</b></button>`;
+    return `<article class="specialty-banner-card ${program.tone} specialty-${program.id} reveal delay-${Math.min(index,2)}"><a class="specialty-poster-preview" href="${program.image}" target="_blank" rel="noopener noreferrer" aria-label="${program.titleKo} 전단지 크게 보기"><img src="${program.image}" alt="${program.titleKo} 프로그램 전단지"><span data-ko="전단지 크게 보기 ↗" data-en="View Flyer ↗">전단지 크게 보기 ↗</span></a><div class="specialty-banner-info"><span class="specialty-operation-badge" data-ko="${program.operationKo}" data-en="${program.operationEn}">${program.operationKo}</span><h3 data-ko="${program.titleKo}" data-en="${program.titleEn}">${program.titleKo}</h3>${actionHtml}</div></article>`;
+  }).join('')}</div></div>`;
   oldSpecialtyStart.before(specialtySection);
   specialtySection.querySelectorAll('.reveal').forEach(item=>item.classList.add('visible'));
   document.querySelectorAll('#digital-why, .english-feature, .choir-feature').forEach(section=>section.remove());
@@ -472,7 +477,7 @@ if (specialtyScroll) {
 const registeredPartners = [
   {category:0,name:'하이벨 디지털',type:'스마트폰·AI·컴퓨터 교육',status:'직영',featured:true,logo:'assets/brands/hibelle-digital.jpg'},
   {category:1,name:'하이벨 화상영어',type:'1:1 맞춤 화상영어',status:'직영',featured:true,logo:'assets/brands/hibelle-online-english.jpg'},
-  {category:2,name:'미란멜로디',type:'합창·발성·음악 교육',status:'공동 운영',featured:true,logo:'assets/brands/meeran-melody-logo.png?v=20260819-1'}
+  {category:2,name:'미란멜로디',type:'합창·발성·음악 교육',status:'공동 운영',featured:true,logo:'assets/brands/meeran-melody-logo.png?v=20260822-1'}
 ];
 Object.assign(registeredPartners[0],{nameEn:'Hibelle Digital',typeEn:'Smartphone, AI & Computer Education',statusEn:'DIRECTLY OPERATED'});
 Object.assign(registeredPartners[1],{nameEn:'Hibelle Online English',typeEn:'Personalized 1:1 Online English',statusEn:'DIRECTLY OPERATED'});
@@ -622,8 +627,15 @@ if (currentEventGrid) {
   const originalComingCard = currentEventGrid.querySelector('.event-coming');
   currentEventGrid.classList.add('event-type-layout');
   currentEventGrid.innerHTML = `<section class="event-type-block seminar-type"><div class="event-type-head"><span>01</span><div><p data-ko="무료 세미나" data-en="FREE SEMINARS">무료 세미나</p><small data-ko="지식과 정보를 나누는 무료 교육" data-en="Free educational seminars">지식과 정보를 나누는 무료 교육</small></div></div><div class="event-type-grid seminar-grid"></div></section><section class="event-type-block trial-type"><div class="event-type-head"><span>02</span><div><p data-ko="무료 체험" data-en="FREE TRIAL CLASSES">무료 체험</p><small data-ko="처음 경험하는 분을 위한 체험 수업" data-en="Trial sessions for first-time learners">처음 경험하는 분을 위한 체험 수업</small></div></div><div class="event-type-grid trial-grid"></div></section><section class="event-type-block paid-type"><div class="event-type-head"><span>03</span><div><p data-ko="유료 1회 수업" data-en="PAID ONE-TIME CLASSES">유료 1회 수업</p><small data-ko="정규과정 부담 없이 참여하는 단회 수업" data-en="Single paid sessions without a full-course commitment">정규과정 부담 없이 참여하는 단회 수업</small></div></div><div class="event-type-grid paid-grid"></div></section>`;
-  if(originalEventCards[0]) currentEventGrid.querySelector('.seminar-grid').appendChild(originalEventCards[0]);
-  originalEventCards.slice(1).forEach(card => currentEventGrid.querySelector('.trial-grid').appendChild(card));
+  const eventDateKey = card => card.dataset.eventStart || card.dataset.eventEnd || '9999-12-31';
+  const eventTarget = card => card.dataset.eventCategory === 'seminar'
+    ? currentEventGrid.querySelector('.seminar-grid')
+    : card.dataset.eventCategory === 'paid'
+      ? currentEventGrid.querySelector('.paid-grid')
+      : currentEventGrid.querySelector('.trial-grid');
+  originalEventCards
+    .sort((a, b) => eventDateKey(a).localeCompare(eventDateKey(b)))
+    .forEach(card => eventTarget(card).appendChild(card));
   if(originalComingCard){
     originalComingCard.querySelector('.event-badge').dataset.ko='유료 수업 준비 중';
     originalComingCard.querySelector('.event-badge').dataset.en='PAID CLASS COMING SOON';
@@ -643,9 +655,7 @@ if (currentEventGrid) {
   } else {
     currentEventGrid.querySelector('.paid-grid').innerHTML=`<article class="event-card event-coming"><div class="event-coming-icon">＋</div><div class="event-info"><span class="event-badge" data-ko="유료 수업 준비 중" data-en="PAID CLASS COMING SOON">유료 수업 준비 중</span><h3><span data-ko="새로운 유료 1회 수업" data-en="A new paid one-time class">새로운 유료 1회 수업</span><br><span data-ko="준비하고 있습니다" data-en="is coming soon">준비하고 있습니다</span></h3><p data-ko="관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다." data-en="Try a topic in a single paid session without committing to a regular course.">관심 있는 수업을 한 번만 부담 없이 경험할 수 있는 단회 프로그램이 공개됩니다.</p></div></article>`;
   }
-  const datedCards = currentEventGrid.querySelectorAll('.event-card:not(.event-coming)');
-  const endDates = ['2026-07-24T17:00:00-04:00','2026-11-23T00:00:00-05:00','2026-08-01T13:00:00-04:00'];
-  datedCards.forEach((card,index) => card.dataset.eventEnd = endDates[index]);
+  const datedCards = originalEventCards.filter(card => card.dataset.eventEnd);
   // Any event address written in the location row automatically receives a Google Maps link.
   datedCards.forEach(card => {
     const locationRow = [...card.querySelectorAll('dl>div')].find(row => {
@@ -668,10 +678,12 @@ if (currentEventGrid) {
   currentEventGrid.insertAdjacentHTML('afterend', `<section class="past-events"><div class="past-events-head"><div><p class="eyebrow">PAST EVENTS</p><h3 data-ko="지난 무료강좌" data-en="Past Free Events">지난 무료강좌</h3></div><button class="past-events-toggle" type="button" aria-expanded="false"><span data-ko="지난 강좌 보기" data-en="View Past Events">지난 강좌 보기</span><b>＋</b></button></div><div class="past-event-grid" hidden></div><p class="past-events-empty" data-ko="아직 지난 강좌가 없습니다." data-en="There are no past events yet.">아직 지난 강좌가 없습니다.</p></section>`);
   const pastSection = currentEventGrid.nextElementSibling;
   const pastGrid = pastSection.querySelector('.past-event-grid');
-  const today = new Date();
-  datedCards.forEach(card => {
-    if (today > new Date(card.dataset.eventEnd)) pastGrid.appendChild(card);
-  });
+  const localDateKey = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  const todayKey = localDateKey(new Date());
+  datedCards
+    .filter(card => card.dataset.eventEnd < todayKey)
+    .sort((a, b) => b.dataset.eventEnd.localeCompare(a.dataset.eventEnd))
+    .forEach(card => pastGrid.appendChild(card));
   const comingCard = ({badgeKo,badgeEn,titleKo,titleEn,titleLineKo,titleLineEn,copyKo,copyEn}) => `<article class="event-card event-coming"><div class="event-coming-icon">＋</div><span class="event-badge" data-ko="${badgeKo}" data-en="${badgeEn}">${badgeKo}</span><h3><span data-ko="${titleKo}" data-en="${titleEn}">${titleKo}</span><span class="paid-coming-line" data-ko="${titleLineKo}" data-en="${titleLineEn}">${titleLineKo}</span></h3><p data-ko="${copyKo}" data-en="${copyEn}">${copyKo}</p></article>`;
   const seminarGrid = currentEventGrid.querySelector('.seminar-grid');
   const trialGrid = currentEventGrid.querySelector('.trial-grid');
@@ -1096,7 +1108,7 @@ restartPromotionTimer();
 document.querySelectorAll('[data-ad-room]').forEach(button=>button.addEventListener('click',()=>{
   const room=adRooms[button.dataset.adRoom];
   adDirectoryModal.querySelector('h2').textContent=currentLanguage==='en'?room.en:room.ko;
-  const registeredCards=room.items.map(item=>{const english=currentLanguage==='en';const displayName=english?(item.displayNameEn||item.name):(item.displayNameKo||item.name);const logoHint=english?'Click logo to enlarge':'로고 클릭 · 배너 크게 보기';const chatLabel=english?(item.primaryLabelEn||(item.name==='OrganicOne'?'Instagram ↗':'Open Kakao Chat ↗')):(item.primaryLabelKo||(item.name==='OrganicOne'?'인스타그램 ↗':'오픈카톡 상담 ↗'));const pageLabel=english?(item.secondaryLabelEn||(item.name==='OrganicOne'?'Official Website ↗':'Broker Website ↗')):(item.secondaryLabelKo||(item.name==='OrganicOne'?'공식 홈페이지 ↗':'브로커 페이지 ↗'));const galleryImages=item.banners||[item.bannerEn||item.banner||item.image,item.secondaryBanner].filter(Boolean);return `<article class="ad-partner-card ${english?'is-english':'is-korean'}">${item.imageOnly?`<button type="button" class="ad-partner-image ad-image-expand" data-images="${galleryImages.join('|')}" data-alt="${item.name} advertising image"><img src="${item.image}" alt="${item.name} logo"><span>${logoHint}</span></button>`:`<div class="ad-partner-image aaleac-logo-wrap"${item.banner?` data-banner="${item.banner}"`:''}><img src="${item.image}" alt="${displayName} logo">${item.banner?`<span class="ad-partner-banner-hint">${logoHint}</span>`:''}</div>`}<div class="ad-partner-copy"><span>${room.label}</span>${item.imageOnly?`<h3>${displayName}</h3>`:`<a class="ad-partner-name" href="${item.url}" target="_blank" rel="noopener noreferrer"><h3>${displayName}</h3></a>`}<p>${english?(item.copyEn||'Click the logo for a larger view, or use the links below.'):(item.copy)}</p>${item.imageOnly?`<div class="ad-partner-actions"><a href="${item.chatUrl}" ${item.chatUrl?.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}>${chatLabel}</a><a href="${item.brokerUrl}" target="_blank" rel="noopener noreferrer">${pageLabel}</a></div>`:''}</div></article>`;}).join('');
+  const registeredCards=room.items.map(item=>{const english=currentLanguage==='en';const displayName=english?(item.displayNameEn||item.name):(item.displayNameKo||item.name);const logoHint=english?'Click logo to enlarge':'로고 클릭 · 배너 크게 보기';const chatLabel=english?(item.primaryLabelEn||(item.name==='OrganicOne'?'Instagram ↗':'Open Kakao Chat ↗')):(item.primaryLabelKo||(item.name==='OrganicOne'?'인스타그램 ↗':'오픈카톡 상담 ↗'));const pageLabel=english?(item.secondaryLabelEn||(item.name==='OrganicOne'?'Official Website ↗':'Broker Website ↗')):(item.secondaryLabelKo||(item.name==='OrganicOne'?'공식 홈페이지 ↗':'브로커 페이지 ↗'));const galleryImages=item.banners||[item.bannerEn||item.banner||item.image,item.secondaryBanner].filter(Boolean);return `<article class="ad-partner-card ${english?'is-english':'is-korean'}">${item.imageOnly?`<button type="button" class="ad-partner-image ad-image-expand${item.name.includes('Yura Kim')?' yura-logo-wrap':''}" data-images="${galleryImages.join('|')}" data-alt="${item.name} advertising image"><img src="${item.image}" alt="${item.name} logo"><span>${logoHint}</span></button>`:`<div class="ad-partner-image aaleac-logo-wrap"${item.banner?` data-banner="${item.banner}"`:''}><img src="${item.image}" alt="${displayName} logo">${item.banner?`<span class="ad-partner-banner-hint">${logoHint}</span>`:''}</div>`}<div class="ad-partner-copy"><span>${room.label}</span>${item.imageOnly?`<h3>${displayName}</h3>`:`<a class="ad-partner-name" href="${item.url}" target="_blank" rel="noopener noreferrer"><h3>${displayName}</h3></a>`}<p>${english?(item.copyEn||'Click the logo for a larger view, or use the links below.'):(item.copy)}</p>${item.imageOnly?`<div class="ad-partner-actions"><a href="${item.chatUrl}" ${item.chatUrl?.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}>${chatLabel}</a><a href="${item.brokerUrl}" target="_blank" rel="noopener noreferrer">${pageLabel}</a></div>`:''}</div></article>`;}).join('');
   const emptySlots=Array.from({length:Math.max(0,room.slots-room.items.length)},(_,index)=>`<article class="ad-slot-card"><div class="ad-slot-visual"><b>＋</b><small>1600 × 900</small></div><div><span>AVAILABLE SPACE ${String(room.items.length+index+1).padStart(2,'0')}</span><h3 data-ko="새 업체 등록 공간" data-en="Available listing space">새 업체 등록 공간</h3><p data-ko="새로운 업체가 등록되면 이 자리에 배너와 업체명이 표시됩니다." data-en="A new business banner and name will appear here after registration.">새로운 업체가 등록되면 이 자리에 배너와 업체명이 표시됩니다.</p></div></article>`).join('');
   adDirectoryModal.querySelector('.ad-directory-list').innerHTML=registeredCards+emptySlots;
   adDirectoryModal.querySelectorAll('.ad-partner-card').forEach((card,index)=>{const item=room.items[index];if(item&&!item.imageOnly&&item.url){const isJangsu=item.name==='Jangsu Daycare';const isAaleac=item.name==='AALEAC';const actionHref=isJangsu?'tel:+17187990133':item.url;const labelKo=isJangsu?'전화 바로걸기 ↗':isAaleac?'업체 바로가기 ↗':'공식 홈페이지 ↗';const labelEn=isJangsu?'Call Now ↗':isAaleac?'Visit Business ↗':'Official Website ↗';const actions=document.createElement('div');actions.className='ad-partner-actions';actions.innerHTML=`<a href="${actionHref}" ${isJangsu?'':'target="_blank" rel="noopener noreferrer"'} data-ko="${labelKo}" data-en="${labelEn}">${currentLanguage==='en'?labelEn:labelKo}</a>`;card.querySelector('.ad-partner-copy')?.appendChild(actions);}});
@@ -1189,19 +1201,6 @@ document.querySelectorAll('.contact-form-open').forEach(button => button.addEven
 }));
 
 // Partner-only resource library. Available files download immediately; planned files are clearly labeled.
-// Dated seminars/classes are sorted chronologically and hidden at midnight after their final date.
-const datedEventGrid=document.querySelector('#events .event-grid');
-if(datedEventGrid){
-  const eventRules=[
-    {image:'finance-ai-seminar.jpg',end:'2026-07-25T00:00:00-04:00'},
-    {image:'free-music-class-20260822.png',end:'2026-11-23T00:00:00-05:00'},
-    {image:'one-day-class.jpg',end:'2026-08-02T00:00:00-04:00'}
-  ];
-  const eventCards=[...datedEventGrid.querySelectorAll('.event-card')];
-  eventCards.forEach(card=>{const source=card.querySelector('img')?.getAttribute('src')||'';const rule=eventRules.find(item=>source.includes(item.image));if(rule)card.dataset.eventEnd=rule.end;});
-  eventCards.forEach(card=>{card.hidden=Boolean(card.dataset.eventEnd)&&Date.now()>=Date.parse(card.dataset.eventEnd);});
-}
-
 const partnerResourceSections = [
   {no:'01',tier:0,icon:'🚀',title:'시작하기 (필수)',copy:'입점 후 가장 먼저 확인하는 필수 안내 자료',items:[['입점 파트너 시작 안내서','downloads/HarmonyLink_Partner_Getting_Started.pdf','PDF'],['플랫폼 이용 및 운영 정책','downloads/HarmonyLink_Partner_Policy_v1.0.pdf','PDF'],['입점 파트너 계약서','downloads/HarmonyLink_Partner_Agreement_v2.0.pdf','PDF'],['강사 활동 가이드','downloads/HarmonyLink_Instructor_Activity_Guide_v1.0.pdf','PDF'],['자주 묻는 질문 (FAQ)','downloads/HarmonyLink_Partner_FAQ_v1.0.pdf','PDF']]},
   {no:'02',tier:20,icon:'📘',title:'운영 매뉴얼',copy:'기관 출강과 실제 수업 운영을 위한 기준',items:[['기관 수업 진행 방법'],['출강 체크리스트'],['첫 수업 준비 방법'],['수업 종료 후 해야 할 일'],['강사 매너·복장 가이드'],['안전 수칙']]},
