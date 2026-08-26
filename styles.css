@@ -994,3 +994,38 @@ footer .footer-bottom{padding-top:11px!important}
 .local-grid .event-info dl,.free-grid .event-info dl{margin-top:auto!important;width:100%}
 @media(max-width:900px){.event-type-layout{grid-template-columns:1fr!important}.community-spotlight-wrap{align-items:flex-start;flex-direction:column}.community-spotlight h2{font-size:29px}}
 @media(max-width:600px){.community-spotlight{padding:52px 0}.community-spotlight h2{font-size:25px}.community-spotlight .btn-light{width:100%;justify-content:center}}
+
+/* Upcoming special event */
+.special-event-feature{background:linear-gradient(145deg,#fffaf1,#f3f8f3)}
+.special-event-card{max-width:980px;margin:42px auto 0;display:grid;grid-template-columns:minmax(250px,34%) 1fr;overflow:hidden;border:1px solid #ead9bd;border-radius:26px;background:#fff;box-shadow:0 22px 60px rgba(80,40,10,.12)}
+.special-event-preview{min-height:410px;padding:18px;background:#f7efe2;display:flex;align-items:center;justify-content:center}
+.special-event-preview img{display:block;width:100%;height:100%;max-height:440px;object-fit:contain;object-position:center;border-radius:12px;box-shadow:0 12px 30px rgba(72,35,10,.16)}
+.special-event-copy{padding:44px 46px;display:flex;flex-direction:column;justify-content:center}
+.special-event-badge{align-self:flex-start;padding:7px 12px;border-radius:50px;background:#0a5137;color:#fff;font-size:10px;font-weight:800;letter-spacing:1px}
+.special-event-copy h3{margin:15px 0 12px;color:#173f31;font-size:31px;line-height:1.3;letter-spacing:-1.2px}
+.special-event-copy>p{margin:0;color:var(--muted);font-size:15px;line-height:1.7}
+.special-event-copy dl{margin:25px 0 28px;padding:18px 0;border-top:1px solid #eadfce;border-bottom:1px solid #eadfce}
+.special-event-copy dl div{display:grid;grid-template-columns:58px 1fr;gap:12px;margin:8px 0}
+.special-event-copy dt{color:#9b6a27;font-size:11px;font-weight:800}
+.special-event-copy dd{margin:0;color:#173f31;font-size:13px;font-weight:700}
+.special-event-detail-button{align-self:flex-start;background:#9b1518;color:#fff;box-shadow:0 12px 26px rgba(155,21,24,.2)}
+.messiah-detail-page{min-height:100vh;background:linear-gradient(145deg,#fffaf2,#edf5ee)}
+.messiah-detail-header{padding:18px 0;background:#fff;border-bottom:1px solid #eadfce}
+.messiah-detail-header .container{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.messiah-back-link{color:#0a5137;font-size:13px;font-weight:800}
+.messiah-detail-main{padding:60px 0 90px}
+.messiah-detail-hero{text-align:center;max-width:850px;margin:0 auto 38px}
+.messiah-detail-hero h1{margin:8px 0 12px;color:#173f31;font-size:44px;line-height:1.2;letter-spacing:-2px}
+.messiah-detail-hero p{color:var(--muted)}
+.messiah-detail-layout{display:grid;grid-template-columns:minmax(320px,1.05fr) minmax(320px,.95fr);gap:34px;align-items:start}
+.messiah-full-poster{margin:0;padding:16px;border:1px solid #ead9bd;border-radius:22px;background:#fff;box-shadow:0 20px 50px rgba(70,37,12,.12)}
+.messiah-full-poster img{display:block;width:100%;height:auto;border-radius:12px}
+.messiah-detail-panel{position:sticky;top:24px;padding:34px;border-radius:22px;background:#fff;border:1px solid #ead9bd;box-shadow:0 20px 50px rgba(70,37,12,.1)}
+.messiah-detail-panel h2{margin:0 0 20px;color:#173f31;font-size:27px}
+.messiah-support-list{list-style:none;padding:0;margin:0 0 27px;display:grid;gap:12px}
+.messiah-support-list li{padding:13px 15px;border-radius:12px;background:#f4f8f3;color:#173f31;font-weight:700}
+.messiah-support-list li:before{content:"✓";margin-right:10px;color:#9b1518}
+.messiah-detail-meta{margin:0 0 26px;padding:20px 0;border-top:1px solid #eadfce;border-bottom:1px solid #eadfce}
+.messiah-detail-meta div{margin:12px 0}.messiah-detail-meta dt{color:#9b6a27;font-size:11px;font-weight:800}.messiah-detail-meta dd{margin:3px 0 0;color:#173f31;font-weight:700}.messiah-detail-meta a{color:#075bb5;text-decoration:underline;text-underline-offset:3px}
+.messiah-inquiry-button{width:100%;background:#9b1518;color:#fff;font-size:15px;box-shadow:0 14px 28px rgba(155,21,24,.22)}
+@media(max-width:760px){.special-event-card{grid-template-columns:1fr}.special-event-preview{min-height:0;max-height:430px;padding:16px}.special-event-preview img{height:auto;max-height:398px}.special-event-copy{padding:30px 25px}.special-event-copy h3{font-size:25px}.special-event-detail-button{width:100%}.messiah-detail-main{padding:40px 0 70px}.messiah-detail-hero h1{font-size:33px}.messiah-detail-layout{grid-template-columns:1fr}.messiah-detail-panel{position:static;padding:27px 22px}.messiah-detail-header .logo-name small{display:none}}
