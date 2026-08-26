@@ -433,7 +433,6 @@ const contactWrap=document.querySelector('.contact-wrap');
 contactWrap?.insertAdjacentHTML('afterbegin','<div class="contact-illustration" aria-hidden="true"><span>✉</span><i></i><b></b><em>♥</em></div>');
 const eventGrid=document.querySelector('.event-grid');
 if(eventGrid){
-  eventGrid.insertAdjacentHTML('beforeend','<article class="event-card event-coming reveal"><div class="event-coming-icon">＋</div><span class="event-badge" data-ko="준비 중" data-en="COMING SOON">준비 중</span><h3 data-ko="새로운 무료강좌를 준비하고 있습니다" data-en="A new free class is coming soon">새로운 무료강좌를 준비하고 있습니다</h3><p data-ko="디지털·언어·음악을 비롯한 새로운 체험 강좌가 곧 공개됩니다." data-en="New trial classes in digital learning, language, music, and more will be announced soon.">디지털·언어·음악을 비롯한 새로운 체험 강좌가 곧 공개됩니다.</p></article>');
   eventGrid.querySelectorAll('.reveal').forEach(item=>item.classList.add('visible'));
 }
 setLanguage(currentLanguage);
@@ -611,23 +610,6 @@ if (learnerCard) learnerCard.insertAdjacentHTML('beforeend', `<p class="matching
 const currentEventGrid = document.querySelector('.event-grid');
 if (currentEventGrid) {
   const originalEventCards = [...currentEventGrid.querySelectorAll('.event-card:not(.event-coming)')];
-  const originalComingCard = currentEventGrid.querySelector('.event-coming');
-  currentEventGrid.classList.add('event-type-layout');
-  currentEventGrid.innerHTML = `<section class="event-type-block local-type"><div class="event-type-head"><span>01</span><div><p data-ko="지역 행사" data-en="LOCAL EVENTS">지역 행사</p><small data-ko="우리 지역에서 함께 즐기는 행사" data-en="Events happening in our community">우리 지역에서 함께 즐기는 행사</small></div></div><div class="event-type-grid local-grid"></div></section><section class="event-type-block free-type"><div class="event-type-head"><span>02</span><div><p data-ko="무료 수업" data-en="FREE CLASSES">무료 수업</p><small data-ko="부담 없이 시작하는 배움" data-en="Learning opportunities at no cost">부담 없이 시작하는 배움</small></div></div><div class="event-type-grid free-grid"></div></section><section class="event-type-block special-type"><div class="event-type-head"><span>03</span><div><p data-ko="세미나·특강" data-en="SEMINARS & TALKS">세미나·특강</p><small data-ko="새로운 정보와 영감을 만나는 시간" data-en="Fresh ideas, information and inspiration">새로운 정보와 영감을 만나는 시간</small></div></div><div class="event-type-grid special-grid"></div></section>`;
-  const eventDateKey = card => card.dataset.eventStart || card.dataset.eventEnd || '9999-12-31';
-  const eventTarget = card => card.dataset.eventCategory === 'local'
-    ? currentEventGrid.querySelector('.local-grid')
-    : card.dataset.eventCategory === 'free'
-      ? currentEventGrid.querySelector('.free-grid')
-      : currentEventGrid.querySelector('.special-grid');
-  originalEventCards
-    .sort((a, b) => eventDateKey(a).localeCompare(eventDateKey(b)))
-    .forEach(card => eventTarget(card).appendChild(card));
-  if(originalComingCard){
-    currentEventGrid.querySelector('.special-grid').appendChild(originalComingCard);
-  } else {
-    currentEventGrid.querySelector('.special-grid').innerHTML=`<article class="event-card event-coming"><div class="event-coming-icon">✦</div><div class="event-info"><span class="event-badge" data-ko="세미나·특강" data-en="SEMINARS & TALKS">세미나·특강</span><h3 data-ko="새로운 세미나와 특별 강좌 소식을 준비하고 있습니다" data-en="New seminars and special classes are on the way">새로운 세미나와 특별 강좌 소식을 준비하고 있습니다</h3><p data-ko="일정이 확정되는 즉시 이곳과 앱에서 가장 먼저 안내해 드립니다." data-en="Confirmed dates will be announced here and in the app first.">일정이 확정되는 즉시 이곳과 앱에서 가장 먼저 안내해 드립니다.</p></div></article>`;
-  }
   const datedCards = originalEventCards.filter(card => card.dataset.eventEnd);
   // Any event address written in the location row automatically receives a Google Maps link.
   datedCards.forEach(card => {
@@ -648,7 +630,7 @@ if (currentEventGrid) {
     mapLink.textContent = currentLanguage === 'en' ? mapLink.dataset.en : mapLink.dataset.ko;
     locationCopy.appendChild(mapLink);
   });
-  currentEventGrid.insertAdjacentHTML('afterend', `<section class="past-events"><div class="past-events-head"><div><p class="eyebrow">PAST EVENTS</p><h3 data-ko="지난 강좌·행사" data-en="Past Classes & Events">지난 강좌·행사</h3></div><button class="past-events-toggle" type="button" aria-expanded="false"><span data-ko="지난 일정 보기" data-en="View Past Events">지난 일정 보기</span><b>＋</b></button></div><div class="past-event-grid" hidden></div><p class="past-events-empty" data-ko="아직 지난 일정이 없습니다." data-en="There are no past events yet.">아직 지난 일정이 없습니다.</p></section>`);
+  currentEventGrid.insertAdjacentHTML('afterend', `<section class="past-events"><div class="past-events-head"><div><p class="eyebrow">PAST EVENTS</p><h3 data-ko="지난 강좌·행사" data-en="Past Classes & Events">지난 강좌·행사</h3></div></div><details class="past-events-disclosure"><summary class="past-events-toggle"><span data-ko="지난 일정 보기" data-en="View Past Events">지난 일정 보기</span><b aria-hidden="true">＋</b></summary><div class="past-event-grid"></div></details><p class="past-events-empty" data-ko="아직 지난 일정이 없습니다." data-en="There are no past events yet.">아직 지난 일정이 없습니다.</p></section>`);
   const pastSection = currentEventGrid.nextElementSibling;
   const pastGrid = pastSection.querySelector('.past-event-grid');
   const localDateKey = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
@@ -657,19 +639,19 @@ if (currentEventGrid) {
     .filter(card => card.dataset.eventEnd < todayKey)
     .sort((a, b) => b.dataset.eventEnd.localeCompare(a.dataset.eventEnd))
     .forEach(card => pastGrid.appendChild(card));
-  const comingCard = ({badgeKo,badgeEn,titleKo,titleEn,titleLineKo,titleLineEn,copyKo,copyEn}) => `<article class="event-card event-coming"><div class="event-coming-icon">＋</div><span class="event-badge" data-ko="${badgeKo}" data-en="${badgeEn}">${badgeKo}</span><h3><span data-ko="${titleKo}" data-en="${titleEn}">${titleKo}</span><span class="paid-coming-line" data-ko="${titleLineKo}" data-en="${titleLineEn}">${titleLineKo}</span></h3><p data-ko="${copyKo}" data-en="${copyEn}">${copyKo}</p></article>`;
-  const localGrid = currentEventGrid.querySelector('.local-grid');
-  const freeGrid = currentEventGrid.querySelector('.free-grid');
-  if (!localGrid.querySelector('.event-card')) localGrid.innerHTML = comingCard({badgeKo:'지역 행사',badgeEn:'LOCAL EVENTS',titleKo:'새로운 지역 행사를',titleEn:'A new local event',titleLineKo:'준비하고 있습니다',titleLineEn:'is coming soon',copyKo:'새로운 일정과 장소가 확정되면 안내해 드립니다.',copyEn:'A new date and location will be announced here.'});
-  if (!freeGrid.querySelector('.event-card')) freeGrid.innerHTML = comingCard({badgeKo:'무료 수업',badgeEn:'FREE CLASSES',titleKo:'새로운 무료 수업을',titleEn:'A new free class',titleLineKo:'준비하고 있습니다',titleLineEn:'is coming soon',copyKo:'새로운 수업 일정이 확정되면 안내해 드립니다.',copyEn:'A new class will be announced here.'});
-  pastSection.querySelector('.past-events-empty').hidden = pastGrid.children.length > 0;
-  const toggle = pastSection.querySelector('.past-events-toggle');
-  toggle.addEventListener('click', () => {
-    const open = pastGrid.hidden;
-    pastGrid.hidden = !open;
-    toggle.setAttribute('aria-expanded', String(open));
-    toggle.querySelector('b').textContent = open ? '−' : '＋';
+  currentEventGrid.querySelectorAll('.event-card:not(.event-coming):not(.special-event-card)').forEach(card => {
+    const info = card.querySelector('.event-info');
+    const poster = card.querySelector('.event-poster');
+    if (!info || !poster || info.querySelector('.event-detail-button')) return;
+    const button = document.createElement('a');
+    button.className = 'btn event-detail-button';
+    button.href = poster.href;
+    button.target = poster.target || '_blank';
+    button.rel = 'noopener noreferrer';
+    button.innerHTML = '<span data-ko="관련 정보 보기" data-en="View Information">관련 정보 보기</span><b>→</b>';
+    info.appendChild(button);
   });
+  pastSection.querySelector('.past-events-empty').hidden = pastGrid.children.length > 0;
 }
 
 const contactSectionForAds = document.getElementById('contact');
