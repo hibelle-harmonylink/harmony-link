@@ -496,3 +496,6 @@ a.program-mini h3{color:inherit;text-decoration:none}
 #newsPopup[data-item="yura"] .news-media img{display:none!important}
 #newsPopup[data-item="yura"] .news-media:before{content:"";display:block;width:130px;height:130px;border-radius:10px;background:#b8b8b6 url("../assets/ads/highline-hl-symbol.png") center/cover no-repeat}
 #newsPopup[data-item="yura"] .news-media:after{content:"HIGHLINE\A RESIDENTIAL";white-space:pre;text-align:center;color:#6b7684;font-size:13px;font-weight:700;letter-spacing:.08em;line-height:1.4}
+.top-community-link{height:38px;display:inline-flex;align-items:center;padding:0 12px;border-radius:20px;background:#e7f2ff;color:#075bb5;font-size:11px;font-weight:800;text-decoration:none}
+@media(max-width:430px){.top-community-link{position:fixed;right:14px;bottom:90px;z-index:29;height:44px;padding:0 16px;border:1px solid #c9ddf4;box-shadow:0 10px 24px rgba(6,29,69,.18);font-size:12px}.top-actions{gap:5px}}
+.event-placeholder-art{height:180px;display:grid;place-items:center;background:linear-gradient(145deg,#eef6ff,#dbeaff);color:#075bb5;font-size:56px}.event-placeholder{border-style:dashed}
