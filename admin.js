@@ -47,11 +47,12 @@
     deniedMessage.textContent = text;
   };
   const setCounts = members => {
-    const counts = { all: members.length, general: 0, student: 0, partner0: 0, partner20: 0, partner50: 0 };
+    const counts = { all: members.length, general: 0, student: 0, partner0: 0, partner20: 0, partner50: 0, premium: 0 };
     members.forEach(member => {
       if (member.member_type === 'general') counts.general += 1;
       if (member.member_type === 'student') counts.student += 1;
       if (Object.hasOwn(counts, member.role)) counts[member.role] += 1;
+      if (member.premium_member === true) counts.premium += 1;
     });
     Object.entries(counts).forEach(([key, value]) => {
       const target = document.querySelector(`[data-count="${key}"]`);
@@ -68,7 +69,8 @@
     const badge = card.querySelector('.member-role-badge');
     const typeLabel = TYPE_LABELS[member.member_type] || (member.role === 'member' ? '일반회원' : '입점 파트너');
     const tierLabel = member.role === 'member' || member.role === 'admin' ? '' : ` · ${ROLE_LABELS[member.role]}`;
-    badge.textContent = `${typeLabel}${tierLabel} · ${displayName}`;
+    const premiumLabel = member.premium_member === true ? ' · Premium' : '';
+    badge.textContent = `${typeLabel}${tierLabel}${premiumLabel} · ${displayName}`;
     badge.classList.add(member.role);
     card.querySelectorAll('[data-field]').forEach(field => {
       field.innerHTML = formatDate(member[field.dataset.field]);
@@ -109,7 +111,18 @@
       statusButton.textContent = next === 'suspended' ? '중지 예정' : '활성 예정';
       statusButton.classList.toggle('suspended', next === 'suspended');
     });
-    card.querySelector('.member-save').addEventListener('click', () => updateMember(member, select.value, statusButton.dataset.status, nameInput.value, typeSelect.value));
+    const premiumButton = card.querySelector('.member-premium-button');
+    const isPremium = member.premium_member === true;
+    premiumButton.dataset.premium = String(isPremium);
+    premiumButton.textContent = isPremium ? 'Premium 승인됨' : 'Premium 미승인';
+    premiumButton.classList.toggle('is-approved', isPremium);
+    premiumButton.addEventListener('click', () => {
+      const next = premiumButton.dataset.premium !== 'true';
+      premiumButton.dataset.premium = String(next);
+      premiumButton.textContent = next ? 'Premium 승인 예정' : 'Premium 해제 예정';
+      premiumButton.classList.toggle('is-approved', next);
+    });
+    card.querySelector('.member-save').addEventListener('click', () => updateMember(member, select.value, statusButton.dataset.status, nameInput.value, typeSelect.value, premiumButton.dataset.premium === 'true'));
     const resendButton = card.querySelector('.member-resend');
     resendButton.addEventListener('click', async () => {
       resendButton.disabled = true;
@@ -222,14 +235,15 @@
     if (data?.error) throw new Error(data.error);
   };
 
-  const updateMember = async (member, nextRole, nextStatus, requestedName, requestedType) => {
+  const updateMember = async (member, nextRole, nextStatus, requestedName, requestedType, nextPremium) => {
     const nextName = requestedName.trim();
     const nextType = ['general', 'student', 'partner'].includes(requestedType) ? requestedType : 'general';
     const roleChanged = nextRole !== member.role;
     const typeChanged = nextType !== member.member_type;
     const statusChanged = nextStatus !== member.account_status;
     const nameChanged = nextName !== (member.display_name || '');
-    if (!roleChanged && !typeChanged && !statusChanged && !nameChanged) {
+    const premiumChanged = nextPremium !== (member.premium_member === true);
+    if (!roleChanged && !typeChanged && !statusChanged && !nameChanged && !premiumChanged) {
       setMessage('변경된 내용이 없습니다.', true);
       return;
     }
@@ -237,13 +251,20 @@
       setMessage('회원 이름은 2자 이상 50자 이하로 입력해 주세요.', true);
       return;
     }
-    const detail = [nameChanged ? `회원 이름 → ${nextName}` : '', typeChanged ? `회원 유형 → ${TYPE_LABELS[nextType]}` : '', roleChanged ? `${ROLE_LABELS[member.role]} → ${ROLE_LABELS[nextRole]}` : '', statusChanged ? `${member.account_status === 'active' ? '활성' : '중지'} → ${nextStatus === 'active' ? '활성' : '중지'}` : ''].filter(Boolean).join('\n');
+    const detail = [nameChanged ? `회원 이름 → ${nextName}` : '', typeChanged ? `회원 유형 → ${TYPE_LABELS[nextType]}` : '', roleChanged ? `${ROLE_LABELS[member.role]} → ${ROLE_LABELS[nextRole]}` : '', statusChanged ? `${member.account_status === 'active' ? '활성' : '중지'} → ${nextStatus === 'active' ? '활성' : '중지'}` : '', premiumChanged ? `Premium 회원(AI 쇼츠) → ${nextPremium ? '승인' : '미승인'}` : ''].filter(Boolean).join('\n');
     if (!window.confirm(`${member.email} 회원을 다음과 같이 변경할까요?\n\n${detail}`)) return;
     setMessage(`${member.email} 회원 정보를 변경하고 있습니다.`);
     if (nameChanged) {
       const { error: nameError } = await client.rpc('admin_update_member_name', { p_member_id: member.id, p_display_name: nextName });
       if (nameError) {
         setMessage(`이름 변경에 실패했습니다: ${nameError.message}`, true);
+        return;
+      }
+    }
+    if (premiumChanged) {
+      const { error: premiumError } = await client.rpc('admin_update_member_premium', { p_member_id: member.id, p_premium: nextPremium });
+      if (premiumError) {
+        setMessage(`Premium 승인 상태 변경에 실패했습니다: ${premiumError.message}`, true);
         return;
       }
     }

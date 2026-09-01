@@ -88,3 +88,9 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   .admin-title-row{margin:10px 10px 18px!important}
   .admin-page main{background:linear-gradient(180deg,#0b5fc2 0 104px,transparent 104px)!important}
 }
+
+/* $50/month Premium (AI Shorts) approval toggle — independent of partner tier. */
+.member-premium-button{align-self:end;min-height:43px;border:1px solid #c9d3df;border-radius:10px;background:#f3f5f8;color:#5a6b80;padding:8px 12px;font-size:10px;font-weight:900;cursor:pointer}
+.member-premium-button.is-approved{border-color:#e1b94f;background:#fff1c9;color:#7a5705}
+@media(min-width:1000px){.member-premium-button{font-size:12px}}
+@media(max-width:680px){.member-premium-button{grid-column:1/3}}

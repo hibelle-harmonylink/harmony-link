@@ -33,6 +33,7 @@
   let activeMemberStatus = 'active';
   let activeMemberName = '';
   let activeMemberType = 'general';
+  let activeMemberPremium = false;
   let selectedSignupType = 'general';
 
   const authSlot = document.createElement('div');
@@ -293,6 +294,7 @@
     activeSession = session;
     renderHeader(session);
     renderPartnerCenter(session);
+    publishAuthState();
   };
 
   const partnerStatusMark = partnerCenter.querySelector('.partner-lock');
@@ -318,14 +320,14 @@
     if (!session?.user) return { role: 'guest', status: 'active' };
     const { data, error } = await client
       .from('member_profiles')
-      .select('role,account_status,display_name,member_type')
+      .select('role,account_status,display_name,member_type,premium_member')
       .eq('id', session.user.id)
       .maybeSingle();
     if (error) {
       console.error('Member access could not be loaded.', error);
-      return { role: 'member', status: 'active', type: 'general' };
+      return { role: 'member', status: 'active', type: 'general', premium: false };
     }
-    return { role: data?.role || 'member', status: data?.account_status || 'active', name: data?.display_name || '', type: data?.member_type || 'general' };
+    return { role: data?.role || 'member', status: data?.account_status || 'active', name: data?.display_name || '', type: data?.member_type || 'general', premium: data?.premium_member === true };
   };
 
   const refreshMemberAccess = async session => {
@@ -334,8 +336,31 @@
     activeMemberStatus = access.status;
     activeMemberName = access.name || '';
     activeMemberType = access.type || 'general';
+    activeMemberPremium = access.premium === true;
     render(session);
   };
+
+  // Lets other on-page scripts (e.g. the AI Shorts card) react to sign-in
+  // state without re-implementing Supabase auth: a single source of truth
+  // published on window and re-broadcast on every render.
+  const publishAuthState = () => {
+    const hasPremiumAccess = activeMemberStatus === 'active'
+      && (activeMemberRole === 'admin' || activeMemberPremium === true);
+    const state = {
+      loading: activeMemberRole === 'loading',
+      signedIn: Boolean(activeSession?.user),
+      role: activeMemberRole,
+      status: activeMemberStatus,
+      memberType: activeMemberType,
+      premium: activeMemberPremium,
+      isAdmin: activeMemberRole === 'admin',
+      hasPremiumAccess
+    };
+    window.HarmonyAuthState = state;
+    document.dispatchEvent(new CustomEvent('harmony-auth-change', { detail: state }));
+  };
+
+  window.HarmonyAuthGetSession = () => client.auth.getSession();
 
   const applyPendingMemberType = async session => {
     if (!session?.user) return;
