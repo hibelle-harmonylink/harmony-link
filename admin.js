@@ -121,9 +121,11 @@
       premiumButton.dataset.premium = String(next);
       premiumButton.textContent = next ? 'Premium 승인 예정' : 'Premium 해제 예정';
       premiumButton.classList.toggle('is-approved', next);
+      console.log('[admin] Premium toggle clicked', { memberId: member.id, pendingPremium: next });
     });
     const saveButton = card.querySelector('.member-save');
     saveButton.addEventListener('click', async () => {
+      console.log('[admin] Save button clicked', { memberId: member.id, pendingPremium: premiumButton.dataset.premium });
       saveButton.disabled = true;
       try {
         await updateMember(member, select.value, statusButton.dataset.status, nameInput.value, typeSelect.value, premiumButton.dataset.premium === 'true');
@@ -262,70 +264,95 @@
     const detail = [nameChanged ? `회원 이름 → ${nextName}` : '', typeChanged ? `회원 유형 → ${TYPE_LABELS[nextType]}` : '', roleChanged ? `${ROLE_LABELS[member.role]} → ${ROLE_LABELS[nextRole]}` : '', statusChanged ? `${member.account_status === 'active' ? '활성' : '중지'} → ${nextStatus === 'active' ? '활성' : '중지'}` : '', premiumChanged ? `Premium 회원(AI 쇼츠) → ${nextPremium ? '승인' : '미승인'}` : ''].filter(Boolean).join('\n');
     if (!window.confirm(`${member.email} 회원을 다음과 같이 변경할까요?\n\n${detail}`)) return;
     setMessage(`${member.email} 회원 정보를 변경하고 있습니다.`);
+    console.log('[admin] updateMember start', { memberId: member.id, email: member.email, roleChanged, typeChanged, statusChanged, nameChanged, premiumChanged, nextPremium });
 
-    // Each field is saved independently so one failing RPC (e.g. a
-    // migration that hasn't been applied yet) can't silently block the
-    // other, unrelated fields from being saved.
-    const results = [];
-    if (nameChanged) {
-      const { error } = await client.rpc('admin_update_member_name', { p_member_id: member.id, p_display_name: nextName });
-      results.push({ label: '회원 이름', ok: !error, error });
-    }
-    if (premiumChanged) {
-      const { error } = await client.rpc('admin_update_member_premium', { p_member_id: member.id, p_premium: nextPremium });
-      results.push({ label: 'Premium 승인 상태', ok: !error, error });
-    }
-    if (typeChanged) {
-      const { error } = await client.rpc('admin_update_member_type', { p_member_id: member.id, p_member_type: nextType });
-      results.push({ label: '회원 유형', ok: !error, error });
-    }
-    const roleChangedAt = new Date(Date.now() - 2000).toISOString();
-    if (roleChanged || statusChanged) {
-      const { error } = await client.rpc('admin_update_member', { p_member_id: member.id, p_role: nextRole, p_account_status: nextStatus });
-      results.push({ label: roleChanged && statusChanged ? '파트너 등급/활성 상태' : roleChanged ? '파트너 등급' : '활성 상태', ok: !error, error });
-    }
-
-    const typeSaved = results.some(result => result.label === '회원 유형' && result.ok);
-    if (typeChanged && !roleChanged && typeSaved) {
-      const { error: rosterError } = await client.functions.invoke('notify-role-change', { body: { action: 'member_type_change', memberId: member.id } });
-      results.push({ label: '회원가입 명단 반영', ok: !rosterError, error: rosterError });
-    }
-
-    let emailNote = '';
-    const tierSaved = results.some(result => result.label.startsWith('파트너 등급') && result.ok);
-    if (roleChanged && tierSaved) {
+    // Diagnostic wrapper: logs every RPC call and its result, and makes
+    // sure setMessage is always reached even if an RPC call rejects
+    // outright (network error, thrown exception) instead of cleanly
+    // resolving to { data, error } — previously an unexpected rejection
+    // here would abort the whole function with no message ever shown,
+    // which looked like the save button silently doing nothing.
+    const callRpc = async (name, params) => {
+      console.log(`[admin] calling RPC "${name}"`, params);
       try {
-        await waitForAutomaticRoleEmail(member.id, roleChangedAt);
-        emailNote = ' 안내메일도 정상 발송되었습니다.';
-      } catch {
+        const response = await client.rpc(name, params);
+        console.log(`[admin] RPC "${name}" response`, { data: response.data, error: response.error });
+        return response;
+      } catch (thrown) {
+        console.error(`[admin] RPC "${name}" threw instead of returning { data, error }`, thrown);
+        return { data: null, error: thrown instanceof Error ? thrown : new Error(String(thrown)) };
+      }
+    };
+
+    try {
+      // Each field is saved independently so one failing RPC (e.g. a
+      // migration that hasn't been applied yet) can't silently block the
+      // other, unrelated fields from being saved.
+      const results = [];
+      if (nameChanged) {
+        const { error } = await callRpc('admin_update_member_name', { p_member_id: member.id, p_display_name: nextName });
+        results.push({ label: '회원 이름', ok: !error, error });
+      }
+      if (premiumChanged) {
+        const { error } = await callRpc('admin_update_member_premium', { p_member_id: member.id, p_premium: nextPremium });
+        results.push({ label: 'Premium 승인 상태', ok: !error, error });
+      }
+      if (typeChanged) {
+        const { error } = await callRpc('admin_update_member_type', { p_member_id: member.id, p_member_type: nextType });
+        results.push({ label: '회원 유형', ok: !error, error });
+      }
+      const roleChangedAt = new Date(Date.now() - 2000).toISOString();
+      if (roleChanged || statusChanged) {
+        const { error } = await callRpc('admin_update_member', { p_member_id: member.id, p_role: nextRole, p_account_status: nextStatus });
+        results.push({ label: roleChanged && statusChanged ? '파트너 등급/활성 상태' : roleChanged ? '파트너 등급' : '활성 상태', ok: !error, error });
+      }
+
+      const typeSaved = results.some(result => result.label === '회원 유형' && result.ok);
+      if (typeChanged && !roleChanged && typeSaved) {
+        const { error: rosterError } = await client.functions.invoke('notify-role-change', { body: { action: 'member_type_change', memberId: member.id } });
+        results.push({ label: '회원가입 명단 반영', ok: !rosterError, error: rosterError });
+      }
+
+      let emailNote = '';
+      const tierSaved = results.some(result => result.label.startsWith('파트너 등급') && result.ok);
+      if (roleChanged && tierSaved) {
         try {
-          await sendDirectRoleNotification({ ...member, role: nextRole }, member.role);
+          await waitForAutomaticRoleEmail(member.id, roleChangedAt);
           emailNote = ' 안내메일도 정상 발송되었습니다.';
-        } catch (directError) {
-          emailNote = ` 다만 안내메일 발송에는 실패했습니다: ${directError.message}`;
+        } catch {
+          try {
+            await sendDirectRoleNotification({ ...member, role: nextRole }, member.role);
+            emailNote = ' 안내메일도 정상 발송되었습니다.';
+          } catch (directError) {
+            emailNote = ` 다만 안내메일 발송에는 실패했습니다: ${directError.message}`;
+          }
         }
       }
-    }
 
-    const failed = results.filter(result => !result.ok);
-    const succeeded = results.filter(result => result.ok);
-    let resultMessage;
-    let resultIsError;
-    if (failed.length === 0) {
-      resultMessage = `저장되었습니다.${emailNote}`;
-      resultIsError = false;
-    } else {
-      const failureText = failed.map(result => `${result.label}: ${result.error?.message || result.error}`).join(' / ');
-      resultIsError = true;
-      resultMessage = succeeded.length === 0
-        ? `저장에 실패했습니다. ${failureText}`
-        : `일부 항목만 저장되었습니다 (${succeeded.map(result => result.label).join(', ')}). 실패: ${failureText}${emailNote}`;
+      const failed = results.filter(result => !result.ok);
+      const succeeded = results.filter(result => result.ok);
+      console.log('[admin] updateMember results', results);
+      let resultMessage;
+      let resultIsError;
+      if (failed.length === 0) {
+        resultMessage = `저장되었습니다.${emailNote}`;
+        resultIsError = false;
+      } else {
+        const failureText = failed.map(result => `${result.label}: ${result.error?.message || result.error}`).join(' / ');
+        resultIsError = true;
+        resultMessage = succeeded.length === 0
+          ? `저장에 실패했습니다. ${failureText}`
+          : `일부 항목만 저장되었습니다 (${succeeded.map(result => result.label).join(', ')}). 실패: ${failureText}${emailNote}`;
+      }
+      // loadMembers() sets its own "명단을 불러오는 중" status messages while it
+      // refreshes the list from the database, so the save result has to be
+      // re-applied after it finishes — otherwise the admin never sees it.
+      await loadMembers();
+      setMessage(resultMessage, resultIsError);
+    } catch (unexpected) {
+      console.error('[admin] updateMember failed unexpectedly', unexpected);
+      setMessage(`예기치 않은 오류로 저장하지 못했습니다: ${unexpected?.message || unexpected}`, true);
     }
-    // loadMembers() sets its own "명단을 불러오는 중" status messages while it
-    // refreshes the list from the database, so the save result has to be
-    // re-applied after it finishes — otherwise the admin never sees it.
-    await loadMembers();
-    setMessage(resultMessage, resultIsError);
   };
 
   filters.addEventListener('submit', event => { event.preventDefault(); applyFilters(); });
