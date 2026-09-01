@@ -122,7 +122,15 @@
       premiumButton.textContent = next ? 'Premium 승인 예정' : 'Premium 해제 예정';
       premiumButton.classList.toggle('is-approved', next);
     });
-    card.querySelector('.member-save').addEventListener('click', () => updateMember(member, select.value, statusButton.dataset.status, nameInput.value, typeSelect.value, premiumButton.dataset.premium === 'true'));
+    const saveButton = card.querySelector('.member-save');
+    saveButton.addEventListener('click', async () => {
+      saveButton.disabled = true;
+      try {
+        await updateMember(member, select.value, statusButton.dataset.status, nameInput.value, typeSelect.value, premiumButton.dataset.premium === 'true');
+      } finally {
+        saveButton.disabled = false;
+      }
+    });
     const resendButton = card.querySelector('.member-resend');
     resendButton.addEventListener('click', async () => {
       resendButton.disabled = true;
@@ -254,60 +262,70 @@
     const detail = [nameChanged ? `회원 이름 → ${nextName}` : '', typeChanged ? `회원 유형 → ${TYPE_LABELS[nextType]}` : '', roleChanged ? `${ROLE_LABELS[member.role]} → ${ROLE_LABELS[nextRole]}` : '', statusChanged ? `${member.account_status === 'active' ? '활성' : '중지'} → ${nextStatus === 'active' ? '활성' : '중지'}` : '', premiumChanged ? `Premium 회원(AI 쇼츠) → ${nextPremium ? '승인' : '미승인'}` : ''].filter(Boolean).join('\n');
     if (!window.confirm(`${member.email} 회원을 다음과 같이 변경할까요?\n\n${detail}`)) return;
     setMessage(`${member.email} 회원 정보를 변경하고 있습니다.`);
+
+    // Each field is saved independently so one failing RPC (e.g. a
+    // migration that hasn't been applied yet) can't silently block the
+    // other, unrelated fields from being saved.
+    const results = [];
     if (nameChanged) {
-      const { error: nameError } = await client.rpc('admin_update_member_name', { p_member_id: member.id, p_display_name: nextName });
-      if (nameError) {
-        setMessage(`이름 변경에 실패했습니다: ${nameError.message}`, true);
-        return;
-      }
+      const { error } = await client.rpc('admin_update_member_name', { p_member_id: member.id, p_display_name: nextName });
+      results.push({ label: '회원 이름', ok: !error, error });
     }
     if (premiumChanged) {
-      const { error: premiumError } = await client.rpc('admin_update_member_premium', { p_member_id: member.id, p_premium: nextPremium });
-      if (premiumError) {
-        setMessage(`Premium 승인 상태 변경에 실패했습니다: ${premiumError.message}`, true);
-        return;
-      }
+      const { error } = await client.rpc('admin_update_member_premium', { p_member_id: member.id, p_premium: nextPremium });
+      results.push({ label: 'Premium 승인 상태', ok: !error, error });
+    }
+    if (typeChanged) {
+      const { error } = await client.rpc('admin_update_member_type', { p_member_id: member.id, p_member_type: nextType });
+      results.push({ label: '회원 유형', ok: !error, error });
     }
     const roleChangedAt = new Date(Date.now() - 2000).toISOString();
-    if (typeChanged) {
-      const { error: typeError } = await client.rpc('admin_update_member_type', { p_member_id: member.id, p_member_type: nextType });
-      if (typeError) {
-        setMessage(`회원 유형 변경에 실패했습니다: ${typeError.message}`, true);
-        return;
-      }
-    }
     if (roleChanged || statusChanged) {
       const { error } = await client.rpc('admin_update_member', { p_member_id: member.id, p_role: nextRole, p_account_status: nextStatus });
-      if (error) {
-        setMessage(`변경에 실패했습니다: ${error.message}`, true);
-        return;
-      }
+      results.push({ label: roleChanged && statusChanged ? '파트너 등급/활성 상태' : roleChanged ? '파트너 등급' : '활성 상태', ok: !error, error });
     }
-    if (typeChanged && !roleChanged) {
+
+    const typeSaved = results.some(result => result.label === '회원 유형' && result.ok);
+    if (typeChanged && !roleChanged && typeSaved) {
       const { error: rosterError } = await client.functions.invoke('notify-role-change', { body: { action: 'member_type_change', memberId: member.id } });
-      if (rosterError) {
-        setMessage(`회원 유형은 변경됐지만 회원가입 명단 반영에 실패했습니다: ${rosterError.message}`, true);
-        return;
-      }
+      results.push({ label: '회원가입 명단 반영', ok: !rosterError, error: rosterError });
     }
-    if (roleChanged) {
-      setMessage('회원 등급이 변경되었습니다. 실제 메일 발송 결과를 확인하고 있습니다.');
+
+    let emailNote = '';
+    const tierSaved = results.some(result => result.label.startsWith('파트너 등급') && result.ok);
+    if (roleChanged && tierSaved) {
       try {
         await waitForAutomaticRoleEmail(member.id, roleChangedAt);
-        setMessage('회원 등급 변경과 안내메일 발송이 모두 완료되었습니다.');
-      } catch (mailError) {
-        setMessage('자동 메일 결과를 확인하지 못해 안전한 직접 발송을 시도하고 있습니다.');
+        emailNote = ' 안내메일도 정상 발송되었습니다.';
+      } catch {
         try {
           await sendDirectRoleNotification({ ...member, role: nextRole }, member.role);
-          setMessage('회원 등급 변경과 안내메일 발송이 모두 완료되었습니다.');
+          emailNote = ' 안내메일도 정상 발송되었습니다.';
         } catch (directError) {
-          setMessage(`등급은 변경됐지만 안내메일은 발송되지 않았습니다: ${directError.message}`, true);
+          emailNote = ` 다만 안내메일 발송에는 실패했습니다: ${directError.message}`;
         }
       }
-    } else {
-      setMessage('회원 정보가 안전하게 변경되었습니다.');
     }
+
+    const failed = results.filter(result => !result.ok);
+    const succeeded = results.filter(result => result.ok);
+    let resultMessage;
+    let resultIsError;
+    if (failed.length === 0) {
+      resultMessage = `저장되었습니다.${emailNote}`;
+      resultIsError = false;
+    } else {
+      const failureText = failed.map(result => `${result.label}: ${result.error?.message || result.error}`).join(' / ');
+      resultIsError = true;
+      resultMessage = succeeded.length === 0
+        ? `저장에 실패했습니다. ${failureText}`
+        : `일부 항목만 저장되었습니다 (${succeeded.map(result => result.label).join(', ')}). 실패: ${failureText}${emailNote}`;
+    }
+    // loadMembers() sets its own "명단을 불러오는 중" status messages while it
+    // refreshes the list from the database, so the save result has to be
+    // re-applied after it finishes — otherwise the admin never sees it.
     await loadMembers();
+    setMessage(resultMessage, resultIsError);
   };
 
   filters.addEventListener('submit', event => { event.preventDefault(); applyFilters(); });
