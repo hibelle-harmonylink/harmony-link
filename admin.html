@@ -8,7 +8,7 @@
   <meta name="robots" content="noindex,nofollow">
   <title>회원 및 파트너 관리 | Harmony Link</title>
   <link rel="stylesheet" href="styles.css?v=20260805-253">
-  <link rel="stylesheet" href="admin.css?v=20260811-293">
+  <link rel="stylesheet" href="admin.css?v=20260901-1">
 </head>
 <body class="admin-page">
   <header class="admin-header">
@@ -34,6 +34,7 @@
         <article><span>무료 파트너</span><strong data-count="partner0">0</strong></article>
         <article><span>$20 BASIC</span><strong data-count="partner20">0</strong></article>
         <article><span>$50 PREMIUM</span><strong data-count="partner50">0</strong></article>
+        <article><span>Premium 회원 승인</span><strong data-count="premium">0</strong></article>
       </div>
 
       <form class="admin-toolbar" id="adminFilters">
@@ -53,11 +54,11 @@
     <article class="member-card">
       <div class="member-main"><span class="member-role-badge"></span><h2 class="member-email"></h2><p class="member-id"></p></div>
       <dl class="member-dates"><div><dt>가입일시</dt><dd data-field="created_at"></dd></div><div><dt>최근 로그인</dt><dd data-field="last_sign_in_at"></dd></div><div><dt>파트너 승인일</dt><dd data-field="approved_at"></dd></div><div><dt>마지막 변경일</dt><dd data-field="updated_at"></dd></div></dl>
-      <div class="member-actions"><label class="member-name-field"><span>회원 이름</span><input class="member-name-input" type="text" minlength="2" maxlength="50" autocomplete="off" placeholder="사람 이름을 입력하세요"></label><label><span>회원 유형</span><select class="member-type-select"><option value="general">일반회원</option><option value="student">수강생</option><option value="partner">입점 파트너</option></select></label><label><span>파트너 등급</span><select class="member-role-select"><option value="member">등급 없음</option><option value="partner0">무료 파트너</option><option value="partner20">$20 BASIC 파트너</option><option value="partner50">$50 PREMIUM 파트너</option></select></label><button type="button" class="member-status-button"></button><button type="button" class="member-save btn btn-primary">변경 저장</button><button type="button" class="member-resend">안내메일 다시 보내기</button></div>
+      <div class="member-actions"><label class="member-name-field"><span>회원 이름</span><input class="member-name-input" type="text" minlength="2" maxlength="50" autocomplete="off" placeholder="사람 이름을 입력하세요"></label><label><span>회원 유형</span><select class="member-type-select"><option value="general">일반회원</option><option value="student">수강생</option><option value="partner">입점 파트너</option></select></label><label><span>파트너 등급</span><select class="member-role-select"><option value="member">등급 없음</option><option value="partner0">무료 파트너</option><option value="partner20">$20 BASIC 파트너</option><option value="partner50">$50 PREMIUM 파트너</option></select></label><button type="button" class="member-status-button"></button><button type="button" class="member-premium-button" title="AI 쇼츠 등 Premium 전용 기능 이용 승인 (파트너 등급과 무관)"></button><button type="button" class="member-save btn btn-primary">변경 저장</button><button type="button" class="member-resend">안내메일 다시 보내기</button></div>
     </article>
   </template>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="admin.js?v=20260811-293"></script>
+  <script src="admin.js?v=20260901-1"></script>
 </body>
 </html>
