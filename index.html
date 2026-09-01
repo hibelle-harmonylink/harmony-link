@@ -11,7 +11,7 @@
   <meta name="theme-color" content="#061d45">
   <script>
     (() => {
-      const pageVersion = '20260822-353';
+      const pageVersion = '20260826-6';
       fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
         .then(response => response.ok ? response.json() : null)
         .then(release => {
@@ -48,7 +48,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260826-5">
+  <link rel="stylesheet" href="styles.css?v=20260826-6">
 </head>
 <body>
   <a class="skip-link" href="#main" data-ko="본문으로 이동" data-en="Skip to content">본문으로 이동</a>
@@ -220,6 +220,39 @@
       </div>
     </section>
 
+    <!--
+      AI Shorts Creation Program: deployed separately at
+      https://ai-shorts-maker-production.up.railway.app
+      Meant to be gated to $50/month PREMIUM members, but the site has no
+      real member-tier auth yet (auth.js only tracks PARTNER tiers for
+      business listings, not a regular member's paid plan — and script.js
+      unconditionally removes the old #membership paid-plans section from
+      the DOM on every load, so it's not a live destination either). Until
+      member-tier auth and a real membership page exist, this card always
+      shows the locked state and sends everyone to #contact instead of
+      linking to the program directly. Swap the badge/button/href here once
+      that infrastructure is in place.
+    -->
+    <section class="section" id="ai-shorts" style="padding:70px 0;background:linear-gradient(135deg,#fff 0%,#eef5ff 100%)">
+      <style>
+        .ai-shorts-card{max-width:720px;margin:0 auto;border-radius:28px;padding:48px 40px;background:linear-gradient(145deg,#071f49,#0c4a98);color:#fff;text-align:center;box-shadow:0 24px 60px rgba(7,31,73,.28)}
+        .ai-shorts-lock{display:inline-grid;place-items:center;width:56px;height:56px;border-radius:16px;background:rgba(255,255,255,.12);font-size:25px;margin-bottom:18px}
+        .ai-shorts-badge{display:inline-block;background:#fff2c9;color:#765300;border:1px solid #e1b94f;border-radius:50px;padding:6px 14px;font-size:11px;font-weight:800;letter-spacing:.4px;margin:0 0 16px}
+        .ai-shorts-card h2{font-size:clamp(24px,3.4vw,32px);letter-spacing:-1px;margin:0 0 14px;color:#fff}
+        .ai-shorts-card p{color:#c3d5eb;font-size:16px;line-height:1.7;margin:0 auto 28px;max-width:480px}
+        @media (max-width:600px){.ai-shorts-card{padding:36px 22px;border-radius:22px}}
+      </style>
+      <div class="container">
+        <div class="ai-shorts-card reveal">
+          <div class="ai-shorts-lock" aria-hidden="true">🔒</div>
+          <div><span class="ai-shorts-badge" data-ko="Premium 회원 전용" data-en="PREMIUM MEMBERS ONLY">Premium 회원 전용</span></div>
+          <h2 data-ko="AI 쇼츠 제작 프로그램" data-en="AI Shorts Creation Program">AI 쇼츠 제작 프로그램</h2>
+          <p data-ko="주제를 몰라도 AI가 대본, 목소리, 이미지, 자막을 만들어 쇼츠 영상 제작을 도와드려요." data-en="Even without a topic in mind, AI writes the script, voice, images, and captions to help you create short-form videos.">주제를 몰라도 AI가 대본, 목소리, 이미지, 자막을 만들어 쇼츠 영상 제작을 도와드려요.</p>
+          <a class="btn btn-primary" href="#contact"><span data-ko="Premium 멤버십 알아보기" data-en="Learn About Premium Membership">Premium 멤버십 알아보기</span><b>→</b></a>
+        </div>
+      </div>
+    </section>
+
     <section class="feature-deepdive english-feature section">
       <div class="container digital-why-grid">
         <div class="digital-why-copy reveal"><p class="eyebrow">HIBELLE ONLINE ENGLISH</p><h2 data-ko="영어는 지식이 아닌<br>세상과 연결되는 자신감입니다" data-en="English is more than knowledge—<br>it is confidence to connect">영어는 지식이 아닌<br>세상과 연결되는 자신감입니다</h2><p data-ko="시간과 장소의 제약 없이 학습자의 수준과 목표에 맞춘 1:1 실용 회화 수업으로 실제 생활에서 사용하는 영어 자신감을 키웁니다." data-en="Personalized one-to-one conversation lessons build practical speaking confidence without limits of time or place.">시간과 장소의 제약 없이 학습자의 수준과 목표에 맞춘 1:1 실용 회화 수업으로 실제 생활에서 사용하는 영어 자신감을 키웁니다.</p><a class="btn feature-request-btn" href="#apply" data-program="언어 교육"><span data-ko="화상영어 신청하기" data-en="Apply for Online English">화상영어 신청하기</span><b>↗</b></a></div>
@@ -314,7 +347,7 @@
 
   <footer><div class="container footer-top"><a class="logo logo-light" href="#top"><span class="logo-mark brand-image footer-brand-image"><img src="assets/harmony-logo.png" alt=""></span><span class="logo-name">Harmony <b>Link</b><small data-ko="이음문화센터" data-en="E-eum Culture Center">이음문화센터</small></span></a><p data-ko="하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다." data-en="A cultural and educational project operated<br class='mobile-en-only-break'>by Hibelle Consulting.">하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다.</p><div class="footer-nav"><a href="#about" data-ko="회사 소개" data-en="About">회사 소개</a><a href="#digital-why" data-ko="전문 교육" data-en="Specialty Programs">전문 교육</a><a href="#events" data-ko="강좌·행사" data-en="Classes & Events">강좌·행사</a><a href="community.html" data-ko="커뮤니티" data-en="Community">커뮤니티</a><a href="#contact" data-ko="문의하기" data-en="Contact">문의하기</a></div></div><div class="container footer-bottom"><span>© 2026 Hibelle Consulting · Harmony Link / 이음문화센터</span><div><a href="#" data-ko="개인정보처리방침" data-en="Privacy Policy">개인정보처리방침</a><a href="#" data-ko="이용약관" data-en="Terms">이용약관</a><button id="footerDeleteAccount" type="button" class="auth-delete footer-account-delete" data-ko="회원 탈퇴" data-en="Delete Account">회원 탈퇴</button></div></div></footer>
   <button class="to-top" type="button" aria-label="맨 위로">↑</button>
-  <script src="script.js?v=20260826-5"></script>
+  <script src="script.js?v=20260826-6"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="auth.js?v=20260820-342"></script>
   <script>
