@@ -1,5 +1,6 @@
 (() => {
   'use strict';
+  console.log('[admin] admin.js loaded — build 20260901-4');
 
   const SUPABASE_URL = 'https://ricndeoiomzjacmrsjtg.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_cGiclRJGjTqHBPVZqgTiQA_tvGKSQ60';
@@ -34,6 +35,26 @@
     message.textContent = text;
     message.classList.toggle('error', error);
   };
+  // window.confirm() is used only here, for the save flow's "are you sure"
+  // step. After a user dismisses several native confirm()/alert() dialogs
+  // on the same page in a row, Chrome offers to (and once checked, will)
+  // silently disable all further ones for that page: every later
+  // window.confirm() call then returns false instantly, with no dialog
+  // shown and nothing thrown -- which looks exactly like the save button
+  // doing nothing at all. A custom in-page dialog can't be suppressed that
+  // way, so it replaces window.confirm() for this flow.
+  const askConfirm = text => new Promise(resolve => {
+    const overlay = document.createElement('div');
+    overlay.className = 'admin-confirm-overlay';
+    overlay.innerHTML = '<div class="admin-confirm-box"><pre class="admin-confirm-message"></pre><div class="admin-confirm-actions"><button type="button" class="admin-confirm-cancel">취소</button><button type="button" class="admin-confirm-ok btn btn-primary">확인</button></div></div>';
+    overlay.querySelector('.admin-confirm-message').textContent = text;
+    document.body.appendChild(overlay);
+    const finish = result => { overlay.remove(); resolve(result); };
+    overlay.querySelector('.admin-confirm-ok').addEventListener('click', () => finish(true));
+    overlay.querySelector('.admin-confirm-cancel').addEventListener('click', () => finish(false));
+    overlay.addEventListener('click', event => { if (event.target === overlay) finish(false); });
+    overlay.querySelector('.admin-confirm-ok').focus();
+  });
   const formatDate = value => {
     if (!value) return '없음';
     const parts = new Intl.DateTimeFormat('ko-KR', {
@@ -154,6 +175,7 @@
   const renderMembers = members => {
     list.replaceChildren(...members.map(createCard));
     empty.hidden = members.length > 0;
+    console.log('[admin] rendered cards', { count: members.length, saveButtonsWired: list.querySelectorAll('.member-save').length });
   };
 
   const loadMembers = async () => {
@@ -262,7 +284,13 @@
       return;
     }
     const detail = [nameChanged ? `회원 이름 → ${nextName}` : '', typeChanged ? `회원 유형 → ${TYPE_LABELS[nextType]}` : '', roleChanged ? `${ROLE_LABELS[member.role]} → ${ROLE_LABELS[nextRole]}` : '', statusChanged ? `${member.account_status === 'active' ? '활성' : '중지'} → ${nextStatus === 'active' ? '활성' : '중지'}` : '', premiumChanged ? `Premium 회원(AI 쇼츠) → ${nextPremium ? '승인' : '미승인'}` : ''].filter(Boolean).join('\n');
-    if (!window.confirm(`${member.email} 회원을 다음과 같이 변경할까요?\n\n${detail}`)) return;
+    console.log('[admin] asking for confirmation', { memberId: member.id, detail });
+    const confirmed = await askConfirm(`${member.email} 회원을 다음과 같이 변경할까요?\n\n${detail}`);
+    console.log('[admin] confirmation result', confirmed);
+    if (!confirmed) {
+      setMessage('변경이 취소되었습니다.', true);
+      return;
+    }
     setMessage(`${member.email} 회원 정보를 변경하고 있습니다.`);
     console.log('[admin] updateMember start', { memberId: member.id, email: member.email, roleChanged, typeChanged, statusChanged, nameChanged, premiumChanged, nextPremium });
 
