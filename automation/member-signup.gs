@@ -7,9 +7,15 @@ const MEMBER_SIGNUP = {
   roleEmailSecretProperty: 'ROLE_EMAIL_WEBHOOK_SECRET'
 };
 
-const HEADERS = ['회원 ID', '가입시각', '이름', '이메일', '가입방식', '회원유형', '파트너등급', '가입경로'];
+// Columns 9-10 (Premium 여부/활성 상태) are appended after the original
+// 8 columns rather than inserted in the middle, so every existing function
+// that reads/writes columns 1-8 by fixed position (registerMember_,
+// updateMember_, updateIdentityAndMembership_) needed no changes at all.
+const HEADERS = ['회원 ID', '가입시각', '이름', '이메일', '가입방식', '회원유형', '파트너등급', '가입경로', 'Premium 여부', '활성 상태'];
 const TYPE_LABELS = ['일반회원', '수강생', '입점 파트너', '탈퇴'];
 const TIER_LABELS = ['무료 파트너', '$20 베이직 파트너', '$50 프리미엄 파트너'];
+const PREMIUM_LABELS = ['Premium 승인', 'Premium 미승인'];
+const STATUS_LABELS = ['활성', '중지'];
 const ROLE_INFO = {
   member: { type: '일반회원', tier: '', label: '일반회원' },
   partner0: { type: '입점 파트너', tier: '무료 파트너', label: '무료 파트너' },
@@ -24,6 +30,7 @@ function doPost(e) {
     if (values.action === 'role_change') return sendRoleChangeEmail_(values);
     if (values.action === 'member_type_change') return changeMemberType_(values);
     if (values.action === 'member_withdrawal') return markMemberWithdrawn_(values);
+    if (values.action === 'profile_sync') return syncProfile_(values);
     return registerMember_(values);
   } catch (error) {
     return json_({ ok: false, error: String(error && error.message ? error.message : error) });
@@ -118,6 +125,30 @@ function markMemberWithdrawn_(values) {
   return json_({ ok: true });
 }
 
+// Admin-panel save sync: updates 회원유형/파트너등급/Premium 여부/활성 상태
+// on an EXISTING row only (found by 회원 ID or 이메일) -- never appends a
+// new row, since this only ever fires for a member who already exists.
+// Columns 1-5 and 8 (identity/가입경로) are left untouched.
+function syncProfile_(values) {
+  requireWebhookSecret_(values);
+  const sheet = getSheet_();
+  ensureSchema_(sheet);
+  const id = text_(values.member_id);
+  const email = text_(values.member_email);
+  const row = findMemberRow_(sheet, id, email);
+  if (!row) {
+    return json_({ ok: false, error: '회원 명단 시트에서 해당 회원 행을 찾지 못해 업데이트하지 못했습니다.' });
+  }
+  const memberType = normalizeType_(values.member_type);
+  const partnerTier = (ROLE_INFO[text_(values.role)] || {}).tier || '';
+  const premiumLabel = text_(values.premium) === 'true' ? 'Premium 승인' : 'Premium 미승인';
+  const statusLabel = text_(values.account_status) === 'suspended' ? '중지' : '활성';
+  sheet.getRange(row, 6, 1, 2).setValues([[memberType, partnerTier]]);
+  sheet.getRange(row, 9, 1, 2).setValues([[premiumLabel, statusLabel]]);
+  SpreadsheetApp.flush();
+  return json_({ ok: true });
+}
+
 function updateMember_(values, memberType, partnerTier, withdrawal) {
   const sheet = getSheet_();
   ensureSchema_(sheet);
@@ -161,6 +192,8 @@ function ensureSchema_(sheet) {
   const rows = Math.max(sheet.getMaxRows() - 1, 1);
   sheet.getRange(2, 6, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(TYPE_LABELS, true).setAllowInvalid(false).build());
   sheet.getRange(2, 7, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(TIER_LABELS, true).setAllowInvalid(false).build());
+  sheet.getRange(2, 9, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(PREMIUM_LABELS, true).setAllowInvalid(false).build());
+  sheet.getRange(2, 10, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUS_LABELS, true).setAllowInvalid(false).build());
   const usedRows = Math.max(sheet.getLastRow() - 1, 0);
   if (usedRows > 0) {
     const membership = sheet.getRange(2, 6, usedRows, 2).getDisplayValues();

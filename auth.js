@@ -330,14 +330,36 @@
     return { role: data?.role || 'member', status: data?.account_status || 'active', name: data?.display_name || '', type: data?.member_type || 'general', premium: data?.premium_member === true };
   };
 
+  // client.auth.getSession() (below) and client.auth.onAuthStateChange()'s
+  // own initial callback both fire once for the same session on every page
+  // load, and both used to call this independently — doubling the
+  // member_profiles round trip on every visit, right when the page is
+  // trying to render. If a refresh for the same access token is already
+  // in flight, later callers just await it instead of issuing a second
+  // fetch.
+  let refreshInFlightToken = null;
+  let refreshInFlightPromise = null;
   const refreshMemberAccess = async session => {
-    const access = await loadMemberAccess(session);
-    activeMemberRole = access.role;
-    activeMemberStatus = access.status;
-    activeMemberName = access.name || '';
-    activeMemberType = access.type || 'general';
-    activeMemberPremium = access.premium === true;
-    render(session);
+    const token = session?.access_token || null;
+    if (refreshInFlightPromise && refreshInFlightToken === token) {
+      await refreshInFlightPromise;
+      return;
+    }
+    refreshInFlightToken = token;
+    refreshInFlightPromise = (async () => {
+      const access = await loadMemberAccess(session);
+      activeMemberRole = access.role;
+      activeMemberStatus = access.status;
+      activeMemberName = access.name || '';
+      activeMemberType = access.type || 'general';
+      activeMemberPremium = access.premium === true;
+      render(session);
+    })();
+    try {
+      await refreshInFlightPromise;
+    } finally {
+      refreshInFlightPromise = null;
+    }
   };
 
   // Lets other on-page scripts (e.g. the AI Shorts card) react to sign-in
@@ -449,9 +471,20 @@
     const status = authModal.querySelector('.auth-status');
     status.textContent = t('로그인 서버를 확인하고 있습니다…', 'Checking the secure sign-in service…');
     try {
-      const health = await fetch(`${SUPABASE_URL}/auth/v1/settings`, {
-        headers: { apikey: SUPABASE_PUBLISHABLE_KEY }
-      });
+      // Bounded so a slow/unresponsive network can't stall the login click
+      // indefinitely -- this pre-flight check exists to give a clear
+      // message if Supabase itself is down, not to add unbounded wait time.
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 3000);
+      let health;
+      try {
+        health = await fetch(`${SUPABASE_URL}/auth/v1/settings`, {
+          headers: { apikey: SUPABASE_PUBLISHABLE_KEY },
+          signal: controller.signal
+        });
+      } finally {
+        window.clearTimeout(timeout);
+      }
       if (!health.ok) throw new Error(`HTTP ${health.status}`);
     } catch {
       status.textContent = t('현재 로그인 서버에 연결할 수 없습니다. Supabase 프로젝트 상태를 확인해 주세요.', 'The sign-in service is currently unavailable. Please check the Supabase project status.');
@@ -590,12 +623,16 @@
     activeMemberRole = session ? 'loading' : 'guest';
     activeMemberStatus = session ? 'loading' : 'active';
     render(session);
+    // Close the login modal as soon as sign-in itself succeeds, rather
+    // than waiting on the member_profiles fetch and (for a brand-new
+    // signup) the admin notification -- those still run right after and
+    // update the header once they resolve, but the user shouldn't have
+    // to watch the modal sit open for them; that was reading as "login is
+    // slow" when the OAuth part had already finished.
+    if (event === 'SIGNED_IN') setModalOpen(false);
     await applyPendingMemberType(session);
     await refreshMemberAccess(session);
-    if (event === 'SIGNED_IN') {
-      setModalOpen(false);
-      await notifyAdminOfNewSignup(session?.user);
-    }
+    if (event === 'SIGNED_IN') await notifyAdminOfNewSignup(session?.user);
   });
 
   let accessRefreshRunning = false;

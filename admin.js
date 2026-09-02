@@ -31,6 +31,20 @@
   let currentUserName = '';
   let allMembers = [];
 
+  // Postgrest/Supabase errors carry more than .message -- .code, .details
+  // and .hint often say exactly what's wrong (missing function, RLS
+  // denial, bad param). Surface all of it on screen, not just the terse
+  // message, so a real production failure is diagnosable without opening
+  // devtools.
+  const describeError = error => {
+    if (!error) return '알 수 없는 오류';
+    if (typeof error === 'string') return error;
+    const parts = [error.message || String(error)];
+    if (error.code) parts.push(`code=${error.code}`);
+    if (error.details) parts.push(`details=${error.details}`);
+    if (error.hint) parts.push(`hint=${error.hint}`);
+    return parts.join(' | ');
+  };
   const setMessage = (text = '', error = false) => {
     message.textContent = text;
     message.classList.toggle('error', error);
@@ -189,7 +203,7 @@
     refreshButton.textContent = '새로고침 ↻';
     if (error) {
       if (error.code === '42501') deny('관리자 권한이 확인되지 않아 접근할 수 없습니다.');
-      else setMessage(`회원 명단을 불러오지 못했습니다: ${error.message}`, true);
+      else setMessage(`회원 명단을 불러오지 못했습니다: ${describeError(error)}`, true);
       return;
     }
     allMembers = (data || []).map(member => member.id === currentUserId && currentUserName ? { ...member, display_name: currentUserName } : member);
@@ -315,34 +329,66 @@
     try {
       // Each field is saved independently so one failing RPC (e.g. a
       // migration that hasn't been applied yet) can't silently block the
-      // other, unrelated fields from being saved.
+      // other, unrelated fields from being saved. `field` is a stable key
+      // used by the post-save verification step below; `label` is just
+      // display text.
       const results = [];
       if (nameChanged) {
         const { error } = await callRpc('admin_update_member_name', { p_member_id: member.id, p_display_name: nextName });
-        results.push({ label: '회원 이름', ok: !error, error });
+        results.push({ field: 'name', label: '회원 이름', ok: !error, error });
       }
       if (premiumChanged) {
         const { error } = await callRpc('admin_update_member_premium', { p_member_id: member.id, p_premium: nextPremium });
-        results.push({ label: 'Premium 승인 상태', ok: !error, error });
+        results.push({ field: 'premium', label: 'Premium 승인 상태', ok: !error, error });
       }
       if (typeChanged) {
         const { error } = await callRpc('admin_update_member_type', { p_member_id: member.id, p_member_type: nextType });
-        results.push({ label: '회원 유형', ok: !error, error });
+        results.push({ field: 'type', label: '회원 유형', ok: !error, error });
       }
       const roleChangedAt = new Date(Date.now() - 2000).toISOString();
       if (roleChanged || statusChanged) {
         const { error } = await callRpc('admin_update_member', { p_member_id: member.id, p_role: nextRole, p_account_status: nextStatus });
-        results.push({ label: roleChanged && statusChanged ? '파트너 등급/활성 상태' : roleChanged ? '파트너 등급' : '활성 상태', ok: !error, error });
+        results.push({ field: 'roleStatus', label: roleChanged && statusChanged ? '파트너 등급/활성 상태' : roleChanged ? '파트너 등급' : '활성 상태', ok: !error, error });
       }
 
-      const typeSaved = results.some(result => result.label === '회원 유형' && result.ok);
-      if (typeChanged && !roleChanged && typeSaved) {
-        const { error: rosterError } = await client.functions.invoke('notify-role-change', { body: { action: 'member_type_change', memberId: member.id } });
-        results.push({ label: '회원가입 명단 반영', ok: !rosterError, error: rosterError });
+      // Never trust an RPC's { error: null } alone as proof the value
+      // actually changed -- re-read the member from the database (via the
+      // same admin_list_members() the list itself uses, so there's no
+      // second copy of the data to fall out of sync) and only count a
+      // field as saved if the fresh value actually matches what was asked
+      // for.
+      await loadMembers();
+      const freshMember = allMembers.find(candidate => candidate.id === member.id);
+      console.log('[admin] post-save verification read', freshMember);
+      const markUnverified = (field, msg) => {
+        const result = results.find(candidate => candidate.field === field && candidate.ok);
+        if (result) { result.ok = false; result.error = { message: msg }; }
+      };
+      if (!freshMember) {
+        results.filter(result => result.ok).forEach(result => {
+          result.ok = false;
+          result.error = { message: '저장 후 회원 정보를 다시 불러오지 못해 DB 반영 여부를 확인할 수 없습니다.' };
+        });
+      } else {
+        if (nameChanged && freshMember.display_name !== nextName) {
+          markUnverified('name', `DB에 실제로 반영되지 않았습니다 (요청값: ${nextName}, 실제값: ${freshMember.display_name || '(없음)'})`);
+        }
+        if (premiumChanged && (freshMember.premium_member === true) !== nextPremium) {
+          markUnverified('premium', `DB에 실제로 반영되지 않았습니다 (요청값: ${nextPremium ? '승인' : '미승인'}, 실제값: ${freshMember.premium_member ? '승인' : '미승인'})`);
+        }
+        if (typeChanged && freshMember.member_type !== nextType) {
+          markUnverified('type', `DB에 실제로 반영되지 않았습니다 (요청값: ${TYPE_LABELS[nextType] || nextType}, 실제값: ${TYPE_LABELS[freshMember.member_type] || freshMember.member_type})`);
+        }
+        if (roleChanged && freshMember.role !== nextRole) {
+          markUnverified('roleStatus', `파트너 등급이 DB에 실제로 반영되지 않았습니다 (요청값: ${ROLE_LABELS[nextRole] || nextRole}, 실제값: ${ROLE_LABELS[freshMember.role] || freshMember.role})`);
+        }
+        if (statusChanged && freshMember.account_status !== nextStatus) {
+          markUnverified('roleStatus', `활성 상태가 DB에 실제로 반영되지 않았습니다 (요청값: ${nextStatus}, 실제값: ${freshMember.account_status})`);
+        }
       }
 
       let emailNote = '';
-      const tierSaved = results.some(result => result.label.startsWith('파트너 등급') && result.ok);
+      const tierSaved = results.some(result => result.field === 'roleStatus' && result.ok);
       if (roleChanged && tierSaved) {
         try {
           await waitForAutomaticRoleEmail(member.id, roleChangedAt);
@@ -357,29 +403,47 @@
         }
       }
 
+      // Sync the (now-verified) member profile to the existing member
+      // roster Google Sheet -- reusing the same notify-role-change Edge
+      // Function and Apps Script webhook the role-change email already
+      // goes through, not a separate system. This must never affect
+      // whether the DB save itself is reported as successful: it only
+      // runs after a save actually succeeded, and its own failure is
+      // reported as a separate, additional note.
+      let sheetSyncNote = '';
+      const anyFieldSaved = results.some(result => result.ok && ['name', 'type', 'premium', 'roleStatus'].includes(result.field));
+      if (anyFieldSaved) {
+        console.log('[admin] syncing profile to member roster sheet', { memberId: member.id });
+        const { error: syncError } = await client.functions.invoke('notify-role-change', { body: { action: 'profile_sync', memberId: member.id } });
+        console.log('[admin] roster sheet sync result', { error: syncError });
+        sheetSyncNote = syncError
+          ? ` 회원 정보는 저장되었지만 회원 명단 시트 업데이트에 실패했습니다: ${describeError(syncError)}`
+          : ' 회원 명단 시트에도 반영되었습니다.';
+      }
+
       const failed = results.filter(result => !result.ok);
       const succeeded = results.filter(result => result.ok);
-      console.log('[admin] updateMember results', results);
+      console.log('[admin] updateMember results (after DB verification)', results);
       let resultMessage;
       let resultIsError;
       if (failed.length === 0) {
-        resultMessage = `저장되었습니다.${emailNote}`;
+        resultMessage = `저장되었습니다. (DB 재조회로 확인함)${emailNote}${sheetSyncNote}`;
         resultIsError = false;
       } else {
-        const failureText = failed.map(result => `${result.label}: ${result.error?.message || result.error}`).join(' / ');
+        const failureText = failed.map(result => `${result.label}: ${describeError(result.error)}`).join(' / ');
         resultIsError = true;
         resultMessage = succeeded.length === 0
           ? `저장에 실패했습니다. ${failureText}`
-          : `일부 항목만 저장되었습니다 (${succeeded.map(result => result.label).join(', ')}). 실패: ${failureText}${emailNote}`;
+          : `일부 항목만 저장되었습니다 (${succeeded.map(result => result.label).join(', ')}). 실패: ${failureText}${emailNote}${sheetSyncNote}`;
       }
-      // loadMembers() sets its own "명단을 불러오는 중" status messages while it
-      // refreshes the list from the database, so the save result has to be
-      // re-applied after it finishes — otherwise the admin never sees it.
-      await loadMembers();
+      // loadMembers() already ran above (to fetch the verification data)
+      // and sets its own "명단을 불러오는 중" status text while it does, so
+      // the save result has to be applied last -- otherwise the admin
+      // never sees it.
       setMessage(resultMessage, resultIsError);
     } catch (unexpected) {
       console.error('[admin] updateMember failed unexpectedly', unexpected);
-      setMessage(`예기치 않은 오류로 저장하지 못했습니다: ${unexpected?.message || unexpected}`, true);
+      setMessage(`예기치 않은 오류로 저장하지 못했습니다: ${describeError(unexpected)}`, true);
     }
   };
 
