@@ -31,6 +31,20 @@
   let currentUserName = '';
   let allMembers = [];
 
+  // Postgrest/Supabase errors carry more than .message -- .code, .details
+  // and .hint often say exactly what's wrong (missing function, RLS
+  // denial, bad param). Surface all of it on screen, not just the terse
+  // message, so a real production failure is diagnosable without opening
+  // devtools.
+  const describeError = error => {
+    if (!error) return '알 수 없는 오류';
+    if (typeof error === 'string') return error;
+    const parts = [error.message || String(error)];
+    if (error.code) parts.push(`code=${error.code}`);
+    if (error.details) parts.push(`details=${error.details}`);
+    if (error.hint) parts.push(`hint=${error.hint}`);
+    return parts.join(' | ');
+  };
   const setMessage = (text = '', error = false) => {
     message.textContent = text;
     message.classList.toggle('error', error);
@@ -189,7 +203,7 @@
     refreshButton.textContent = '새로고침 ↻';
     if (error) {
       if (error.code === '42501') deny('관리자 권한이 확인되지 않아 접근할 수 없습니다.');
-      else setMessage(`회원 명단을 불러오지 못했습니다: ${error.message}`, true);
+      else setMessage(`회원 명단을 불러오지 못했습니다: ${describeError(error)}`, true);
       return;
     }
     allMembers = (data || []).map(member => member.id === currentUserId && currentUserName ? { ...member, display_name: currentUserName } : member);
@@ -366,7 +380,7 @@
         resultMessage = `저장되었습니다.${emailNote}`;
         resultIsError = false;
       } else {
-        const failureText = failed.map(result => `${result.label}: ${result.error?.message || result.error}`).join(' / ');
+        const failureText = failed.map(result => `${result.label}: ${describeError(result.error)}`).join(' / ');
         resultIsError = true;
         resultMessage = succeeded.length === 0
           ? `저장에 실패했습니다. ${failureText}`
@@ -379,7 +393,7 @@
       setMessage(resultMessage, resultIsError);
     } catch (unexpected) {
       console.error('[admin] updateMember failed unexpectedly', unexpected);
-      setMessage(`예기치 않은 오류로 저장하지 못했습니다: ${unexpected?.message || unexpected}`, true);
+      setMessage(`예기치 않은 오류로 저장하지 못했습니다: ${describeError(unexpected)}`, true);
     }
   };
 

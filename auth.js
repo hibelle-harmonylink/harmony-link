@@ -330,14 +330,36 @@
     return { role: data?.role || 'member', status: data?.account_status || 'active', name: data?.display_name || '', type: data?.member_type || 'general', premium: data?.premium_member === true };
   };
 
+  // client.auth.getSession() (below) and client.auth.onAuthStateChange()'s
+  // own initial callback both fire once for the same session on every page
+  // load, and both used to call this independently — doubling the
+  // member_profiles round trip on every visit, right when the page is
+  // trying to render. If a refresh for the same access token is already
+  // in flight, later callers just await it instead of issuing a second
+  // fetch.
+  let refreshInFlightToken = null;
+  let refreshInFlightPromise = null;
   const refreshMemberAccess = async session => {
-    const access = await loadMemberAccess(session);
-    activeMemberRole = access.role;
-    activeMemberStatus = access.status;
-    activeMemberName = access.name || '';
-    activeMemberType = access.type || 'general';
-    activeMemberPremium = access.premium === true;
-    render(session);
+    const token = session?.access_token || null;
+    if (refreshInFlightPromise && refreshInFlightToken === token) {
+      await refreshInFlightPromise;
+      return;
+    }
+    refreshInFlightToken = token;
+    refreshInFlightPromise = (async () => {
+      const access = await loadMemberAccess(session);
+      activeMemberRole = access.role;
+      activeMemberStatus = access.status;
+      activeMemberName = access.name || '';
+      activeMemberType = access.type || 'general';
+      activeMemberPremium = access.premium === true;
+      render(session);
+    })();
+    try {
+      await refreshInFlightPromise;
+    } finally {
+      refreshInFlightPromise = null;
+    }
   };
 
   // Lets other on-page scripts (e.g. the AI Shorts card) react to sign-in
