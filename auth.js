@@ -316,15 +316,41 @@
     });
   }
 
+  const describeAccessError = error => (error && typeof error === 'object')
+    ? { code: error.code, message: error.message, details: error.details, hint: error.hint }
+    : { message: String(error) };
+
+  // Reads the caller's own row through a security-definer RPC first --
+  // the same pattern the admin screen already relies on (admin_list_members,
+  // admin_update_member*), which bypasses table/RLS grants entirely. A
+  // plain `.from('member_profiles').select(...)` is subject to whatever
+  // grants exist on the table, and if those were never extended to a
+  // newer column (member_type/premium_member) a member's own read could
+  // silently come back wrong while the admin's RPC-based save
+  // verification stays unaffected -- i.e. the admin panel would report a
+  // successful, verified save while the member's own next login still
+  // shows the old grade. Falls back to the previous direct-select
+  // behavior if the RPC isn't deployed yet (e.g. its migration hasn't
+  // been run), so this can't regress anything that already works.
   const loadMemberAccess = async session => {
     if (!session?.user) return { role: 'guest', status: 'active' };
+    const { data: rpcData, error: rpcError } = await client.rpc('get_own_member_profile');
+    if (!rpcError) {
+      const row = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+      if (row) {
+        return { role: row.role || 'member', status: row.account_status || 'active', name: row.display_name || '', type: row.member_type || 'general', premium: row.premium_member === true };
+      }
+      console.error('get_own_member_profile returned no row for a signed-in user.', { userId: session.user.id });
+    } else {
+      console.error('get_own_member_profile RPC failed; falling back to a direct member_profiles read.', describeAccessError(rpcError));
+    }
     const { data, error } = await client
       .from('member_profiles')
       .select('role,account_status,display_name,member_type,premium_member')
       .eq('id', session.user.id)
       .maybeSingle();
     if (error) {
-      console.error('Member access could not be loaded.', error);
+      console.error('Member access could not be loaded from member_profiles directly.', describeAccessError(error));
       return { role: 'member', status: 'active', type: 'general', premium: false };
     }
     return { role: data?.role || 'member', status: data?.account_status || 'active', name: data?.display_name || '', type: data?.member_type || 'general', premium: data?.premium_member === true };
