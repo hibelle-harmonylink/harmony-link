@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  console.log('[admin] admin.js loaded — build 20260901-4');
+  console.log('[admin] admin.js loaded — build 20260902-1');
 
   const SUPABASE_URL = 'https://ricndeoiomzjacmrsjtg.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_cGiclRJGjTqHBPVZqgTiQA_tvGKSQ60';
@@ -390,14 +390,19 @@
       let emailNote = '';
       const tierSaved = results.some(result => result.field === 'roleStatus' && result.ok);
       if (roleChanged && tierSaved) {
+        console.log('[admin] waiting for the automatic role-change email', { memberId: member.id, roleChangedAt });
         try {
           await waitForAutomaticRoleEmail(member.id, roleChangedAt);
+          console.log('[admin] automatic role-change email confirmed sent', { memberId: member.id });
           emailNote = ' 안내메일도 정상 발송되었습니다.';
-        } catch {
+        } catch (automaticError) {
+          console.error('[admin] automatic role-change email was not confirmed; falling back to a direct send', { memberId: member.id, error: automaticError.message });
           try {
             await sendDirectRoleNotification({ ...member, role: nextRole }, member.role);
+            console.log('[admin] direct role-change email sent', { memberId: member.id });
             emailNote = ' 안내메일도 정상 발송되었습니다.';
           } catch (directError) {
+            console.error('[admin] direct role-change email also failed', { memberId: member.id, error: directError.message });
             emailNote = ` 다만 안내메일 발송에는 실패했습니다: ${directError.message}`;
           }
         }
