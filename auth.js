@@ -5,6 +5,7 @@
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_cGiclRJGjTqHBPVZqgTiQA_tvGKSQ60';
   const signupAutomationUrl = window.signupAutomationUrl || '';
   const authLibrary = window.supabase;
+  const accessControl = window.HarmonyAccess;
   const nav = document.getElementById('primary-nav');
   const partnerCenter = document.getElementById('partner-center');
   const accessCard = partnerCenter?.querySelector('.partner-access-card');
@@ -12,7 +13,7 @@
   const downloads = partnerCenter?.querySelector('.partner-downloads');
   const partnerNav = nav?.querySelector('a[href="#partner-center"]');
 
-  if (!authLibrary?.createClient || !nav || !partnerCenter || !accessCard || !downloads) {
+  if (!authLibrary?.createClient || !accessControl || !nav || !partnerCenter || !accessCard || !downloads) {
     console.error('Harmony Link authentication could not be initialized.');
     return;
   }
@@ -32,8 +33,9 @@
   let activeMemberRole = 'guest';
   let activeMemberStatus = 'active';
   let activeMemberName = '';
-  let activeMemberType = 'general';
-  let selectedSignupType = 'general';
+  let activeMemberType = 'student';
+  let activeMembership = 'free';
+  let selectedSignupType = 'student';
 
   const authSlot = document.createElement('div');
   authSlot.className = 'auth-nav-slot';
@@ -58,8 +60,7 @@
       <div class="auth-member-type" hidden>
         <span data-ko="가입 유형을 선택해 주세요" data-en="Choose your membership type">가입 유형을 선택해 주세요</span>
         <div>
-          <button type="button" class="active" data-signup-type="general"><b data-ko="일반회원" data-en="General member">일반회원</b><small data-ko="소식과 무료 프로그램 확인" data-en="News and free programs">소식과 무료 프로그램 확인</small></button>
-          <button type="button" data-signup-type="student"><b data-ko="수강생" data-en="Learner">수강생</b><small data-ko="교육 신청과 수강 안내" data-en="Learning requests and class updates">교육 신청과 수강 안내</small></button>
+          <button type="button" class="active" data-signup-type="student"><b data-ko="수강생" data-en="Learner">수강생</b><small data-ko="교육 신청과 수강 안내" data-en="Learning requests and class updates">교육 신청과 수강 안내</small></button>
         </div>
       </div>
       <div class="auth-provider-list">
@@ -92,7 +93,7 @@
     <span class="partner-auth-icon" aria-hidden="true">💬</span>
     <p class="eyebrow">MEMBER COMMUNITY</p>
     <h3 data-ko="회원 커뮤니티를 이용하세요" data-en="Enter the member community">회원 커뮤니티를 이용하세요</h3>
-    <p data-ko="일반회원과 수강생은 승인 대기 없이 가입 즉시 커뮤니티에서 공지와 게시글을 확인할 수 있습니다." data-en="General members and learners can enter the community immediately without waiting for approval.">일반회원과 수강생은 승인 대기 없이 가입 즉시 커뮤니티에서 공지와 게시글을 확인할 수 있습니다.</p>
+    <p data-ko="수강생은 가입 즉시 커뮤니티에서 공지와 게시글을 확인할 수 있습니다." data-en="Learners can enter the community immediately after joining.">수강생은 가입 즉시 커뮤니티에서 공지와 게시글을 확인할 수 있습니다.</p>
     <a class="btn btn-primary" href="community.html?refresh=20260815-301"><span data-ko="커뮤니티 입장" data-en="Enter Community">커뮤니티 입장</span><b>→</b></a>`;
   accessCard.insertBefore(approvalGate, downloads);
 
@@ -184,21 +185,15 @@
     const profile = getProfile(session.user);
     footerDeleteButton.hidden = false;
     footerDeleteButton.textContent = t('회원 탈퇴', 'Delete Account');
-    const roleLabel = activeMemberStatus === 'suspended'
+    const roleLabel = !['active', 'expiring'].includes(activeMemberStatus)
       ? t('이용 중지', 'Suspended')
       : activeMemberRole === 'admin'
       ? t('관리자', 'Administrator')
-      : activeMemberRole === 'partner50'
-        ? t('PREMIUM 파트너 · $50', 'PREMIUM Partner · $50')
-        : activeMemberRole === 'partner20'
-          ? t('BASIC 파트너 · $20', 'BASIC Partner · $20')
-          : activeMemberRole === 'partner0'
-            ? t('무료 파트너', 'Free Partner')
+      : activeMemberType === 'partner'
+        ? `${activeMembership.toUpperCase()} ${t('파트너', 'Partner')}`
         : activeMemberRole === 'loading'
           ? t('회원 확인 중', 'Checking Membership')
-          : activeMemberType === 'student'
-            ? t('수강생', 'Learner')
-            : t('일반회원', 'General Member');
+          : `${activeMembership.toUpperCase()} ${t('수강생', 'Learner')}`;
     const wrapper = document.createElement('div');
     wrapper.className = `auth-user${activeMemberRole === 'admin' ? ' admin-auth-user' : ''}`;
     const avatar = safeAvatar(profile.avatar);
@@ -241,13 +236,13 @@
 
   const renderPartnerCenter = session => {
     const signedIn = Boolean(session?.user);
-    const accountActive = activeMemberStatus !== 'suspended';
-    const isAdmin = signedIn && accountActive && activeMemberRole === 'admin';
-    const isFreePartner = signedIn && accountActive && activeMemberRole === 'partner0';
-    const isBasicPartner = signedIn && accountActive && activeMemberRole === 'partner20';
-    const isPremiumPartner = signedIn && accountActive && activeMemberRole === 'partner50';
-    const isPartner = isFreePartner || isBasicPartner || isPremiumPartner;
-    const approvedPartner = isAdmin || isPartner;
+    const memberAccess = accessControl.normalizeUser({ role: activeMemberRole, user_type: activeMemberType, membership: activeMembership, account_status: activeMemberStatus });
+    const accountActive = ['active', 'expiring'].includes(memberAccess.account_status);
+    const isAdmin = signedIn && memberAccess.is_admin && accountActive;
+    const isFreePartner = signedIn && memberAccess.user_type === 'partner' && memberAccess.membership === 'free' && accountActive;
+    const isBasicPartner = signedIn && memberAccess.user_type === 'partner' && memberAccess.membership === 'basic' && accountActive;
+    const isPremiumPartner = signedIn && memberAccess.user_type === 'partner' && memberAccess.membership === 'premium' && accountActive;
+    const approvedPartner = signedIn && accessControl.canAccessPartnerCenter(memberAccess);
     authGate.hidden = signedIn;
     approvalGate.hidden = !signedIn || approvedPartner;
     downloads.hidden = !approvedPartner;
@@ -257,13 +252,13 @@
     const lock = partnerCenter.querySelector('.partner-lock');
 
     if (securityTitle) {
-      securityTitle.dataset.ko = !accountActive ? '계정 이용 중지' : isAdmin ? '관리자' : isPremiumPartner ? 'PREMIUM 파트너 · $50' : isBasicPartner ? 'BASIC 파트너 · $20' : isFreePartner ? '무료 파트너' : signedIn && activeMemberType === 'student' ? '수강생' : signedIn ? '일반회원' : '회원 로그인 필요';
-      securityTitle.dataset.en = !accountActive ? 'ACCOUNT SUSPENDED' : isAdmin ? 'ADMINISTRATOR' : isPremiumPartner ? 'PREMIUM PARTNER · $50' : isBasicPartner ? 'BASIC PARTNER · $20' : isFreePartner ? 'FREE PARTNER' : signedIn && activeMemberType === 'student' ? 'LEARNER' : signedIn ? 'GENERAL MEMBER' : 'MEMBER SIGN-IN REQUIRED';
+      securityTitle.dataset.ko = !accountActive ? '계정 이용 제한' : isAdmin ? '관리자' : isPremiumPartner ? 'PREMIUM 파트너' : isBasicPartner ? 'BASIC 파트너' : isFreePartner ? 'FREE 파트너' : signedIn ? `${activeMembership.toUpperCase()} 수강생` : '회원 로그인 필요';
+      securityTitle.dataset.en = !accountActive ? 'ACCOUNT UNAVAILABLE' : isAdmin ? 'ADMINISTRATOR' : isPremiumPartner ? 'PREMIUM PARTNER' : isBasicPartner ? 'BASIC PARTNER' : isFreePartner ? 'FREE PARTNER' : signedIn ? `${activeMembership.toUpperCase()} LEARNER` : 'MEMBER SIGN-IN REQUIRED';
       securityTitle.textContent = t(securityTitle.dataset.ko, securityTitle.dataset.en);
     }
     if (securityCopy) {
       const profile = signedIn ? getProfile(session.user) : null;
-      securityCopy.dataset.ko = !accountActive ? `${profile.name}님의 홈페이지 이용이 중지되었습니다. 관리자에게 문의해 주세요.` : isAdmin ? `${profile.name}님, 관리자 권한으로 접속했습니다.` : isPremiumPartner ? `${profile.name}님, $50 PREMIUM 파트너 자료실에 접속했습니다.` : isBasicPartner ? `${profile.name}님, $20 BASIC 파트너 자료실에 접속했습니다.` : isFreePartner ? `${profile.name}님, 무료 파트너 자료실에 접속했습니다.` : signedIn && activeMemberType === 'student' ? `${profile.name}님은 수강생 회원입니다. 이 자료실은 승인된 입점 파트너 전용입니다.` : signedIn ? `${profile.name}님은 일반회원입니다. 이 자료실은 승인된 입점 파트너 전용입니다.` : 'Google 또는 카카오 계정으로 로그인해 주세요.';
+      securityCopy.dataset.ko = !accountActive ? `${profile.name}님의 홈페이지 이용 상태를 확인해 주세요.` : isAdmin ? `${profile.name}님, 관리자 권한으로 접속했습니다.` : approvedPartner ? `${profile.name}님, ${activeMembership.toUpperCase()} 파트너 자료실에 접속했습니다.` : signedIn ? `${profile.name}님은 수강생 회원입니다. 이 자료실은 파트너 전용입니다.` : 'Google 또는 카카오 계정으로 로그인해 주세요.';
       securityCopy.dataset.en = !accountActive ? `${profile.name}'s website access is suspended. Please contact an administrator.` : isAdmin ? `${profile.name} is signed in as an administrator.` : isPremiumPartner ? `Welcome ${profile.name}. Your $50 PREMIUM partner resources are available.` : isBasicPartner ? `Welcome ${profile.name}. Your $20 BASIC partner resources are available.` : isFreePartner ? `Welcome ${profile.name}. Your free partner resources are available.` : signedIn && activeMemberType === 'student' ? `${profile.name} is a learner. This resource center is for approved partners.` : signedIn ? `${profile.name} is a general member. This resource center is for approved partners.` : 'Sign in with your Google or Kakao account.';
       securityCopy.textContent = t(securityCopy.dataset.ko, securityCopy.dataset.en);
     }
@@ -316,16 +311,21 @@
 
   const loadMemberAccess = async session => {
     if (!session?.user) return { role: 'guest', status: 'active' };
-    const { data, error } = await client
+    let { data, error } = await client
       .from('member_profiles')
-      .select('role,account_status,display_name,member_type')
+      .select('role,account_status,display_name,member_type,user_type,membership')
       .eq('id', session.user.id)
       .maybeSingle();
     if (error) {
-      console.error('Member access could not be loaded.', error);
-      return { role: 'member', status: 'active', type: 'general' };
+      const legacy = await client.from('member_profiles').select('role,account_status,display_name,member_type').eq('id', session.user.id).maybeSingle();
+      data = legacy.data; error = legacy.error;
     }
-    return { role: data?.role || 'member', status: data?.account_status || 'active', name: data?.display_name || '', type: data?.member_type || 'general' };
+    if (error) {
+      console.error('Member access could not be loaded.', error);
+      return { role: 'member', status: 'active', type: 'student', membership: 'free' };
+    }
+    const normalized = accessControl.normalizeUser(data);
+    return { role: data?.role || 'member', status: normalized.account_status, name: data?.display_name || '', type: normalized.user_type, membership: normalized.membership };
   };
 
   const refreshMemberAccess = async session => {
@@ -333,7 +333,8 @@
     activeMemberRole = access.role;
     activeMemberStatus = access.status;
     activeMemberName = access.name || '';
-    activeMemberType = access.type || 'general';
+    activeMemberType = access.type || 'student';
+    activeMembership = access.membership || 'free';
     render(session);
   };
 
@@ -341,7 +342,7 @@
     if (!session?.user) return;
     const pendingType = localStorage.getItem('harmonyPendingMemberType');
     if (pendingType !== 'general' && pendingType !== 'student') return;
-    const { error } = await client.rpc('set_own_member_type', { p_member_type: pendingType });
+    const { error } = await client.rpc('set_own_member_type', { p_member_type: 'student' });
     if (!error) localStorage.removeItem('harmonyPendingMemberType');
     else console.error('Member type could not be saved.', error);
   };
@@ -380,9 +381,9 @@
     signupRecord.set('이름', profile.name);
     signupRecord.set('이메일', profile.email);
     signupRecord.set('가입 방식', user.app_metadata?.provider || 'social');
-    signupRecord.set('회원 유형', activeMemberType === 'student' ? '수강생' : '일반회원');
+    signupRecord.set('회원 유형', activeMemberType === 'partner' ? '파트너' : '수강생');
     signupRecord.set('파트너 등급', '');
-    signupRecord.set('회원 구분', activeMemberType === 'student' ? '수강생' : '일반회원');
+    signupRecord.set('회원 구분', activeMemberType === 'partner' ? '파트너' : '수강생');
     signupRecord.set('가입 경로', 'Harmony Link 홈페이지');
 
     try {
@@ -451,7 +452,7 @@
     const signupTypeButton = event.target.closest('[data-signup-type]');
     if (signupTypeButton) {
       event.preventDefault();
-      selectedSignupType = signupTypeButton.dataset.signupType === 'student' ? 'student' : 'general';
+      selectedSignupType = 'student';
       authModal.querySelectorAll('[data-signup-type]').forEach(button => button.classList.toggle('active', button === signupTypeButton));
       return;
     }
