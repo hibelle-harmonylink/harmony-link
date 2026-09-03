@@ -1,6 +1,14 @@
 (() => {
   'use strict';
-  console.log('[admin] admin.js loaded — build 20260902-3');
+  const BUILD = '20260902-4';
+  console.log(`[admin] admin.js loaded — build ${BUILD}`);
+  // Visible without opening devtools -- if this text is missing, blank, or
+  // shows an older build number than the one just shipped, the browser (or
+  // an intermediate cache) is still running an old admin.js, and no
+  // further diagnosis of "the fix didn't do anything" makes sense until
+  // that's resolved first.
+  const buildTag = document.getElementById('adminBuildTag');
+  if (buildTag) buildTag.textContent = `build ${BUILD}`;
 
   const SUPABASE_URL = 'https://ricndeoiomzjacmrsjtg.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_cGiclRJGjTqHBPVZqgTiQA_tvGKSQ60';

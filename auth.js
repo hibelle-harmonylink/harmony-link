@@ -1,5 +1,7 @@
 (() => {
   'use strict';
+  const BUILD = '20260902-2';
+  console.log(`[auth] auth.js loaded — build ${BUILD}`);
 
   const SUPABASE_URL = 'https://ricndeoiomzjacmrsjtg.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_cGiclRJGjTqHBPVZqgTiQA_tvGKSQ60';
@@ -185,7 +187,7 @@
     const profile = getProfile(session.user);
     footerDeleteButton.hidden = false;
     footerDeleteButton.textContent = t('회원 탈퇴', 'Delete Account');
-    const roleLabel = activeMemberStatus === 'suspended'
+    const baseRoleLabel = activeMemberStatus === 'suspended'
       ? t('이용 중지', 'Suspended')
       : activeMemberRole === 'admin'
       ? t('관리자', 'Administrator')
@@ -200,6 +202,15 @@
           : activeMemberType === 'student'
             ? t('수강생', 'Learner')
             : t('일반회원', 'General Member');
+    // premium_member ($50/month AI Shorts membership) is a standalone flag,
+    // independent of member_type/role (a general member can be Premium; a
+    // partner tier is unrelated to it) -- see 202609010001_premium_shorts_access.sql.
+    // It must never be folded into or inferred from the member-type/partner
+    // label above; show it as its own, separate suffix instead.
+    const premiumSuffix = activeMemberPremium === true && activeMemberStatus === 'active' && activeMemberRole !== 'loading'
+      ? t(' · Premium 승인', ' · Premium Approved')
+      : '';
+    const roleLabel = baseRoleLabel + premiumSuffix;
     const wrapper = document.createElement('div');
     wrapper.className = `auth-user${activeMemberRole === 'admin' ? ' admin-auth-user' : ''}`;
     const avatar = safeAvatar(profile.avatar);
@@ -402,7 +413,8 @@
       memberType: activeMemberType,
       premium: activeMemberPremium,
       isAdmin: activeMemberRole === 'admin',
-      hasPremiumAccess
+      hasPremiumAccess,
+      build: BUILD
     };
     window.HarmonyAuthState = state;
     document.dispatchEvent(new CustomEvent('harmony-auth-change', { detail: state }));
