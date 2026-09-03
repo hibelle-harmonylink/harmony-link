@@ -18,7 +18,7 @@
        version.json polling pattern so a stale copy force-reloads itself. -->
   <script>
     (() => {
-      const pageVersion = '20260902-2';
+      const pageVersion = '20260902-3';
       fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
         .then(response => response.ok ? response.json() : null)
         .then(release => {
@@ -32,7 +32,7 @@
     })();
   </script>
   <link rel="stylesheet" href="styles.css?v=20260805-253">
-  <link rel="stylesheet" href="admin.css?v=20260901-2">
+  <link rel="stylesheet" href="admin.css?v=20260902-1">
 </head>
 <body class="admin-page">
   <header class="admin-header">
@@ -83,6 +83,6 @@
   </template>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="admin.js?v=20260902-2"></script>
+  <script src="admin.js?v=20260902-3"></script>
 </body>
 </html>

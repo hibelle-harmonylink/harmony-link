@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  console.log('[admin] admin.js loaded — build 20260902-2');
+  console.log('[admin] admin.js loaded — build 20260902-3');
 
   const SUPABASE_URL = 'https://ricndeoiomzjacmrsjtg.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_cGiclRJGjTqHBPVZqgTiQA_tvGKSQ60';
@@ -43,6 +43,39 @@
     if (error.code) parts.push(`code=${error.code}`);
     if (error.details) parts.push(`details=${error.details}`);
     if (error.hint) parts.push(`hint=${error.hint}`);
+    return parts.join(' | ');
+  };
+  // client.functions.invoke() errors are NOT shaped like PostgREST/RPC
+  // errors -- they're FunctionsHttpError/FunctionsRelayError/
+  // FunctionsFetchError instances with .name/.context (a Response, for the
+  // first two) instead of .code/.details/.hint. describeError() above
+  // silently drops all of that (falls back to just .message), which is
+  // exactly why a Sheet-sync failure only ever showed the bare
+  // "Failed to send a request to the Edge Function" with no further
+  // detail. This reads the actual HTTP status and response body when the
+  // request reached the function at all (FunctionsHttpError/
+  // FunctionsRelayError), and the error's name otherwise (FunctionsFetchError
+  // -- the fetch never got a response, e.g. the function isn't deployed at
+  // this URL, or the request was blocked by CORS; browsers deliberately
+  // withhold further detail from JS for that specific failure mode, so the
+  // Network tab in devtools -- not this message -- is the way to see the
+  // real status/reason when this is what's shown).
+  const describeFunctionError = async error => {
+    if (!error) return '알 수 없는 오류';
+    const parts = [error.message || String(error)];
+    if (error.name) parts.push(`type=${error.name}`);
+    const response = error.context;
+    if (response && typeof response === 'object') {
+      if (typeof response.status === 'number') parts.push(`status=${response.status}`);
+      if (typeof response.clone === 'function') {
+        try {
+          const bodyText = await response.clone().text();
+          if (bodyText) parts.push(`body=${bodyText.slice(0, 400)}`);
+        } catch (readError) {
+          parts.push(`(응답 본문을 읽지 못함: ${readError.message})`);
+        }
+      }
+    }
     return parts.join(' | ');
   };
   const setMessage = (text = '', error = false) => {
@@ -464,10 +497,20 @@
             15000,
             '회원 명단 시트 업데이트 요청이 시간 초과되었습니다.'
           );
-          console.log('[admin] roster sheet sync result', { error: syncError });
-          sheetSyncNote = syncError
-            ? ` 회원 정보는 저장되었지만 회원 명단 시트 업데이트에 실패했습니다: ${describeError(syncError)}`
-            : ' 회원 명단 시트에도 반영되었습니다.';
+          if (syncError) {
+            const detail = await describeFunctionError(syncError);
+            console.error('[admin] roster sheet sync failed', {
+              memberId: member.id,
+              name: syncError.name,
+              message: syncError.message,
+              status: syncError.context?.status,
+              detail
+            });
+            sheetSyncNote = ` 회원 정보는 저장되었지만 회원 명단 시트 업데이트에 실패했습니다: ${detail}`;
+          } else {
+            console.log('[admin] roster sheet sync succeeded', { memberId: member.id });
+            sheetSyncNote = ' 회원 명단 시트에도 반영되었습니다.';
+          }
         } catch (syncTimeoutError) {
           console.error('[admin] roster sheet sync timed out or threw', { memberId: member.id, error: syncTimeoutError.message });
           sheetSyncNote = ` 회원 정보는 저장되었지만 회원 명단 시트 업데이트에 실패했습니다: ${syncTimeoutError.message}`;
