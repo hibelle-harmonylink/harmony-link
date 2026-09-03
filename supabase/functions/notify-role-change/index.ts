@@ -57,7 +57,23 @@ Deno.serve(async (request) => {
       const userClient = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authorization } } });
       const { data: { user }, error: userError } = await userClient.auth.getUser();
       if (userError || !user) return json({ error: 'Authentication required' }, 401);
-      const { data: administrator } = await userClient.from('member_profiles').select('role,account_status').eq('id', user.id).maybeSingle();
+      // Read via adminClient (service role), not userClient -- every other
+      // admin-authorization check in this codebase (admin_list_members,
+      // admin_update_member*, etc.) is a `security definer` Postgres
+      // function that deliberately bypasses RLS for exactly this kind of
+      // "is the validated caller an admin" check. Reading through
+      // userClient instead makes this specific check silently depend on
+      // member_profiles having a working self-select RLS policy; if that
+      // policy is ever missing, stricter than intended, or briefly
+      // misconfigured, a genuine admin's own request would be rejected
+      // here with a false "administrator access required", even though
+      // every other admin action on the same page keeps working (since
+      // those all go through RPCs that never touch RLS at all). user.id
+      // here is the server-validated id from userClient.auth.getUser(),
+      // not caller-supplied, so bypassing RLS for this specific lookup is
+      // exactly as safe as the security-definer pattern used everywhere
+      // else -- it does not widen what any caller can do.
+      const { data: administrator } = await adminClient.from('member_profiles').select('role,account_status').eq('id', user.id).maybeSingle();
       if (administrator?.role !== 'admin' || administrator?.account_status !== 'active') return json({ error: 'Administrator access required' }, 403);
 
       const syncMemberId = String(requestBody.memberId || '');
@@ -130,7 +146,23 @@ Deno.serve(async (request) => {
       const userClient = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authorization } } });
       const { data: { user }, error: userError } = await userClient.auth.getUser();
       if (userError || !user) return json({ error: 'Authentication required' }, 401);
-      const { data: administrator } = await userClient.from('member_profiles').select('role,account_status').eq('id', user.id).maybeSingle();
+      // Read via adminClient (service role), not userClient -- every other
+      // admin-authorization check in this codebase (admin_list_members,
+      // admin_update_member*, etc.) is a `security definer` Postgres
+      // function that deliberately bypasses RLS for exactly this kind of
+      // "is the validated caller an admin" check. Reading through
+      // userClient instead makes this specific check silently depend on
+      // member_profiles having a working self-select RLS policy; if that
+      // policy is ever missing, stricter than intended, or briefly
+      // misconfigured, a genuine admin's own request would be rejected
+      // here with a false "administrator access required", even though
+      // every other admin action on the same page keeps working (since
+      // those all go through RPCs that never touch RLS at all). user.id
+      // here is the server-validated id from userClient.auth.getUser(),
+      // not caller-supplied, so bypassing RLS for this specific lookup is
+      // exactly as safe as the security-definer pattern used everywhere
+      // else -- it does not widen what any caller can do.
+      const { data: administrator } = await adminClient.from('member_profiles').select('role,account_status').eq('id', user.id).maybeSingle();
       if (administrator?.role !== 'admin' || administrator?.account_status !== 'active') return json({ error: 'Administrator access required' }, 403);
       if (!memberId && !memberEmail) return json({ error: 'Member id or email is required' }, 400);
     }
