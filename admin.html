@@ -6,7 +6,31 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>회원 및 파트너 관리 | Harmony Link</title>
+  <!-- admin.html had no cache-busting/auto-refresh of its own (unlike
+       index.html), so a browser or intermediate cache could keep serving
+       an old admin.html -- with old admin.js/admin.css query strings baked
+       into it -- indefinitely, silently hiding every admin.js fix shipped
+       after that snapshot was cached. Mirrors index.html's exact
+       version.json polling pattern so a stale copy force-reloads itself. -->
+  <script>
+    (() => {
+      const pageVersion = '20260902-2';
+      fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
+        .then(response => response.ok ? response.json() : null)
+        .then(release => {
+          if (!release?.version || release.version === pageVersion) return;
+          const latestUrl = new URL(window.location.href);
+          if (latestUrl.searchParams.get('refresh') === release.version) return;
+          latestUrl.searchParams.set('refresh', release.version);
+          window.location.replace(latestUrl);
+        })
+        .catch(() => {});
+    })();
+  </script>
   <link rel="stylesheet" href="styles.css?v=20260805-253">
   <link rel="stylesheet" href="admin.css?v=20260901-2">
 </head>
