@@ -235,6 +235,16 @@ $$;
 -- own login/homepage grade -- re-published here with user_type/membership
 -- added so it keeps returning every column the current model needs
 -- instead of silently going stale the moment this migration adds them.
+--
+-- Its previously-deployed shape only returned 5 columns (role,
+-- account_status, display_name, member_type, premium_member); inserting
+-- user_type/membership changes the OUT-parameter row type, which
+-- `create or replace function` cannot do for a function whose return type
+-- changes (fails with 42P13). No other function or view in this schema
+-- calls get_own_member_profile() -- only client code (auth.js) invokes it
+-- as an RPC -- so dropping and recreating it here is safe and carries no
+-- CASCADE risk; the revoke/grant below re-applies the same permissions.
+drop function if exists public.get_own_member_profile();
 create or replace function public.get_own_member_profile()
 returns table (
   role text,
