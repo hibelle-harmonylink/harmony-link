@@ -174,43 +174,61 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
    fallback for unusually short viewports, but the two-column layout
    means that fallback should rarely if ever engage on a normal PC. */
 .member-dialog{width:min(940px,calc(100% - 24px));overflow:hidden}
-.member-detail{max-height:calc(90vh - 60px);overflow-y:auto;gap:14px}
+.member-detail{max-height:calc(90vh - 56px);overflow-y:auto;gap:12px}
 /* .eyebrow carries a 22px bottom margin sized for full-page hero
    sections site-wide -- inside this compact dialog header it was most
    of the "too much top padding" the header appeared to have. */
-.member-dialog-head{padding:14px 22px}
+.member-dialog-head{padding:12px 22px}
 .member-dialog-head .eyebrow{margin:0 0 2px}
-.member-dialog-head h2{font-size:21px;margin:0}
-/* Name/email/role badges read as one identity line instead of the name
-   sitting alone above them (the base rule forces the name to its own
-   full-width row -- overridden here to flow inline). */
-.member-detail-summary strong{width:auto;font-size:26px;font-weight:900;color:var(--admin-navy)}
-.member-detail-summary span{font-size:15px;color:var(--admin-muted)}
+.member-dialog-head h2{font-size:20px;margin:0}
 .member-detail-summary .member-badge{font-size:12.5px;padding:7px 13px}
-.member-edit-grid,.member-dates{border:1px solid var(--admin-line);border-radius:14px;padding:18px 20px;background:#fbfdff}
-.member-edit-grid label{font-size:13px;font-weight:800;color:#3c5876;gap:8px}
-.member-edit-grid select,.member-edit-grid input{font-size:14px;font-weight:600}
-.member-dates{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;margin:0}
-.member-dates dt{font-size:11px;font-weight:800;color:#7c8ba0;letter-spacing:.02em}
-.member-dates dd{font-size:14px;font-weight:700;color:#233a58;margin:4px 0 0}
 /* Keeps its own light-blue accent background (an info notice, not a
    plain field box) but matches the same border-radius/padding rhythm. */
-.member-protected-copy{border-radius:14px;padding:18px 20px;font-size:13px;line-height:1.6}
-/* Feature access reads as its own section, set apart from the info/
-   dates row above with a divider and noticeably larger, darker text. */
-#detailFeatures{border-top:1px solid var(--admin-line);padding-top:12px}
-.feature-box{padding:16px 20px}
-.feature-box h3{font-size:16px;font-weight:800;color:var(--admin-navy);margin:0 0 10px}
-.feature-box ul{font-size:14.5px;font-weight:600;color:#233045;gap:9px;line-height:1.45}
-.member-detail-actions{border-top:1px solid var(--admin-line);padding-top:12px}
-.member-detail-actions button{font-size:14px}
+.member-protected-copy{border-radius:12px;padding:14px 18px;font-size:13px;line-height:1.5}
 .member-resend{background:#fff;color:var(--admin-blue);border:1.5px solid var(--admin-blue)}
 .member-resend:disabled{cursor:wait;opacity:.6}
 @media(min-width:681px){
-  .member-detail{display:grid;grid-template-columns:1fr 1fr;gap:14px 24px;padding:16px 28px}
-  .member-detail-summary{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center}
-  .member-edit-grid,.member-protected-copy{grid-column:1;grid-row:2}
-  .member-dates{grid-column:2;grid-row:2}
-  #detailFeatures{grid-column:1/-1;grid-row:3}
-  .member-detail-actions{grid-column:1/-1;grid-row:4}
+  .member-detail{padding:14px 28px}
+  /* Visual order only (DOM order is unchanged): 날짜정보 sits right
+     after 기본정보, with 기능 access moved down below both instead of
+     between them. */
+  .member-detail-summary{order:1}
+  .member-edit-grid,.member-protected-copy{order:2}
+  .member-dates{order:3}
+  #detailFeatures{order:4}
+  .member-detail-actions{order:5}
+  /* Identity line: name (left, own natural width) -- email (center,
+     grows to fill the middle since it's the only flexible item, so
+     text-align:center lands it in the middle of that space) -- role/
+     membership/status badges (pushed to the right edge because the
+     email already absorbed the slack between them). */
+  .member-detail-summary{display:flex;align-items:center;flex-wrap:nowrap;gap:14px}
+  .member-detail-summary strong{width:auto;flex:0 1 auto;font-size:22px;font-weight:900;color:var(--admin-navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .member-detail-summary strong + span{flex:1 1 auto;min-width:0;text-align:center;font-size:17px;font-weight:700;color:var(--admin-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .member-detail-summary .member-badge{flex:0 0 auto}
+  /* 기본정보/날짜정보 as thin single-line strips (label and value share
+     one line) instead of tall boxed cards, each strip's fields sitting
+     in one row. */
+  .member-edit-grid,.member-dates{border:1px solid var(--admin-line);border-radius:12px;padding:10px 18px;background:#fbfdff}
+  .member-edit-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 16px;align-items:center}
+  .member-edit-grid label{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;color:#3c5876;white-space:nowrap}
+  .member-edit-grid .member-name-field{grid-column:auto}
+  .member-edit-grid select,.member-edit-grid input{font-size:13px;font-weight:600;min-height:34px;padding:5px 9px;flex:1;min-width:0}
+  .member-dates{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
+  .member-dates div{display:flex;align-items:center;gap:8px}
+  .member-dates dt{font-size:12px;font-weight:800;color:#7c8ba0;letter-spacing:.02em;white-space:nowrap;margin:0}
+  .member-dates dd{font-size:13px;font-weight:700;color:#233a58;margin:0}
+  /* Only 가입일/파트너 승인일 stay on this compact strip -- 최근 로그인/
+     마지막 변경일 are still fetched and present in the DOM, just hidden
+     here to match the requested two-field strip. */
+  .member-dates div:nth-child(2),.member-dates div:nth-child(4){display:none}
+  /* Feature access set apart with a divider and larger, darker text;
+     each list wraps into two columns so a long denied list doesn't run
+     tall down the page. */
+  #detailFeatures{border-top:1px solid var(--admin-line);padding-top:10px}
+  .feature-box{padding:14px 18px}
+  .feature-box h3{font-size:16px;font-weight:800;color:var(--admin-navy);margin:0 0 8px}
+  .feature-box ul{display:grid;grid-template-columns:1fr 1fr;font-size:14px;font-weight:600;color:#233045;gap:7px 14px;line-height:1.4}
+  .member-detail-actions{border-top:1px solid var(--admin-line);padding-top:10px}
+  .member-detail-actions .btn{min-height:36px;padding:8px 16px;font-size:13px}
 }
