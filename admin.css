@@ -151,3 +151,54 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .member-table th{padding:15px 16px;font-size:12.5px}
 .member-table td{padding:17px 16px;font-size:14px}
 .member-badge{font-size:11px;padding:6px 11px}
+
+/* 2026-09: badge colors carry meaning per column -- 회원유형 (role),
+   멤버십 (paid tier), 상태 (account status) each get their own vivid,
+   easy-to-scan palette instead of sharing one muted style. */
+.member-badge.type-admin{background:#d7f8e3;color:#0a7a3e}
+.member-badge.type-partner{background:#dbe9ff;color:#1249c7}
+.member-badge.type-student{background:#ffe1e1;color:#c81e1e}
+.member-badge.free{background:#eef1f5;color:#55606e}
+.member-badge.basic{background:#efe3ff;color:#6a21c9}
+.member-badge.premium{background:#ffe6cc;color:#b3540a}
+.member-badge.active{background:#d7f8e3;color:#0a7a3e}
+.member-badge.expiring{background:#ffe9d1;color:#b35c00}
+.member-badge.expired{background:#ffe1e1;color:#c81e1e}
+.member-badge.suspended{background:#1f2430;color:#fff}
+
+/* 2026-09: member detail dialog -- wider two-column layout on desktop so
+   the summary/edit fields/dates sit beside the feature-access panel
+   instead of stacking five sections full-height, which is what pushed
+   the dialog past typical PC viewport heights and forced an internal
+   scroll. .member-detail keeps a capped, scrollable max-height as a
+   fallback for unusually short viewports, but the two-column layout
+   means that fallback should rarely if ever engage on a normal PC. */
+.member-dialog{width:min(940px,calc(100% - 24px));overflow:hidden}
+.member-detail{max-height:calc(88vh - 78px);overflow-y:auto;gap:18px}
+.member-detail-summary{gap:10px}
+.member-detail-summary strong{font-size:22px;font-weight:800}
+.member-detail-summary span{font-size:14px;color:var(--admin-muted)}
+.member-edit-grid,.member-dates{border:1px solid var(--admin-line);border-radius:14px;padding:18px 20px;background:#fbfdff}
+.member-edit-grid label{font-size:13px;font-weight:800;color:#3c5876;gap:8px}
+.member-edit-grid select,.member-edit-grid input{font-size:14px;font-weight:600}
+.member-dates{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;margin:0}
+.member-dates dt{font-size:11px;font-weight:800;color:#7c8ba0;letter-spacing:.02em}
+.member-dates dd{font-size:14px;font-weight:700;color:#233a58;margin:4px 0 0}
+/* Keeps its own light-blue accent background (an info notice, not a
+   plain field box) but matches the same border-radius/padding rhythm. */
+.member-protected-copy{border-radius:14px;padding:18px 20px;font-size:13px;line-height:1.6}
+.feature-box{padding:18px 20px}
+.feature-box h3{font-size:14px;font-weight:800;color:var(--admin-navy)}
+.feature-box ul{font-size:13px;gap:9px}
+.member-detail-actions button{font-size:14px}
+.member-resend{background:#fff;color:var(--admin-blue);border:1.5px solid var(--admin-blue)}
+.member-resend:disabled{cursor:wait;opacity:.6}
+@media(min-width:681px){
+  .member-detail{display:grid;grid-template-columns:1.05fr 1fr;gap:18px 24px;align-items:start;padding:26px 28px}
+  .member-detail-summary{grid-column:1/-1}
+  .member-edit-grid,.member-protected-copy{grid-column:1;grid-row:2}
+  .member-dates{grid-column:1;grid-row:3}
+  .member-detail-actions{grid-column:1;grid-row:4}
+  #detailFeatures{grid-column:2;grid-row:2/5}
+  .feature-columns{height:100%}
+}
