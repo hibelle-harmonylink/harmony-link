@@ -9,7 +9,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>회원 및 파트너 관리 | Harmony Link</title>
+  <title>회원 및 파트너 관리 | 하이벨</title>
   <!-- admin.html had no cache-busting/auto-refresh of its own (unlike
        index.html), so a browser or intermediate cache could keep serving
        an old admin.html -- with old admin.js/admin.css query strings baked
@@ -18,7 +18,7 @@
        version.json polling pattern so a stale copy force-reloads itself. -->
   <script>
     (() => {
-      const pageVersion = '20260904-1';
+      const pageVersion = '20260904-2';
       fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
         .then(response => response.ok ? response.json() : null)
         .then(release => {
@@ -32,11 +32,11 @@
     })();
   </script>
   <link rel="stylesheet" href="styles.css?v=20260805-253">
-  <link rel="stylesheet" href="admin.css?v=20260904-1">
+  <link rel="stylesheet" href="admin.css?v=20260904-2">
 </head>
 <body class="admin-page">
   <header class="admin-header">
-    <a class="logo admin-brand" href="./"><span class="logo-mark brand-image" aria-hidden="true"><img src="assets/harmony-logo.png" alt=""></span><span class="logo-name">Harmony <b>Link</b><small>이음문화센터</small></span></a>
+    <a class="logo admin-brand" href="./"><span class="logo-mark brand-image" aria-hidden="true"><img src="assets/harmony-logo.png" alt=""></span><span class="logo-name">하이벨<small>이음문화센터</small></span></a>
     <nav><small id="adminBuildTag" style="opacity:.45;font-size:10px;margin-right:4px" title="현재 실행 중인 admin.js 빌드 -- 캐시된 옛 버전이 실행되고 있는지 확인할 때 사용"></small><a href="./">홈페이지</a><button id="adminSignOut" type="button" hidden>로그아웃</button></nav>
   </header>
 
@@ -49,14 +49,16 @@
     </section>
 
     <section class="admin-shell" id="adminApp" hidden>
-      <div class="admin-title-row"><div><p class="eyebrow">ADMIN MEMBER CENTER</p><h1>회원 관리</h1><p>회원유형, 멤버십, 계정 상태와 기능 권한을 각각 관리합니다.</p></div><button class="admin-refresh" id="adminRefresh" type="button">새로고침 ↻</button></div>
-
-      <div class="admin-summary" aria-label="회원 현황">
-        <article><span>전체 회원</span><strong data-count="all">0</strong></article>
-        <article><span>수강생</span><strong data-count="student">0</strong></article>
-        <article><span>파트너</span><strong data-count="partner">0</strong></article>
-        <article><span>관리자</span><strong data-count="admin">0</strong></article>
-        <article><span>PREMIUM 멤버십</span><strong data-count="premium">0</strong></article>
+      <div class="admin-title-row">
+        <div><p class="eyebrow">ADMIN MEMBER CENTER</p><h1>회원 관리</h1><p>회원유형, 멤버십, 계정 상태와 기능 권한을 각각 관리합니다.</p></div>
+        <div class="admin-summary" aria-label="회원 현황">
+          <article><span>전체 회원</span><strong data-count="all">0</strong></article>
+          <article><span>관리자</span><strong data-count="admin">0</strong></article>
+          <article><span>프리미엄</span><strong data-count="premium">0</strong></article>
+          <article><span>파트너</span><strong data-count="partner">0</strong></article>
+          <article><span>수강생</span><strong data-count="student">0</strong></article>
+        </div>
+        <button class="admin-refresh" id="adminRefresh" type="button">새로고침 ↻</button>
       </div>
 
       <form class="admin-toolbar" id="adminFilters">
@@ -77,6 +79,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="access-control.js?v=20260904-1"></script>
-  <script src="admin.js?v=20260904-1"></script>
+  <script src="admin.js?v=20260904-2"></script>
 </body>
 </html>

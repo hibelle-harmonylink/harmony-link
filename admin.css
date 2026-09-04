@@ -127,3 +127,27 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .admin-confirm-actions{display:flex;gap:10px;justify-content:flex-end}
 .admin-confirm-cancel{border:1px solid #c8d8ea;border-radius:10px;background:#fff;color:#4a5c72;padding:10px 16px;font-weight:800;cursor:pointer}
 .admin-confirm-ok{padding:10px 18px}
+
+/* 2026-09: stat boxes live inside the title banner (desktop/tablet only --
+   mobile keeps its own stacked/compact layout from the media blocks above,
+   unaffected since this is scoped to min-width:681px). */
+@media(min-width:681px){
+  .admin-title-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+  .admin-title-row>div:first-child{flex:0 0 auto}
+  .admin-title-row .admin-summary{flex:1 1 260px;margin:0;justify-content:center}
+  .admin-title-row .admin-refresh{flex:0 0 auto}
+}
+/* The grid previously reserved 6 column tracks for 5 boxes, leaving a
+   phantom empty track that threw justify-content:center off-balance --
+   this is the actual cause of the "not centered" stat boxes. */
+.admin-summary{grid-template-columns:repeat(5,minmax(92px,124px));justify-content:center}
+.admin-toolbar{margin-top:18px}
+/* The search button had no grid-column set at the desktop 4-column
+   toolbar breakpoint, so it wrapped into a single 1fr track (as narrow as
+   the search input) instead of spanning the row -- tablet/mobile already
+   span it correctly via their own rules above. */
+@media(min-width:1001px){.admin-toolbar .btn{grid-column:1/-1;width:100%;margin-top:2px}}
+.admin-message:not(.error){margin:8px 8px 16px}
+.member-table th{padding:15px 16px;font-size:12.5px}
+.member-table td{padding:17px 16px;font-size:14px}
+.member-badge{font-size:11px;padding:6px 11px}
