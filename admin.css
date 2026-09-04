@@ -174,10 +174,19 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
    fallback for unusually short viewports, but the two-column layout
    means that fallback should rarely if ever engage on a normal PC. */
 .member-dialog{width:min(940px,calc(100% - 24px));overflow:hidden}
-.member-detail{max-height:calc(88vh - 78px);overflow-y:auto;gap:18px}
-.member-detail-summary{gap:10px}
-.member-detail-summary strong{font-size:22px;font-weight:800}
-.member-detail-summary span{font-size:14px;color:var(--admin-muted)}
+.member-detail{max-height:calc(90vh - 60px);overflow-y:auto;gap:14px}
+/* .eyebrow carries a 22px bottom margin sized for full-page hero
+   sections site-wide -- inside this compact dialog header it was most
+   of the "too much top padding" the header appeared to have. */
+.member-dialog-head{padding:14px 22px}
+.member-dialog-head .eyebrow{margin:0 0 2px}
+.member-dialog-head h2{font-size:21px;margin:0}
+/* Name/email/role badges read as one identity line instead of the name
+   sitting alone above them (the base rule forces the name to its own
+   full-width row -- overridden here to flow inline). */
+.member-detail-summary strong{width:auto;font-size:26px;font-weight:900;color:var(--admin-navy)}
+.member-detail-summary span{font-size:15px;color:var(--admin-muted)}
+.member-detail-summary .member-badge{font-size:12.5px;padding:7px 13px}
 .member-edit-grid,.member-dates{border:1px solid var(--admin-line);border-radius:14px;padding:18px 20px;background:#fbfdff}
 .member-edit-grid label{font-size:13px;font-weight:800;color:#3c5876;gap:8px}
 .member-edit-grid select,.member-edit-grid input{font-size:14px;font-weight:600}
@@ -187,18 +196,21 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 /* Keeps its own light-blue accent background (an info notice, not a
    plain field box) but matches the same border-radius/padding rhythm. */
 .member-protected-copy{border-radius:14px;padding:18px 20px;font-size:13px;line-height:1.6}
-.feature-box{padding:18px 20px}
-.feature-box h3{font-size:14px;font-weight:800;color:var(--admin-navy)}
-.feature-box ul{font-size:13px;gap:9px}
+/* Feature access reads as its own section, set apart from the info/
+   dates row above with a divider and noticeably larger, darker text. */
+#detailFeatures{border-top:1px solid var(--admin-line);padding-top:12px}
+.feature-box{padding:16px 20px}
+.feature-box h3{font-size:16px;font-weight:800;color:var(--admin-navy);margin:0 0 10px}
+.feature-box ul{font-size:14.5px;font-weight:600;color:#233045;gap:9px;line-height:1.45}
+.member-detail-actions{border-top:1px solid var(--admin-line);padding-top:12px}
 .member-detail-actions button{font-size:14px}
 .member-resend{background:#fff;color:var(--admin-blue);border:1.5px solid var(--admin-blue)}
 .member-resend:disabled{cursor:wait;opacity:.6}
 @media(min-width:681px){
-  .member-detail{display:grid;grid-template-columns:1.05fr 1fr;gap:18px 24px;align-items:start;padding:26px 28px}
-  .member-detail-summary{grid-column:1/-1}
+  .member-detail{display:grid;grid-template-columns:1fr 1fr;gap:14px 24px;padding:16px 28px}
+  .member-detail-summary{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center}
   .member-edit-grid,.member-protected-copy{grid-column:1;grid-row:2}
-  .member-dates{grid-column:1;grid-row:3}
-  .member-detail-actions{grid-column:1;grid-row:4}
-  #detailFeatures{grid-column:2;grid-row:2/5}
-  .feature-columns{height:100%}
+  .member-dates{grid-column:2;grid-row:2}
+  #detailFeatures{grid-column:1/-1;grid-row:3}
+  .member-detail-actions{grid-column:1/-1;grid-row:4}
 }
