@@ -121,6 +121,14 @@
   const formatDate = value => value ? new Intl.DateTimeFormat('ko-KR', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(value)) : '없음';
   const deny = text => { loading.hidden = true; app.hidden = true; denied.hidden = false; deniedMessage.textContent = text; };
   const normalize = member => access.normalizeUser({ ...member, is_admin: member.is_admin || member.role === 'admin' });
+  // The admin account's stored display_name is a leftover site-brand
+  // placeholder ("Harmony Link") from setup, not this admin's own name.
+  // The database value is left untouched -- only what's rendered changes.
+  const resolveDisplayName = member => {
+    const raw = (member.display_name || '').trim();
+    if (member.is_admin && raw === 'Harmony Link') return '하이벨';
+    return raw || (member.email || '').split('@')[0] || '이름 없음';
+  };
   const escapeHtml = value => String(value || '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
   const badge = (label, className = '') => `<span class="member-badge ${className}">${label}</span>`;
 
@@ -159,7 +167,7 @@
     list.replaceChildren(...members.map(raw => {
       const member = normalize(raw);
       const row = document.createElement('tr');
-      const name = member.display_name || (member.email || '').split('@')[0] || '이름 없음';
+      const name = resolveDisplayName(member);
       const cells = [
         ['이름', escapeHtml(name) + (member.access_migration_review ? '<span class="member-review">검토 필요</span>' : '')],
         ['이메일', escapeHtml(member.email || '이메일 없음')],
@@ -209,9 +217,14 @@
     const term = search.value.trim().toLowerCase();
     renderMembers(allMembers.filter(raw => {
       const member = normalize(raw);
+      // The 회원유형/멤버십 filter dropdowns only offer non-admin values
+      // (수강생/파트너, FREE/BASIC/PREMIUM) -- admin's user_type/membership
+      // are leftover backfill values (student/free), not real answers to
+      // either question, so admin must never match a specific selection
+      // here. "전체 유형"/"전체 멤버십" (empty value) still show admin.
       return (!term || `${member.display_name || ''} ${member.email || ''}`.toLowerCase().includes(term))
-        && (!typeFilter.value || member.user_type === typeFilter.value)
-        && (!membershipFilter.value || member.membership === membershipFilter.value)
+        && (!typeFilter.value || (!member.is_admin && member.user_type === typeFilter.value))
+        && (!membershipFilter.value || (!member.is_admin && member.membership === membershipFilter.value))
         && (!statusFilter.value || member.account_status === statusFilter.value);
     }));
   };
@@ -282,7 +295,7 @@
   const openDetail = raw => {
     const member = normalize(raw);
     const protectedAccount = member.is_admin || member.id === currentUserId;
-    const name = member.display_name || (member.email || '').split('@')[0] || '이름 없음';
+    const name = resolveDisplayName(member);
     detail.className = 'member-detail';
     detail.innerHTML = `<div class="member-detail-summary"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(member.email || '')}</span>${badge(member.is_admin ? '관리자' : TYPE_LABELS[member.user_type], `type-${member.user_type}`)}${member.is_admin ? '' : badge(MEMBERSHIP_LABELS[member.membership], member.membership)}${badge(STATUS_LABELS[member.account_status], member.account_status)}</div>${protectedAccount ? '<div class="member-protected-copy">관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.</div>' : `<div class="member-edit-grid"><label class="member-name-field">회원 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label>회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label>멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label>계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label></div>`}<div id="detailFeatures">${featureHtml(member)}</div><dl class="member-dates"><div><dt>가입일</dt><dd>${formatDate(member.created_at)}</dd></div><div><dt>최근 로그인</dt><dd>${formatDate(member.last_sign_in_at)}</dd></div><div><dt>파트너 승인일</dt><dd>${formatDate(member.approved_at)}</dd></div><div><dt>마지막 변경일</dt><dd>${formatDate(member.updated_at)}</dd></div></dl>${protectedAccount ? '' : '<div class="member-detail-actions"><button type="button" class="member-resend">안내메일 다시 보내기</button><button type="button" class="btn btn-primary" id="detailSave">변경 저장</button></div>'}`;
     const nameInput = detail.querySelector('#detailName');
