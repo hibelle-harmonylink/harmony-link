@@ -1,19 +1,43 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <link rel="icon" href="/assets/harmony-logo.png">
-  <link rel="shortcut icon" href="/assets/harmony-logo.png">
+  <link rel="icon" type="image/png" href="/app/icon-512.png?v=2">
+  <link rel="shortcut icon" href="/app/icon-512.png?v=2">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>회원 및 파트너 관리 | Harmony Link</title>
+  <!-- admin.html had no cache-busting/auto-refresh of its own (unlike
+       index.html), so a browser or intermediate cache could keep serving
+       an old admin.html -- with old admin.js/admin.css query strings baked
+       into it -- indefinitely, silently hiding every admin.js fix shipped
+       after that snapshot was cached. Mirrors index.html's exact
+       version.json polling pattern so a stale copy force-reloads itself. -->
+  <script>
+    (() => {
+      const pageVersion = '20260904-1';
+      fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
+        .then(response => response.ok ? response.json() : null)
+        .then(release => {
+          if (!release?.version || release.version === pageVersion) return;
+          const latestUrl = new URL(window.location.href);
+          if (latestUrl.searchParams.get('refresh') === release.version) return;
+          latestUrl.searchParams.set('refresh', release.version);
+          window.location.replace(latestUrl);
+        })
+        .catch(() => {});
+    })();
+  </script>
   <link rel="stylesheet" href="styles.css?v=20260805-253">
-  <link rel="stylesheet" href="admin.css?v=20260903-301">
+  <link rel="stylesheet" href="admin.css?v=20260904-1">
 </head>
 <body class="admin-page">
   <header class="admin-header">
     <a class="logo admin-brand" href="./"><span class="logo-mark brand-image" aria-hidden="true"><img src="assets/harmony-logo.png" alt=""></span><span class="logo-name">Harmony <b>Link</b><small>이음문화센터</small></span></a>
-    <nav><a href="./">홈페이지</a><button id="adminSignOut" type="button" hidden>로그아웃</button></nav>
+    <nav><small id="adminBuildTag" style="opacity:.45;font-size:10px;margin-right:4px" title="현재 실행 중인 admin.js 빌드 -- 캐시된 옛 버전이 실행되고 있는지 확인할 때 사용"></small><a href="./">홈페이지</a><button id="adminSignOut" type="button" hidden>로그아웃</button></nav>
   </header>
 
   <main>
@@ -32,6 +56,7 @@
         <article><span>수강생</span><strong data-count="student">0</strong></article>
         <article><span>파트너</span><strong data-count="partner">0</strong></article>
         <article><span>관리자</span><strong data-count="admin">0</strong></article>
+        <article><span>PREMIUM 멤버십</span><strong data-count="premium">0</strong></article>
       </div>
 
       <form class="admin-toolbar" id="adminFilters">
@@ -51,7 +76,7 @@
   <dialog class="member-dialog" id="memberDialog" aria-labelledby="memberDialogTitle"><form method="dialog" class="member-dialog-head"><div><p class="eyebrow">MEMBER DETAIL</p><h2 id="memberDialogTitle">회원 상세</h2></div><button value="cancel" aria-label="닫기">×</button></form><div id="memberDetail"></div></dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="access-control.js?v=20260903-301"></script>
-  <script src="admin.js?v=20260903-301"></script>
+  <script src="access-control.js?v=20260904-1"></script>
+  <script src="admin.js?v=20260904-1"></script>
 </body>
 </html>

@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <link rel="icon" href="/assets/harmony-logo.png">
-  <link rel="shortcut icon" href="/assets/harmony-logo.png">
+  <link rel="icon" type="image/png" href="/app/icon-512.png?v=2">
+  <link rel="shortcut icon" href="/app/icon-512.png?v=2">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -11,7 +11,7 @@
   <meta name="theme-color" content="#061d45">
   <script>
     (() => {
-      const pageVersion = '20260822-353';
+      const pageVersion = '20260904-1';
       fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
         .then(response => response.ok ? response.json() : null)
         .then(release => {
@@ -44,11 +44,10 @@
   <meta name="twitter:image" content="https://hibelleharmony.com/assets/social/harmony-link-og-1200x630.png?v=20260822-1">
   <meta name="twitter:image:alt" content="Harmony Link 로고와 배움으로 연결되는 더 나은 일상">
   <title>Harmony Link | 배움으로 이어지는 우리</title>
-  <link rel="icon" type="image/png" href="app/icon-512.png?v=2">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260826-5">
+  <link rel="stylesheet" href="styles.css?v=20260901-5">
 </head>
 <body>
   <a class="skip-link" href="#main" data-ko="본문으로 이동" data-en="Skip to content">본문으로 이동</a>
@@ -220,6 +219,139 @@
       </div>
     </section>
 
+    <!--
+      AI Shorts Creation Program: deployed separately at
+      https://ai-shorts-maker-production.up.railway.app (ai-shorts-maker repo).
+      Gated to approved $50/month Premium members using the same Supabase
+      project as the rest of HarmonyLink (member_profiles.premium_member,
+      set by an admin — see admin.html). The card below reacts to the
+      'harmony-auth-change' event published by auth.js and renders one of
+      three states: signed out, signed in but not Premium, and Premium/
+      admin. Clicking through as an approved member hands the current
+      Supabase session (access + refresh token) to the AI Shorts app via
+      the URL fragment so it can open its own session against the same
+      Supabase project — the AI Shorts app independently re-checks Premium
+      access itself (both on load and on its API routes), so this card is
+      a convenience, not the security boundary.
+    -->
+    <section class="section" id="ai-shorts" style="padding:70px 0;background:linear-gradient(135deg,#fff 0%,#eef5ff 100%)">
+      <style>
+        .ai-shorts-card{max-width:720px;margin:0 auto;border-radius:28px;padding:48px 40px;background:linear-gradient(145deg,#071f49,#0c4a98);color:#fff;text-align:center;box-shadow:0 24px 60px rgba(7,31,73,.28)}
+        .ai-shorts-lock{display:inline-grid;place-items:center;width:56px;height:56px;border-radius:16px;background:rgba(255,255,255,.12);font-size:25px;margin-bottom:18px}
+        .ai-shorts-badge{display:inline-block;background:#fff2c9;color:#765300;border:1px solid #e1b94f;border-radius:50px;padding:6px 14px;font-size:11px;font-weight:800;letter-spacing:.4px;margin:0 0 16px}
+        .ai-shorts-badge.ai-shorts-badge-unlocked{background:#dcf7e3;color:#136b3f;border-color:#8fdba9}
+        .ai-shorts-card h2{font-size:clamp(24px,3.4vw,32px);letter-spacing:-1px;margin:0 0 14px;color:#fff}
+        .ai-shorts-card p{color:#c3d5eb;font-size:16px;line-height:1.7;margin:0 auto 28px;max-width:480px}
+        .ai-shorts-card p.ai-shorts-notice{font-size:14px;line-height:1.6;color:#bcd3ef;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:14px 18px;max-width:420px}
+        @media (max-width:600px){.ai-shorts-card{padding:36px 22px;border-radius:22px}}
+      </style>
+      <div class="container">
+        <div class="ai-shorts-card reveal" id="aiShortsCard">
+          <div class="ai-shorts-lock" id="aiShortsIcon" aria-hidden="true">🔒</div>
+          <div><span class="ai-shorts-badge" id="aiShortsBadge" data-ko="Premium 회원 전용" data-en="PREMIUM MEMBERS ONLY">Premium 회원 전용</span></div>
+          <h2 data-ko="AI 쇼츠 제작 프로그램" data-en="AI Shorts Creation Program">AI 쇼츠 제작 프로그램</h2>
+          <p data-ko="주제를 몰라도 AI가 대본, 목소리, 이미지, 자막을 만들어 쇼츠 영상 제작을 도와드려요." data-en="Even without a topic in mind, AI writes the script, voice, images, and captions to help you create short-form videos.">주제를 몰라도 AI가 대본, 목소리, 이미지, 자막을 만들어 쇼츠 영상 제작을 도와드려요.</p>
+          <p class="ai-shorts-notice" id="aiShortsNotice" data-ko="Premium 회원 전용 기능입니다.<br>이용하려면 로그인해 주세요." data-en="Available to Premium members.<br>Please sign in to continue.">Premium 회원 전용 기능입니다.<br>이용하려면 로그인해 주세요.</p>
+          <a class="btn btn-primary auth-open" id="aiShortsButton" href="#" data-auth-mode="login"><span id="aiShortsButtonLabel" data-ko="회원 로그인" data-en="Member Sign In">회원 로그인</span><b>→</b></a>
+        </div>
+      </div>
+      <script>
+        (() => {
+          var AI_SHORTS_URL = 'https://ai-shorts-maker-production.up.railway.app/';
+          var card = document.getElementById('aiShortsCard');
+          var icon = document.getElementById('aiShortsIcon');
+          var badge = document.getElementById('aiShortsBadge');
+          var notice = document.getElementById('aiShortsNotice');
+          var button = document.getElementById('aiShortsButton');
+          var buttonLabel = document.getElementById('aiShortsButtonLabel');
+          if (!card || !icon || !badge || !notice || !button || !buttonLabel) return;
+
+          var lang = function () { return document.documentElement.lang === 'en' ? 'en' : 'ko'; };
+
+          var COPY = {
+            guest: {
+              icon: '🔒',
+              badgeUnlocked: false,
+              badge: { ko: 'Premium 회원 전용', en: 'PREMIUM MEMBERS ONLY' },
+              notice: { ko: 'Premium 회원 전용 기능입니다.<br>이용하려면 로그인해 주세요.', en: 'Available to Premium members.<br>Please sign in to continue.' },
+              button: { ko: '회원 로그인', en: 'Member Sign In' }
+            },
+            nonPremium: {
+              icon: '🔒',
+              badgeUnlocked: false,
+              badge: { ko: 'Premium 회원 전용', en: 'PREMIUM MEMBERS ONLY' },
+              notice: { ko: 'Premium 회원에게 제공되는 기능입니다.', en: 'This feature is available to Premium members.' },
+              button: { ko: 'Premium 멤버십 신청하기', en: 'Apply for Premium Membership' }
+            },
+            premium: {
+              icon: '✅',
+              badgeUnlocked: true,
+              badge: { ko: 'PREMIUM 이용 가능', en: 'PREMIUM · UNLOCKED' },
+              notice: { ko: 'Premium 회원 전용 AI 쇼츠 제작 프로그램을 이용할 수 있습니다.', en: 'You have access to the Premium AI Shorts Creation Program.' },
+              button: { ko: 'AI 쇼츠 제작하기', en: 'Create AI Shorts' }
+            }
+          };
+
+          var currentMode = 'guest';
+
+          var applyMode = function (mode) {
+            currentMode = mode;
+            var copy = COPY[mode];
+            icon.textContent = copy.icon;
+            badge.classList.toggle('ai-shorts-badge-unlocked', copy.badgeUnlocked);
+            badge.dataset.ko = copy.badge.ko;
+            badge.dataset.en = copy.badge.en;
+            badge.innerHTML = copy.badge[lang()];
+            notice.dataset.ko = copy.notice.ko;
+            notice.dataset.en = copy.notice.en;
+            notice.innerHTML = copy.notice[lang()];
+            buttonLabel.dataset.ko = copy.button.ko;
+            buttonLabel.dataset.en = copy.button.en;
+            buttonLabel.innerHTML = copy.button[lang()];
+            if (mode === 'guest') {
+              button.classList.add('auth-open');
+              button.dataset.authMode = 'login';
+              button.setAttribute('href', '#');
+            } else if (mode === 'nonPremium') {
+              button.classList.remove('auth-open');
+              button.removeAttribute('data-auth-mode');
+              button.setAttribute('href', '#contact');
+            } else {
+              button.classList.remove('auth-open');
+              button.removeAttribute('data-auth-mode');
+              button.setAttribute('href', AI_SHORTS_URL);
+            }
+          };
+
+          var renderFromState = function (state) {
+            if (!state || state.loading || !state.signedIn) { applyMode('guest'); return; }
+            if (state.hasPremiumAccess) { applyMode('premium'); return; }
+            applyMode('nonPremium');
+          };
+
+          document.addEventListener('harmony-auth-change', function (event) { renderFromState(event.detail); });
+          if (window.HarmonyAuthState) renderFromState(window.HarmonyAuthState);
+
+          button.addEventListener('click', function (event) {
+            if (currentMode !== 'premium') return;
+            event.preventDefault();
+            var openProgram = function (accessToken, refreshToken) {
+              var target = AI_SHORTS_URL;
+              if (accessToken && refreshToken) {
+                target += '#hl_at=' + encodeURIComponent(accessToken) + '&hl_rt=' + encodeURIComponent(refreshToken);
+              }
+              window.location.href = target;
+            };
+            if (typeof window.HarmonyAuthGetSession !== 'function') { openProgram(); return; }
+            window.HarmonyAuthGetSession().then(function (result) {
+              var session = result && result.data && result.data.session;
+              openProgram(session && session.access_token, session && session.refresh_token);
+            }).catch(function () { openProgram(); });
+          });
+        })();
+      </script>
+    </section>
+
     <section class="feature-deepdive english-feature section">
       <div class="container digital-why-grid">
         <div class="digital-why-copy reveal"><p class="eyebrow">HIBELLE ONLINE ENGLISH</p><h2 data-ko="영어는 지식이 아닌<br>세상과 연결되는 자신감입니다" data-en="English is more than knowledge—<br>it is confidence to connect">영어는 지식이 아닌<br>세상과 연결되는 자신감입니다</h2><p data-ko="시간과 장소의 제약 없이 학습자의 수준과 목표에 맞춘 1:1 실용 회화 수업으로 실제 생활에서 사용하는 영어 자신감을 키웁니다." data-en="Personalized one-to-one conversation lessons build practical speaking confidence without limits of time or place.">시간과 장소의 제약 없이 학습자의 수준과 목표에 맞춘 1:1 실용 회화 수업으로 실제 생활에서 사용하는 영어 자신감을 키웁니다.</p><a class="btn feature-request-btn" href="#apply" data-program="언어 교육"><span data-ko="화상영어 신청하기" data-en="Apply for Online English">화상영어 신청하기</span><b>↗</b></a></div>
@@ -314,10 +446,10 @@
 
   <footer><div class="container footer-top"><a class="logo logo-light" href="#top"><span class="logo-mark brand-image footer-brand-image"><img src="assets/harmony-logo.png" alt=""></span><span class="logo-name">Harmony <b>Link</b><small data-ko="이음문화센터" data-en="E-eum Culture Center">이음문화센터</small></span></a><p data-ko="하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다." data-en="A cultural and educational project operated<br class='mobile-en-only-break'>by Hibelle Consulting.">하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다.</p><div class="footer-nav"><a href="#about" data-ko="회사 소개" data-en="About">회사 소개</a><a href="#digital-why" data-ko="전문 교육" data-en="Specialty Programs">전문 교육</a><a href="#events" data-ko="강좌·행사" data-en="Classes & Events">강좌·행사</a><a href="community.html" data-ko="커뮤니티" data-en="Community">커뮤니티</a><a href="#contact" data-ko="문의하기" data-en="Contact">문의하기</a></div></div><div class="container footer-bottom"><span>© 2026 Hibelle Consulting · Harmony Link / 이음문화센터</span><div><a href="#" data-ko="개인정보처리방침" data-en="Privacy Policy">개인정보처리방침</a><a href="#" data-ko="이용약관" data-en="Terms">이용약관</a><button id="footerDeleteAccount" type="button" class="auth-delete footer-account-delete" data-ko="회원 탈퇴" data-en="Delete Account">회원 탈퇴</button></div></div></footer>
   <button class="to-top" type="button" aria-label="맨 위로">↑</button>
-  <script src="script.js?v=20260826-5"></script>
+  <script src="script.js?v=20260901-5"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="access-control.js?v=20260903-301"></script>
-  <script src="auth.js?v=20260903-301"></script>
+  <script src="access-control.js?v=20260904-1"></script>
+  <script src="auth.js?v=20260904-1"></script>
   <script>
     document.addEventListener('click', function (event) {
       var toggle = event.target.closest('.lang-toggle, .mobile-lang-toggle');

@@ -19,10 +19,20 @@ set legacy_access_role = coalesce(legacy_access_role, role),
       when member_type = 'partner' or role in ('partner0', 'partner20', 'partner50') then 'partner'
       else 'student'
     end,
+    -- premium_member (202609010001_premium_shorts_access.sql) approved a
+    -- member for the $50/month AI Shorts membership independently of
+    -- their partner tier -- a general/student member could be
+    -- premium_member=true with role='member'. That flag predates this
+    -- migration and is superseded by it (membership becomes the single
+    -- source of truth going forward), so the one-time backfill must also
+    -- honor it here, or any member already approved that way would be
+    -- silently downgraded to membership='free' the moment this migration
+    -- runs, deleting a real, working grant.
     membership = case
       when membership in ('free', 'basic', 'premium') then membership
       when role = 'partner50' then 'premium'
       when role = 'partner20' then 'basic'
+      when coalesce(premium_member, false) is true then 'premium'
       else 'free'
     end,
     access_migration_review = access_migration_review
@@ -156,7 +166,9 @@ language plpgsql
 security definer
 set search_path = pg_catalog, public
 as $$
-declare target_role text;
+declare
+  target_role text;
+  derived_new_role text;
 begin
   if auth.uid() is null or not exists (
     select 1 from public.member_profiles administrator
@@ -178,6 +190,25 @@ begin
       access_migration_review = false, updated_at = now(), changed_by = auth.uid()
   where profile.id = p_member_id
   returning profile.id, profile.user_type, profile.membership, profile.account_status, profile.updated_at;
+
+  -- admin_update_member() (202608050001_server_role_email_queue.sql) used
+  -- to queue the automatic role-change email whenever the legacy `role`
+  -- column actually changed. sync_member_access_compatibility() above
+  -- still derives `role` from user_type/membership on every update, so
+  -- mirror that exact derivation here and queue the same way when it
+  -- produces a different role than before -- otherwise the whole
+  -- automatic-email pipeline this admin screen relies on goes silent for
+  -- every save made through this new RPC.
+  derived_new_role := case
+    when p_user_type = 'partner' and p_membership = 'premium' then 'partner50'
+    when p_user_type = 'partner' and p_membership = 'basic' then 'partner20'
+    when p_user_type = 'partner' then 'partner0'
+    else 'member'
+  end;
+  if target_role is distinct from derived_new_role then
+    insert into public.role_email_outbox (member_id, old_role, new_role)
+    values (p_member_id, target_role, derived_new_role);
+  end if;
 end;
 $$;
 
@@ -199,14 +230,48 @@ begin
 end;
 $$;
 
+-- get_own_member_profile() (202609020001_own_member_profile_access.sql)
+-- is the security-definer, RLS-bypassing read auth.js uses for a member's
+-- own login/homepage grade -- re-published here with user_type/membership
+-- added so it keeps returning every column the current model needs
+-- instead of silently going stale the moment this migration adds them.
+create or replace function public.get_own_member_profile()
+returns table (
+  role text,
+  account_status text,
+  display_name text,
+  member_type text,
+  user_type text,
+  membership text,
+  premium_member boolean
+)
+language plpgsql
+security definer
+set search_path = pg_catalog, public, auth
+as $$
+begin
+  if auth.uid() is null then
+    raise exception 'authentication required' using errcode = '42501';
+  end if;
+
+  return query
+  select profile.role, profile.account_status, profile.display_name, profile.member_type,
+    profile.user_type, profile.membership, profile.premium_member
+  from public.member_profiles profile
+  where profile.id = auth.uid();
+end;
+$$;
+
 revoke all on function public.has_feature_access(uuid, text) from public;
 revoke all on function public.admin_list_members(text, text) from public;
 revoke all on function public.admin_update_member_access(uuid, text, text, text) from public;
 revoke all on function public.set_own_member_type(text) from public;
+revoke all on function public.get_own_member_profile() from public;
 grant execute on function public.has_feature_access(uuid, text) to authenticated;
 grant execute on function public.is_active_community_member(uuid) to authenticated;
 grant execute on function public.admin_list_members(text, text) to authenticated;
 grant execute on function public.admin_update_member_access(uuid, text, text, text) to authenticated;
 grant execute on function public.set_own_member_type(text) to authenticated;
+grant execute on function public.get_own_member_profile() to authenticated;
 
 commit;

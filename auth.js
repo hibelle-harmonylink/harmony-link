@@ -1,5 +1,7 @@
 (() => {
   'use strict';
+  const BUILD = '20260904-1';
+  console.log(`[auth] auth.js loaded — build ${BUILD}`);
 
   const SUPABASE_URL = 'https://ricndeoiomzjacmrsjtg.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_cGiclRJGjTqHBPVZqgTiQA_tvGKSQ60';
@@ -185,6 +187,12 @@
     const profile = getProfile(session.user);
     footerDeleteButton.hidden = false;
     footerDeleteButton.textContent = t('회원 탈퇴', 'Delete Account');
+    // membership (free/basic/premium) is a real, independent tier that
+    // applies uniformly to both student and partner members -- see
+    // 202609030001_separate_user_type_membership_access.sql. Always show
+    // it alongside user_type/role rather than folding it into either, so
+    // e.g. a PREMIUM student and a PREMIUM partner are both visibly
+    // "PREMIUM", distinct from their user_type.
     const roleLabel = !['active', 'expiring'].includes(activeMemberStatus)
       ? t('이용 중지', 'Suspended')
       : activeMemberRole === 'admin'
@@ -239,9 +247,9 @@
     const memberAccess = accessControl.normalizeUser({ role: activeMemberRole, user_type: activeMemberType, membership: activeMembership, account_status: activeMemberStatus });
     const accountActive = ['active', 'expiring'].includes(memberAccess.account_status);
     const isAdmin = signedIn && memberAccess.is_admin && accountActive;
-    const isFreePartner = signedIn && memberAccess.user_type === 'partner' && memberAccess.membership === 'free' && accountActive;
-    const isBasicPartner = signedIn && memberAccess.user_type === 'partner' && memberAccess.membership === 'basic' && accountActive;
-    const isPremiumPartner = signedIn && memberAccess.user_type === 'partner' && memberAccess.membership === 'premium' && accountActive;
+    const isFreePartner = signedIn && accountActive && memberAccess.user_type === 'partner' && memberAccess.membership === 'free';
+    const isBasicPartner = signedIn && accountActive && memberAccess.user_type === 'partner' && memberAccess.membership === 'basic';
+    const isPremiumPartner = signedIn && accountActive && memberAccess.user_type === 'partner' && memberAccess.membership === 'premium';
     const approvedPartner = signedIn && accessControl.canAccessPartnerCenter(memberAccess);
     authGate.hidden = signedIn;
     approvalGate.hidden = !signedIn || approvedPartner;
@@ -259,7 +267,7 @@
     if (securityCopy) {
       const profile = signedIn ? getProfile(session.user) : null;
       securityCopy.dataset.ko = !accountActive ? `${profile.name}님의 홈페이지 이용 상태를 확인해 주세요.` : isAdmin ? `${profile.name}님, 관리자 권한으로 접속했습니다.` : approvedPartner ? `${profile.name}님, ${activeMembership.toUpperCase()} 파트너 자료실에 접속했습니다.` : signedIn ? `${profile.name}님은 수강생 회원입니다. 이 자료실은 파트너 전용입니다.` : 'Google 또는 카카오 계정으로 로그인해 주세요.';
-      securityCopy.dataset.en = !accountActive ? `${profile.name}'s website access is suspended. Please contact an administrator.` : isAdmin ? `${profile.name} is signed in as an administrator.` : isPremiumPartner ? `Welcome ${profile.name}. Your $50 PREMIUM partner resources are available.` : isBasicPartner ? `Welcome ${profile.name}. Your $20 BASIC partner resources are available.` : isFreePartner ? `Welcome ${profile.name}. Your free partner resources are available.` : signedIn && activeMemberType === 'student' ? `${profile.name} is a learner. This resource center is for approved partners.` : signedIn ? `${profile.name} is a general member. This resource center is for approved partners.` : 'Sign in with your Google or Kakao account.';
+      securityCopy.dataset.en = !accountActive ? `${profile.name}'s website access needs review. Please contact an administrator.` : isAdmin ? `${profile.name} is signed in as an administrator.` : approvedPartner ? `Welcome ${profile.name}. Your ${activeMembership.toUpperCase()} partner resources are available.` : signedIn ? `${profile.name} is a learner. This resource center is for approved partners.` : 'Sign in with your Google or Kakao account.';
       securityCopy.textContent = t(securityCopy.dataset.ko, securityCopy.dataset.en);
     }
     const accessBadge = downloads.querySelector('.unlocked-badge');
@@ -288,6 +296,7 @@
     activeSession = session;
     renderHeader(session);
     renderPartnerCenter(session);
+    publishAuthState();
   };
 
   const partnerStatusMark = partnerCenter.querySelector('.partner-lock');
@@ -309,34 +318,108 @@
     });
   }
 
+  const describeAccessError = error => (error && typeof error === 'object')
+    ? { code: error.code, message: error.message, details: error.details, hint: error.hint }
+    : { message: String(error) };
+
+  // Reads the caller's own row through a security-definer RPC first --
+  // the same pattern the admin screen already relies on (admin_list_members,
+  // admin_update_member_access), which bypasses table/RLS grants entirely.
+  // A plain `.from('member_profiles').select(...)` is subject to whatever
+  // grants exist on the table, and if those were never extended to a
+  // newer column (user_type/membership) a member's own read could
+  // silently come back wrong while the admin's RPC-based save
+  // verification stays unaffected -- i.e. the admin panel would report a
+  // successful, verified save while the member's own next login still
+  // shows the old grade. Falls back to the previous direct-select
+  // behavior if the RPC isn't deployed yet (e.g. its migration hasn't
+  // been run), so this can't regress anything that already works.
   const loadMemberAccess = async session => {
     if (!session?.user) return { role: 'guest', status: 'active' };
-    let { data, error } = await client
+    const { data: rpcData, error: rpcError } = await client.rpc('get_own_member_profile');
+    if (!rpcError) {
+      const row = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+      if (row) {
+        const normalized = accessControl.normalizeUser(row);
+        return { role: row.role || 'member', status: normalized.account_status, name: row.display_name || '', type: normalized.user_type, membership: normalized.membership };
+      }
+      console.error('get_own_member_profile returned no row for a signed-in user.', { userId: session.user.id });
+    } else {
+      console.error('get_own_member_profile RPC failed; falling back to a direct member_profiles read.', describeAccessError(rpcError));
+    }
+    const { data, error } = await client
       .from('member_profiles')
       .select('role,account_status,display_name,member_type,user_type,membership')
       .eq('id', session.user.id)
       .maybeSingle();
     if (error) {
-      const legacy = await client.from('member_profiles').select('role,account_status,display_name,member_type').eq('id', session.user.id).maybeSingle();
-      data = legacy.data; error = legacy.error;
-    }
-    if (error) {
-      console.error('Member access could not be loaded.', error);
+      console.error('Member access could not be loaded from member_profiles directly.', describeAccessError(error));
       return { role: 'member', status: 'active', type: 'student', membership: 'free' };
     }
     const normalized = accessControl.normalizeUser(data);
     return { role: data?.role || 'member', status: normalized.account_status, name: data?.display_name || '', type: normalized.user_type, membership: normalized.membership };
   };
 
+  // client.auth.getSession() (below) and client.auth.onAuthStateChange()'s
+  // own initial callback both fire once for the same session on every page
+  // load, and both used to call this independently — doubling the
+  // member_profiles round trip on every visit, right when the page is
+  // trying to render. If a refresh for the same access token is already
+  // in flight, later callers just await it instead of issuing a second
+  // fetch.
+  let refreshInFlightToken = null;
+  let refreshInFlightPromise = null;
   const refreshMemberAccess = async session => {
-    const access = await loadMemberAccess(session);
-    activeMemberRole = access.role;
-    activeMemberStatus = access.status;
-    activeMemberName = access.name || '';
-    activeMemberType = access.type || 'student';
-    activeMembership = access.membership || 'free';
-    render(session);
+    const token = session?.access_token || null;
+    if (refreshInFlightPromise && refreshInFlightToken === token) {
+      await refreshInFlightPromise;
+      return;
+    }
+    refreshInFlightToken = token;
+    refreshInFlightPromise = (async () => {
+      const access = await loadMemberAccess(session);
+      activeMemberRole = access.role;
+      activeMemberStatus = access.status;
+      activeMemberName = access.name || '';
+      activeMemberType = access.type || 'student';
+      activeMembership = access.membership || 'free';
+      render(session);
+    })();
+    try {
+      await refreshInFlightPromise;
+    } finally {
+      refreshInFlightPromise = null;
+    }
   };
+
+  // Lets other on-page scripts (e.g. the AI Shorts card) react to sign-in
+  // state without re-implementing Supabase auth: a single source of truth
+  // published on window and re-broadcast on every render. `premium` is
+  // kept as a plain boolean (derived from membership === 'premium') for
+  // backward compatibility with consumers (e.g. the separate
+  // ai-shorts-maker app) that only ever read the boolean gate.
+  const publishAuthState = () => {
+    const isPremiumMembership = activeMembership === 'premium';
+    const hasPremiumAccess = activeMemberStatus === 'active'
+      && (activeMemberRole === 'admin' || isPremiumMembership);
+    const state = {
+      loading: activeMemberRole === 'loading',
+      signedIn: Boolean(activeSession?.user),
+      role: activeMemberRole,
+      status: activeMemberStatus,
+      memberType: activeMemberType,
+      userType: activeMemberType,
+      membership: activeMembership,
+      premium: isPremiumMembership,
+      isAdmin: activeMemberRole === 'admin',
+      hasPremiumAccess,
+      build: BUILD
+    };
+    window.HarmonyAuthState = state;
+    document.dispatchEvent(new CustomEvent('harmony-auth-change', { detail: state }));
+  };
+
+  window.HarmonyAuthGetSession = () => client.auth.getSession();
 
   const applyPendingMemberType = async session => {
     if (!session?.user) return;
@@ -425,9 +508,20 @@
     const status = authModal.querySelector('.auth-status');
     status.textContent = t('로그인 서버를 확인하고 있습니다…', 'Checking the secure sign-in service…');
     try {
-      const health = await fetch(`${SUPABASE_URL}/auth/v1/settings`, {
-        headers: { apikey: SUPABASE_PUBLISHABLE_KEY }
-      });
+      // Bounded so a slow/unresponsive network can't stall the login click
+      // indefinitely -- this pre-flight check exists to give a clear
+      // message if Supabase itself is down, not to add unbounded wait time.
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 3000);
+      let health;
+      try {
+        health = await fetch(`${SUPABASE_URL}/auth/v1/settings`, {
+          headers: { apikey: SUPABASE_PUBLISHABLE_KEY },
+          signal: controller.signal
+        });
+      } finally {
+        window.clearTimeout(timeout);
+      }
       if (!health.ok) throw new Error(`HTTP ${health.status}`);
     } catch {
       status.textContent = t('현재 로그인 서버에 연결할 수 없습니다. Supabase 프로젝트 상태를 확인해 주세요.', 'The sign-in service is currently unavailable. Please check the Supabase project status.');
@@ -566,12 +660,16 @@
     activeMemberRole = session ? 'loading' : 'guest';
     activeMemberStatus = session ? 'loading' : 'active';
     render(session);
+    // Close the login modal as soon as sign-in itself succeeds, rather
+    // than waiting on the member_profiles fetch and (for a brand-new
+    // signup) the admin notification -- those still run right after and
+    // update the header once they resolve, but the user shouldn't have
+    // to watch the modal sit open for them; that was reading as "login is
+    // slow" when the OAuth part had already finished.
+    if (event === 'SIGNED_IN') setModalOpen(false);
     await applyPendingMemberType(session);
     await refreshMemberAccess(session);
-    if (event === 'SIGNED_IN') {
-      setModalOpen(false);
-      await notifyAdminOfNewSignup(session?.user);
-    }
+    if (event === 'SIGNED_IN') await notifyAdminOfNewSignup(session?.user);
   });
 
   let accessRefreshRunning = false;

@@ -51,6 +51,67 @@ Deno.serve(async (request) => {
       }
       return json({ ok: true, rosterUpdated: true });
     }
+    if (requestBody.action === 'profile_sync') {
+      const authorization = request.headers.get('Authorization') || '';
+      if (!authorization) return json({ error: 'Authentication required' }, 401);
+      const userClient = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authorization } } });
+      const { data: { user }, error: userError } = await userClient.auth.getUser();
+      if (userError || !user) return json({ error: 'Authentication required' }, 401);
+      const { data: administrator } = await userClient.from('member_profiles').select('role,account_status').eq('id', user.id).maybeSingle();
+      if (administrator?.role !== 'admin' || administrator?.account_status !== 'active') return json({ error: 'Administrator access required' }, 403);
+
+      const syncMemberId = String(requestBody.memberId || '');
+      if (!syncMemberId) return json({ error: 'Member id is required' }, 400);
+
+      const { data: syncTargetUser, error: syncTargetError } = await adminClient.auth.admin.getUserById(syncMemberId);
+      if (syncTargetError || !syncTargetUser?.user?.email) return json({ error: 'Member not found' }, 404);
+
+      // Re-read the profile fresh from the database -- this is the single
+      // source of truth the roster gets synced from, not whatever values
+      // the caller happened to pass in.
+      const { data: syncProfile } = await adminClient
+        .from('member_profiles')
+        .select('display_name,member_type,role,premium_member,membership,account_status')
+        .eq('id', syncMemberId)
+        .maybeSingle();
+      if (!syncProfile) return json({ error: 'Member profile not found' }, 404);
+
+      const syncMetadata = syncTargetUser.user.user_metadata || {};
+      const syncMemberName = syncProfile.display_name || syncMetadata.full_name || syncMetadata.name || syncMetadata.nickname || syncTargetUser.user.email.split('@')[0];
+
+      // membership (202609030001_separate_user_type_membership_access.sql)
+      // is the current source of truth for Premium status -- the
+      // sync_member_access_compatibility trigger keeps member_type/role in
+      // sync with it on every admin save, but does not touch the older
+      // premium_member flag at all, so premium_member alone would go
+      // stale the moment a member is edited through the new access model.
+      // Fall back to premium_member only for a profile the new migration
+      // hasn't touched yet (membership still null).
+      const syncIsPremium = syncProfile.membership != null
+        ? syncProfile.membership === 'premium'
+        : syncProfile.premium_member === true;
+
+      const syncFormData = new FormData();
+      syncFormData.set('action', 'profile_sync');
+      syncFormData.set('webhook_secret', webhookSecret);
+      syncFormData.set('member_id', syncMemberId);
+      syncFormData.set('member_email', syncTargetUser.user.email);
+      syncFormData.set('member_name', syncMemberName);
+      syncFormData.set('member_type', String(syncProfile.member_type || 'general'));
+      syncFormData.set('role', String(syncProfile.role || 'member'));
+      syncFormData.set('premium', syncIsPremium ? 'true' : 'false');
+      syncFormData.set('account_status', String(syncProfile.account_status || 'active'));
+
+      const syncResponse = await fetch(webhookUrl, { method: 'POST', body: syncFormData, redirect: 'follow' });
+      const syncResultText = await syncResponse.text();
+      const syncJson = parseWebhookResult(syncResultText);
+      if (!syncResponse.ok || syncJson?.ok !== true) {
+        console.error('Profile sync webhook failed', syncResponse.status, syncResultText.slice(0, 500));
+        return json({ error: syncJson?.error || `Roster sync failed (${syncResponse.status})` }, 502);
+      }
+      return json({ ok: true });
+    }
+
     const isMemberTypeChange = requestBody.action === 'member_type_change';
     let memberId = requestBody.memberId || '';
     let memberEmail = requestBody.memberEmail || '';
