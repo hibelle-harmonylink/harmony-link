@@ -71,13 +71,25 @@ Deno.serve(async (request) => {
       // the caller happened to pass in.
       const { data: syncProfile } = await adminClient
         .from('member_profiles')
-        .select('display_name,member_type,role,premium_member,account_status')
+        .select('display_name,member_type,role,premium_member,membership,account_status')
         .eq('id', syncMemberId)
         .maybeSingle();
       if (!syncProfile) return json({ error: 'Member profile not found' }, 404);
 
       const syncMetadata = syncTargetUser.user.user_metadata || {};
       const syncMemberName = syncProfile.display_name || syncMetadata.full_name || syncMetadata.name || syncMetadata.nickname || syncTargetUser.user.email.split('@')[0];
+
+      // membership (202609030001_separate_user_type_membership_access.sql)
+      // is the current source of truth for Premium status -- the
+      // sync_member_access_compatibility trigger keeps member_type/role in
+      // sync with it on every admin save, but does not touch the older
+      // premium_member flag at all, so premium_member alone would go
+      // stale the moment a member is edited through the new access model.
+      // Fall back to premium_member only for a profile the new migration
+      // hasn't touched yet (membership still null).
+      const syncIsPremium = syncProfile.membership != null
+        ? syncProfile.membership === 'premium'
+        : syncProfile.premium_member === true;
 
       const syncFormData = new FormData();
       syncFormData.set('action', 'profile_sync');
@@ -87,7 +99,7 @@ Deno.serve(async (request) => {
       syncFormData.set('member_name', syncMemberName);
       syncFormData.set('member_type', String(syncProfile.member_type || 'general'));
       syncFormData.set('role', String(syncProfile.role || 'member'));
-      syncFormData.set('premium', syncProfile.premium_member === true ? 'true' : 'false');
+      syncFormData.set('premium', syncIsPremium ? 'true' : 'false');
       syncFormData.set('account_status', String(syncProfile.account_status || 'active'));
 
       const syncResponse = await fetch(webhookUrl, { method: 'POST', body: syncFormData, redirect: 'follow' });

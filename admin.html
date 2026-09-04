@@ -18,7 +18,7 @@
        version.json polling pattern so a stale copy force-reloads itself. -->
   <script>
     (() => {
-      const pageVersion = '20260902-4';
+      const pageVersion = '20260904-1';
       fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
         .then(response => response.ok ? response.json() : null)
         .then(release => {
@@ -32,7 +32,7 @@
     })();
   </script>
   <link rel="stylesheet" href="styles.css?v=20260805-253">
-  <link rel="stylesheet" href="admin.css?v=20260902-1">
+  <link rel="stylesheet" href="admin.css?v=20260904-1">
 </head>
 <body class="admin-page">
   <header class="admin-header">
@@ -49,40 +49,34 @@
     </section>
 
     <section class="admin-shell" id="adminApp" hidden>
-      <div class="admin-title-row"><div><p class="eyebrow">ADMIN MEMBER CENTER</p><h1>회원 및 파트너 관리</h1><p>회원 승인, 파트너 등급과 홈페이지 이용 상태를 <br class="admin-mobile-break">안전하게 관리합니다.</p></div><button class="admin-refresh" id="adminRefresh" type="button">새로고침 ↻</button></div>
+      <div class="admin-title-row"><div><p class="eyebrow">ADMIN MEMBER CENTER</p><h1>회원 관리</h1><p>회원유형, 멤버십, 계정 상태와 기능 권한을 각각 관리합니다.</p></div><button class="admin-refresh" id="adminRefresh" type="button">새로고침 ↻</button></div>
 
       <div class="admin-summary" aria-label="회원 현황">
         <article><span>전체 회원</span><strong data-count="all">0</strong></article>
-        <article><span>일반회원</span><strong data-count="general">0</strong></article>
         <article><span>수강생</span><strong data-count="student">0</strong></article>
-        <article><span>무료 파트너</span><strong data-count="partner0">0</strong></article>
-        <article><span>$20 BASIC</span><strong data-count="partner20">0</strong></article>
-        <article><span>$50 PREMIUM</span><strong data-count="partner50">0</strong></article>
-        <article><span>Premium 회원 승인</span><strong data-count="premium">0</strong></article>
+        <article><span>파트너</span><strong data-count="partner">0</strong></article>
+        <article><span>관리자</span><strong data-count="admin">0</strong></article>
+        <article><span>PREMIUM 멤버십</span><strong data-count="premium">0</strong></article>
       </div>
 
       <form class="admin-toolbar" id="adminFilters">
-        <label><span>이메일 검색</span><input id="memberSearch" type="search" autocomplete="off" placeholder="회원 이메일 입력"></label>
-        <label><span>회원 유형</span><select id="typeFilter"><option value="">전체 유형</option><option value="general">일반회원</option><option value="student">수강생</option><option value="partner">입점 파트너</option><option value="admin">관리자</option></select></label>
-        <label><span>파트너 등급</span><select id="roleFilter"><option value="">전체 등급</option><option value="member">등급 없음</option><option value="partner0">무료 파트너</option><option value="partner20">$20 BASIC 파트너</option><option value="partner50">$50 PREMIUM 파트너</option><option value="admin">관리자</option></select></label>
+        <label><span>이름 또는 이메일 검색</span><input id="memberSearch" type="search" autocomplete="off" placeholder="이름 또는 이메일 입력"></label>
+        <label><span>회원유형</span><select id="typeFilter"><option value="">전체 유형</option><option value="student">수강생</option><option value="partner">파트너</option></select></label>
+        <label><span>멤버십</span><select id="membershipFilter"><option value="">전체 멤버십</option><option value="free">FREE</option><option value="basic">BASIC $20</option><option value="premium">PREMIUM $50</option></select></label>
+        <label><span>계정 상태</span><select id="statusFilter"><option value="">전체 상태</option><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label>
         <button class="btn btn-primary" type="submit">검색</button>
       </form>
 
       <div class="admin-message" id="adminMessage" role="status" aria-live="polite"></div>
-      <div class="member-list" id="memberList" aria-live="polite"></div>
+      <div class="member-table-wrap"><table class="member-table"><thead><tr><th>이름</th><th>이메일</th><th>회원유형</th><th>멤버십</th><th>상태</th><th>가입일</th><th>관리</th></tr></thead><tbody id="memberList"></tbody></table></div>
       <div class="member-empty" id="memberEmpty" hidden>조건에 맞는 회원이 없습니다.</div>
     </section>
   </main>
 
-  <template id="memberCardTemplate">
-    <article class="member-card">
-      <div class="member-main"><span class="member-role-badge"></span><h2 class="member-email"></h2><p class="member-id"></p></div>
-      <dl class="member-dates"><div><dt>가입일시</dt><dd data-field="created_at"></dd></div><div><dt>최근 로그인</dt><dd data-field="last_sign_in_at"></dd></div><div><dt>파트너 승인일</dt><dd data-field="approved_at"></dd></div><div><dt>마지막 변경일</dt><dd data-field="updated_at"></dd></div></dl>
-      <div class="member-actions"><label class="member-name-field"><span>회원 이름</span><input class="member-name-input" type="text" minlength="2" maxlength="50" autocomplete="off" placeholder="사람 이름을 입력하세요"></label><label><span>회원 유형</span><select class="member-type-select"><option value="general">일반회원</option><option value="student">수강생</option><option value="partner">입점 파트너</option></select></label><label><span>파트너 등급</span><select class="member-role-select"><option value="member">등급 없음</option><option value="partner0">무료 파트너</option><option value="partner20">$20 BASIC 파트너</option><option value="partner50">$50 PREMIUM 파트너</option></select></label><button type="button" class="member-status-button"></button><button type="button" class="member-premium-button" title="AI 쇼츠 등 Premium 전용 기능 이용 승인 (파트너 등급과 무관)"></button><button type="button" class="member-save btn btn-primary">변경 저장</button><button type="button" class="member-resend">안내메일 다시 보내기</button></div>
-    </article>
-  </template>
+  <dialog class="member-dialog" id="memberDialog" aria-labelledby="memberDialogTitle"><form method="dialog" class="member-dialog-head"><div><p class="eyebrow">MEMBER DETAIL</p><h2 id="memberDialogTitle">회원 상세</h2></div><button value="cancel" aria-label="닫기">×</button></form><div id="memberDetail"></div></dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="admin.js?v=20260902-4"></script>
+  <script src="access-control.js?v=20260904-1"></script>
+  <script src="admin.js?v=20260904-1"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const BUILD = '20260902-4';
+  const BUILD = '20260904-1';
   console.log(`[admin] admin.js loaded — build ${BUILD}`);
   // Visible without opening devtools -- if this text is missing, blank, or
   // shows an older build number than the one just shipped, the browser (or
@@ -15,6 +15,7 @@
   const client = window.supabase?.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
   });
+  const access = window.HarmonyAccess;
 
   const loading = document.getElementById('adminLoading');
   const denied = document.getElementById('adminDenied');
@@ -23,18 +24,19 @@
   const list = document.getElementById('memberList');
   const empty = document.getElementById('memberEmpty');
   const message = document.getElementById('adminMessage');
-  const template = document.getElementById('memberCardTemplate');
   const filters = document.getElementById('adminFilters');
   const search = document.getElementById('memberSearch');
   const typeFilter = document.getElementById('typeFilter');
-  const roleFilter = document.getElementById('roleFilter');
+  const membershipFilter = document.getElementById('membershipFilter');
+  const statusFilter = document.getElementById('statusFilter');
   const refreshButton = document.getElementById('adminRefresh');
   const signOutButton = document.getElementById('adminSignOut');
+  const dialog = document.getElementById('memberDialog');
+  const detail = document.getElementById('memberDetail');
 
-  const ROLE_LABELS = {
-    member: '파트너 등급 없음', partner0: '무료 파트너', partner20: '$20 BASIC 파트너', partner50: '$50 PREMIUM 파트너', admin: '관리자'
-  };
-  const TYPE_LABELS = { general: '일반회원', student: '수강생', partner: '입점 파트너', admin: '관리자' };
+  const TYPE_LABELS = { student: '수강생', partner: '파트너' };
+  const MEMBERSHIP_LABELS = { free: 'FREE', basic: 'BASIC $20', premium: 'PREMIUM $50' };
+  const STATUS_LABELS = { active: '활성', expiring: '만료 예정', expired: '만료', suspended: '중지' };
   let currentUserId = '';
   let currentUserName = '';
   let allMembers = [];
@@ -86,9 +88,9 @@
     }
     return parts.join(' | ');
   };
-  const setMessage = (text = '', error = false) => {
+  const setMessage = (text = '', isError = false) => {
     message.textContent = text;
-    message.classList.toggle('error', error);
+    message.classList.toggle('error', isError);
   };
   // window.confirm() is used only here, for the save flow's "are you sure"
   // step. After a user dismisses several native confirm()/alert() dialogs
@@ -98,37 +100,51 @@
   // shown and nothing thrown -- which looks exactly like the save button
   // doing nothing at all. A custom in-page dialog can't be suppressed that
   // way, so it replaces window.confirm() for this flow.
+  // Appended inside the open <dialog> (not document.body): a native
+  // <dialog> shown via showModal() renders in the browser's top layer,
+  // above every regular sibling regardless of z-index or DOM order --
+  // a body-level overlay would end up visually and pointer-wise UNDER
+  // the still-open member detail dialog, since updateMember() (the only
+  // caller) always runs while that dialog is open.
   const askConfirm = text => new Promise(resolve => {
     const overlay = document.createElement('div');
     overlay.className = 'admin-confirm-overlay';
     overlay.innerHTML = '<div class="admin-confirm-box"><pre class="admin-confirm-message"></pre><div class="admin-confirm-actions"><button type="button" class="admin-confirm-cancel">취소</button><button type="button" class="admin-confirm-ok btn btn-primary">확인</button></div></div>';
     overlay.querySelector('.admin-confirm-message').textContent = text;
-    document.body.appendChild(overlay);
+    (dialog.open ? dialog : document.body).appendChild(overlay);
     const finish = result => { overlay.remove(); resolve(result); };
     overlay.querySelector('.admin-confirm-ok').addEventListener('click', () => finish(true));
     overlay.querySelector('.admin-confirm-cancel').addEventListener('click', () => finish(false));
     overlay.addEventListener('click', event => { if (event.target === overlay) finish(false); });
     overlay.querySelector('.admin-confirm-ok').focus();
   });
-  const formatDate = value => {
-    if (!value) return '없음';
-    const parts = new Intl.DateTimeFormat('ko-KR', {
-      timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
-    }).formatToParts(new Date(value));
-    const get = type => parts.find(part => part.type === type)?.value || '';
-    return `${get('year')}. ${get('month')}. ${get('day')}. <span class="member-time-period">${get('dayPeriod')} ${get('hour')}:${get('minute')}</span>`;
+  const formatDate = value => value ? new Intl.DateTimeFormat('ko-KR', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(value)) : '없음';
+  const deny = text => { loading.hidden = true; app.hidden = true; denied.hidden = false; deniedMessage.textContent = text; };
+  const normalize = member => access.normalizeUser({ ...member, is_admin: member.is_admin || member.role === 'admin' });
+  const escapeHtml = value => String(value || '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+  const badge = (label, className = '') => `<span class="member-badge ${className}">${label}</span>`;
+
+  // Mirrors sync_member_access_compatibility()'s role derivation exactly
+  // (202609030001_separate_user_type_membership_access.sql), so the save
+  // flow knows whether a user_type/membership change will actually change
+  // the underlying legacy `role` column -- and therefore whether to wait
+  // for the automatic role-change email, without needing a second round
+  // trip just to ask.
+  const deriveRole = (userType, membership, isAdmin) => {
+    if (isAdmin) return 'admin';
+    if (userType !== 'partner') return 'member';
+    if (membership === 'premium') return 'partner50';
+    if (membership === 'basic') return 'partner20';
+    return 'partner0';
   };
-  const deny = text => {
-    loading.hidden = true; app.hidden = true; denied.hidden = false;
-    deniedMessage.textContent = text;
-  };
+
   const setCounts = members => {
-    const counts = { all: members.length, general: 0, student: 0, partner0: 0, partner20: 0, partner50: 0, premium: 0 };
-    members.forEach(member => {
-      if (member.member_type === 'general') counts.general += 1;
-      if (member.member_type === 'student') counts.student += 1;
-      if (Object.hasOwn(counts, member.role)) counts[member.role] += 1;
-      if (member.premium_member === true) counts.premium += 1;
+    const counts = { all: members.length, student: 0, partner: 0, admin: 0, premium: 0 };
+    members.forEach(raw => {
+      const member = normalize(raw);
+      if (member.is_admin) counts.admin += 1;
+      else counts[member.user_type] += 1;
+      if (member.membership === 'premium') counts.premium += 1;
     });
     Object.entries(counts).forEach(([key, value]) => {
       const target = document.querySelector(`[data-count="${key}"]`);
@@ -136,101 +152,31 @@
     });
   };
 
-  const createCard = member => {
-    const card = template.content.firstElementChild.cloneNode(true);
-    card.dataset.memberId = member.id;
-    const displayName = member.display_name || (member.email || '').split('@')[0] || '이름 없음';
-    card.querySelector('.member-email').textContent = member.email || '이메일 없음';
-    card.querySelector('.member-id').textContent = member.id;
-    const badge = card.querySelector('.member-role-badge');
-    const typeLabel = TYPE_LABELS[member.member_type] || (member.role === 'member' ? '일반회원' : '입점 파트너');
-    const tierLabel = member.role === 'member' || member.role === 'admin' ? '' : ` · ${ROLE_LABELS[member.role]}`;
-    const premiumLabel = member.premium_member === true ? ' · Premium' : '';
-    badge.textContent = `${typeLabel}${tierLabel}${premiumLabel} · ${displayName}`;
-    badge.classList.add(member.role);
-    card.querySelectorAll('[data-field]').forEach(field => {
-      field.innerHTML = formatDate(member[field.dataset.field]);
-    });
-    const actions = card.querySelector('.member-actions');
-    if (member.role === 'admin' || member.id === currentUserId) {
-      card.classList.add('protected');
-      actions.innerHTML = '<div class="member-protected-copy">관리자 계정은<br class="admin-mobile-break">이 화면에서는 변경하거나 중지할 수 없습니다.</div>';
-      return card;
-    }
-    const select = card.querySelector('.member-role-select');
-    select.value = member.role;
-    const typeSelect = card.querySelector('.member-type-select');
-    typeSelect.value = member.member_type || (member.role === 'member' ? 'general' : 'partner');
-    const syncFromType = () => {
-      const isPartner = typeSelect.value === 'partner';
-      select.disabled = !isPartner;
-      if (isPartner && select.value === 'member') select.value = 'partner0';
-      if (!isPartner) select.value = 'member';
-    };
-    const syncFromRole = () => {
-      if (select.value !== 'member') typeSelect.value = 'partner';
-      syncFromType();
-    };
-    typeSelect.disabled = false;
-    typeSelect.addEventListener('change', syncFromType);
-    select.addEventListener('change', syncFromRole);
-    syncFromType();
-    const nameInput = card.querySelector('.member-name-input');
-    nameInput.value = displayName;
-    const statusButton = card.querySelector('.member-status-button');
-    statusButton.dataset.status = member.account_status;
-    statusButton.textContent = member.account_status === 'suspended' ? '중지 상태' : '활성 상태';
-    statusButton.classList.toggle('suspended', member.account_status === 'suspended');
-    statusButton.addEventListener('click', () => {
-      const next = statusButton.dataset.status === 'active' ? 'suspended' : 'active';
-      statusButton.dataset.status = next;
-      statusButton.textContent = next === 'suspended' ? '중지 예정' : '활성 예정';
-      statusButton.classList.toggle('suspended', next === 'suspended');
-    });
-    const premiumButton = card.querySelector('.member-premium-button');
-    const isPremium = member.premium_member === true;
-    premiumButton.dataset.premium = String(isPremium);
-    premiumButton.textContent = isPremium ? 'Premium 승인됨' : 'Premium 미승인';
-    premiumButton.classList.toggle('is-approved', isPremium);
-    premiumButton.addEventListener('click', () => {
-      const next = premiumButton.dataset.premium !== 'true';
-      premiumButton.dataset.premium = String(next);
-      premiumButton.textContent = next ? 'Premium 승인 예정' : 'Premium 해제 예정';
-      premiumButton.classList.toggle('is-approved', next);
-      console.log('[admin] Premium toggle clicked', { memberId: member.id, pendingPremium: next });
-    });
-    const saveButton = card.querySelector('.member-save');
-    saveButton.addEventListener('click', async () => {
-      console.log('[admin] Save button clicked', { memberId: member.id, pendingPremium: premiumButton.dataset.premium });
-      saveButton.disabled = true;
-      try {
-        await updateMember(member, select.value, statusButton.dataset.status, nameInput.value, typeSelect.value, premiumButton.dataset.premium === 'true');
-      } finally {
-        saveButton.disabled = false;
-      }
-    });
-    const resendButton = card.querySelector('.member-resend');
-    resendButton.addEventListener('click', async () => {
-      resendButton.disabled = true;
-      resendButton.textContent = '메일 보내는 중…';
-      setMessage(`${member.email} 회원에게 등급 안내메일을 보내고 있습니다.`);
-      try {
-        await sendRoleNotification(member);
-        setMessage(`${member.email} 회원에게 등급 안내메일을 보냈습니다.`);
-      } catch (error) {
-        setMessage(`안내메일 전송 실패: ${error.message}`, true);
-      } finally {
-        resendButton.disabled = false;
-        resendButton.textContent = '안내메일 다시 보내기';
-      }
-    });
-    return card;
-  };
-
   const renderMembers = members => {
-    list.replaceChildren(...members.map(createCard));
+    list.replaceChildren(...members.map(raw => {
+      const member = normalize(raw);
+      const row = document.createElement('tr');
+      const name = member.display_name || (member.email || '').split('@')[0] || '이름 없음';
+      const cells = [
+        ['이름', escapeHtml(name) + (member.access_migration_review ? '<span class="member-review">검토 필요</span>' : '')],
+        ['이메일', escapeHtml(member.email || '이메일 없음')],
+        ['회원유형', member.is_admin ? badge('관리자') : badge(TYPE_LABELS[member.user_type], `type-${member.user_type}`)],
+        ['멤버십', badge(MEMBERSHIP_LABELS[member.membership], member.membership)],
+        ['상태', badge(STATUS_LABELS[member.account_status] || member.account_status, member.account_status)],
+        ['가입일', formatDate(member.created_at)]
+      ];
+      cells.forEach(([label, html]) => { const cell = document.createElement('td'); cell.dataset.label = label; cell.innerHTML = html; row.appendChild(cell); });
+      const actionCell = document.createElement('td');
+      actionCell.dataset.label = '관리';
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'member-manage'; button.textContent = '상세 관리';
+      button.addEventListener('click', () => openDetail(raw));
+      actionCell.appendChild(button);
+      row.appendChild(actionCell);
+      return row;
+    }));
     empty.hidden = members.length > 0;
-    console.log('[admin] rendered cards', { count: members.length, saveButtonsWired: list.querySelectorAll('.member-save').length });
+    console.log('[admin] rendered rows', { count: members.length });
   };
 
   const loadMembers = async () => {
@@ -255,19 +201,21 @@
 
   const applyFilters = () => {
     const term = search.value.trim().toLowerCase();
-    const type = typeFilter.value;
-    const role = roleFilter.value;
-    renderMembers(allMembers.filter(member => (!term || (member.email || '').toLowerCase().includes(term)) && (!type || member.member_type === type) && (!role || member.role === role)));
+    renderMembers(allMembers.filter(raw => {
+      const member = normalize(raw);
+      return (!term || `${member.display_name || ''} ${member.email || ''}`.toLowerCase().includes(term))
+        && (!typeFilter.value || member.user_type === typeFilter.value)
+        && (!membershipFilter.value || member.membership === membershipFilter.value)
+        && (!statusFilter.value || member.account_status === statusFilter.value);
+    }));
   };
 
-  const sendRoleNotification = async (member, oldRole = '') => {
+  const sendRoleNotification = async member => {
     const { data: notificationId, error } = await client.rpc('admin_queue_role_email', { p_member_id: member.id });
     if (error) throw new Error(error.message || '메일 발송 대기열 등록에 실패했습니다.');
     for (let attempt = 0; attempt < 15; attempt += 1) {
       await new Promise(resolve => window.setTimeout(resolve, 1000));
-      const { data: rows, error: statusError } = await client.rpc('admin_get_role_email_status', {
-        p_notification_id: notificationId
-      });
+      const { data: rows, error: statusError } = await client.rpc('admin_get_role_email_status', { p_notification_id: notificationId });
       if (statusError) throw new Error(statusError.message || '메일 발송 상태를 확인하지 못했습니다.');
       const delivery = rows?.[0];
       if (delivery?.processed_at) return;
@@ -285,10 +233,7 @@
   const waitForAutomaticRoleEmail = async (memberId, changedAfter) => {
     for (let attempt = 0; attempt < 20; attempt += 1) {
       await new Promise(resolve => window.setTimeout(resolve, 1000));
-      const { data: rows, error } = await client.rpc('admin_get_latest_role_email_status', {
-        p_member_id: memberId,
-        p_after: changedAfter
-      });
+      const { data: rows, error } = await client.rpc('admin_get_latest_role_email_status', { p_member_id: memberId, p_after: changedAfter });
       if (error) throw new Error(error.message || '메일 발송 상태를 확인하지 못했습니다.');
       const delivery = rows?.[0];
       if (!delivery) continue;
@@ -322,32 +267,76 @@
     if (data?.error) throw new Error(data.error);
   };
 
-  const updateMember = async (member, nextRole, nextStatus, requestedName, requestedType, nextPremium) => {
+  const featureHtml = member => {
+    const features = access.getFeatureAccess(member);
+    const renderList = allowed => features.filter(item => item.allowed === allowed).map(item => `<li>${item.label}</li>`).join('') || '<li>없음</li>';
+    return `<div class="feature-columns"><section class="feature-box allowed"><h3>이용 가능한 기능</h3><ul>${renderList(true)}</ul></section><section class="feature-box denied"><h3>이용 불가능한 기능</h3><ul>${renderList(false)}</ul></section></div>`;
+  };
+
+  const openDetail = raw => {
+    const member = normalize(raw);
+    const protectedAccount = member.is_admin || member.id === currentUserId;
+    const name = member.display_name || (member.email || '').split('@')[0] || '이름 없음';
+    detail.className = 'member-detail';
+    detail.innerHTML = `<div class="member-detail-summary"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(member.email || '')}</span>${badge(member.is_admin ? '관리자' : TYPE_LABELS[member.user_type], `type-${member.user_type}`)}${badge(MEMBERSHIP_LABELS[member.membership], member.membership)}${badge(STATUS_LABELS[member.account_status], member.account_status)}</div>${protectedAccount ? '<div class="member-protected-copy">관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.</div>' : `<div class="member-edit-grid"><label class="member-name-field">회원 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label>회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label>멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label>계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label></div>`}<div id="detailFeatures">${featureHtml(member)}</div><dl class="member-dates"><div><dt>가입일</dt><dd>${formatDate(member.created_at)}</dd></div><div><dt>최근 로그인</dt><dd>${formatDate(member.last_sign_in_at)}</dd></div><div><dt>파트너 승인일</dt><dd>${formatDate(member.approved_at)}</dd></div><div><dt>마지막 변경일</dt><dd>${formatDate(member.updated_at)}</dd></div></dl>${protectedAccount ? '' : '<div class="member-detail-actions"><button type="button" class="member-resend">안내메일 다시 보내기</button><button type="button" class="btn btn-primary" id="detailSave">변경 저장</button></div>'}`;
+    const nameInput = detail.querySelector('#detailName');
+    const type = detail.querySelector('#detailType');
+    const membership = detail.querySelector('#detailMembership');
+    const status = detail.querySelector('#detailStatus');
+    if (type) {
+      nameInput.value = name;
+      type.value = member.user_type; membership.value = member.membership; status.value = member.account_status;
+      const preview = () => { detail.querySelector('#detailFeatures').innerHTML = featureHtml({ ...member, user_type: type.value, membership: membership.value, account_status: status.value }); };
+      [type, membership, status].forEach(select => select.addEventListener('change', preview));
+      detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, nameInput.value, type.value, membership.value, status.value));
+      detail.querySelector('.member-resend').addEventListener('click', event => resendNotification(raw, event.currentTarget));
+    }
+    dialog.showModal();
+  };
+
+  const resendNotification = async (member, button) => {
+    button.disabled = true;
+    button.textContent = '메일 보내는 중…';
+    setMessage(`${member.email} 회원에게 등급 안내메일을 보내고 있습니다.`);
+    try {
+      await sendRoleNotification(member);
+      setMessage(`${member.email} 회원에게 안내메일을 보냈습니다.`);
+    } catch (error) {
+      setMessage(`안내메일 전송 실패: ${error.message}`, true);
+    } finally {
+      button.disabled = false;
+      button.textContent = '안내메일 다시 보내기';
+    }
+  };
+
+  const updateMember = async (raw, requestedName, nextUserType, nextMembership, nextStatus) => {
+    const member = normalize(raw);
     const nextName = requestedName.trim();
-    const nextType = ['general', 'student', 'partner'].includes(requestedType) ? requestedType : 'general';
-    const roleChanged = nextRole !== member.role;
-    const typeChanged = nextType !== member.member_type;
-    const statusChanged = nextStatus !== member.account_status;
     const nameChanged = nextName !== (member.display_name || '');
-    const premiumChanged = nextPremium !== (member.premium_member === true);
-    if (!roleChanged && !typeChanged && !statusChanged && !nameChanged && !premiumChanged) {
+    const accessChanged = nextUserType !== member.user_type || nextMembership !== member.membership || nextStatus !== member.account_status;
+    if (!nameChanged && !accessChanged) {
       setMessage('변경된 내용이 없습니다.', true);
       return;
     }
-    if (nextName.length < 2 || nextName.length > 50) {
+    if (nameChanged && (nextName.length < 2 || nextName.length > 50)) {
       setMessage('회원 이름은 2자 이상 50자 이하로 입력해 주세요.', true);
       return;
     }
-    const detail = [nameChanged ? `회원 이름 → ${nextName}` : '', typeChanged ? `회원 유형 → ${TYPE_LABELS[nextType]}` : '', roleChanged ? `${ROLE_LABELS[member.role]} → ${ROLE_LABELS[nextRole]}` : '', statusChanged ? `${member.account_status === 'active' ? '활성' : '중지'} → ${nextStatus === 'active' ? '활성' : '중지'}` : '', premiumChanged ? `Premium 회원(AI 쇼츠) → ${nextPremium ? '승인' : '미승인'}` : ''].filter(Boolean).join('\n');
-    console.log('[admin] asking for confirmation', { memberId: member.id, detail });
-    const confirmed = await askConfirm(`${member.email} 회원을 다음과 같이 변경할까요?\n\n${detail}`);
+    const detailLines = [
+      nameChanged ? `회원 이름 → ${nextName}` : '',
+      nextUserType !== member.user_type ? `회원유형: ${TYPE_LABELS[member.user_type]} → ${TYPE_LABELS[nextUserType]}` : '',
+      nextMembership !== member.membership ? `멤버십: ${MEMBERSHIP_LABELS[member.membership]} → ${MEMBERSHIP_LABELS[nextMembership]}` : '',
+      nextStatus !== member.account_status ? `계정 상태: ${STATUS_LABELS[member.account_status]} → ${STATUS_LABELS[nextStatus]}` : ''
+    ].filter(Boolean).join('\n');
+    console.log('[admin] asking for confirmation', { memberId: member.id, detailLines });
+    const confirmed = await askConfirm(`${member.email} 회원을 다음과 같이 변경할까요?\n\n${detailLines}`);
     console.log('[admin] confirmation result', confirmed);
     if (!confirmed) {
       setMessage('변경이 취소되었습니다.', true);
       return;
     }
     setMessage(`${member.email} 회원 정보를 변경하고 있습니다.`);
-    console.log('[admin] updateMember start', { memberId: member.id, email: member.email, roleChanged, typeChanged, statusChanged, nameChanged, premiumChanged, nextPremium });
+    console.log('[admin] updateMember start', { memberId: member.id, email: member.email, nameChanged, accessChanged, nextUserType, nextMembership, nextStatus });
 
     // Diagnostic wrapper: logs every RPC call and its result, and makes
     // sure setMessage is always reached even if an RPC call rejects
@@ -368,28 +357,20 @@
     };
 
     try {
-      // Each field is saved independently so one failing RPC (e.g. a
-      // migration that hasn't been applied yet) can't silently block the
-      // other, unrelated fields from being saved. `field` is a stable key
-      // used by the post-save verification step below; `label` is just
-      // display text.
+      // Each concern is saved independently so one failing RPC can't
+      // silently block the other from being saved. `field` is a stable
+      // key used by the post-save verification step below; `label` is
+      // just display text.
       const results = [];
       if (nameChanged) {
         const { error } = await callRpc('admin_update_member_name', { p_member_id: member.id, p_display_name: nextName });
         results.push({ field: 'name', label: '회원 이름', ok: !error, error });
       }
-      if (premiumChanged) {
-        const { error } = await callRpc('admin_update_member_premium', { p_member_id: member.id, p_premium: nextPremium });
-        results.push({ field: 'premium', label: 'Premium 승인 상태', ok: !error, error });
-      }
-      if (typeChanged) {
-        const { error } = await callRpc('admin_update_member_type', { p_member_id: member.id, p_member_type: nextType });
-        results.push({ field: 'type', label: '회원 유형', ok: !error, error });
-      }
-      const roleChangedAt = new Date(Date.now() - 2000).toISOString();
-      if (roleChanged || statusChanged) {
-        const { error } = await callRpc('admin_update_member', { p_member_id: member.id, p_role: nextRole, p_account_status: nextStatus });
-        results.push({ field: 'roleStatus', label: roleChanged && statusChanged ? '파트너 등급/활성 상태' : roleChanged ? '파트너 등급' : '활성 상태', ok: !error, error });
+      const accessChangedAt = new Date(Date.now() - 2000).toISOString();
+      const roleChanged = deriveRole(nextUserType, nextMembership, member.is_admin) !== member.role;
+      if (accessChanged) {
+        const { error } = await callRpc('admin_update_member_access', { p_member_id: member.id, p_user_type: nextUserType, p_membership: nextMembership, p_account_status: nextStatus });
+        results.push({ field: 'access', label: '회원유형/멤버십/계정 상태', ok: !error, error });
       }
 
       // Never trust an RPC's { error: null } alone as proof the value
@@ -399,7 +380,8 @@
       // field as saved if the fresh value actually matches what was asked
       // for.
       await loadMembers();
-      const freshMember = allMembers.find(candidate => candidate.id === member.id);
+      const freshRaw = allMembers.find(candidate => candidate.id === member.id);
+      const freshMember = freshRaw ? normalize(freshRaw) : null;
       console.log('[admin] post-save verification read', freshMember);
       const markUnverified = (field, msg) => {
         const result = results.find(candidate => candidate.field === field && candidate.ok);
@@ -414,17 +396,14 @@
         if (nameChanged && freshMember.display_name !== nextName) {
           markUnverified('name', `DB에 실제로 반영되지 않았습니다 (요청값: ${nextName}, 실제값: ${freshMember.display_name || '(없음)'})`);
         }
-        if (premiumChanged && (freshMember.premium_member === true) !== nextPremium) {
-          markUnverified('premium', `DB에 실제로 반영되지 않았습니다 (요청값: ${nextPremium ? '승인' : '미승인'}, 실제값: ${freshMember.premium_member ? '승인' : '미승인'})`);
-        }
-        if (typeChanged && freshMember.member_type !== nextType) {
-          markUnverified('type', `DB에 실제로 반영되지 않았습니다 (요청값: ${TYPE_LABELS[nextType] || nextType}, 실제값: ${TYPE_LABELS[freshMember.member_type] || freshMember.member_type})`);
-        }
-        if (roleChanged && freshMember.role !== nextRole) {
-          markUnverified('roleStatus', `파트너 등급이 DB에 실제로 반영되지 않았습니다 (요청값: ${ROLE_LABELS[nextRole] || nextRole}, 실제값: ${ROLE_LABELS[freshMember.role] || freshMember.role})`);
-        }
-        if (statusChanged && freshMember.account_status !== nextStatus) {
-          markUnverified('roleStatus', `활성 상태가 DB에 실제로 반영되지 않았습니다 (요청값: ${nextStatus}, 실제값: ${freshMember.account_status})`);
+        if (accessChanged) {
+          if (freshMember.user_type !== nextUserType) {
+            markUnverified('access', `회원유형이 DB에 실제로 반영되지 않았습니다 (요청값: ${TYPE_LABELS[nextUserType]}, 실제값: ${TYPE_LABELS[freshMember.user_type]})`);
+          } else if (freshMember.membership !== nextMembership) {
+            markUnverified('access', `멤버십이 DB에 실제로 반영되지 않았습니다 (요청값: ${MEMBERSHIP_LABELS[nextMembership]}, 실제값: ${MEMBERSHIP_LABELS[freshMember.membership]})`);
+          } else if (freshMember.account_status !== nextStatus) {
+            markUnverified('access', `계정 상태가 DB에 실제로 반영되지 않았습니다 (요청값: ${STATUS_LABELS[nextStatus]}, 실제값: ${STATUS_LABELS[freshMember.account_status]})`);
+          }
         }
       }
 
@@ -447,14 +426,13 @@
       // Show the completion notification right now, based only on the DB
       // verification above. The automatic-email confirmation (polls for up
       // to 20s) and the Sheet sync webhook (no timeout of its own) are
-      // both best-effort follow-ups; previously this notification waited
-      // on both of them to finish before ever appearing, so any hang or
-      // slow response from either one -- e.g. a slow/cold Apps Script
-      // deployment -- silently swallowed the "저장되었습니다" message
-      // entirely, even though the DB save itself had already succeeded
-      // and been verified. Each follow-up now appends its own note to the
-      // same banner once (and only once) it resolves, instead of gating
-      // whether the banner appears at all.
+      // both best-effort follow-ups; gating the notification on either of
+      // them finishing means any hang or slow response -- e.g. a slow/cold
+      // Apps Script deployment -- silently swallows the "저장되었습니다"
+      // message entirely, even though the DB save itself had already
+      // succeeded and been verified. Each follow-up appends its own note
+      // to the same banner once (and only once) it resolves, instead of
+      // gating whether the banner appears at all.
       let emailNote = '';
       let sheetSyncNote = '';
       const renderResult = () => setMessage(`${resultMessage}${emailNote}${sheetSyncNote}`, resultIsError);
@@ -468,17 +446,17 @@
         new Promise((resolve, reject) => window.setTimeout(() => reject(new Error(timeoutMessage)), ms))
       ]);
 
-      const tierSaved = results.some(result => result.field === 'roleStatus' && result.ok);
-      const emailTask = (roleChanged && tierSaved) ? (async () => {
-        console.log('[admin] waiting for the automatic role-change email', { memberId: member.id, roleChangedAt });
+      const accessSaved = results.some(result => result.field === 'access' && result.ok);
+      const emailTask = (roleChanged && accessSaved) ? (async () => {
+        console.log('[admin] waiting for the automatic role-change email', { memberId: member.id, accessChangedAt });
         try {
-          await withTimeout(waitForAutomaticRoleEmail(member.id, roleChangedAt), 25000, '메일 발송 확인이 시간 초과되었습니다.');
+          await withTimeout(waitForAutomaticRoleEmail(member.id, accessChangedAt), 25000, '메일 발송 확인이 시간 초과되었습니다.');
           console.log('[admin] automatic role-change email confirmed sent', { memberId: member.id });
           emailNote = ' 안내메일도 정상 발송되었습니다.';
         } catch (automaticError) {
           console.error('[admin] automatic role-change email was not confirmed; falling back to a direct send', { memberId: member.id, error: automaticError.message });
           try {
-            await withTimeout(sendDirectRoleNotification({ ...member, role: nextRole }, member.role), 10000, '안내메일 직접 발송이 시간 초과되었습니다.');
+            await withTimeout(sendDirectRoleNotification({ ...member, role: deriveRole(nextUserType, nextMembership, member.is_admin) }, member.role), 10000, '안내메일 직접 발송이 시간 초과되었습니다.');
             console.log('[admin] direct role-change email sent', { memberId: member.id });
             emailNote = ' 안내메일도 정상 발송되었습니다.';
           } catch (directError) {
@@ -496,7 +474,7 @@
       // whether the DB save itself is reported as successful: it only
       // runs after a save actually succeeded, and its own failure is
       // reported as a separate, additional note.
-      const anyFieldSaved = results.some(result => result.ok && ['name', 'type', 'premium', 'roleStatus'].includes(result.field));
+      const anyFieldSaved = results.some(result => result.ok);
       const sheetTask = anyFieldSaved ? (async () => {
         console.log('[admin] syncing profile to member roster sheet', { memberId: member.id });
         try {
@@ -527,6 +505,7 @@
       })() : Promise.resolve();
 
       await Promise.all([emailTask, sheetTask]);
+      if (failed.length === 0) dialog.close();
     } catch (unexpected) {
       console.error('[admin] updateMember failed unexpectedly', unexpected);
       setMessage(`예기치 않은 오류로 저장하지 못했습니다: ${describeError(unexpected)}`, true);
@@ -534,14 +513,12 @@
   };
 
   filters.addEventListener('submit', event => { event.preventDefault(); applyFilters(); });
-  roleFilter.addEventListener('change', applyFilters);
-  typeFilter.addEventListener('change', applyFilters);
-  search.addEventListener('input', applyFilters);
+  [search, typeFilter, membershipFilter, statusFilter].forEach(control => control.addEventListener(control === search ? 'input' : 'change', applyFilters));
   refreshButton.addEventListener('click', loadMembers);
   signOutButton.addEventListener('click', async () => { await client.auth.signOut(); window.location.replace('./'); });
 
   const initialize = async () => {
-    if (!client) { deny('로그인 기능을 불러오지 못했습니다.'); return; }
+    if (!client || !access) { deny('회원관리 기능을 불러오지 못했습니다.'); return; }
     const { data: sessionData, error: sessionError } = await client.auth.getSession();
     if (sessionError || !sessionData.session?.user) { deny('로그인하지 않은 사용자는 관리자 페이지에 접근할 수 없습니다.'); return; }
     currentUserId = sessionData.session.user.id;
