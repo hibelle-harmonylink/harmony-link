@@ -144,7 +144,10 @@
       const member = normalize(raw);
       if (member.is_admin) counts.admin += 1;
       else counts[member.user_type] += 1;
-      if (member.membership === 'premium') counts.premium += 1;
+      // Admin is a separate access tier, not a paid membership -- its
+      // membership column is a leftover backfill value, not a real
+      // premium grant, so it must never inflate this count.
+      if (!member.is_admin && member.membership === 'premium') counts.premium += 1;
     });
     Object.entries(counts).forEach(([key, value]) => {
       const target = document.querySelector(`[data-count="${key}"]`);
@@ -161,7 +164,10 @@
         ['이름', escapeHtml(name) + (member.access_migration_review ? '<span class="member-review">검토 필요</span>' : '')],
         ['이메일', escapeHtml(member.email || '이메일 없음')],
         ['회원유형', member.is_admin ? badge('관리자') : badge(TYPE_LABELS[member.user_type], `type-${member.user_type}`)],
-        ['멤버십', badge(MEMBERSHIP_LABELS[member.membership], member.membership)],
+        // Admin's membership column value (backfilled to 'free') is not a
+        // real membership -- showing it as FREE reads as a demotion, so
+        // the admin row shows its access tier instead of that leftover value.
+        ['멤버십', member.is_admin ? badge('관리자') : badge(MEMBERSHIP_LABELS[member.membership], member.membership)],
         ['상태', badge(STATUS_LABELS[member.account_status] || member.account_status, member.account_status)],
         ['가입일', formatDate(member.created_at)]
       ];
@@ -278,7 +284,7 @@
     const protectedAccount = member.is_admin || member.id === currentUserId;
     const name = member.display_name || (member.email || '').split('@')[0] || '이름 없음';
     detail.className = 'member-detail';
-    detail.innerHTML = `<div class="member-detail-summary"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(member.email || '')}</span>${badge(member.is_admin ? '관리자' : TYPE_LABELS[member.user_type], `type-${member.user_type}`)}${badge(MEMBERSHIP_LABELS[member.membership], member.membership)}${badge(STATUS_LABELS[member.account_status], member.account_status)}</div>${protectedAccount ? '<div class="member-protected-copy">관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.</div>' : `<div class="member-edit-grid"><label class="member-name-field">회원 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label>회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label>멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label>계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label></div>`}<div id="detailFeatures">${featureHtml(member)}</div><dl class="member-dates"><div><dt>가입일</dt><dd>${formatDate(member.created_at)}</dd></div><div><dt>최근 로그인</dt><dd>${formatDate(member.last_sign_in_at)}</dd></div><div><dt>파트너 승인일</dt><dd>${formatDate(member.approved_at)}</dd></div><div><dt>마지막 변경일</dt><dd>${formatDate(member.updated_at)}</dd></div></dl>${protectedAccount ? '' : '<div class="member-detail-actions"><button type="button" class="member-resend">안내메일 다시 보내기</button><button type="button" class="btn btn-primary" id="detailSave">변경 저장</button></div>'}`;
+    detail.innerHTML = `<div class="member-detail-summary"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(member.email || '')}</span>${badge(member.is_admin ? '관리자' : TYPE_LABELS[member.user_type], `type-${member.user_type}`)}${member.is_admin ? '' : badge(MEMBERSHIP_LABELS[member.membership], member.membership)}${badge(STATUS_LABELS[member.account_status], member.account_status)}</div>${protectedAccount ? '<div class="member-protected-copy">관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.</div>' : `<div class="member-edit-grid"><label class="member-name-field">회원 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label>회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label>멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label>계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label></div>`}<div id="detailFeatures">${featureHtml(member)}</div><dl class="member-dates"><div><dt>가입일</dt><dd>${formatDate(member.created_at)}</dd></div><div><dt>최근 로그인</dt><dd>${formatDate(member.last_sign_in_at)}</dd></div><div><dt>파트너 승인일</dt><dd>${formatDate(member.approved_at)}</dd></div><div><dt>마지막 변경일</dt><dd>${formatDate(member.updated_at)}</dd></div></dl>${protectedAccount ? '' : '<div class="member-detail-actions"><button type="button" class="member-resend">안내메일 다시 보내기</button><button type="button" class="btn btn-primary" id="detailSave">변경 저장</button></div>'}`;
     const nameInput = detail.querySelector('#detailName');
     const type = detail.querySelector('#detailType');
     const membership = detail.querySelector('#detailMembership');
