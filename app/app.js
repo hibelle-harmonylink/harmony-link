@@ -162,6 +162,8 @@ function applyLanguage(){
   document.documentElement.lang=language;
   $$("[data-ko]").forEach(el=>{el.innerHTML=el.dataset[language]});
   $$("[data-ko-placeholder]").forEach(el=>{el.placeholder=el.dataset[`${language}Placeholder`]});
+  $$("[data-ko-src]").forEach(el=>{el.src=el.dataset[`${language}Src`]});
+  $$("[data-ko-alt]").forEach(el=>{el.alt=el.dataset[`${language}Alt`]});
   $("#languageButton").textContent=language==="ko"?"EN":"한";
   localStorage.setItem("hl-language",language);
   renderRecommended();renderPartners();renderFilters();renderPrograms();renderSaved();renderEvents();renderPopup();
@@ -309,13 +311,64 @@ $("#contactForm").addEventListener("submit",async event=>{
     status.innerHTML=language==="ko"?'전송하지 못했습니다. <a href="mailto:hibelle@hibelleconsulting.com">이메일로 문의해 주세요.</a>':'Could not send. Please <a href="mailto:hibelle@hibelleconsulting.com">email us</a>.';
   }finally{button.disabled=false}
 });
+function detectInstallPlatform(){
+  const ua=navigator.userAgent;
+  const isIos=/iphone|ipad|ipod/i.test(ua);
+  const isAndroid=/android/i.test(ua);
+  const isSafari=/safari/i.test(ua)&&!/crios|fxios|edgios|chrome|android/i.test(ua);
+  if(isIos&&isSafari) return "ios-safari";
+  if(isAndroid) return "android";
+  if(/edg\//i.test(ua)) return "desktop-edge";
+  if(/chrome/i.test(ua)) return "desktop-chrome";
+  return "other";
+}
+function installStepsFor(platform){
+  const steps={
+    "ios-safari":[
+      {ko:"화면 아래(또는 위) 공유 버튼 <b>⬆️</b>을 눌러주세요.",en:"Tap the Share button <b>⬆️</b> in Safari's toolbar."},
+      {ko:"메뉴에서 '홈 화면에 추가'를 선택하세요.",en:"Choose 'Add to Home Screen' from the menu."},
+      {ko:"오른쪽 위 '추가'를 누르면 설치가 완료됩니다.",en:"Tap 'Add' in the top corner to finish installing."}
+    ],
+    "android":[
+      {ko:"오른쪽 위 메뉴(⋮)를 눌러주세요.",en:"Tap the menu (⋮) in the top-right corner."},
+      {ko:"'앱 설치' 또는 '홈 화면에 추가'를 선택하세요.",en:"Choose 'Install app' or 'Add to Home screen'."},
+      {ko:"설치를 확인하면 홈 화면에 아이콘이 추가됩니다.",en:"Confirm to add the Harmony Link icon to your home screen."}
+    ],
+    "desktop-chrome":[
+      {ko:"주소창 오른쪽의 설치 아이콘 <b>⊕</b>을 클릭하세요.",en:"Click the install icon <b>⊕</b> in the address bar."},
+      {ko:"아이콘이 보이지 않으면 메뉴(⋮) &gt; '앱 설치'를 선택하세요.",en:"If you don't see it, open the menu (⋮) and choose 'Install app'."},
+      {ko:"'설치'를 누르면 바탕화면 앱으로 설치됩니다.",en:"Click 'Install' to add Harmony Link as a desktop app."}
+    ],
+    "desktop-edge":[
+      {ko:"주소창 오른쪽의 설치 아이콘을 클릭하세요.",en:"Click the install icon in the address bar."},
+      {ko:"아이콘이 보이지 않으면 메뉴(…) &gt; '앱' &gt; '이 사이트를 앱으로 설치'를 선택하세요.",en:"If you don't see it, open the menu (…) &gt; Apps &gt; 'Install this site as an app'."},
+      {ko:"'설치'를 누르면 바탕화면 앱으로 설치됩니다.",en:"Click 'Install' to add Harmony Link as a desktop app."}
+    ],
+    other:[
+      {ko:"Chrome 또는 Edge 브라우저에서는 주소창의 설치 아이콘이나 메뉴의 '앱 설치'를 이용하세요.",en:"On Chrome or Edge, use the install icon in the address bar or 'Install app' in the menu."},
+      {ko:"iPhone Safari에서는 공유 버튼 &gt; '홈 화면에 추가'를 이용하세요.",en:"On iPhone Safari, use the Share button &gt; 'Add to Home Screen'."}
+    ]
+  };
+  return steps[platform]||steps.other;
+}
+function openInstallHelp(){
+  const modal=$("#installHelpModal");
+  const list=$("#installHelpSteps");
+  const platform=detectInstallPlatform();
+  list.innerHTML=installStepsFor(platform).map(step=>`<li data-ko="${step.ko}" data-en="${step.en}">${language==="ko"?step.ko:step.en}</li>`).join("");
+  modal.hidden=false;
+  document.body.style.overflow="hidden";
+}
+function closeInstallHelp(){
+  $("#installHelpModal").hidden=true;
+  document.body.style.overflow="";
+}
+$("#installHelpModal").querySelectorAll("[data-install-help-close]").forEach(button=>button.addEventListener("click",closeInstallHelp));
+document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!$("#installHelpModal").hidden)closeInstallHelp();});
 window.addEventListener("beforeinstallprompt",event=>{
   event.preventDefault();
   installPrompt=event;
   $("#installButton").hidden=false;
-  if(new URLSearchParams(location.search).get("install")==="1"){
-    setTimeout(()=>$("#installButton").focus(),150);
-  }
 });
 $("#installButton").addEventListener("click",async()=>{
   if(window.matchMedia("(display-mode: standalone)").matches){
@@ -323,14 +376,14 @@ $("#installButton").addEventListener("click",async()=>{
     return;
   }
   if(!installPrompt){
-    alert(language==="ko"?"Chrome에서 화면을 한 번 누른 뒤 30초 정도 기다리고 다시 ‘앱 설치’를 눌러 주세요. 기존에 Google 표시가 붙은 바로가기가 있으면 먼저 삭제해 주세요.":"Tap the page, wait about 30 seconds, then press Install App again. Remove any old Chrome shortcut first.");
+    openInstallHelp();
     return;
   }
   installPrompt.prompt();
   const choice=await installPrompt.userChoice;
   if(choice.outcome==="accepted") installPrompt=null;
 });
-window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true});
+window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true;closeInstallHelp()});
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
@@ -354,9 +407,15 @@ if(initialParams.get("install")==="1"){
   const installButton=$("#installButton");
   installButton.hidden=false;
   installButton.classList.add("install-highlight");
-  const isIos=/iphone|ipad|ipod/i.test(navigator.userAgent);
-  if(isIos&&!window.matchMedia("(display-mode: standalone)").matches){
-    setTimeout(()=>alert("iPhone에서는 Safari 아래의 공유 버튼을 누른 뒤 ‘홈 화면에 추가’를 선택해 주세요."),500);
+  if(!window.matchMedia("(display-mode: standalone)").matches){
+    setTimeout(()=>{
+      if(installPrompt){
+        installPrompt.prompt();
+        installPrompt.userChoice.then(choice=>{if(choice.outcome==="accepted") installPrompt=null;});
+      }else{
+        openInstallHelp();
+      }
+    },900);
   }
 }
 if("scrollRestoration" in history) history.scrollRestoration="manual";
