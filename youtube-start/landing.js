@@ -15,12 +15,12 @@
         (isBuild ? '<span class="ytlab-plan-badge">가장 많이 선택</span>' : '') +
         '<p class="ytlab-plan-key">' + plan.key + '</p>' +
         '<h3>' + plan.nameKo + '</h3>' +
-        '<p class="ytlab-plan-price">' + plan.priceLabel + ' <small>' + plan.priceUnitKo + '</small></p>' +
+        '<p class="ytlab-plan-price-highlight">상담 후 최종 확정</p>' +
         '<p class="ytlab-plan-price-note">' + plan.priceNoteKo + '</p>' +
         '<p class="ytlab-plan-bestfor">' + plan.bestForKo + '</p>' +
         (plan.includesNote ? '<p class="ytlab-plan-includes-note">' + plan.includesNote + '</p>' : '') +
         '<ul>' + plan.includes.map(function (item) { return '<li><b>✓</b><span>' + item + '</span></li>'; }).join('') + '</ul>' +
-        '<a class="ytlab-btn ytlab-btn-' + (isBuild ? 'primary' : 'outline') + ' ytlab-btn-block" href="#consult">' + plan.key + ' 상담 신청</a>' +
+        '<a class="ytlab-btn ytlab-btn-primary ytlab-btn-block" href="#consult">' + plan.key + ' 상담 신청</a>' +
         '</div>';
     }).join('');
     document.getElementById('plansGrid').innerHTML = html;
