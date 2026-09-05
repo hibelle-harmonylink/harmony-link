@@ -218,7 +218,7 @@ function setLanguage(language) {
 
 langButton.onclick=()=>{
   setLanguage(currentLanguage==='ko'?'en':'ko');
-  window.setTimeout(()=>{ renderPromotionNews(); },0);
+  window.setTimeout(()=>renderAdvertisingCarousel?.(),0);
 };
 
 window.addEventListener('scroll', () => {
@@ -318,6 +318,24 @@ setLanguage(currentLanguage);
 const membershipPricingAnchor = document.querySelector('#membership .upgrade-prompt');
 document.querySelector('.partner-price-summary')?.remove();
 
+const promotionModal = document.createElement('div');
+promotionModal.className = 'promotion-modal';
+promotionModal.hidden = true;
+promotionModal.innerHTML = `<div class="promotion-backdrop" data-promotion-close></div><section class="promotion-panel" role="dialog" aria-modal="true" aria-labelledby="promotionTitle"><button class="promotion-close" type="button" data-promotion-close aria-label="닫기">×</button><span class="promotion-badge" data-ko="8월 한정 혜택" data-en="AUGUST SPECIAL">8월 한정 혜택</span><p class="promotion-eyebrow">HARMONY LINK PARTNER</p><h2 id="promotionTitle" data-ko="PREMIUM 회원<br>3개월 등록비 면제" data-en="PREMIUM Partners<br>3 Months Registration Fee Waived">PREMIUM 회원<br>3개월 등록비 면제</h2><p data-ko="2026년 8월 31일까지 프리미엄 회원으로 접수한 입점 강사·교육업체에게 3개월 등록비 면제 혜택을 드립니다." data-en="Partner instructors and education providers who apply for PREMIUM membership by August 31, 2026 receive a three-month registration fee waiver.">2026년 8월 31일까지 프리미엄 회원으로 접수한 입점 강사·교육업체에게 3개월 등록비 면제 혜택을 드립니다.</p><div class="promotion-prices"><span><b>BASIC</b><strong>$20</strong><small data-ko="/ 월" data-en="/ month">/ 월</small></span><span class="featured"><b>PREMIUM</b><strong>$50</strong><small data-ko="/ 월" data-en="/ month">/ 월</small></span></div><button class="btn promotion-action" type="button"><span data-ko="멤버십 혜택 확인하기" data-en="View Membership Benefits">멤버십 혜택 확인하기</span><b>→</b></button><small class="promotion-deadline" data-ko="접수 마감 · 2026년 8월 31일" data-en="Application deadline · August 31, 2026">접수 마감 · 2026년 8월 31일</small></section>`;
+document.body.appendChild(promotionModal);
+const closePromotion = () => {
+  promotionModal.hidden = true;
+  document.body.classList.remove('modal-open');
+};
+promotionModal.querySelectorAll('[data-promotion-close]').forEach(item => item.addEventListener('click', closePromotion));
+promotionModal.querySelector('.promotion-action').addEventListener('click', () => {
+  closePromotion();
+  document.querySelector('.audience-card.provider .partner-form-link')?.click();
+});
+// Show the rotating promotion popup on every page load. Individual expired
+// items (e.g. a time-limited offer) are filtered out of the rotation by
+// their own endDate below, rather than gating the whole popup on one date.
+// The advertising carousel replaces the former automatic promotion popup.
 setLanguage(currentLanguage);
 
 const specialtyPrograms = [
@@ -633,9 +651,9 @@ if (currentEventGrid) {
   pastSection.querySelector('.past-events-empty').hidden = pastGrid.children.length > 0;
 }
 
-const contactSectionForAds = document.getElementById('contact');
+const contactSectionForAds = document.getElementById('specialty-banners');
 if (contactSectionForAds) {
-  contactSectionForAds.insertAdjacentHTML('beforebegin', `<section class="advertising section" id="advertising"><div class="container"><div class="section-heading centered reveal visible"><p class="eyebrow">COMMUNITY PARTNERS</p><h2 data-ko="지역 업체 광고·제휴 공간" data-en="Local Business Advertising">지역 업체 광고·제휴 공간</h2><p data-ko="지역사회와 함께 성장할 광고 파트너를 위한<br class='mobile-only-break'>배너 자리입니다." data-en="Banner placements for local partners growing with our community.">지역사회와 함께 성장할 광고 파트너를 위한 배너 자리입니다.</p></div><div class="ad-grid"><a href="#contact"><span>AD 01</span><b data-ko="프리미엄 광고 배너" data-en="Premium Ad Banner">프리미엄 광고 배너</b><small data-ko="광고 문의" data-en="Advertising inquiry">광고 문의</small></a><a href="https://aaleac.org/" target="_blank" rel="noopener noreferrer"><span>PARTNER</span><b data-ko="지역 협력 업체" data-en="Community Partner">지역 협력 업체</b><small>AALEAC ↗</small></a><a href="#contact"><span>AD 03</span><b data-ko="문화·교육 제휴" data-en="Culture & Education Partner">문화·교육 제휴</b><small data-ko="제휴 문의" data-en="Partnership inquiry">제휴 문의</small></a></div></div></section>`);
+  contactSectionForAds.insertAdjacentHTML('beforebegin', `<section class="advertising section" id="advertising"><div class="container"><div class="section-heading centered reveal visible"><p class="eyebrow">COMMUNITY PARTNERS</p><h2 data-ko="업체 광고 · 제휴 공간" data-en="Business Advertising & Partnerships">업체 광고 · 제휴 공간</h2><p data-ko="지역사회와 함께 성장하는 업체를 만나보세요." data-en="Meet businesses growing with our community.">지역사회와 함께 성장하는 업체를 만나보세요.</p></div><div class="ad-inline-carousel" aria-live="polite"><button type="button" class="ad-carousel-prev" aria-label="이전 업체">‹</button><div class="ad-carousel-track"></div><button type="button" class="ad-carousel-next" aria-label="다음 업체">›</button></div><div class="ad-carousel-dots"></div></div></section>`);
 }
 setLanguage(currentLanguage);
 
@@ -898,6 +916,27 @@ const adRooms={
   community:{ko:'협력 업체',en:'Community Partners',label:'COMMUNITY PARTNER',slots:4,items:[{name:'AALEAC',displayNameKo:'아시안 아메리칸 사법 경찰자문위원회',displayNameEn:'Asian American Law Enforcement Advisory Council',copy:'아시안 커뮤니티와 사법기관의 소통과 협력을 지원합니다.<br>연락처 646-996-8093',copyEn:'Supporting communication and cooperation between<br>Asian American communities and law enforcement.<br>Contact 646-996-8093',url:'https://aaleac.org/',image:'assets/partners/aaleac-shield.png?v=20260819-1'},{name:'Jangsu Daycare',displayNameKo:'장수 데이케어',displayNameEn:'Jangsu Daycare',copy:'어르신 한 분 한 분을 가족처럼 모시며 건강하고 행복한 하루를 함께하는<br class="jangsu-card-break-mobile"> 데이케어 센터입니다.<br class="jangsu-card-break-desktop"> 연락처 718-799-0133 · 718-864-6430',popupCopy:'어르신 한 분 한 분을 가족처럼 모시며 <br class="jangsu-popup-break-desktop">건강하고 행복한 하루를 함께하는 <br class="jangsu-popup-break-mobile">데이케어 센터입니다.<br>연락처 718-799-0133 · 718-864-6430',copyEn:'A daycare center caring for each senior like family, supporting a healthy and happy day together.<br>Phone 718-799-0133 · 718-864-6430',url:'mailto:Jangsuadc1@gmail.com',image:'assets/partners/jangsu-daycare-logo.png?v=20260815-304',banner:'assets/partners/jangsu-daycare-banner.png'}]},
   culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',label:'CULTURE & EDUCATION PARTNER',slots:4,items:[]}
 };
+const advertisingCarouselItems=Object.values(adRooms).flatMap(room=>room.items.map(item=>({...item,roomLabel:room.label})));
+let advertisingCarouselIndex=0;
+let advertisingCarouselTimer;
+function renderAdvertisingCarousel(){
+  const track=document.querySelector('.ad-carousel-track');
+  const dots=document.querySelector('.ad-carousel-dots');
+  if(!track||!dots||!advertisingCarouselItems.length)return;
+  const item=advertisingCarouselItems[advertisingCarouselIndex];
+  const english=currentLanguage==='en';
+  const name=english?(item.displayNameEn||item.name):(item.displayNameKo||item.name);
+  const copy=english?(item.copyEn||item.copy):item.copy;
+  const target=item.brokerUrl||item.url||item.chatUrl||'#contact';
+  track.innerHTML=`<article class="ad-carousel-card"><div class="ad-carousel-logo"><img src="${item.image}" alt="${name} logo"></div><div class="ad-carousel-copy"><span>${item.roomLabel}</span><h3>${name}</h3><p>${copy}</p><a href="${target}" ${target.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}>${english?'Related information':'관련 정보 보기'} →</a></div></article>`;
+  dots.innerHTML=advertisingCarouselItems.map((_,index)=>`<button type="button" class="${index===advertisingCarouselIndex?'active':''}" data-ad-carousel-index="${index}" aria-label="${index+1}번 업체"></button>`).join('');
+  dots.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{advertisingCarouselIndex=Number(button.dataset.adCarouselIndex);renderAdvertisingCarousel();restartAdvertisingCarousel();}));
+}
+function restartAdvertisingCarousel(){window.clearInterval(advertisingCarouselTimer);advertisingCarouselTimer=window.setInterval(()=>{advertisingCarouselIndex=(advertisingCarouselIndex+1)%advertisingCarouselItems.length;renderAdvertisingCarousel();},6500);}
+document.querySelector('.ad-carousel-prev')?.addEventListener('click',()=>{advertisingCarouselIndex=(advertisingCarouselIndex-1+advertisingCarouselItems.length)%advertisingCarouselItems.length;renderAdvertisingCarousel();restartAdvertisingCarousel();});
+document.querySelector('.ad-carousel-next')?.addEventListener('click',()=>{advertisingCarouselIndex=(advertisingCarouselIndex+1)%advertisingCarouselItems.length;renderAdvertisingCarousel();restartAdvertisingCarousel();});
+renderAdvertisingCarousel();restartAdvertisingCarousel();
+
 const hole19Advertiser=adRooms.premium.items.find(item=>item.name==='HOLE19 Golf Lounge');
 if(hole19Advertiser){
   hole19Advertiser.chatUrl='https://www.instagram.com/hole19_golflounge/';
@@ -908,99 +947,6 @@ if(hole19Advertiser){
   hole19Advertiser.secondaryLabelEn='Facebook ↗';
 }
 
-// Build the main news popup from the same approved program and partner registries used on the page.
-// Popup policy: directly/co-operated programs and advertisers remain visible; only $50 PREMIUM listing partners qualify.
-const promotionPublishedDates={
-  'specialty:digital':'2026-07-18T09:00:00-04:00',
-  'specialty:english':'2026-07-18T09:05:00-04:00',
-  'specialty:melody':'2026-07-18T09:10:00-04:00',
-  'advertising:Yura Kim · High Line Residential':'2026-07-20T09:00:00-04:00',
-  'advertising:AALEAC':'2026-07-21T09:00:00-04:00',
-  'advertising:OrganicOne':'2026-07-22T09:00:00-04:00',
-  'advertising:Jangsu Daycare':'2026-08-15T09:00:00-04:00',
-  'advertising:HOLE19 Golf Lounge':'2026-08-17T21:45:00-04:00'
-};
-let promotionFallbackSequence=0;
-const promotionSortKey=key=>promotionPublishedDates[key]
-  ? Date.parse(promotionPublishedDates[key])
-  : Date.now()+promotionFallbackSequence++;
-const premiumPartnerNews=registeredPartners.filter(partner=>partner.membership==='premium').map(partner=>({typeKo:'PREMIUM 입점 파트너',typeEn:'PREMIUM EDUCATION PARTNER',titleKo:partner.name,titleEn:partner.name,copyKo:`${partner.type} · PREMIUM 파트너`,copyEn:`${partner.type} · PREMIUM partner`,image:partner.logo,target:'#programs',actionKo:'파트너 보기',actionEn:'View Partner',sortKey:promotionSortKey(`partner:${partner.name}`)}));
-const specialtyPopupCopy={
-  digital:{ko:'AI와 스마트폰을 실생활에서 자신 있게 활용하도록 돕는<br>맞춤형 디지털 교육입니다.<br>연락처 929-603-0052',en:'Practical digital education for using AI and<br>smartphones with confidence in daily life.<br>Contact 929-603-0052'},
-  english:{ko:'시간과 장소의 제약 없이 수준과 목표에 맞춰 진행하는<br>1:1 실용 화상영어입니다.<br>연락처 929-603-0052',en:'Personalized one-to-one practical English lessons tailored<br>to each learner’s level and goals.<br>Contact 929-603-0052'},
-  melody:{ko:'노래·발성·호흡과 다양한 음악 활동으로 마음과 공동체를 잇는<br>힐링 프로그램입니다.<br>연락처 817-905-3468',en:'A healing music program connecting hearts and<br>community through singing, breathing, and music activities.<br>Contact 817-905-3468'}
-};
-const recentPromotionNews=[
-  ...specialtyPrograms.map((program,index)=>({typeKo:'전문 수업 안내',typeEn:'SPECIALTY PROGRAM',titleKo:program.titleKo,titleEn:program.titleEn,copyKo:specialtyPopupCopy[program.id].ko,copyEn:specialtyPopupCopy[program.id].en,image:registeredPartners[index]?.logo||program.image,target:'#specialty-banners',specialtyId:program.id,actionKo:'수업 보기',actionEn:'View Program',sortKey:promotionSortKey(`specialty:${program.id}`)})),
-  ...premiumPartnerNews,
-  ...Object.entries(adRooms).flatMap(([roomKey,room])=>room.items.map(item=>({typeKo:roomKey==='premium'?'프리미엄 광고 등록':'협력업체 등록',typeEn:roomKey==='premium'?'NEW PREMIUM ADVERTISER':'NEW COMMUNITY PARTNER',titleKo:item.name.includes('Yura Kim')?'Yura Kim':item.name==='OrganicOne'?'올가닉 원 유기농원':item.name==='AALEAC'?(item.displayNameKo||item.name):item.name==='Jangsu Daycare'?(item.displayNameKo||item.name):item.name,titleEn:item.name.includes('Yura Kim')?'Yura Kim':item.name==='AALEAC'?(item.displayNameEn||item.name):item.name,subtitleKo:item.name.includes('Yura Kim')?'High Line Residential':item.name==='AALEAC'?'AALEAC':'',subtitleEn:item.name.includes('Yura Kim')?'High Line Residential':item.name==='AALEAC'?'AALEAC':'',copyKo:item.popupCopy||item.copy,copyEn:item.copyEn||item.copy,image:item.image,target:item.name==='HOLE19 Golf Lounge'?item.chatUrl:item.name==='Jangsu Daycare'?'tel:+17187990133':(item.brokerUrl||item.url||item.chatUrl||'#advertising'),actionKo:item.name==='HOLE19 Golf Lounge'?'인스타그램 보기':item.name==='Jangsu Daycare'?'전화 바로걸기':'업체 바로가기',actionEn:item.name==='HOLE19 Golf Lounge'?'View Instagram':item.name==='Jangsu Daycare'?'Call Now':'Visit Business',sortKey:promotionSortKey(`advertising:${item.name}`)})))
-].sort((a,b)=>b.sortKey-a.sortKey);
-const generatedPromotionNews=[
-  {typeKo:'기간 한정 혜택',typeEn:'LIMITED BENEFIT',titleKo:'PREMIUM 파트너',titleEn:'PREMIUM Partners',subtitleKo:'3개월 등록비 면제',subtitleEn:'3 Months Fee Waived',copyKo:'2026년 8월 31일까지 프리미엄 파트너로 접수하면 3개월 등록비 면제 혜택을 드립니다.',copyEn:'Apply as a PREMIUM partner by August 31, 2026 to receive a three-month registration fee waiver.',image:'assets/harmony-logo.png',target:'#community',actionKo:'함께하기',actionEn:'Join Us',endDate:'2026-08-31'},
-  ...recentPromotionNews
-];
-const sharedPromotionNews=window.HARMONY_LINK_SHARED_CONTENT?.promotions?.map(item=>({
-  typeKo:item.badgeKo,typeEn:item.badgeEn,titleKo:item.titleKo,titleEn:item.titleEn,
-  copyKo:item.textKo,copyEn:item.textEn,image:item.image,target:item.url,
-  actionKo:item.actionKo,actionEn:item.actionEn,endDate:item.endDate
-}))||[];
-// An item with an endDate (e.g. the time-limited PREMIUM partner offer)
-// only rotates in through the end of that day (US Eastern); past it, it's
-// skipped automatically -- no code change needed to retire it, and moving
-// the date forward (or removing it) brings it back. Items with no endDate
-// are evergreen and always included. Filtering here, before anything else
-// reads promotionNews, keeps the counter/dots/index math gap-free.
-const isPromotionLive=item=>!item.endDate||new Date()<new Date(`${item.endDate}T23:59:59-04:00`);
-const promotionNews=(sharedPromotionNews.length?sharedPromotionNews:generatedPromotionNews).filter(isPromotionLive);
-let promotionNewsIndex=0;
-let promotionNewsTimer;
-let promotionRenderToken=0;
-const partnerRollingCard=document.getElementById('partnerRollingCard');
-const restartPromotionTimer=()=>{window.clearTimeout(promotionNewsTimer);promotionNewsTimer=window.setTimeout(()=>{promotionNewsIndex=(promotionNewsIndex+1)%promotionNews.length;renderPromotionNews();restartPromotionTimer();},7000);};
-const renderPromotionNews=()=>{
-  if(!partnerRollingCard||!promotionNews.length)return;
-  const renderToken=++promotionRenderToken;
-  const news=promotionNews[promotionNewsIndex];
-  const isEnglish=currentLanguage==='en';
-  const media=document.getElementById('partnerRollingMedia');
-  media.dataset.kind=news.typeEn==='LIMITED BENEFIT'?'benefit':news.typeEn.includes('ADVERTISER')||news.typeEn.includes('COMMUNITY PARTNER')?'advertising':'program';
-  media.dataset.item=news.image?.includes('hibelle-digital')?'digital':news.image?.includes('hibelle-online-english')?'english':news.image?.includes('aaleac-shield')?'aaleac':news.titleKo.includes('Yura Kim')?'yura':news.image?.includes('organic-one')?'organic':news.image?.includes('hole19')?'hole19':news.image?.includes('meeran-melody')?'melody':news.image?.includes('jangsu-daycare')?'jangsu':'';
-  const image=media.querySelector('img');
-  const icon=media.querySelector('b');
-  image.hidden=true;
-  image.onload=null;
-  image.onerror=null;
-  image.removeAttribute('src');
-  image.alt=news.image?`${news.titleKo} 이미지`:'';
-  icon.hidden=Boolean(news.image);
-  icon.textContent=news.icon||'NEW';
-  if(news.image){
-    image.onload=()=>{if(renderToken===promotionRenderToken)image.hidden=false;};
-    image.onerror=()=>{if(renderToken===promotionRenderToken){image.hidden=true;icon.hidden=false;}};
-    image.src=news.image;
-    if(image.complete&&image.naturalWidth&&renderToken===promotionRenderToken)image.hidden=false;
-  }
-  document.getElementById('partnerRollingBadge').textContent=isEnglish?news.typeEn:news.typeKo;
-  const title=document.getElementById('partnerRollingTitle');
-  title.innerHTML='';
-  title.textContent=isEnglish?news.titleEn:news.titleKo;
-  const subtitle=isEnglish?news.subtitleEn:news.subtitleKo;if(subtitle){const line=document.createElement('small');line.textContent=subtitle;title.appendChild(line);}
-  const newsDescription=document.getElementById('partnerRollingDescription');
-  if(news.typeEn==='LIMITED BENEFIT'){
-    newsDescription.innerHTML=isEnglish?'Apply as a PREMIUM partner by August 31, 2026.<br>Receive a three-month registration fee waiver.':'2026년 8월 31일까지 프리미엄 파트너로 접수하면<br>3개월 등록비 면제 혜택을 드립니다.';
-  }else{
-    newsDescription.innerHTML=isEnglish?news.copyEn:news.copyKo;
-  }
-  const action=document.getElementById('partnerRollingAction');action.href=news.target;action.querySelector('span').textContent=isEnglish?news.actionEn:news.actionKo;action.dataset.specialty=news.specialtyId||'';
-  if(/^https?:\/\//.test(news.target)){action.target='_blank';action.rel='noopener noreferrer';}else{action.removeAttribute('target');action.removeAttribute('rel');}
-  document.getElementById('partnerRollingDots').innerHTML=promotionNews.map((_,index)=>`<button type="button" data-promotion-index="${index}" class="${index===promotionNewsIndex?'active':''}" aria-label="${index+1}번 소식"></button>`).join('');
-  document.querySelectorAll('#partnerRollingDots [data-promotion-index]').forEach(dot=>dot.addEventListener('click',()=>{promotionNewsIndex=Number(dot.dataset.promotionIndex);renderPromotionNews();restartPromotionTimer();}));
-};
-document.getElementById('partnerRollingPrev')?.addEventListener('click',()=>{promotionNewsIndex=(promotionNewsIndex-1+promotionNews.length)%promotionNews.length;renderPromotionNews();restartPromotionTimer();});
-document.getElementById('partnerRollingNext')?.addEventListener('click',()=>{promotionNewsIndex=(promotionNewsIndex+1)%promotionNews.length;renderPromotionNews();restartPromotionTimer();});
-document.getElementById('partnerRollingAction')?.addEventListener('click',event=>{const specialtyId=event.currentTarget.dataset.specialty;if(!specialtyId)return;event.preventDefault();document.querySelector(`[data-specialty="${specialtyId}"]`)?.click();});
-renderPromotionNews();
-restartPromotionTimer();
 document.querySelectorAll('[data-ad-room]').forEach(button=>button.addEventListener('click',()=>{
   const room=adRooms[button.dataset.adRoom];
   adDirectoryModal.querySelector('h2').textContent=currentLanguage==='en'?room.en:room.ko;
@@ -1249,7 +1195,7 @@ if (!document.querySelector('.mobile-lang-toggle')) {
   mobileLanguageButton.setAttribute('aria-label','한국어와 영어 전환');
   mobileLanguageButton.onclick=()=>{
     setLanguage(currentLanguage==='ko'?'en':'ko');
-    renderPromotionNews();
+    renderAdvertisingCarousel?.();
   };
   document.querySelector('.nav-wrap')?.insertBefore(mobileLanguageButton,document.querySelector('.menu-toggle'));
   setLanguage(currentLanguage);

@@ -3,9 +3,9 @@
 
   renderPlans();
   wireConsultForm();
+  wireConsultButtons();
 
   function renderPlans() {
-    document.getElementById('plansNote').textContent = YTLAB.PRICING.note;
     var order = ['start', 'build', 'coach'];
     var html = order.map(function (id) {
       var plan = YTLAB.PRICING.plans[id];
@@ -15,15 +15,27 @@
         (isBuild ? '<span class="ytlab-plan-badge">가장 많이 선택</span>' : '') +
         '<p class="ytlab-plan-key">' + plan.key + '</p>' +
         '<h3>' + plan.nameKo + '</h3>' +
-        '<p class="ytlab-plan-price-highlight">상담 후 최종 확정</p>' +
-        '<p class="ytlab-plan-price-note">' + plan.priceNoteKo + '</p>' +
-        '<p class="ytlab-plan-bestfor">' + plan.bestForKo + '</p>' +
-        (plan.includesNote ? '<p class="ytlab-plan-includes-note">' + plan.includesNote + '</p>' : '') +
+        '<p class="ytlab-plan-bestfor">' + (id === 'coach' ? plan.bestForKo.replace(/^개인\s*/, '') : plan.bestForKo) + '</p>' +
         '<ul>' + plan.includes.map(function (item) { return '<li><b>✓</b><span>' + item + '</span></li>'; }).join('') + '</ul>' +
-        '<a class="ytlab-btn ytlab-btn-primary ytlab-btn-block" href="#consult">' + plan.key + ' 상담 신청</a>' +
+        '<a class="ytlab-btn ytlab-btn-primary ytlab-btn-block" href="#consult" data-consult-plan="' + plan.key + '">' + plan.key + ' 상담 신청</a>' +
         '</div>';
     }).join('');
     document.getElementById('plansGrid').innerHTML = html;
+  }
+
+  function wireConsultButtons() {
+    var consult = document.getElementById('consult');
+    var interestField = document.getElementById('lInterest');
+    document.getElementById('plansGrid').addEventListener('click', function (event) {
+      var button = event.target.closest('[data-consult-plan]');
+      if (!button) return;
+      event.preventDefault();
+      consult.hidden = false;
+      interestField.value = button.dataset.consultPlan;
+      window.requestAnimationFrame(function () {
+        consult.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
   }
 
   function wireConsultForm() {

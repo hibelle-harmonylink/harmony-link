@@ -1010,6 +1010,14 @@ footer .footer-bottom{padding-top:11px!important}
 .ad-partner-image[data-banner]{cursor:pointer;position:relative}
 /* Same dark "로고 클릭 · 배너 크게 보기" badge the premium imageOnly advertiser cards (Yura Kim, OrganicOne) already show, reused here for Jangsu's logo on both desktop and mobile. Scoped to [data-banner] so AALEAC's logo is untouched. */
 .ad-partner-image[data-banner] .ad-partner-banner-hint{position:absolute;right:10px;bottom:10px;padding:7px 10px;border-radius:30px;background:rgba(4,32,70,.88);color:#fff;font-size:9px;font-weight:800;letter-spacing:0;pointer-events:none}
+
+/* Compact company introduction + video frame. */
+.about{padding:58px 0}.about-media-frame{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:30px;align-items:center;padding:32px;border:1px solid #cfe4f8;border-radius:28px;background:linear-gradient(145deg,#eef8ff,#dceeff);box-shadow:0 18px 48px rgba(15,81,151,.09)}
+.about-media-company{padding:8px 10px}.about-media-company h2,.about-media-video h2{margin:4px 0 12px;color:#082d61;font-size:clamp(25px,3vw,36px);letter-spacing:-1px}.about-media-company>p:not(.eyebrow){margin:0 0 18px;color:#4d6580;font-size:14px;line-height:1.75}.about-media-company .company-link{display:inline-flex!important}.about-media-video>div{margin-bottom:12px}.about-media-video .intro-video-frame{min-height:0;aspect-ratio:16/9;border-radius:20px;overflow:hidden;box-shadow:0 16px 38px rgba(5,45,95,.22)}
+
+/* Inline business carousel replaces all automatic advertising popups. */
+.advertising{padding:58px 0;background:linear-gradient(145deg,#0c62c6,#072d69);color:#fff}.advertising .section-heading{margin-bottom:24px}.advertising .section-heading .eyebrow,.advertising .section-heading h2,.advertising .section-heading p{color:#fff}.ad-inline-carousel{display:grid;grid-template-columns:46px minmax(0,1fr) 46px;gap:16px;align-items:center}.ad-carousel-prev,.ad-carousel-next{width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;font-size:28px;cursor:pointer}.ad-carousel-card{display:grid;grid-template-columns:220px 1fr;min-height:230px;overflow:hidden;border:1px solid rgba(255,255,255,.35);border-radius:24px;background:#fff;color:#12345a;box-shadow:0 20px 48px rgba(0,0,0,.2)}.ad-carousel-logo{display:grid;place-items:center;padding:28px;background:#edf6ff}.ad-carousel-logo img{width:100%;height:150px;object-fit:contain}.ad-carousel-copy{display:flex;flex-direction:column;justify-content:center;padding:26px 30px}.ad-carousel-copy>span{color:#0b66c7;font-size:10px;font-weight:900;letter-spacing:1.5px}.ad-carousel-copy h3{margin:6px 0 8px;color:#082d61;font-size:25px}.ad-carousel-copy p{margin:0 0 14px;color:#506985;font-size:13px;line-height:1.65}.ad-carousel-copy a{width:max-content;color:#075fb6;font-size:12px;font-weight:900;text-decoration:none}.ad-carousel-dots{display:flex;justify-content:center;gap:7px;margin-top:18px}.ad-carousel-dots button{width:8px;height:8px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.38);cursor:pointer}.ad-carousel-dots button.active{width:24px;border-radius:999px;background:#fff}
+@media(max-width:760px){.about{padding:42px 0}.about-media-frame{grid-template-columns:1fr;padding:20px;gap:22px}.about-media-company{padding:0}.about-media-company>p:not(.eyebrow){font-size:13px}.ad-inline-carousel{grid-template-columns:34px minmax(0,1fr) 34px;gap:7px}.ad-carousel-prev,.ad-carousel-next{width:34px;height:34px;font-size:22px}.ad-carousel-card{grid-template-columns:1fr;min-height:0}.ad-carousel-logo{padding:18px}.ad-carousel-logo img{height:105px}.ad-carousel-copy{padding:20px}.ad-carousel-copy h3{font-size:20px}.ad-carousel-copy p{font-size:11px}.advertising{padding:44px 0}}
 @media(max-width:760px){.ad-partner-image[data-banner] .ad-partner-banner-hint{right:6px;bottom:6px;padding:5px 8px;font-size:7px}}
 
 /* Homepage app-install banner: sits below the fixed header (margin-top matches .site-header's own height so it never overlaps), dismissible and remembered via localStorage. */
@@ -1125,31 +1133,3 @@ footer .footer-bottom{padding-top:11px!important}
 .messiah-detail-panel .event-map-link{display:inline-flex;margin:0 0 22px}
 .messiah-inquiry-button{width:100%;margin-top:auto;background:#9b1518;color:#fff;font-size:15px;box-shadow:0 14px 28px rgba(155,21,24,.22)}
 @media(max-width:760px){.messiah-detail-main{padding:40px 0 70px}.messiah-detail-hero h1{font-size:33px}.messiah-detail-layout{grid-template-columns:1fr}.messiah-detail-panel{position:static;padding:27px 22px}.messiah-detail-header .logo-name small{display:none}}
-
-.about-video-frame{display:grid;grid-template-columns:.85fr 1.15fr;gap:52px;align-items:center;background:linear-gradient(135deg,#eef6ff 0%,var(--sky) 100%);border-radius:28px;padding:52px}
-.about-video-frame .about-copy{margin:0}
-.about-video-media .eyebrow{color:var(--blue)}
-.about-video-media h2{font-size:29px;line-height:1.25;letter-spacing:-1.2px;margin:0 0 18px;color:var(--navy)}
-.about-video-media .intro-video-frame{margin-bottom:18px}
-@media(max-width:900px){.about-video-frame{grid-template-columns:1fr;gap:36px;padding:36px 26px}}
-@media(max-width:600px){.about-video-frame{padding:28px 20px;border-radius:22px}}
-
-.partner-rolling{background:linear-gradient(135deg,#061d45,#0b4a91);color:#fff}
-.partner-rolling .eyebrow{color:#75c5ff}
-.partner-rolling .section-heading h2{color:#fff}
-.partner-rolling-card{position:relative;max-width:900px;margin:50px auto 0;display:grid;grid-template-columns:48px minmax(0,1fr) 48px;align-items:center;gap:14px}
-.partner-rolling-nav{width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.08);color:#fff;font-size:24px;cursor:pointer;display:grid;place-items:center;transition:.2s}
-.partner-rolling-nav:hover{background:rgba(255,255,255,.2)}
-.partner-rolling-body{display:grid;grid-template-columns:minmax(220px,.9fr) 1.1fr;background:#fff;color:var(--deep);border-radius:24px;overflow:hidden;box-shadow:0 30px 70px rgba(2,15,40,.35);min-height:340px}
-.partner-rolling-media{background:linear-gradient(145deg,#e8f3ff,#cfe5ff);display:grid;place-items:center;overflow:hidden}
-.partner-rolling-media img{width:100%;height:100%;object-fit:cover;display:block}
-.partner-rolling-media b{font-size:38px;color:#7fa8e0}
-.partner-rolling-copy{padding:40px 38px;display:flex;flex-direction:column}
-.partner-rolling-badge{align-self:flex-start;background:#ffd45b;color:#102b55;border-radius:50px;padding:6px 13px;font-size:10px;font-weight:800;margin-bottom:14px}
-.partner-rolling-copy h3{font-size:24px;letter-spacing:-1px;margin:0 0 12px;color:var(--navy)}
-.partner-rolling-copy p{font-size:14px;line-height:1.7;color:var(--muted);margin:0 0 24px}
-.partner-rolling-action{margin-top:auto;justify-content:space-between;background:var(--blue);color:#fff}
-.partner-rolling-dots{display:flex;justify-content:center;gap:7px;margin-top:22px}
-.partner-rolling-dots button{width:8px;height:8px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.35);cursor:pointer}
-.partner-rolling-dots button.active{background:#fff;width:22px;border-radius:5px}
-@media(max-width:760px){.partner-rolling-card{grid-template-columns:38px minmax(0,1fr) 38px;gap:8px}.partner-rolling-nav{width:38px;height:38px;font-size:19px}.partner-rolling-body{grid-template-columns:1fr;min-height:0}.partner-rolling-media{height:180px}.partner-rolling-copy{padding:26px 22px}.partner-rolling-copy h3{font-size:20px}}
