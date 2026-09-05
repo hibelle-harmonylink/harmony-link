@@ -638,7 +638,11 @@ if (currentEventGrid) {
     .filter(card => card.dataset.eventEnd < todayKey)
     .sort((a, b) => b.dataset.eventEnd.localeCompare(a.dataset.eventEnd))
     .forEach(card => pastGrid.appendChild(card));
-  currentEventGrid.querySelectorAll('.event-card:not(.event-coming):not(.special-event-card)').forEach(card => {
+  // Run on both grids -- cards already moved into pastGrid above would
+  // otherwise never get this button (the old querySelectorAll only ever
+  // covered currentEventGrid), leaving past events with no 자세히 보기
+  // action at all once the separate 전단지 크게 보기 link is removed.
+  [...currentEventGrid.querySelectorAll('.event-card:not(.event-coming):not(.special-event-card)'), ...pastGrid.querySelectorAll('.event-card:not(.event-coming):not(.special-event-card)')].forEach(card => {
     const info = card.querySelector('.event-info');
     const poster = card.querySelector('.event-poster');
     if (!info || !poster || info.querySelector('.event-detail-button')) return;
@@ -647,7 +651,7 @@ if (currentEventGrid) {
     button.href = poster.href;
     button.target = poster.target || '_blank';
     button.rel = 'noopener noreferrer';
-    button.innerHTML = '<span data-ko="관련 정보 보기" data-en="View Information">관련 정보 보기</span><b>→</b>';
+    button.innerHTML = '<span data-ko="자세히 보기" data-en="View Details">자세히 보기</span><b>→</b>';
     info.appendChild(button);
   });
   pastSection.querySelector('.past-events-empty').hidden = pastGrid.children.length > 0;
@@ -932,13 +936,13 @@ document.querySelectorAll('.contact-form-open').forEach(button => button.addEven
 const advertisingArea = document.getElementById('advertising');
 if (advertisingArea) {
   const adHeading=advertisingArea.querySelector('.section-heading h2');
-  if(adHeading){adHeading.dataset.ko='업체 광고·제휴 공간';adHeading.dataset.en='Business Advertising & Partnerships';adHeading.textContent=currentLanguage==='en'?adHeading.dataset.en:adHeading.dataset.ko;}
+  if(adHeading){adHeading.dataset.ko='업체 광고 · 제휴 공간';adHeading.dataset.en='Business Advertising & Partnerships';adHeading.textContent=currentLanguage==='en'?adHeading.dataset.en:adHeading.dataset.ko;}
   const adGrid=advertisingArea.querySelector('.ad-grid');
   if(adGrid){
     adGrid.innerHTML=`<button type="button" data-ad-room="premium"><span>AD 01</span><b data-ko="프리미엄 광고" data-en="Premium Advertising">프리미엄 광고</b><small data-ko="업체 둘러보기 →" data-en="View businesses →">업체 둘러보기 →</small></button><button type="button" data-ad-room="community"><span>PARTNERS</span><b data-ko="협력 업체" data-en="Community Partners">협력 업체</b><small data-ko="협력 업체 둘러보기 →" data-en="View partners →">협력 업체 둘러보기 →</small></button><button type="button" data-ad-room="culture"><span>AD 03</span><b data-ko="문화·교육 제휴" data-en="Culture & Education">문화·교육 제휴</b><small data-ko="제휴 업체 둘러보기 →" data-en="View partners →">제휴 업체 둘러보기 →</small></button>`;
     const adSizeGuide=document.createElement('section');
     adSizeGuide.className='ad-size-guide';
-    adSizeGuide.innerHTML=`<div class="ad-size-guide-copy"><span>BANNER GUIDE</span><h3 data-ko="광고 배너 등록 안내" data-en="Advertising Banner Guide">광고 배너 등록 안내</h3><p data-ko="권장 크기와 파일 형식을 확인한 뒤 배너를 준비해 주세요." data-en="Check the recommended size and file format before preparing your banner.">권장 크기와 파일 형식을 확인한 뒤 배너를 준비해 주세요.</p><button type="button" data-ad-guide-open><span data-ko="안내 이미지 크게 보기" data-en="View Guide Larger">안내 이미지 크게 보기</span><b>↗</b></button></div><button type="button" class="ad-size-guide-image" data-ad-guide-open aria-label="광고 배너 사이즈 안내 크게 보기"><img src="assets/ads/banner-size-guide.png" alt="하모니링크 광고 배너 사이즈 안내"></button>`;
+    adSizeGuide.innerHTML=`<div class="ad-size-guide-copy"><span>BANNER GUIDE</span><h3 data-ko="광고 배너 등록 안내" data-en="Advertising Banner Guide">광고 배너 등록 안내</h3><p data-ko="권장 크기와 파일 형식을 확인한 뒤 배너를 준비해 주세요." data-en="Check the recommended size and file format before preparing your banner.">권장 크기와 파일 형식을 확인한 뒤 배너를 준비해 주세요.</p></div><button type="button" class="ad-size-guide-image" data-ad-guide-open aria-label="광고 배너 사이즈 안내 크게 보기"><img src="assets/ads/banner-size-guide.png" alt="하모니링크 광고 배너 사이즈 안내"></button>`;
     adGrid.before(adSizeGuide);
   }
 }
@@ -1195,26 +1199,19 @@ if (downloads) {
 document.querySelectorAll('#events .event-card:not(.event-coming)').forEach(card=>{
   const heading=card.querySelector('.event-info h3');
   const poster=card.querySelector('.event-poster');
-  if(!heading||!poster||heading.parentElement?.classList.contains('event-title-row'))return;
-  if(poster.href.includes('finance-ai-seminar.jpg')){
+  if(!heading||!poster)return;
+  // The separate "전단지 크게 보기" link that used to live next to the
+  // title duplicated the poster's own click-through (and, for the
+  // messiah card, the "자세히 보기" button below) -- removed so 자세히
+  // 보기/관련 정보 보기 is the one action per card. poster is no longer
+  // guaranteed to be an <a> (the messiah card's poster is now a plain
+  // div), so read its href defensively rather than assuming one exists.
+  if((poster.getAttribute('href')||'').includes('finance-ai-seminar.jpg')){
     card.classList.add('finance-seminar-card');
     heading.dataset.ko='재정과 AI의 협력, 더 나은 미래 설계';
     heading.dataset.en='Finance and AI: Designing a Better Future';
     heading.innerHTML=heading.dataset[currentLanguage];
   }
-  const row=document.createElement('div');
-  row.className='event-title-row';
-  heading.before(row);
-  row.appendChild(heading);
-  const flyerButton=document.createElement('a');
-  flyerButton.className='event-flyer-button';
-  flyerButton.href=poster.href;
-  flyerButton.target='_blank';
-  flyerButton.rel='noopener noreferrer';
-  flyerButton.dataset.ko='전단지 크게 보기 ↗';
-  flyerButton.dataset.en='View flyer ↗';
-  flyerButton.textContent=currentLanguage==='en'?flyerButton.dataset.en:flyerButton.dataset.ko;
-  row.appendChild(flyerButton);
 });
 const mobileTrialHeading=document.querySelector('#events .trial-type .event-title-row h3');
 if(mobileTrialHeading)mobileTrialHeading.dataset.en='Three-Month Free Music Class';
@@ -1258,7 +1255,11 @@ consentDetailModal.querySelectorAll('[data-consent-detail-close]').forEach(butto
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!consentDetailModal.hidden)closeConsentDetail();});
 document.addEventListener('click',event=>{
   if(window.innerWidth>760)return;
-  const flyerLink=event.target.closest('#events .event-poster, #events .event-flyer-button');
+  // The messiah card's poster is a plain div (no href) since it links
+  // straight to an internal detail page via its own 자세히 보기 button --
+  // exclude it so this flyer-image lightbox isn't triggered with a
+  // missing image source.
+  const flyerLink=event.target.closest('#events .event-poster:not(.special-event-card .event-poster), #events .event-flyer-button');
   if(!flyerLink)return;
   event.preventDefault();
   const image=eventFlyerModal.querySelector('img');

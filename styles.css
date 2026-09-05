@@ -580,6 +580,9 @@ html[lang="en"] #events .event-poster:after{content:"Click to view the full flye
 @media(max-width:760px){.ad-directory-list .ad-partner-card,.ad-directory-list .ad-slot-card{height:360px!important;min-height:360px!important}.contact-info-stack .contact-info-card{padding:18px!important}}
 /* Balanced advertising cards */
 .ad-size-guide{display:grid;grid-template-columns:minmax(240px,.72fr) minmax(0,1.28fr);align-items:center;gap:24px;margin:34px 0 28px;padding:24px;border:1px solid rgba(83,136,202,.25);border-radius:24px;background:rgba(255,255,255,.78);box-shadow:0 16px 38px rgba(19,73,139,.12)}
+/* Copy read as pinned to the edges of the white box -- centered with
+   room to breathe on both sides instead. */
+.ad-size-guide-copy{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 20px}
 .ad-size-guide-copy span{display:block;font-size:9px;font-weight:800;letter-spacing:1.8px;color:var(--blue)}
 .ad-size-guide-copy h3{margin:7px 0 8px;font-size:25px;line-height:1.25;color:var(--deep)}
 .ad-size-guide-copy p{margin:0;color:var(--muted);font-size:12px;line-height:1.65}
@@ -778,35 +781,45 @@ footer .footer-bottom{padding-top:11px!important}
 
 /* Unified Harmony Link news and events */
 #events{background:linear-gradient(145deg,#fffaf1,#f3f8f3)}
-#events .event-grid{display:grid;grid-template-columns:1fr!important;gap:28px;max-width:1040px;margin:42px auto 0}
-#events .event-card{display:grid;grid-template-columns:minmax(250px,34%) minmax(0,1fr);min-height:410px;overflow:hidden;border:1px solid #dbe4ea;border-radius:26px;background:#fff;box-shadow:0 20px 52px rgba(23,51,76,.1);text-align:left}
-#events .event-poster{display:flex;height:auto!important;max-height:none!important;min-height:410px;padding:18px;background:#edf3f7;align-items:center;justify-content:center;overflow:hidden}
-#events .event-poster img{display:block;width:100%;height:100%;max-height:440px;object-fit:contain;object-position:center;border-radius:12px;box-shadow:0 12px 28px rgba(18,44,68,.14)}
+/* Compact three-per-row cards on desktop -- previously forced to a
+   single column (1fr!important below), which is what made six large
+   cards stack into a very tall section. Poster stays on the left and
+   the white info column on the right per card, just at a much smaller
+   overall scale so three fit per row. */
+#events .event-grid{display:grid;grid-template-columns:repeat(3,1fr)!important;gap:18px;max-width:1180px;margin:32px auto 0}
+#events .event-card{display:grid;grid-template-columns:minmax(84px,36%) minmax(0,1fr);min-height:0;overflow:hidden;border:1px solid #dbe4ea;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(23,51,76,.09);text-align:left}
+#events .event-poster{display:flex;height:auto!important;max-height:none!important;min-height:0;padding:9px;background:#edf3f7;align-items:center;justify-content:center;overflow:hidden}
+#events .event-poster img{display:block;width:100%;height:100%;max-height:190px;object-fit:contain;object-position:center;border-radius:8px;box-shadow:0 8px 18px rgba(18,44,68,.12)}
 #events .special-event-card .event-poster{background:#f7efe2}
-#events .event-info{display:flex;min-width:0;padding:38px 42px!important;flex-direction:column;justify-content:center}
-#events .event-badge{align-self:flex-start;margin:0;padding:7px 12px;border-radius:50px;background:#0b5fc2;color:#fff;font-size:10px;font-weight:800;letter-spacing:.8px}
-#events .event-badge.purple{background:#6e3fac}
-#events .event-badge.special{background:#9b1518}
-#events .event-title-row{position:relative!important;display:block!important;min-height:0!important;margin:14px 0 10px!important;padding-right:105px!important}
-#events .event-title-row h3,#events .event-info>h3{display:block!important;min-height:0!important;margin:14px 0 10px!important;padding:0!important;color:#173f31;font-size:27px!important;line-height:1.35;letter-spacing:-1px;white-space:normal!important}
-#events .event-info>p{margin:0;color:var(--muted);font-size:14px;line-height:1.7}
-#events .event-info dl{width:100%;margin:22px 0 24px!important;padding:15px 0!important;border-top:1px solid #dfe7ec;border-bottom:1px solid #dfe7ec}
-#events .event-info dl div{display:grid;grid-template-columns:62px minmax(0,1fr)!important;gap:14px!important;margin:8px 0!important}
-#events .event-info dt{color:#52647a!important;font-size:11px!important;font-weight:800}
-#events .event-info dd,#events .event-info dd strong{margin:0;color:#173f31;font-size:13px!important;line-height:1.55!important;font-weight:700}
-#events .event-info dd small{display:block;margin-top:3px;font-size:11px!important;font-weight:600}
-#events .event-detail-button{align-self:flex-start;min-width:160px;background:#075bb5;color:#fff;box-shadow:0 11px 24px rgba(7,91,181,.2)}
-#events .special-event-card .event-detail-button{background:#9b1518;box-shadow:0 11px 24px rgba(155,21,24,.2)}
-#events .event-coming{grid-template-columns:minmax(250px,34%) minmax(0,1fr);min-height:310px;padding:0!important;border-style:dashed;text-align:left}
-#events .event-coming-icon{width:auto;height:100%;min-height:310px;margin:0;border-radius:0;background:linear-gradient(145deg,#dbeaff,#eef6ff);font-size:52px}
+#events .event-info{display:flex;min-width:0;padding:13px 15px!important;flex-direction:column;justify-content:center}
+/* Badges (특별 행사/지역 행사/무료 수업 etc.) hidden for now, not removed
+   -- markup and data stay intact so they can come back later. */
+#events .event-badge{display:none!important}
+#events .event-title-row{position:relative!important;display:block!important;min-height:0!important;margin:0 0 5px!important;padding-right:0!important}
+#events .event-title-row h3,#events .event-info>h3{display:block!important;min-height:0!important;margin:0 0 5px!important;padding:0!important;color:#173f31;font-size:14.5px!important;line-height:1.3;letter-spacing:-.3px;white-space:normal!important}
+#events .event-info>p{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;margin:0;color:var(--muted);font-size:11px;line-height:1.45}
+#events .event-info dl{width:100%;margin:8px 0 10px!important;padding:8px 0!important;border-top:1px solid #dfe7ec;border-bottom:1px solid #dfe7ec}
+#events .event-info dl div{display:grid;grid-template-columns:40px minmax(0,1fr)!important;gap:6px!important;margin:4px 0!important}
+#events .event-info dt{color:#52647a!important;font-size:9px!important;font-weight:800}
+#events .event-info dd,#events .event-info dd strong{margin:0;color:#173f31;font-size:10.5px!important;line-height:1.4!important;font-weight:700}
+#events .event-info dd small{display:block;margin-top:2px;font-size:9px!important;font-weight:600}
+#events .event-detail-button{align-self:stretch;justify-content:center;min-width:0;min-height:34px;padding:8px 12px;font-size:11px;background:#075bb5;color:#fff;box-shadow:0 8px 18px rgba(7,91,181,.2)}
+#events .special-event-card .event-detail-button{background:#9b1518;box-shadow:0 8px 18px rgba(155,21,24,.2)}
+#events .event-coming{grid-template-columns:minmax(84px,36%) minmax(0,1fr);min-height:0;padding:0!important;border-style:dashed;text-align:left}
+#events .event-coming-icon{width:auto;height:100%;min-height:0;margin:0;border-radius:0;background:linear-gradient(145deg,#dbeaff,#eef6ff);font-size:30px;display:flex;align-items:center;justify-content:center}
 #events .event-coming .event-info{align-items:flex-start}
-#events .event-coming h3{margin:14px 0 10px;font-size:25px;line-height:1.4}
-#events .event-coming p{font-size:13px;line-height:1.65}
-#events .past-events{max-width:1040px;margin:34px auto 0}
+#events .event-coming h3{margin:0 0 5px;font-size:14.5px;line-height:1.3}
+#events .event-coming p{font-size:11px;line-height:1.45}
+@media(min-width:761px) and (max-width:980px){#events .event-grid{grid-template-columns:1fr 1fr!important}}
+#events .past-events{max-width:1180px;margin:28px auto 0}
 #events .past-events-disclosure>summary{list-style:none;cursor:pointer}
-#events .past-events-disclosure>.past-events-toggle{width:max-content;margin:-46px 0 18px auto}
+#events .past-events-disclosure>.past-events-toggle{width:max-content;margin:-40px 0 18px auto}
 #events .past-events-disclosure>summary::-webkit-details-marker{display:none}
 #events .past-events-disclosure[open] .past-events-toggle b{transform:rotate(45deg)}
+/* Stronger CTA: the plain white/gray toggle read as inert. */
+#events .past-events-toggle{background:#e8f5ff!important;color:#0a4f9d!important;border:1.5px solid #9fc9ee!important;box-shadow:0 10px 24px rgba(11,95,194,.18)!important;font-weight:800!important;transition:transform .18s,box-shadow .18s}
+#events .past-events-toggle:hover,#events .past-events-toggle:focus-visible{transform:translateY(-2px);box-shadow:0 14px 30px rgba(11,95,194,.26)!important}
+#events .past-events-toggle b{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:#0b5fc2;color:#fff;font-size:13px;font-style:normal;transition:transform .25s}
 
 /* Higher-contrast public community callout */
 #open-community.community-spotlight{background-color:#031d45!important;background-image:linear-gradient(135deg,#031d45 0%,#074c99 58%,#0969bd 100%)!important;color:#fff;box-shadow:inset 0 1px rgba(255,255,255,.12)}
@@ -816,13 +829,14 @@ footer .footer-bottom{padding-top:11px!important}
 .community-spotlight .btn-light{background:#fff!important;color:#073d82!important;border:2px solid rgba(255,255,255,.95);box-shadow:0 12px 30px rgba(0,20,54,.34)}
 
 @media(max-width:760px){
-  #events .event-grid{gap:22px;margin-top:30px}
+  #events .event-grid{grid-template-columns:1fr!important;gap:22px;margin-top:30px}
   #events .event-card,#events .event-coming{grid-template-columns:1fr;min-height:0}
   #events .event-poster{min-height:0;max-height:430px!important;padding:15px}
   #events .event-poster img{width:100%;height:auto;max-height:400px}
   #events .event-info{padding:27px 23px!important}
-  #events .event-title-row{padding-right:90px!important}
+  #events .event-title-row{padding-right:0!important}
   #events .event-title-row h3,#events .event-info>h3{font-size:22px!important;letter-spacing:-.7px}
+  #events .event-info>p{-webkit-line-clamp:initial}
   #events .event-detail-button{width:100%;justify-content:center}
   #events .event-coming-icon{min-height:170px}
   #events .event-coming .event-info{padding-top:25px!important;padding-bottom:28px!important}
@@ -1040,6 +1054,9 @@ footer .footer-bottom{padding-top:11px!important}
 .community-spotlight h2{margin:6px 0 12px;color:#fff;font-size:34px;line-height:1.25}
 .community-spotlight p:not(.eyebrow){margin:0;color:#d9ebff}
 .community-spotlight .btn-light{flex:0 0 auto;background:#fff;color:#075bb5}
+/* Make the CTA impossible to miss: bigger, bolder, deeper shadow, hover lift. */
+.community-spotlight .btn-light{padding:19px 32px!important;font-size:17px!important;font-weight:800!important;border-radius:14px!important;box-shadow:0 16px 38px rgba(0,20,54,.45)!important;transition:transform .2s,box-shadow .2s}
+.community-spotlight .btn-light:hover,.community-spotlight .btn-light:focus-visible{transform:translateY(-3px);box-shadow:0 20px 46px rgba(0,20,54,.55)!important}
 .event-type-layout{grid-template-columns:repeat(3,minmax(0,1fr))!important;align-items:stretch!important}
 .event-type-block{min-width:0;display:flex;flex-direction:column}
 .event-type-grid{display:block;flex:1}
