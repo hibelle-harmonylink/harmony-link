@@ -28,13 +28,12 @@
 .ytlab-container-wide{width:min(1100px,calc(100% - 40px));margin:0 auto}
 
 /* ---------- top bar ---------- */
-.ytlab-topbar{padding:18px 0;border-bottom:1px solid var(--yt-line)}
+.ytlab-topbar{padding:14px 0;border-bottom:0;background:linear-gradient(135deg,var(--yt-navy),var(--yt-deep));color:#fff}
 .ytlab-topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .ytlab-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;text-decoration:none}
 .ytlab-brand-icon{width:32px;height:32px;padding:4px;border-radius:8px;background:linear-gradient(145deg,#bcd5fb,#6f9fe6);box-shadow:0 5px 16px rgba(12,64,140,.16);overflow:hidden;flex:none;display:flex}
 .ytlab-brand-icon img{width:100%;height:100%;object-fit:contain;display:block}
-.ytlab-brand small{display:block;font-weight:500;font-size:12px;color:var(--yt-muted)}
-.ytlab-home-link{font-size:14px;font-weight:600;color:var(--yt-blue);text-decoration:none;white-space:nowrap}
+.ytlab-brand small{display:block;font-weight:500;font-size:12px;color:#c9d9f2}.ytlab-home-link{font-size:14px;font-weight:600;color:#fff!important;text-decoration:none;white-space:nowrap}
 
 /* ---------- buttons ---------- */
 .ytlab-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:14px;padding:16px 24px;font-weight:700;font-size:17px;border:0;cursor:pointer;text-decoration:none;min-height:52px;line-height:1.3}
@@ -47,7 +46,7 @@
 .ytlab-btn-row{display:flex;gap:14px;flex-wrap:wrap}
 
 /* ---------- hero ---------- */
-.ytlab-hero{padding:56px 0 44px;background:linear-gradient(140deg,#f7fbff 0%,#fff 55%,#eef5ff 100%)}
+.ytlab-hero{padding:46px 0 38px;background:linear-gradient(140deg,#dceeff 0%,#eef7ff 100%)}
 .ytlab-eyebrow{color:var(--yt-blue);font-weight:800;font-size:14px;letter-spacing:1.5px;margin:0 0 14px}
 .ytlab-hero h1{font-size:clamp(28px,5vw,44px);line-height:1.25;letter-spacing:-.5px;margin:0 0 18px}
 .ytlab-hero h1 em{font-style:normal;color:var(--yt-blue)}
@@ -69,9 +68,7 @@
 .ytlab-icon-badge{width:52px;height:52px;border-radius:14px;background:var(--yt-pale);color:var(--yt-blue);display:grid;place-items:center;font-size:26px;margin-bottom:16px}
 
 /* ---------- fit-for list ---------- */
-.ytlab-fit-list{list-style:none;padding:0;margin:0;display:grid;gap:14px}
-.ytlab-fit-list li{display:flex;gap:14px;align-items:flex-start;font-size:18px;padding:16px 18px;background:#fff;border:1px solid var(--yt-line);border-radius:14px}
-.ytlab-fit-list b{color:var(--yt-blue);flex:none}
+.ytlab-fit-section{padding:42px 0;background:linear-gradient(145deg,#0c5fbd,#082f72);color:#fff}.ytlab-fit-section .ytlab-eyebrow,.ytlab-fit-section h2{color:#fff}.ytlab-fit-list{list-style:none;padding:0;margin:22px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}.ytlab-fit-list li{display:flex;gap:11px;align-items:flex-start;font-size:16px;padding:12px 15px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:12px}.ytlab-fit-list b{color:#9bd3ff;flex:none}.ytlab-process-section{background:var(--yt-sky)}
 
 /* ---------- process steps ---------- */
 .ytlab-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:step}
@@ -108,6 +105,7 @@
 .ytlab-ai-shorts-addon-notice{display:inline-block;max-width:100%;margin:0!important;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff2c9!important;font-size:13px!important;font-weight:700;line-height:1.6}
 .ytlab-ai-shorts-addon-btn{flex-shrink:0;min-width:240px;padding:22px 34px!important;font-size:18px!important;background:#fff;color:#0b3f96}
 .ytlab-ai-shorts-addon-btn:hover{background:#eef4ff}
+.ytlab-ai-shorts-addon-btn.is-locked{opacity:.72;cursor:not-allowed}
 @media(max-width:760px){.ytlab-ai-shorts-addon{padding:24px 22px}.ytlab-ai-shorts-addon-btn{width:100%;min-width:0}}
 
 /* ---------- FAQ ---------- */
@@ -212,4 +210,5 @@
   .ytlab-page{font-size:17px}
   .ytlab-steps{grid-template-columns:1fr}
   .ytlab-option{font-size:17px;padding:16px}
+  .ytlab-fit-list{grid-template-columns:1fr;gap:8px}.ytlab-fit-section{padding:34px 0}.ytlab-fit-list li{font-size:15px;padding:10px 12px}.ytlab-hero p br{display:none}
 }

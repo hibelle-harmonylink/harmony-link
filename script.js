@@ -114,15 +114,6 @@ if (primaryNav) {
   }
 }
 
-const aboutSection = document.getElementById('about');
-aboutSection?.insertAdjacentHTML('afterend', `
-  <section class="intro-video section" id="intro-video">
-    <div class="container intro-video-grid reveal">
-      <div class="intro-video-copy"><p class="eyebrow">HARMONY LINK ON YOUTUBE</p><h2 data-ko="영상으로 만나는<br>Harmony Link" data-en="Meet Harmony Link<br>through video">영상으로 만나는<br>Harmony Link</h2><p data-ko="배움과 문화를 지역사회에 연결하는 Harmony Link의<br>비전과 이야기를 소개영상으로 만나보세요." data-en="Discover the vision and story of Harmony Link,<br>connecting learning and culture with local communities.">배움과 문화를 지역사회에 연결하는 Harmony Link의<br>비전과 이야기를 소개영상으로 만나보세요.</p><a class="btn youtube-channel-btn" href="https://www.youtube.com/@hibelleconsulting" target="_blank" rel="noopener noreferrer"><span data-ko="하이벨컨설팅 유튜브 채널" data-en="Hibelle Consulting YouTube">하이벨컨설팅 유튜브 채널</span><b>↗</b></a></div>
-      <a class="intro-video-frame video-watch-link" href="https://www.youtube.com/watch?v=7jo7Ovnq7Ew" target="_blank" rel="noopener noreferrer" aria-label="Harmony Link 소개영상 유튜브에서 보기"><img src="https://i.ytimg.com/vi/7jo7Ovnq7Ew/maxresdefault.jpg" alt="Harmony Link 소개영상 미리보기"><span class="video-play"><b>▶</b><em data-ko="소개영상 재생" data-en="Play introduction video">소개영상 재생</em></span></a>
-    </div>
-  </section>`);
-
 function connectForm(link, url) {
   link.href = url;
   link.target = '_blank';
@@ -227,12 +218,7 @@ function setLanguage(language) {
 
 langButton.onclick=()=>{
   setLanguage(currentLanguage==='ko'?'en':'ko');
-  window.setTimeout(()=>{
-    renderPromotionNews();
-    promotionModal.hidden=false;
-    document.body.classList.add('modal-open');
-    restartPromotionTimer();
-  },0);
+  window.setTimeout(()=>renderAdvertisingCarousel?.(),0);
 };
 
 window.addEventListener('scroll', () => {
@@ -349,10 +335,7 @@ promotionModal.querySelector('.promotion-action').addEventListener('click', () =
 // Show the rotating promotion popup on every page load. Individual expired
 // items (e.g. a time-limited offer) are filtered out of the rotation by
 // their own endDate below, rather than gating the whole popup on one date.
-window.setTimeout(() => {
-  promotionModal.hidden = false;
-  document.body.classList.add('modal-open');
-}, 450);
+// The advertising carousel replaces the former automatic promotion popup.
 setLanguage(currentLanguage);
 
 const specialtyPrograms = [
@@ -669,9 +652,9 @@ if (currentEventGrid) {
   pastSection.querySelector('.past-events-empty').hidden = pastGrid.children.length > 0;
 }
 
-const contactSectionForAds = document.getElementById('contact');
+const contactSectionForAds = document.getElementById('specialty-banners');
 if (contactSectionForAds) {
-  contactSectionForAds.insertAdjacentHTML('beforebegin', `<section class="advertising section" id="advertising"><div class="container"><div class="section-heading centered reveal visible"><p class="eyebrow">COMMUNITY PARTNERS</p><h2 data-ko="지역 업체 광고·제휴 공간" data-en="Local Business Advertising">지역 업체 광고·제휴 공간</h2><p data-ko="지역사회와 함께 성장할 광고 파트너를 위한<br class='mobile-only-break'>배너 자리입니다." data-en="Banner placements for local partners growing with our community.">지역사회와 함께 성장할 광고 파트너를 위한 배너 자리입니다.</p></div><div class="ad-grid"><a href="#contact"><span>AD 01</span><b data-ko="프리미엄 광고 배너" data-en="Premium Ad Banner">프리미엄 광고 배너</b><small data-ko="광고 문의" data-en="Advertising inquiry">광고 문의</small></a><a href="https://aaleac.org/" target="_blank" rel="noopener noreferrer"><span>PARTNER</span><b data-ko="지역 협력 업체" data-en="Community Partner">지역 협력 업체</b><small>AALEAC ↗</small></a><a href="#contact"><span>AD 03</span><b data-ko="문화·교육 제휴" data-en="Culture & Education Partner">문화·교육 제휴</b><small data-ko="제휴 문의" data-en="Partnership inquiry">제휴 문의</small></a></div></div></section>`);
+  contactSectionForAds.insertAdjacentHTML('beforebegin', `<section class="advertising section" id="advertising"><div class="container"><div class="section-heading centered reveal visible"><p class="eyebrow">COMMUNITY PARTNERS</p><h2 data-ko="업체 광고 · 제휴 공간" data-en="Business Advertising & Partnerships">업체 광고 · 제휴 공간</h2><p data-ko="지역사회와 함께 성장하는 업체를 만나보세요." data-en="Meet businesses growing with our community.">지역사회와 함께 성장하는 업체를 만나보세요.</p></div><div class="ad-inline-carousel" aria-live="polite"><button type="button" class="ad-carousel-prev" aria-label="이전 업체">‹</button><div class="ad-carousel-track"></div><button type="button" class="ad-carousel-next" aria-label="다음 업체">›</button></div><div class="ad-carousel-dots"></div></div></section>`);
 }
 setLanguage(currentLanguage);
 
@@ -934,6 +917,27 @@ const adRooms={
   community:{ko:'협력 업체',en:'Community Partners',label:'COMMUNITY PARTNER',slots:4,items:[{name:'AALEAC',displayNameKo:'아시안 아메리칸 사법 경찰자문위원회',displayNameEn:'Asian American Law Enforcement Advisory Council',copy:'아시안 커뮤니티와 사법기관의 소통과 협력을 지원합니다.<br>연락처 646-996-8093',copyEn:'Supporting communication and cooperation between<br>Asian American communities and law enforcement.<br>Contact 646-996-8093',url:'https://aaleac.org/',image:'assets/partners/aaleac-shield.png?v=20260819-1'},{name:'Jangsu Daycare',displayNameKo:'장수 데이케어',displayNameEn:'Jangsu Daycare',copy:'어르신 한 분 한 분을 가족처럼 모시며 건강하고 행복한 하루를 함께하는<br class="jangsu-card-break-mobile"> 데이케어 센터입니다.<br class="jangsu-card-break-desktop"> 연락처 718-799-0133 · 718-864-6430',popupCopy:'어르신 한 분 한 분을 가족처럼 모시며 <br class="jangsu-popup-break-desktop">건강하고 행복한 하루를 함께하는 <br class="jangsu-popup-break-mobile">데이케어 센터입니다.<br>연락처 718-799-0133 · 718-864-6430',copyEn:'A daycare center caring for each senior like family, supporting a healthy and happy day together.<br>Phone 718-799-0133 · 718-864-6430',url:'mailto:Jangsuadc1@gmail.com',image:'assets/partners/jangsu-daycare-logo.png?v=20260815-304',banner:'assets/partners/jangsu-daycare-banner.png'}]},
   culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',label:'CULTURE & EDUCATION PARTNER',slots:4,items:[]}
 };
+const advertisingCarouselItems=Object.values(adRooms).flatMap(room=>room.items.map(item=>({...item,roomLabel:room.label})));
+let advertisingCarouselIndex=0;
+let advertisingCarouselTimer;
+function renderAdvertisingCarousel(){
+  const track=document.querySelector('.ad-carousel-track');
+  const dots=document.querySelector('.ad-carousel-dots');
+  if(!track||!dots||!advertisingCarouselItems.length)return;
+  const item=advertisingCarouselItems[advertisingCarouselIndex];
+  const english=currentLanguage==='en';
+  const name=english?(item.displayNameEn||item.name):(item.displayNameKo||item.name);
+  const copy=english?(item.copyEn||item.copy):item.copy;
+  const target=item.brokerUrl||item.url||item.chatUrl||'#contact';
+  track.innerHTML=`<article class="ad-carousel-card"><div class="ad-carousel-logo"><img src="${item.image}" alt="${name} logo"></div><div class="ad-carousel-copy"><span>${item.roomLabel}</span><h3>${name}</h3><p>${copy}</p><a href="${target}" ${target.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}>${english?'Related information':'관련 정보 보기'} →</a></div></article>`;
+  dots.innerHTML=advertisingCarouselItems.map((_,index)=>`<button type="button" class="${index===advertisingCarouselIndex?'active':''}" data-ad-carousel-index="${index}" aria-label="${index+1}번 업체"></button>`).join('');
+  dots.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{advertisingCarouselIndex=Number(button.dataset.adCarouselIndex);renderAdvertisingCarousel();restartAdvertisingCarousel();}));
+}
+function restartAdvertisingCarousel(){window.clearInterval(advertisingCarouselTimer);advertisingCarouselTimer=window.setInterval(()=>{advertisingCarouselIndex=(advertisingCarouselIndex+1)%advertisingCarouselItems.length;renderAdvertisingCarousel();},6500);}
+document.querySelector('.ad-carousel-prev')?.addEventListener('click',()=>{advertisingCarouselIndex=(advertisingCarouselIndex-1+advertisingCarouselItems.length)%advertisingCarouselItems.length;renderAdvertisingCarousel();restartAdvertisingCarousel();});
+document.querySelector('.ad-carousel-next')?.addEventListener('click',()=>{advertisingCarouselIndex=(advertisingCarouselIndex+1)%advertisingCarouselItems.length;renderAdvertisingCarousel();restartAdvertisingCarousel();});
+renderAdvertisingCarousel();restartAdvertisingCarousel();
+
 const hole19Advertiser=adRooms.premium.items.find(item=>item.name==='HOLE19 Golf Lounge');
 if(hole19Advertiser){
   hole19Advertiser.chatUrl='https://www.instagram.com/hole19_golflounge/';
@@ -1289,12 +1293,7 @@ if (!document.querySelector('.mobile-lang-toggle')) {
   mobileLanguageButton.setAttribute('aria-label','한국어와 영어 전환');
   mobileLanguageButton.onclick=()=>{
     setLanguage(currentLanguage==='ko'?'en':'ko');
-    if(window.innerWidth<=760){
-      renderPromotionNews();
-      promotionModal.hidden=false;
-      document.body.classList.add('modal-open');
-      restartPromotionTimer();
-    }
+    renderAdvertisingCarousel?.();
   };
   document.querySelector('.nav-wrap')?.insertBefore(mobileLanguageButton,document.querySelector('.menu-toggle'));
   setLanguage(currentLanguage);
