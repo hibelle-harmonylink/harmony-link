@@ -1255,11 +1255,7 @@ consentDetailModal.querySelectorAll('[data-consent-detail-close]').forEach(butto
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!consentDetailModal.hidden)closeConsentDetail();});
 document.addEventListener('click',event=>{
   if(window.innerWidth>760)return;
-  // The messiah card's poster is a plain div (no href) since it links
-  // straight to an internal detail page via its own 자세히 보기 button --
-  // exclude it so this flyer-image lightbox isn't triggered with a
-  // missing image source.
-  const flyerLink=event.target.closest('#events .event-poster:not(.special-event-card .event-poster), #events .event-flyer-button');
+  const flyerLink=event.target.closest('#events .event-poster, #events .event-flyer-button');
   if(!flyerLink)return;
   event.preventDefault();
   const image=eventFlyerModal.querySelector('img');

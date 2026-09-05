@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body class="ytlab-page">
 
@@ -86,12 +86,14 @@
         <h2>START · BUILD · COACH</h2>
         <p class="ytlab-section-lead" id="plansNote"></p>
         <div class="ytlab-plans" id="plansGrid"></div>
-        <div class="ytlab-card" id="ai-shorts-addon" style="margin-top:28px;text-align:left;display:flex;flex-wrap:wrap;align-items:center;gap:18px;justify-content:space-between">
-          <div style="flex:1;min-width:220px">
-            <h3 style="margin:0 0 6px">▶️ 함께 보면 좋은 프로그램 · AI 쇼츠 제작 프로그램</h3>
-            <p style="margin:0">주제를 몰라도 AI가 대본 · 목소리 · 이미지 · 자막을 만들어 쇼츠 영상 제작을 도와드립니다. HarmonyLink Premium 회원 전용이며, 로그인 후 이용 가능 여부가 확인됩니다.</p>
+        <div class="ytlab-ai-shorts-addon" id="ai-shorts-addon">
+          <div class="ytlab-ai-shorts-addon-copy">
+            <span class="ytlab-ai-shorts-addon-badge">▶ 함께 보면 좋은 프로그램</span>
+            <h3>AI 쇼츠 제작 프로그램</h3>
+            <p>주제를 몰라도 AI가 대본 · 목소리 · 이미지 · 자막을 만들어 쇼츠 영상 제작을 도와드립니다.</p>
+            <p class="ytlab-ai-shorts-addon-notice">하모니링크 프리미엄 회원 전용<br>로그인 후 이용 가능 여부가 확인됩니다</p>
           </div>
-          <a class="ytlab-btn ytlab-btn-outline" href="https://ai-shorts-maker-production.up.railway.app/" target="_blank" rel="noopener" style="flex-shrink:0">AI 쇼츠 알아보기</a>
+          <a class="ytlab-btn ytlab-ai-shorts-addon-btn" href="https://ai-shorts-maker-production.up.railway.app/" target="_blank" rel="noopener">AI 쇼츠 알아보기</a>
         </div>
       </div>
     </section>
@@ -156,14 +158,11 @@
               <button class="ytlab-btn ytlab-btn-primary ytlab-btn-block" type="submit">무료 상담 신청하기</button>
               <p class="ytlab-form-status" id="consultStatus" role="status"></p>
             </form>
-            <aside class="ytlab-consult-info">
-              <h3>상담 전 안내</h3>
-              <ul>
-                <li><b>✓</b><span>상담은 무료입니다.</span></li>
-                <li><b>✓</b><span>아직 채널을 시작하지 않은 분도 상담 가능합니다.</span></li>
-                <li><b>✓</b><span>현재 상황에 맞는 시작 순서를 함께 안내해 드립니다.</span></li>
-                <li><b>✓</b><span>최종 프로그램과 가격은 상담 후 확정됩니다.</span></li>
-              </ul>
+            <aside class="ytlab-consult-visual" aria-hidden="true">
+              <div class="ytlab-consult-orb">🎥</div>
+              <span class="ytlab-consult-chip chip-a">🎙️ 1:1 상담</span>
+              <span class="ytlab-consult-chip chip-b">📈 채널 진단</span>
+              <span class="ytlab-consult-chip chip-c">🤖 AI 코칭</span>
             </aside>
           </div>
         </div>
