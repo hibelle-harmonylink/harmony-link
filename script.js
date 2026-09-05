@@ -424,7 +424,7 @@ document.querySelector('.apply')?.remove();
 document.querySelector('.hero-actions .request-form-link')?.remove();
 document.querySelector('.hero-actions .btn-explore')?.classList.add('btn-primary');
 const serviceArea=document.querySelector('.service-note span');
-if(serviceArea){serviceArea.dataset.ko='뉴욕시 · 롱아일랜드 · 웨체스터 · 뉴저지';serviceArea.dataset.en='New York City · Long Island<br class="mobile-only-break">Westchester · New Jersey';serviceArea.innerHTML=currentLanguage==='ko'?serviceArea.dataset.ko:serviceArea.dataset.en;}
+if(serviceArea){serviceArea.dataset.ko='뉴욕시 · 롱아일랜드 · 브롱스 · 웨스트체스터 · 뉴저지';serviceArea.dataset.en='New York City · Long Island · The Bronx<br class="mobile-only-break">Westchester · New Jersey';serviceArea.innerHTML=currentLanguage==='ko'?serviceArea.dataset.ko:serviceArea.dataset.en;}
 const aboutCopy=document.querySelector('.about-copy');
 aboutCopy?.classList.add('about-copy-card');
 aboutCopy?.querySelector('p')?.remove();

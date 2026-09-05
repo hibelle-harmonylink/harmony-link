@@ -286,8 +286,8 @@
       lock.setAttribute('aria-label', approvedPartner ? t('시작하기 필수 자료 열기', 'Open required getting-started resources') : t('파트너 자료실 접근 상태', 'Partner resource access status'));
     }
     if (partnerNav) {
-      partnerNav.dataset.ko = approvedPartner ? '파트너센터 ✓' : '파트너센터 🔒';
-      partnerNav.dataset.en = approvedPartner ? 'Partner Center ✓' : 'Partner Center 🔒';
+      partnerNav.dataset.ko = approvedPartner ? '파트너센터' : '파트너센터 🔒';
+      partnerNav.dataset.en = approvedPartner ? 'Partner Center' : 'Partner Center 🔒';
       partnerNav.textContent = t(partnerNav.dataset.ko, partnerNav.dataset.en);
     }
   };
