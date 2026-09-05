@@ -475,15 +475,43 @@ main>section:nth-of-type(3n) .section-heading>p:last-child,
 main>section:nth-of-type(3n).intro-video .video-copy>p,
 main>section:nth-of-type(3n).intro-video .intro-video-copy>p{color:#d9ebff!important}
 main>section:nth-of-type(3n) .section-heading{position:relative;z-index:1}
-/* Requested palette from specialty programs through contact. */
-#specialty-banners,#events,#advertising{background:#edf7ff!important;color:var(--text)!important}
+/* Homepage background flow: white -> pale sky -> deep blue, repeating,
+   so the tone reads as one consistent sequence top to bottom. */
+#events,#advertising{background:#edf7ff!important;color:var(--text)!important}
+#specialty-banners{background:#fff!important;color:var(--text)!important}
 #specialty-banners h2,#events h2,#advertising h2{color:var(--deep)!important}
 #specialty-banners .eyebrow,#events .eyebrow,#advertising .eyebrow{color:var(--blue)!important}
 #specialty-banners .section-heading>p:last-child,#events .section-heading>p:last-child,#advertising .section-heading>p:last-child{color:var(--muted)!important}
-#community,#digital-store,#contact{background:linear-gradient(145deg,#075bb5 0%,#073d82 100%)!important;color:#fff!important}
-#community h2,#digital-store h2,#contact h2{color:#fff!important}
-#community .eyebrow,#digital-store .eyebrow,#contact .eyebrow{color:#bfe0ff!important}
-#community .section-heading>p:last-child,#digital-store .section-heading>p:last-child,#contact .section-heading>p:last-child,#contact .contact-page-head>p:last-child{color:#d9ebff!important}
+#digital-store,#contact{background:linear-gradient(145deg,#075bb5 0%,#073d82 100%)!important;color:#fff!important}
+#digital-store h2,#contact h2{color:#fff!important}
+#digital-store .eyebrow,#contact .eyebrow{color:#bfe0ff!important}
+#digital-store .section-heading>p:last-child,#contact .section-heading>p:last-child,#contact .contact-page-head>p:last-child{color:#d9ebff!important}
+/* Simplified contact section: plain icon/text links instead of boxed cards. */
+.contact-simple-head{max-width:640px;margin:0 auto 30px;text-align:center}
+.contact-simple-links{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-start;gap:16px 40px;margin:0 auto}
+.contact-simple-link{display:inline-flex;align-items:center;gap:12px;color:#fff;text-decoration:none}
+.contact-simple-icon{display:grid;place-items:center;flex:none;width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.16);font-size:16px;transition:background .2s,transform .2s}
+.contact-simple-text{display:grid;text-align:left}
+.contact-simple-text strong{font-size:16px;font-weight:800}
+.contact-simple-text strong em{margin-left:4px;font-style:normal;font-weight:600;opacity:.75}
+.contact-simple-text small{margin-top:2px;color:#bfe0ff;font-size:11px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.contact-simple-link:hover .contact-simple-icon,.contact-simple-link:focus-visible .contact-simple-icon{background:#fff;color:#075bb5;transform:translateY(-2px)}
+.contact-simple-link:hover .contact-simple-text small,.contact-simple-link:focus-visible .contact-simple-text small{color:#fff}
+.contact-simple-note{margin:28px 0 0;text-align:center;color:#d9ebff;font-size:12px}
+@media(max-width:700px){.contact-simple-links{flex-direction:column;align-items:center;gap:18px}}
+#community{background:#eef7ff!important;color:var(--text)!important;padding:76px 0}
+#community h2{color:var(--deep)!important}
+#community .eyebrow{color:var(--blue)!important}
+/* Smaller, lighter cards with bigger, easier-to-read text -- padding,
+   list, and paragraph spacing are tightened so the larger type doesn't
+   just make the card grow back to its old height. */
+#community .audience-grid{gap:18px;margin-top:34px}
+#community .audience-card{padding:24px;border-radius:20px}
+#community .audience-card h3{font-size:24px;margin:8px 0 10px}
+#community .audience-card p{font-size:15px;line-height:1.55;margin:8px 0}
+#community .audience-card ul{margin:14px 0}
+#community .audience-card li{font-size:14px;margin:6px 0}
+#community .audience-card .text-link{padding:13px 18px;font-size:15px}
 #volunteer,#partner-center{background:#fff!important;color:var(--text)!important}
 #volunteer h2,#partner-center h2{color:var(--deep)!important}
 #volunteer .eyebrow,#partner-center .eyebrow{color:var(--blue)!important}
@@ -502,7 +530,6 @@ main>section .reveal{opacity:1!important;transform:none!important}
 .specialty-modal-image-link>span{position:absolute;right:14px;bottom:14px;padding:9px 13px;border-radius:30px;background:rgba(5,43,95,.9);color:#fff;font-size:11px;font-weight:800;box-shadow:0 8px 20px rgba(0,0,0,.2)}
 .melody-program-grid article{background:#fff!important}
 .melody-program-card-copy p{margin:10px 0 0;color:var(--muted);font-size:12px;line-height:1.7}
-#community .audience-card{border:2px solid #d5ad4f!important;box-shadow:0 16px 42px rgba(137,98,18,.14)!important}
 #volunteer .volunteer-program{position:relative;border-color:#c9deef;box-shadow:0 18px 42px rgba(5,57,127,.17);animation:volunteer-card-float 4s ease-in-out infinite}
 #volunteer .volunteer-program:nth-child(2){animation-delay:-2s}
 @keyframes volunteer-card-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
@@ -524,8 +551,7 @@ main>section .reveal{opacity:1!important;transform:none!important}
 /* Volunteer, participation link, and compact event cards */
 #volunteer .volunteer-intro{grid-template-columns:minmax(0,1fr) 620px!important}
 #volunteer .volunteer-image-link{width:620px!important;justify-self:end!important;margin-left:auto!important}
-#community .community-link,#community .community-link b,#community .community-link small{color:#fff!important}
-#community .community-link b,#community .community-link small{display:block;text-shadow:0 1px 3px rgba(0,30,80,.35)}
+#community .community-link b,#community .community-link small{display:block}
 #events .event-grid.event-type-layout{gap:15px!important}
 #events .event-type-block{padding:12px!important;border-radius:18px!important}
 #events .event-type-head{margin-bottom:10px!important}
