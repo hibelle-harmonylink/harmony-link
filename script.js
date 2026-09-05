@@ -209,6 +209,12 @@ function setLanguage(language) {
   document.querySelectorAll('[data-ko-href]').forEach(element => {
     element.href = element.dataset[`${language}Href`];
   });
+  document.querySelectorAll('[data-ko-alt]').forEach(element => {
+    element.alt = element.dataset[`${language}Alt`];
+  });
+  document.querySelectorAll('[data-ko-aria-label]').forEach(element => {
+    element.setAttribute('aria-label', element.dataset[`${language}AriaLabel`]);
+  });
   langButton.querySelectorAll('span').forEach((item, index) => item.classList.toggle('active', (language === 'ko' && index === 0) || (language === 'en' && index === 1)));
   document.querySelectorAll('.mobile-lang-toggle span').forEach((item, index) => item.classList.toggle('active', (language === 'ko' && index === 0) || (language === 'en' && index === 1)));
   langButton.setAttribute('aria-label', language === 'ko' ? 'Switch to English' : '한국어로 전환');
@@ -352,7 +358,7 @@ setLanguage(currentLanguage);
 const specialtyPrograms = [
   {id:'digital',titleKo:'하이벨 디지털',titleEn:'Hibelle Digital',operationKo:'직영',operationEn:'DIRECTLY OPERATED',image:'assets/specialty/hibelle-digital-20260718.jpg',teacherImage:'assets/teachers/noh-hyekyung.png',teacherKo:'노혜경',teacherEn:'Hyekyung Noh',teacherRoleKo:'디지털 교육 대표 강사',teacherRoleEn:'Lead Digital Instructor',form:'https://docs.google.com/forms/d/1DWtn1FQD86E4EHzABxeoEpHDuVeoFH_Smak4_C1RU7M/viewform',tone:'blue'},
   {id:'english',titleKo:'하이벨 화상영어',titleEn:'Hibelle Online English',operationKo:'직영',operationEn:'DIRECTLY OPERATED',image:'assets/specialty/hibelle-online-english-20260718.jpg',teacherImage:'assets/teachers/rachel.png',teacherKo:'하이벨 화상영어 강사진',teacherEn:'Hibelle Online English Team',teacherRoleKo:'1:1 화상영어 전문 강사',teacherRoleEn:'1:1 Online English Instructors',form:'https://docs.google.com/forms/d/1kN5-d09smqU_UO9rUO91SdQqco7ABYDzWTgpv74EUsc/viewform',tone:'orange'},
-  {id:'melody',titleKo:'미란멜로디',titleEn:'Meeran Melody',operationKo:'공동운영',operationEn:'CO-OPERATED',image:'assets/specialty/meeran-melody.png',teacherImage:'assets/teachers/kim-miran.jpg',teacherKo:'김미란',teacherEn:'Miran Kim',teacherRoleKo:'합창·음악 교육 대표 강사',teacherRoleEn:'Lead Choir & Music Instructor',form:null,tone:'pink'}
+  {id:'melody',titleKo:'미란멜로디',titleEn:'Meeran Melody',operationKo:'공동운영',operationEn:'CO-OPERATED',image:'assets/specialty/meeran-melody.png',teacherImage:'assets/teachers/kim-miran.jpg',teacherKo:'김미란',teacherEn:'Meeran Kim',teacherRoleKo:'합창·음악 교육 대표 강사',teacherRoleEn:'Lead Choir & Music Instructor',form:null,tone:'pink'}
 ];
 
 const oldSpecialtyStart = document.getElementById('digital-why');
@@ -430,7 +436,7 @@ document.querySelector('.apply')?.remove();
 document.querySelector('.hero-actions .request-form-link')?.remove();
 document.querySelector('.hero-actions .btn-explore')?.classList.add('btn-primary');
 const serviceArea=document.querySelector('.service-note span');
-if(serviceArea){serviceArea.dataset.ko='뉴욕시 · 롱아일랜드 · 브롱스 · 웨스트체스터 · 뉴저지';serviceArea.dataset.en='New York City · Long Island · The Bronx<br class="mobile-only-break">Westchester · New Jersey';serviceArea.innerHTML=currentLanguage==='ko'?serviceArea.dataset.ko:serviceArea.dataset.en;}
+if(serviceArea){serviceArea.dataset.ko='뉴욕시 · 롱아일랜드 · 브롱스 · 웨스트체스터 · 뉴저지';serviceArea.dataset.en='New York City · Long Island · Bronx · Westchester · New Jersey';serviceArea.innerHTML=currentLanguage==='ko'?serviceArea.dataset.ko:serviceArea.dataset.en;}
 const aboutCopy=document.querySelector('.about-copy');
 aboutCopy?.classList.add('about-copy-card');
 aboutCopy?.querySelector('p')?.remove();
@@ -885,7 +891,7 @@ if (volunteerArea) {
   if (volunteerTitle) {volunteerTitle.dataset.ko='마음을 잇는<br>디지털 무료 봉사';volunteerTitle.dataset.en='Digital Volunteers Connecting Hearts';volunteerTitle.innerHTML=volunteerTitle.dataset[currentLanguage];}
   volunteerArea.querySelector('.volunteer-grid')?.remove();
   const volunteerIntro = volunteerArea.querySelector('.volunteer-intro');
-  if (volunteerIntro && !volunteerArea.querySelector('.volunteer-feature-image')) volunteerIntro.insertAdjacentHTML('beforeend', `<a class="volunteer-image-link" href="assets/volunteer/digital-volunteer.png" target="_blank" rel="noopener noreferrer" aria-label="디지털 무료 봉사 안내 이미지 크게 보기"><img class="volunteer-feature-image" src="assets/volunteer/digital-volunteer.png" alt="디지털 무료 봉사 안내"><span data-ko="이미지 크게 보기 ↗" data-en="View larger ↗">이미지 크게 보기 ↗</span></a>`);
+  if (volunteerIntro && !volunteerArea.querySelector('.volunteer-feature-image')) volunteerIntro.insertAdjacentHTML('beforeend', `<a class="volunteer-image-link" href="assets/volunteer/digital-volunteer.png" data-ko-href="assets/volunteer/digital-volunteer.png" data-en-href="assets/volunteer/digital-volunteer-en.png" target="_blank" rel="noopener noreferrer" data-ko-aria-label="디지털 무료 봉사 안내 이미지 크게 보기" data-en-aria-label="View the digital volunteer support flyer" aria-label="디지털 무료 봉사 안내 이미지 크게 보기"><img class="volunteer-feature-image" src="assets/volunteer/digital-volunteer.png" data-ko-src="assets/volunteer/digital-volunteer.png" data-en-src="assets/volunteer/digital-volunteer-en.png" data-ko-alt="디지털 무료 봉사 안내" data-en-alt="Digital volunteer support information" alt="디지털 무료 봉사 안내"><span data-ko="이미지 크게 보기 ↗" data-en="View larger ↗">이미지 크게 보기 ↗</span></a>`);
 }
 
 const inquiryMessageLabel = inquiryModal.querySelector('textarea')?.closest('label')?.querySelector('span');
@@ -1111,7 +1117,7 @@ if (providerCard && !providerCard.querySelector('.partner-joining-note')) {
 if (volunteerArea && !volunteerArea.querySelector('.volunteer-program-grid')) {
   volunteerArea.querySelector('.volunteer-intro')?.insertAdjacentHTML('afterend', `
     <div class="volunteer-program-grid">
-      <article class="volunteer-program active" role="button" tabindex="0" aria-label="무료 방문 디지털 지원 안내 이미지 크게 보기" data-volunteer-image="assets/volunteer/digital-volunteer.png"><span>NOW</span><b>💻</b><div><h3 data-ko="무료 방문 디지털 지원" data-en="Free In-Home Digital Support">무료 방문 디지털 지원</h3><p data-ko="디지털 기기 연결과 기본 사용이 어려운 이웃을 직접 찾아가 도와드립니다." data-en="Volunteers visit neighbors who need help connecting and using digital devices.">디지털 기기 연결과 기본 사용이 어려운 이웃을 직접 찾아가 도와드립니다.</p></div></article>
+      <article class="volunteer-program active" role="button" tabindex="0" data-ko-aria-label="무료 방문 디지털 지원 안내 이미지 크게 보기" data-en-aria-label="View the free in-home digital support flyer" aria-label="무료 방문 디지털 지원 안내 이미지 크게 보기" data-volunteer-image="assets/volunteer/digital-volunteer.png" data-volunteer-image-en="assets/volunteer/digital-volunteer-en.png"><span>NOW</span><b>💻</b><div><h3 data-ko="무료 방문 디지털 지원" data-en="Free In-Home Digital Support">무료 방문 디지털 지원</h3><p data-ko="디지털 기기 연결과 기본 사용이 어려운 이웃을 직접 찾아가 도와드립니다." data-en="Volunteers visit neighbors who need help connecting and using digital devices.">디지털 기기 연결과 기본 사용이 어려운 이웃을 직접 찾아가 도와드립니다.</p></div></article>
       <article class="volunteer-program coming"><span>COMING SOON</span><b>＋</b><div><h3 data-ko="새 봉사 프로그램" data-en="New Volunteer Program">새 봉사 프로그램</h3><p data-ko="지역사회에 필요한 봉사 프로그램이 이 공간에 계속 추가될 예정입니다." data-en="More volunteer programs responding to community needs will be added here.">지역사회에 필요한 봉사 프로그램이 이 공간에 계속 추가될 예정입니다.</p></div></article>
     </div>`);
 }
@@ -1192,7 +1198,7 @@ document.body.appendChild(eventFlyerModal);
 const closeEventFlyer=()=>{eventFlyerModal.hidden=true;eventFlyerModal.classList.remove('volunteer-flyer-open');document.body.classList.remove('modal-open');};
 const openVolunteerImage=trigger=>{
   const image=eventFlyerModal.querySelector('img');
-  const imageSource=trigger.dataset.volunteerImage||trigger.getAttribute('href')||'assets/volunteer/digital-volunteer.png';
+  const imageSource=(currentLanguage==='en'?trigger.dataset.volunteerImageEn:null)||trigger.dataset.volunteerImage||trigger.getAttribute('href')||'assets/volunteer/digital-volunteer.png';
   eventFlyerModal.classList.remove('trial-flyer-open');
   eventFlyerModal.classList.add('volunteer-flyer-open');
   image.src=imageSource;

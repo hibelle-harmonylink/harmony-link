@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" href="icon-192-v71.png">
   <link rel="apple-touch-icon" href="icon-192-v71.png">
   <link rel="stylesheet" href="app.css?v=61">
-  <link rel="stylesheet" href="overrides.css?v=87">
+  <link rel="stylesheet" href="overrides.css?v=88">
 </head>
 <body>
   <div class="app-shell">
@@ -56,7 +56,7 @@
             <span class="badge" data-ko="무료 방문 지원" data-en="FREE HOME VISIT">무료 방문 지원</span>
             <h2 data-ko="디지털이 어려운 이웃을 직접 찾아갑니다" data-en="We bring friendly digital help to your home">디지털이 어려운 이웃을 직접 찾아갑니다</h2>
           </div>
-          <img id="volunteerImage" src="../assets/volunteer/digital-volunteer.png" alt="무료 방문 디지털 지원" role="button" tabindex="0">
+          <img id="volunteerImage" src="../assets/volunteer/digital-volunteer.png" data-ko-src="../assets/volunteer/digital-volunteer.png" data-en-src="../assets/volunteer/digital-volunteer-en.png" data-ko-alt="무료 방문 디지털 지원" data-en-alt="Free in-home digital support" alt="무료 방문 디지털 지원" role="button" tabindex="0">
         </section>
 
         <section class="home-programs">
@@ -163,6 +163,17 @@
       <button class="lightbox-close" type="button" data-lightbox-close aria-label="닫기">×</button>
     </div>
 
+    <div class="install-help-modal" id="installHelpModal" hidden role="dialog" aria-modal="true" aria-labelledby="installHelpTitle">
+      <button class="install-help-backdrop" type="button" data-install-help-close aria-label="닫기"></button>
+      <div class="install-help-panel">
+        <button class="install-help-close" type="button" data-install-help-close aria-label="닫기">×</button>
+        <h2 id="installHelpTitle" data-ko="앱처럼 설치하기" data-en="Install as an app">앱처럼 설치하기</h2>
+        <p class="install-help-intro" data-ko="사용 중인 기기와 브라우저에 맞는 설치 방법을 안내해 드립니다." data-en="Here's how to install Harmony Link on your device.">사용 중인 기기와 브라우저에 맞는 설치 방법을 안내해 드립니다.</p>
+        <ol class="install-help-steps" id="installHelpSteps"></ol>
+        <button type="button" class="install-help-confirm" data-install-help-close data-ko="확인" data-en="Got it">확인</button>
+      </div>
+    </div>
+
     <nav class="bottom-nav" aria-label="앱 메뉴">
       <button class="active" type="button" data-go="home"><span>⌂</span><small data-ko="홈" data-en="Home">홈</small></button>
       <button type="button" data-go="programs"><span>▦</span><small data-ko="프로그램" data-en="Programs">프로그램</small></button>
@@ -172,6 +183,6 @@
     </nav>
   </div>
   <script src="../shared-content.js?v=87"></script>
-  <script src="app.js?v=87"></script>
+  <script src="app.js?v=88"></script>
 </body>
 </html>
