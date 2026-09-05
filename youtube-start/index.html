@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body class="ytlab-page">
 
@@ -55,13 +55,13 @@
         <p class="ytlab-eyebrow">유튜브에서 실제로 필요한 것</p>
         <h2>화려한 장비보다 이 6가지가 먼저입니다.</h2>
         <p class="ytlab-section-lead">채널의 성패는 장비가 아니라 방향 설정과 꾸준한 실행에서 갈립니다.</p>
-        <div class="ytlab-grid-3">
-          <div class="ytlab-card"><div class="ytlab-icon-badge">🎯</div><h3>명확한 주제와 타깃</h3><p>누구에게, 어떤 가치를 전달할지 정하는 것이 가장 먼저입니다.</p></div>
-          <div class="ytlab-card"><div class="ytlab-icon-badge">🗓️</div><h3>지속 가능한 루틴</h3><p>주당 투입 가능한 시간에 맞는 형식과 업로드 주기를 정하는 것이 중요합니다.</p></div>
-          <div class="ytlab-card"><div class="ytlab-icon-badge">🤖</div><h3>AI 도구 활용</h3><p>대본, 편집, 썸네일 제작 시간을 AI로 줄이는 실전 방법이 필요합니다.</p></div>
-          <div class="ytlab-card"><div class="ytlab-icon-badge">📈</div><h3>꾸준한 개선</h3><p>초기 반응을 확인하고 조금씩 콘텐츠를 개선해나가는 태도가 필요합니다.</p></div>
-          <div class="ytlab-card"><div class="ytlab-icon-badge">🧭</div><h3>현실적인 기대치</h3><p>수익은 결과이지 시작 조건이 아닙니다. 꾸준한 실행이 먼저입니다.</p></div>
-          <div class="ytlab-card"><div class="ytlab-icon-badge">🙋</div><h3>필요할 때의 도움</h3><p>막히는 지점에서 상담과 피드백을 받을 수 있는 것도 큰 차이를 만듭니다.</p></div>
+        <div class="ytlab-grid-2">
+          <div class="ytlab-card"><div class="ytlab-icon-badge">🎯</div><div><h3>명확한 주제와 타깃</h3><p>누구에게 어떤 가치를 줄지 먼저 정하세요.</p></div></div>
+          <div class="ytlab-card"><div class="ytlab-icon-badge">🗓️</div><div><h3>지속 가능한 루틴</h3><p>가능한 시간에 맞는 업로드 주기를 정하세요.</p></div></div>
+          <div class="ytlab-card"><div class="ytlab-icon-badge">🤖</div><div><h3>AI 도구 활용</h3><p>대본·편집·썸네일 제작 시간을 AI로 줄이세요.</p></div></div>
+          <div class="ytlab-card"><div class="ytlab-icon-badge">📈</div><div><h3>꾸준한 개선</h3><p>반응을 보며 콘텐츠를 조금씩 개선하세요.</p></div></div>
+          <div class="ytlab-card"><div class="ytlab-icon-badge">🧭</div><div><h3>현실적인 기대치</h3><p>수익은 결과일 뿐, 꾸준한 실행이 먼저입니다.</p></div></div>
+          <div class="ytlab-card"><div class="ytlab-icon-badge">🙋</div><div><h3>필요할 때의 도움</h3><p>막힐 때 상담과 피드백을 받으면 큰 차이가 납니다.</p></div></div>
         </div>
       </div>
     </section>
@@ -116,47 +116,42 @@
       </div>
     </section>
 
-    <section class="ytlab-section" id="consult" hidden>
-      <div class="ytlab-container-wide">
-        <div class="ytlab-consult">
-          <p class="ytlab-eyebrow" style="color:#8cb8ff">상담 신청</p>
-          <h2>무료 상담으로 먼저 시작해보세요.</h2>
-          <p class="ytlab-section-lead">아직 진단을 안 하셨어도 괜찮습니다. 상담 후 필요하면 진단을 함께 진행해드립니다.</p>
-          <div class="ytlab-consult-grid">
-            <form class="ytlab-form" id="consultForm">
-              <input type="hidden" name="_subject" value="[유튜브 수익화 랩] 상담/안내 신청">
-              <div>
-                <label for="lName">이름 *</label>
-                <input id="lName" name="이름" required>
-              </div>
-              <div>
-                <label for="lContact">연락처 또는 이메일 *</label>
-                <input id="lContact" name="연락처_이메일" required>
-              </div>
-              <div>
-                <label for="lInterest">관심 프로그램 *</label>
-                <select id="lInterest" name="관심 프로그램" required>
-                  <option value="아직 모르겠음">아직 모르겠음 / 상담 후 결정</option>
-                  <option value="START">START</option>
-                  <option value="BUILD">BUILD</option>
-                  <option value="COACH">COACH</option>
-                </select>
-              </div>
-              <div>
-                <label for="lMessage">궁금한 점 (선택)</label>
-                <textarea id="lMessage" name="문의내용" rows="3"></textarea>
-              </div>
-              <button class="ytlab-btn ytlab-btn-primary ytlab-btn-block" type="submit">무료 상담 신청하기</button>
-              <p class="ytlab-form-status" id="consultStatus" role="status"></p>
-            </form>
-            <aside class="ytlab-consult-visual" aria-hidden="true">
-              <img src="assets/consult-creator.webp" alt="" loading="lazy">
-            </aside>
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
+
+  <div class="ytlab-modal-backdrop" id="consultModal" hidden>
+    <div class="ytlab-modal" role="dialog" aria-modal="true" aria-labelledby="consultModalTitle">
+      <button type="button" class="ytlab-modal-close" id="consultModalClose" aria-label="닫기">&times;</button>
+      <p class="ytlab-eyebrow" style="color:#8cb8ff">상담 신청</p>
+      <h2 id="consultModalTitle">무료 상담으로 먼저 시작해보세요.</h2>
+      <p class="ytlab-section-lead">아직 진단을 안 하셨어도 괜찮습니다. 상담 후 필요하면 진단을 함께 진행해드립니다.</p>
+      <form class="ytlab-form" id="consultForm">
+        <input type="hidden" name="_subject" value="[유튜브 수익화 랩] 상담/안내 신청">
+        <div>
+          <label for="lName">이름 *</label>
+          <input id="lName" name="이름" required>
+        </div>
+        <div>
+          <label for="lContact">연락처 또는 이메일 *</label>
+          <input id="lContact" name="연락처_이메일" required>
+        </div>
+        <div>
+          <label for="lInterest">관심 프로그램 *</label>
+          <select id="lInterest" name="관심 프로그램" required>
+            <option value="아직 모르겠음">아직 모르겠음 / 상담 후 결정</option>
+            <option value="START">START</option>
+            <option value="BUILD">BUILD</option>
+            <option value="COACH">COACH</option>
+          </select>
+        </div>
+        <div>
+          <label for="lMessage">궁금한 점 (선택)</label>
+          <textarea id="lMessage" name="문의내용" rows="3"></textarea>
+        </div>
+        <button class="ytlab-btn ytlab-btn-primary ytlab-btn-block" type="submit">무료 상담 신청하기</button>
+        <p class="ytlab-form-status" id="consultStatus" role="status"></p>
+      </form>
+    </div>
+  </div>
 
   <footer class="ytlab-footer">
     <div class="ytlab-container-wide">
@@ -169,6 +164,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../access-control.js?v=20260903-301"></script>
   <script src="access.js?v=2"></script>
-  <script src="landing.js?v=2"></script>
+  <script src="landing.js?v=3"></script>
 </body>
 </html>
