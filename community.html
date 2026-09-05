@@ -10,9 +10,9 @@
   <meta http-equiv="Expires" content="0">
   <script>
     (() => {
-      const pageVersion = '20260815-301';
+      const pageVersion = '20260905-4';
       if (window.location.protocol === 'file:') {
-        window.location.replace('https://hibelleharmony.com/community.html?refresh=20260815-301');
+        window.location.replace('https://hibelleharmony.com/community.html?refresh=20260905-4');
         return;
       }
       const requestedVersion = new URL(window.location.href).searchParams.get('refresh');
@@ -39,7 +39,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="community.css?v=20260815-301">
+  <link rel="stylesheet" href="community.css?v=20260905-1">
   <style>
     html,body{margin:0!important;padding:0!important}
     body>main{padding-top:0!important;margin-top:0!important}
@@ -57,7 +57,7 @@
     <section id="accessState" class="access-state" hidden><h1></h1><p></p></section>
     <section id="communityApp" class="community-app" hidden>
       <div class="community-topbar"><a class="logo" href="./" aria-label="Harmony Link home"><span class="logo-mark brand-image"><img src="assets/harmony-logo.png" alt=""></span><span class="logo-name">Harmony <b>Link</b><small>이음문화센터</small></span></a><div class="community-account-actions"><a class="home-button" href="./">홈페이지</a><button id="signOutButton" type="button">로그아웃</button></div></div>
-      <div class="community-hero"><div><p class="eyebrow">OPEN COMMUNITY</p><h1>Harmony Link 커뮤니티</h1><p>무료회원이라면 누구나 경험과 정보를 나누며<br>함께 성장할 수 있는 공간입니다.</p></div><button id="openComposer" class="primary-button" type="button">＋ 새 글 작성</button></div>
+      <div class="community-hero"><div><p class="eyebrow">OPEN COMMUNITY</p><h1>Harmony Link 커뮤니티</h1><p>누구나 경험과 정보를 나누며<br>함께 성장할 수 있는 공간입니다.</p></div><button id="openComposer" class="primary-button" type="button">＋ 새 글 작성</button></div>
       <div class="community-summary"><span id="memberBadge">승인 파트너</span><strong id="welcomeName"></strong><p>개인정보나 수강생의 민감한 정보는 게시하지 마세요.</p></div>
       <div class="community-toolbar"><label><span>게시판 선택</span><select id="categoryFilter"><option value="">전체 게시글</option><option value="notice">공지사항</option><option value="intro">파트너 소개</option><option value="question">질문과 답변</option><option value="review">수업 후기·성공 사례</option><option value="resource">자료 공유</option></select></label><label><span>게시글 검색</span><input id="postSearch" type="search" placeholder="제목이나 내용을 검색하세요"></label><button id="refreshPosts" type="button">새로고침 ↻</button></div>
       <p id="communityMessage" class="community-message" role="status"></p>

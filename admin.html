@@ -18,7 +18,7 @@
        version.json polling pattern so a stale copy force-reloads itself. -->
   <script>
     (() => {
-      const pageVersion = '20260905-3';
+      const pageVersion = '20260905-4';
       fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
         .then(response => response.ok ? response.json() : null)
         .then(release => {
@@ -31,7 +31,7 @@
         .catch(() => {});
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=20260905-3">
+  <link rel="stylesheet" href="styles.css?v=20260905-4">
   <link rel="stylesheet" href="admin.css?v=20260904-7">
 </head>
 <body class="admin-page">
