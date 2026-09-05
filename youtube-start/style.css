@@ -30,7 +30,7 @@
 /* ---------- top bar ---------- */
 .ytlab-topbar{padding:14px 0;border-bottom:0;background:linear-gradient(135deg,var(--yt-navy),var(--yt-deep));color:#fff}
 .ytlab-topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.ytlab-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;text-decoration:none}
+.ytlab-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;text-decoration:none;color:#fff}
 .ytlab-brand-icon{width:32px;height:32px;padding:4px;border-radius:8px;background:linear-gradient(145deg,#bcd5fb,#6f9fe6);box-shadow:0 5px 16px rgba(12,64,140,.16);overflow:hidden;flex:none;display:flex}
 .ytlab-brand-icon img{width:100%;height:100%;object-fit:contain;display:block}
 .ytlab-brand small{display:block;font-weight:500;font-size:12px;color:#c9d9f2}.ytlab-home-link{font-size:14px;font-weight:600;color:#fff!important;text-decoration:none;white-space:nowrap}
@@ -198,9 +198,11 @@
   .ytlab-grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ytlab-plans{grid-template-columns:1fr}
   .ytlab-grid-2,.ytlab-meta-grid,.ytlab-channel-alt{grid-template-columns:1fr}
+  .ytlab-fit-list-2col{grid-template-columns:1fr}
   .ytlab-steps{grid-template-columns:1fr 1fr}
   .ytlab-hero{padding:36px 0 28px}
   .ytlab-section{padding:40px 0}
+  .ytlab-section-blue{padding:32px 0}
   .ytlab-consult{padding:36px 24px}
   .ytlab-consult-grid{grid-template-columns:1fr;gap:28px}
   .ytlab-consult-info{margin-top:0}
