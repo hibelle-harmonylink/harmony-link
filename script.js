@@ -203,6 +203,12 @@ function setLanguage(language) {
   document.querySelectorAll('[data-placeholder-ko]').forEach(element => {
     element.placeholder = element.dataset[`placeholder${language === 'ko' ? 'Ko' : 'En'}`];
   });
+  document.querySelectorAll('[data-ko-src]').forEach(element => {
+    element.src = element.dataset[`${language}Src`];
+  });
+  document.querySelectorAll('[data-ko-href]').forEach(element => {
+    element.href = element.dataset[`${language}Href`];
+  });
   langButton.querySelectorAll('span').forEach((item, index) => item.classList.toggle('active', (language === 'ko' && index === 0) || (language === 'en' && index === 1)));
   document.querySelectorAll('.mobile-lang-toggle span').forEach((item, index) => item.classList.toggle('active', (language === 'ko' && index === 0) || (language === 'en' && index === 1)));
   langButton.setAttribute('aria-label', language === 'ko' ? 'Switch to English' : '한국어로 전환');
@@ -682,7 +688,7 @@ const refreshedContact=document.querySelector('.contact-wrap');
 if(refreshedContact){
   window.signupAutomationUrl='https://script.google.com/macros/s/AKfycbx8j1IVjbeUrKvPyHkww_V1fHG8qBeY3KBO4ZWpscXAOiIDTZ6efMCuogQWP5QfRbxq/exec';
   refreshedContact.closest('#contact')?.classList.add('contact-simple');
-  refreshedContact.innerHTML=`<div class="contact-simple-head"><p class="eyebrow">GET IN TOUCH</p><h2 data-ko="궁금한 점이 있으신가요?" data-en="Have a question?">궁금한 점이 있으신가요?</h2><p data-ko="프로그램 신청, 강사·업체 참여, 회원 안내와 제휴 문의까지 편하게 연락해주세요." data-en="Contact us about programs, provider participation, membership, or partnerships.">프로그램 신청, 강사·업체 참여, 회원 안내와 제휴 문의까지 편하게 연락해주세요.</p></div><div class="contact-simple-links"><a class="contact-simple-link" href="mailto:hibelle@hibelleconsulting.com"><span class="contact-simple-icon" aria-hidden="true">✉</span><span class="contact-simple-text"><strong>hibelle@hibelleconsulting.com</strong><small data-ko="클릭하여 메일 보내기" data-en="Click to send an email">클릭하여 메일 보내기</small></span></a><a class="contact-simple-link" href="tel:+19296030052"><span class="contact-simple-icon" aria-hidden="true">☎</span><span class="contact-simple-text"><strong>929-603-0052 <em data-ko="미국" data-en="USA">미국</em></strong><small data-ko="클릭하여 전화 연결" data-en="Click to call">클릭하여 전화 연결</small></span></a><a class="contact-simple-link" href="tel:+821097730052"><span class="contact-simple-icon" aria-hidden="true">☎</span><span class="contact-simple-text"><strong>010-9773-0052 <em data-ko="한국" data-en="Korea">한국</em></strong><small data-ko="클릭하여 전화 연결" data-en="Click to call">클릭하여 전화 연결</small></span></a></div><p class="contact-simple-note" data-ko="접수된 문의는 확인 후 빠르게 답변드립니다." data-en="We will review and respond to your inquiry promptly.">접수된 문의는 확인 후 빠르게 답변드립니다.</p>`;
+  refreshedContact.innerHTML=`<div class="contact-simple-head"><p class="eyebrow">GET IN TOUCH</p><h2 data-ko="궁금한 점이 있으신가요?" data-en="Have a question?">궁금한 점이 있으신가요?</h2><p data-ko="프로그램 신청, 강사·업체 참여, 회원 안내와 제휴 문의까지 편하게 연락해주세요." data-en="Contact us about programs, provider participation, membership, or partnerships.">프로그램 신청, 강사·업체 참여, 회원 안내와 제휴 문의까지 편하게 연락해주세요.</p></div><div class="contact-simple-links"><a class="contact-simple-link" href="mailto:hibelle@hibelleconsulting.com"><span class="contact-simple-icon" aria-hidden="true">✉</span><span class="contact-simple-text"><strong>hibelle@hibelleconsulting.com</strong><small data-ko="클릭하여 메일 보내기" data-en="Click to send an email">클릭하여 메일 보내기</small></span></a><a class="contact-simple-link" href="tel:+19296030052"><span class="contact-simple-icon" aria-hidden="true">☎</span><span class="contact-simple-text"><strong>929-603-0052 <em data-ko="미국" data-en="USA">미국</em></strong><small data-ko="클릭하여 전화 연결" data-en="Click to call">클릭하여 전화 연결</small></span></a><a class="contact-simple-link" href="sms:+821097730052"><span class="contact-simple-icon" aria-hidden="true">💬</span><span class="contact-simple-text"><strong>010-9773-0052 <em data-ko="한국" data-en="Korea">한국</em></strong><small data-ko="클릭하여 문자 연결" data-en="Click to Text">클릭하여 문자 연결</small></span></a></div><p class="contact-simple-note" data-ko="접수된 문의는 확인 후 빠르게 답변드립니다." data-en="We will review and respond to your inquiry promptly.">접수된 문의는 확인 후 빠르게 답변드립니다.</p>`;
 }
 const inquiryModal=document.createElement('div');
 inquiryModal.className='inquiry-modal';
