@@ -11,7 +11,7 @@
   <meta name="theme-color" content="#061d45">
   <script>
     (() => {
-      const pageVersion = '20260905-6';
+      const pageVersion = '20260905-7';
       fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
         .then(response => response.ok ? response.json() : null)
         .then(release => {
@@ -47,7 +47,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260905-6">
+  <link rel="stylesheet" href="styles.css?v=20260905-7">
 </head>
 <body>
   <a class="skip-link" href="#main" data-ko="본문으로 이동" data-en="Skip to content">본문으로 이동</a>
@@ -112,9 +112,16 @@
     </section>
 
     <section class="about section" id="about">
-      <div class="container about-grid">
-        <div class="section-heading reveal"><p class="eyebrow" data-ko="HARMONY LINK · 이음문화센터" data-en="HARMONY LINK · E-EUM CULTURE CENTER">HARMONY LINK · 이음문화센터</p><h2 data-ko="교육의 문턱을 낮추고 사람과 사람을 잇습니다" data-en="Lowering barriers to learning, connecting people">교육의 문턱을 낮추고 사람과 사람을 잇습니다</h2></div>
-        <div class="about-copy reveal"><p data-ko="하이벨은 2008년 필리핀에서 시작해 2016년 뉴욕으로 확장했으며, 2023년 하이벨컨설팅을 설립했습니다. 교육과 폭넓은 인적 네트워크를 바탕으로 고객과 지역사회의 성장을 돕습니다." data-en="Hibelle began in the Philippines in 2008, expanded to New York in 2016, and established Hibelle Consulting in 2023. Through education and a broad professional network, we support the growth of our clients and communities.">하이벨은 2008년 필리핀에서 시작해 2016년 뉴욕으로 확장했으며, 2023년 하이벨컨설팅을 설립했습니다. 교육과 폭넓은 인적 네트워크를 바탕으로 고객과 지역사회의 성장을 돕습니다.</p><a class="text-link company-link" href="https://hibelleconsulting.com/" target="_blank" rel="noopener noreferrer"><span data-ko="하이벨컨설팅 회사소개" data-en="About Hibelle Consulting">하이벨컨설팅 회사소개</span><b>↗</b></a></div>
+      <div class="container">
+        <div class="about-video-frame reveal">
+          <div class="about-copy"><p class="eyebrow" data-ko="HARMONY LINK · 이음문화센터" data-en="HARMONY LINK · E-EUM CULTURE CENTER">HARMONY LINK · 이음문화센터</p><p data-ko="하이벨은 2008년 필리핀에서 시작해 2016년 뉴욕으로 확장했으며, 2023년 하이벨컨설팅을 설립했습니다. 교육과 폭넓은 인적 네트워크를 바탕으로 고객과 지역사회의 성장을 돕습니다." data-en="Hibelle began in the Philippines in 2008, expanded to New York in 2016, and established Hibelle Consulting in 2023. Through education and a broad professional network, we support the growth of our clients and communities.">하이벨은 2008년 필리핀에서 시작해 2016년 뉴욕으로 확장했으며, 2023년 하이벨컨설팅을 설립했습니다. 교육과 폭넓은 인적 네트워크를 바탕으로 고객과 지역사회의 성장을 돕습니다.</p><a class="text-link company-link" href="https://hibelleconsulting.com/" target="_blank" rel="noopener noreferrer"><span data-ko="하이벨컨설팅 회사소개" data-en="About Hibelle Consulting">하이벨컨설팅 회사소개</span><b>↗</b></a></div>
+          <div class="about-video-media">
+            <p class="eyebrow" data-ko="HARMONY LINK ON YOUTUBE" data-en="HARMONY LINK ON YOUTUBE">HARMONY LINK ON YOUTUBE</p>
+            <h2 data-ko="영상으로 만나는<br>Harmony Link" data-en="Meet Harmony Link<br>through video">영상으로 만나는<br>Harmony Link</h2>
+            <a class="intro-video-frame video-watch-link" href="https://www.youtube.com/watch?v=7jo7Ovnq7Ew" target="_blank" rel="noopener noreferrer" aria-label="Harmony Link 소개영상 유튜브에서 보기"><img src="https://i.ytimg.com/vi/7jo7Ovnq7Ew/maxresdefault.jpg" alt="Harmony Link 소개영상 미리보기"><span class="video-play"><b>▶</b><em data-ko="소개영상 재생" data-en="Play introduction video">소개영상 재생</em></span></a>
+            <a class="btn youtube-channel-btn" href="https://www.youtube.com/@hibelleconsulting" target="_blank" rel="noopener noreferrer"><span data-ko="하이벨컨설팅 유튜브 채널" data-en="Hibelle Consulting YouTube">하이벨컨설팅 유튜브 채널</span><b>↗</b></a>
+          </div>
+        </div>
       </div>
       <div class="container brand-structure reveal" aria-label="Harmony Link 운영 구조">
         <div class="structure-parent"><span data-ko="운영 법인" data-en="OPERATING COMPANY">운영 법인</span><strong data-ko="하이벨컨설팅" data-en="Hibelle Consulting">하이벨컨설팅</strong><small data-ko="문화·교육·디지털 사업 기획 및 운영" data-en="Culture, education, and digital initiatives">문화·교육·디지털 사업 기획 및 운영</small></div>
@@ -131,6 +138,26 @@
         <article class="value-card reveal"><span>01</span><div class="value-icon">◎</div><h3 data-ko="전문성" data-en="Expertise">전문성</h3><p data-ko="검증된 강사진과 체계적인 커리큘럼" data-en="Trusted instructors and structured curricula">검증된 강사진과 체계적인 커리큘럼</p></article>
         <article class="value-card reveal delay-1"><span>02</span><div class="value-icon">◇</div><h3 data-ko="맞춤형 설계" data-en="Tailored Design">맞춤형 설계</h3><p data-ko="기관과 참여자의 특성에 꼭 맞는 수업" data-en="Programs fit to each group and participant">기관과 참여자의 특성에 꼭 맞는 수업</p></article>
         <article class="value-card reveal delay-2"><span>03</span><div class="value-icon">∞</div><h3 data-ko="지속적인 연결" data-en="Lasting Connection">지속적인 연결</h3><p data-ko="배움 이후에도 이어지는 건강한 관계" data-en="Healthy relationships beyond the classroom">배움 이후에도 이어지는 건강한 관계</p></article>
+      </div>
+    </section>
+
+    <section class="partner-rolling section" id="partner-news">
+      <div class="container">
+        <div class="section-heading centered reveal"><p class="eyebrow" data-ko="HARMONY LINK NEWS" data-en="HARMONY LINK NEWS">HARMONY LINK NEWS</p><h2 data-ko="함께하는 업체와 새 소식을 만나보세요" data-en="Meet our partners and the latest news">함께하는 업체와 새 소식을 만나보세요</h2></div>
+        <div class="partner-rolling-card reveal" id="partnerRollingCard">
+          <button type="button" class="partner-rolling-nav prev" id="partnerRollingPrev" aria-label="이전 소식">‹</button>
+          <div class="partner-rolling-body">
+            <div class="partner-rolling-media" id="partnerRollingMedia"><img src="" alt="" hidden><b aria-hidden="true">★</b></div>
+            <div class="partner-rolling-copy">
+              <span class="partner-rolling-badge" id="partnerRollingBadge"></span>
+              <h3 id="partnerRollingTitle"></h3>
+              <p id="partnerRollingDescription"></p>
+              <a class="btn partner-rolling-action" id="partnerRollingAction" href="#"><span></span><b>→</b></a>
+            </div>
+          </div>
+          <button type="button" class="partner-rolling-nav next" id="partnerRollingNext" aria-label="다음 소식">›</button>
+        </div>
+        <div class="partner-rolling-dots" id="partnerRollingDots"></div>
       </div>
     </section>
 
@@ -445,10 +472,10 @@
 
   <footer><div class="container footer-top"><a class="logo logo-light" href="#top"><span class="logo-mark brand-image footer-brand-image"><img src="assets/harmony-logo.png" alt=""></span><span class="logo-name">Harmony <b>Link</b><small data-ko="이음문화센터" data-en="E-eum Culture Center">이음문화센터</small></span></a><p data-ko="하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다." data-en="A cultural and educational project operated<br class='mobile-en-only-break'>by Hibelle Consulting.">하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다.</p><div class="footer-nav"><a href="#about" data-ko="회사 소개" data-en="About">회사 소개</a><a href="#digital-why" data-ko="전문 교육" data-en="Specialty Programs">전문 교육</a><a href="#events" data-ko="강좌·행사" data-en="Classes & Events">강좌·행사</a><a href="community.html" data-ko="커뮤니티" data-en="Community">커뮤니티</a><a href="#contact" data-ko="문의하기" data-en="Contact">문의하기</a></div></div><div class="container footer-bottom"><span>© 2026 Hibelle Consulting · Harmony Link / 이음문화센터</span><div><a href="#" data-ko="개인정보처리방침" data-en="Privacy Policy">개인정보처리방침</a><a href="#" data-ko="이용약관" data-en="Terms">이용약관</a><button id="footerDeleteAccount" type="button" class="auth-delete footer-account-delete" data-ko="회원 탈퇴" data-en="Delete Account">회원 탈퇴</button></div></div></footer>
   <button class="to-top" type="button" aria-label="맨 위로">↑</button>
-  <script src="script.js?v=20260905-6"></script>
+  <script src="script.js?v=20260905-7"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="access-control.js?v=20260904-1"></script>
-  <script src="auth.js?v=20260905-6"></script>
+  <script src="auth.js?v=20260905-7"></script>
   <script>
     document.addEventListener('click', function (event) {
       var toggle = event.target.closest('.lang-toggle, .mobile-lang-toggle');

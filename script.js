@@ -114,15 +114,6 @@ if (primaryNav) {
   }
 }
 
-const aboutSection = document.getElementById('about');
-aboutSection?.insertAdjacentHTML('afterend', `
-  <section class="intro-video section" id="intro-video">
-    <div class="container intro-video-grid reveal">
-      <div class="intro-video-copy"><p class="eyebrow">HARMONY LINK ON YOUTUBE</p><h2 data-ko="영상으로 만나는<br>Harmony Link" data-en="Meet Harmony Link<br>through video">영상으로 만나는<br>Harmony Link</h2><p data-ko="배움과 문화를 지역사회에 연결하는 Harmony Link의<br>비전과 이야기를 소개영상으로 만나보세요." data-en="Discover the vision and story of Harmony Link,<br>connecting learning and culture with local communities.">배움과 문화를 지역사회에 연결하는 Harmony Link의<br>비전과 이야기를 소개영상으로 만나보세요.</p><a class="btn youtube-channel-btn" href="https://www.youtube.com/@hibelleconsulting" target="_blank" rel="noopener noreferrer"><span data-ko="하이벨컨설팅 유튜브 채널" data-en="Hibelle Consulting YouTube">하이벨컨설팅 유튜브 채널</span><b>↗</b></a></div>
-      <a class="intro-video-frame video-watch-link" href="https://www.youtube.com/watch?v=7jo7Ovnq7Ew" target="_blank" rel="noopener noreferrer" aria-label="Harmony Link 소개영상 유튜브에서 보기"><img src="https://i.ytimg.com/vi/7jo7Ovnq7Ew/maxresdefault.jpg" alt="Harmony Link 소개영상 미리보기"><span class="video-play"><b>▶</b><em data-ko="소개영상 재생" data-en="Play introduction video">소개영상 재생</em></span></a>
-    </div>
-  </section>`);
-
 function connectForm(link, url) {
   link.href = url;
   link.target = '_blank';
@@ -227,12 +218,7 @@ function setLanguage(language) {
 
 langButton.onclick=()=>{
   setLanguage(currentLanguage==='ko'?'en':'ko');
-  window.setTimeout(()=>{
-    renderPromotionNews();
-    promotionModal.hidden=false;
-    document.body.classList.add('modal-open');
-    restartPromotionTimer();
-  },0);
+  window.setTimeout(()=>{ renderPromotionNews(); },0);
 };
 
 window.addEventListener('scroll', () => {
@@ -332,27 +318,6 @@ setLanguage(currentLanguage);
 const membershipPricingAnchor = document.querySelector('#membership .upgrade-prompt');
 document.querySelector('.partner-price-summary')?.remove();
 
-const promotionModal = document.createElement('div');
-promotionModal.className = 'promotion-modal';
-promotionModal.hidden = true;
-promotionModal.innerHTML = `<div class="promotion-backdrop" data-promotion-close></div><section class="promotion-panel" role="dialog" aria-modal="true" aria-labelledby="promotionTitle"><button class="promotion-close" type="button" data-promotion-close aria-label="닫기">×</button><span class="promotion-badge" data-ko="8월 한정 혜택" data-en="AUGUST SPECIAL">8월 한정 혜택</span><p class="promotion-eyebrow">HARMONY LINK PARTNER</p><h2 id="promotionTitle" data-ko="PREMIUM 회원<br>3개월 등록비 면제" data-en="PREMIUM Partners<br>3 Months Registration Fee Waived">PREMIUM 회원<br>3개월 등록비 면제</h2><p data-ko="2026년 8월 31일까지 프리미엄 회원으로 접수한 입점 강사·교육업체에게 3개월 등록비 면제 혜택을 드립니다." data-en="Partner instructors and education providers who apply for PREMIUM membership by August 31, 2026 receive a three-month registration fee waiver.">2026년 8월 31일까지 프리미엄 회원으로 접수한 입점 강사·교육업체에게 3개월 등록비 면제 혜택을 드립니다.</p><div class="promotion-prices"><span><b>BASIC</b><strong>$20</strong><small data-ko="/ 월" data-en="/ month">/ 월</small></span><span class="featured"><b>PREMIUM</b><strong>$50</strong><small data-ko="/ 월" data-en="/ month">/ 월</small></span></div><button class="btn promotion-action" type="button"><span data-ko="멤버십 혜택 확인하기" data-en="View Membership Benefits">멤버십 혜택 확인하기</span><b>→</b></button><small class="promotion-deadline" data-ko="접수 마감 · 2026년 8월 31일" data-en="Application deadline · August 31, 2026">접수 마감 · 2026년 8월 31일</small></section>`;
-document.body.appendChild(promotionModal);
-const closePromotion = () => {
-  promotionModal.hidden = true;
-  document.body.classList.remove('modal-open');
-};
-promotionModal.querySelectorAll('[data-promotion-close]').forEach(item => item.addEventListener('click', closePromotion));
-promotionModal.querySelector('.promotion-action').addEventListener('click', () => {
-  closePromotion();
-  document.querySelector('.audience-card.provider .partner-form-link')?.click();
-});
-// Show the rotating promotion popup on every page load. Individual expired
-// items (e.g. a time-limited offer) are filtered out of the rotation by
-// their own endDate below, rather than gating the whole popup on one date.
-window.setTimeout(() => {
-  promotionModal.hidden = false;
-  document.body.classList.add('modal-open');
-}, 450);
 setLanguage(currentLanguage);
 
 const specialtyPrograms = [
@@ -439,7 +404,6 @@ const serviceArea=document.querySelector('.service-note span');
 if(serviceArea){serviceArea.dataset.ko='뉴욕시 · 롱아일랜드 · 브롱스 · 웨스트체스터 · 뉴저지';serviceArea.dataset.en='New York City · Long Island · Bronx · Westchester · New Jersey';serviceArea.innerHTML=currentLanguage==='ko'?serviceArea.dataset.ko:serviceArea.dataset.en;}
 const aboutCopy=document.querySelector('.about-copy');
 aboutCopy?.classList.add('about-copy-card');
-aboutCopy?.querySelector('p')?.remove();
 const contactWrap=document.querySelector('.contact-wrap');
 contactWrap?.insertAdjacentHTML('afterbegin','<div class="contact-illustration" aria-hidden="true"><span>✉</span><i></i><b></b><em>♥</em></div>');
 const eventGrid=document.querySelector('.event-grid');
@@ -991,20 +955,18 @@ const promotionNews=(sharedPromotionNews.length?sharedPromotionNews:generatedPro
 let promotionNewsIndex=0;
 let promotionNewsTimer;
 let promotionRenderToken=0;
-const restartPromotionTimer=()=>{window.clearTimeout(promotionNewsTimer);promotionNewsTimer=window.setTimeout(()=>{if(!promotionModal.hidden){promotionNewsIndex=(promotionNewsIndex+1)%promotionNews.length;renderPromotionNews();}restartPromotionTimer();},7000);};
-promotionModal.innerHTML=`<div class="promotion-backdrop" data-promotion-close></div><section class="promotion-panel promotion-news-panel" role="dialog" aria-modal="true" aria-labelledby="promotionTitle"><button class="promotion-close" type="button" data-promotion-close aria-label="닫기">×</button><div class="promotion-news-media"><img src="" alt="" hidden><b aria-hidden="true">★</b></div><div class="promotion-news-copy"><span class="promotion-badge"></span><p class="promotion-eyebrow">HARMONY LINK NEW UPDATE</p><h2 id="promotionTitle"></h2><p class="promotion-news-description"></p><a class="btn promotion-action" href="#"><span></span><b>→</b></a><div class="promotion-news-nav"><button type="button" class="promotion-prev" aria-label="이전 소식">‹</button><div class="promotion-dots"></div><small class="promotion-counter"></small><button type="button" class="promotion-next" aria-label="다음 소식">›</button></div></div></section>`;
+const partnerRollingCard=document.getElementById('partnerRollingCard');
+const restartPromotionTimer=()=>{window.clearTimeout(promotionNewsTimer);promotionNewsTimer=window.setTimeout(()=>{promotionNewsIndex=(promotionNewsIndex+1)%promotionNews.length;renderPromotionNews();restartPromotionTimer();},7000);};
 const renderPromotionNews=()=>{
+  if(!partnerRollingCard||!promotionNews.length)return;
   const renderToken=++promotionRenderToken;
   const news=promotionNews[promotionNewsIndex];
   const isEnglish=currentLanguage==='en';
-  const media=promotionModal.querySelector('.promotion-news-media');
+  const media=document.getElementById('partnerRollingMedia');
   media.dataset.kind=news.typeEn==='LIMITED BENEFIT'?'benefit':news.typeEn.includes('ADVERTISER')||news.typeEn.includes('COMMUNITY PARTNER')?'advertising':'program';
   media.dataset.item=news.image?.includes('hibelle-digital')?'digital':news.image?.includes('hibelle-online-english')?'english':news.image?.includes('aaleac-shield')?'aaleac':news.titleKo.includes('Yura Kim')?'yura':news.image?.includes('organic-one')?'organic':news.image?.includes('hole19')?'hole19':news.image?.includes('meeran-melody')?'melody':news.image?.includes('jangsu-daycare')?'jangsu':'';
-  promotionModal.querySelector('.promotion-news-panel').dataset.item=media.dataset.item;
-  promotionModal.querySelector('.promotion-news-panel').dataset.item=media.dataset.item;
-  promotionModal.querySelector('.promotion-news-panel').dataset.kind=media.dataset.kind;
-  const image=promotionModal.querySelector('.promotion-news-media img');
-  const icon=promotionModal.querySelector('.promotion-news-media b');
+  const image=media.querySelector('img');
+  const icon=media.querySelector('b');
   image.hidden=true;
   image.onload=null;
   image.onerror=null;
@@ -1018,27 +980,25 @@ const renderPromotionNews=()=>{
     image.src=news.image;
     if(image.complete&&image.naturalWidth&&renderToken===promotionRenderToken)image.hidden=false;
   }
-  promotionModal.querySelector('.promotion-badge').textContent=isEnglish?news.typeEn:news.typeKo;
-  const title=promotionModal.querySelector('#promotionTitle');
+  document.getElementById('partnerRollingBadge').textContent=isEnglish?news.typeEn:news.typeKo;
+  const title=document.getElementById('partnerRollingTitle');
+  title.innerHTML='';
   title.textContent=isEnglish?news.titleEn:news.titleKo;
   const subtitle=isEnglish?news.subtitleEn:news.subtitleKo;if(subtitle){const line=document.createElement('small');line.textContent=subtitle;title.appendChild(line);}
-  const newsDescription=promotionModal.querySelector('.promotion-news-description');
+  const newsDescription=document.getElementById('partnerRollingDescription');
   if(news.typeEn==='LIMITED BENEFIT'){
     newsDescription.innerHTML=isEnglish?'Apply as a PREMIUM partner by August 31, 2026.<br>Receive a three-month registration fee waiver.':'2026년 8월 31일까지 프리미엄 파트너로 접수하면<br>3개월 등록비 면제 혜택을 드립니다.';
   }else{
     newsDescription.innerHTML=isEnglish?news.copyEn:news.copyKo;
   }
-  const action=promotionModal.querySelector('.promotion-action');action.href=news.target;action.querySelector('span').textContent=isEnglish?news.actionEn:news.actionKo;action.dataset.specialty=news.specialtyId||'';
+  const action=document.getElementById('partnerRollingAction');action.href=news.target;action.querySelector('span').textContent=isEnglish?news.actionEn:news.actionKo;action.dataset.specialty=news.specialtyId||'';
   if(/^https?:\/\//.test(news.target)){action.target='_blank';action.rel='noopener noreferrer';}else{action.removeAttribute('target');action.removeAttribute('rel');}
-  promotionModal.querySelector('.promotion-counter').textContent=`${promotionNewsIndex+1} / ${promotionNews.length}`;
-  promotionModal.querySelector('.promotion-dots').innerHTML=promotionNews.map((_,index)=>`<button type="button" data-promotion-index="${index}" class="${index===promotionNewsIndex?'active':''}" aria-label="${index+1}번 소식"></button>`).join('');
-  promotionModal.querySelectorAll('[data-promotion-index]').forEach(dot=>dot.addEventListener('click',()=>{promotionNewsIndex=Number(dot.dataset.promotionIndex);renderPromotionNews();restartPromotionTimer();}));
+  document.getElementById('partnerRollingDots').innerHTML=promotionNews.map((_,index)=>`<button type="button" data-promotion-index="${index}" class="${index===promotionNewsIndex?'active':''}" aria-label="${index+1}번 소식"></button>`).join('');
+  document.querySelectorAll('#partnerRollingDots [data-promotion-index]').forEach(dot=>dot.addEventListener('click',()=>{promotionNewsIndex=Number(dot.dataset.promotionIndex);renderPromotionNews();restartPromotionTimer();}));
 };
-promotionModal.querySelectorAll('[data-promotion-close]').forEach(item=>item.addEventListener('click',closePromotion));
-promotionModal.querySelector('.promotion-prev').addEventListener('click',()=>{promotionNewsIndex=(promotionNewsIndex-1+promotionNews.length)%promotionNews.length;renderPromotionNews();restartPromotionTimer();});
-promotionModal.querySelector('.promotion-next').addEventListener('click',()=>{promotionNewsIndex=(promotionNewsIndex+1)%promotionNews.length;renderPromotionNews();restartPromotionTimer();});
-promotionModal.querySelector('.promotion-action').addEventListener('click',event=>{const specialtyId=event.currentTarget.dataset.specialty;if(!specialtyId)return;event.preventDefault();closePromotion();document.querySelector(`[data-specialty="${specialtyId}"]`)?.click();});
-promotionModal.querySelector('.promotion-action').addEventListener('click',()=>closePromotion());
+document.getElementById('partnerRollingPrev')?.addEventListener('click',()=>{promotionNewsIndex=(promotionNewsIndex-1+promotionNews.length)%promotionNews.length;renderPromotionNews();restartPromotionTimer();});
+document.getElementById('partnerRollingNext')?.addEventListener('click',()=>{promotionNewsIndex=(promotionNewsIndex+1)%promotionNews.length;renderPromotionNews();restartPromotionTimer();});
+document.getElementById('partnerRollingAction')?.addEventListener('click',event=>{const specialtyId=event.currentTarget.dataset.specialty;if(!specialtyId)return;event.preventDefault();document.querySelector(`[data-specialty="${specialtyId}"]`)?.click();});
 renderPromotionNews();
 restartPromotionTimer();
 document.querySelectorAll('[data-ad-room]').forEach(button=>button.addEventListener('click',()=>{
@@ -1289,12 +1249,7 @@ if (!document.querySelector('.mobile-lang-toggle')) {
   mobileLanguageButton.setAttribute('aria-label','한국어와 영어 전환');
   mobileLanguageButton.onclick=()=>{
     setLanguage(currentLanguage==='ko'?'en':'ko');
-    if(window.innerWidth<=760){
-      renderPromotionNews();
-      promotionModal.hidden=false;
-      document.body.classList.add('modal-open');
-      restartPromotionTimer();
-    }
+    renderPromotionNews();
   };
   document.querySelector('.nav-wrap')?.insertBefore(mobileLanguageButton,document.querySelector('.menu-toggle'));
   setLanguage(currentLanguage);

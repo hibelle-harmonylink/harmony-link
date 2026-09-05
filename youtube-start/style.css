@@ -28,13 +28,14 @@
 .ytlab-container-wide{width:min(1100px,calc(100% - 40px));margin:0 auto}
 
 /* ---------- top bar ---------- */
-.ytlab-topbar{padding:18px 0;border-bottom:1px solid var(--yt-line)}
+.ytlab-topbar{padding:18px 0;background:linear-gradient(120deg,#0b5fc2,#083a86)}
 .ytlab-topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.ytlab-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;text-decoration:none}
+.ytlab-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;text-decoration:none;color:#fff}
 .ytlab-brand-icon{width:32px;height:32px;padding:4px;border-radius:8px;background:linear-gradient(145deg,#bcd5fb,#6f9fe6);box-shadow:0 5px 16px rgba(12,64,140,.16);overflow:hidden;flex:none;display:flex}
 .ytlab-brand-icon img{width:100%;height:100%;object-fit:contain;display:block}
-.ytlab-brand small{display:block;font-weight:500;font-size:12px;color:var(--yt-muted)}
-.ytlab-home-link{font-size:14px;font-weight:600;color:var(--yt-blue);text-decoration:none;white-space:nowrap}
+.ytlab-brand small{display:block;font-weight:500;font-size:12px;color:#cfe0fb}
+.ytlab-home-link{font-size:14px;font-weight:600;color:#fff;text-decoration:none;white-space:nowrap;opacity:.9}
+.ytlab-home-link:hover{opacity:1}
 
 /* ---------- buttons ---------- */
 .ytlab-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:14px;padding:16px 24px;font-weight:700;font-size:17px;border:0;cursor:pointer;text-decoration:none;min-height:52px;line-height:1.3}
@@ -47,7 +48,7 @@
 .ytlab-btn-row{display:flex;gap:14px;flex-wrap:wrap}
 
 /* ---------- hero ---------- */
-.ytlab-hero{padding:56px 0 44px;background:linear-gradient(140deg,#f7fbff 0%,#fff 55%,#eef5ff 100%)}
+.ytlab-hero{padding:56px 0 44px;background:linear-gradient(140deg,#eef6ff 0%,var(--yt-sky) 100%)}
 .ytlab-eyebrow{color:var(--yt-blue);font-weight:800;font-size:14px;letter-spacing:1.5px;margin:0 0 14px}
 .ytlab-hero h1{font-size:clamp(28px,5vw,44px);line-height:1.25;letter-spacing:-.5px;margin:0 0 18px}
 .ytlab-hero h1 em{font-style:normal;color:var(--yt-blue)}
@@ -72,6 +73,16 @@
 .ytlab-fit-list{list-style:none;padding:0;margin:0;display:grid;gap:14px}
 .ytlab-fit-list li{display:flex;gap:14px;align-items:flex-start;font-size:18px;padding:16px 18px;background:#fff;border:1px solid var(--yt-line);border-radius:14px}
 .ytlab-fit-list b{color:var(--yt-blue);flex:none}
+.ytlab-fit-list-2col{grid-template-columns:1fr 1fr;column-gap:16px;row-gap:12px}
+.ytlab-fit-list-2col li{font-size:16px;padding:14px 16px}
+
+/* ---------- section color variants ---------- */
+.ytlab-section-blue{background:var(--yt-blue);color:#fff;padding:44px 0}
+.ytlab-section-blue .ytlab-eyebrow{color:#bcd7ff}
+.ytlab-section-blue h2{color:#fff}
+.ytlab-section-blue .ytlab-fit-list li{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.22);color:#fff}
+.ytlab-section-blue .ytlab-fit-list b{color:#8fd4ff}
+.ytlab-section-sky{background:var(--yt-sky)}
 
 /* ---------- process steps ---------- */
 .ytlab-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:step}
@@ -106,6 +117,9 @@
 .ytlab-ai-shorts-addon-copy h3{margin:0 0 8px;font-size:22px;color:#fff}
 .ytlab-ai-shorts-addon-copy>p{margin:0 0 12px;color:#cddcf5;font-size:15px;line-height:1.6}
 .ytlab-ai-shorts-addon-notice{display:inline-block;max-width:100%;margin:0!important;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff2c9!important;font-size:13px!important;font-weight:700;line-height:1.6}
+.ytlab-ai-shorts-gate-status{display:inline-flex;align-items:center;gap:8px;max-width:100%;margin:10px 0 0!important;padding:10px 14px;border-radius:12px;background:rgba(255,80,80,.16);border:1px solid rgba(255,140,140,.35);color:#ffd9d9!important;font-size:13px!important;font-weight:700;line-height:1.5}
+.ytlab-ai-shorts-gate-status a{color:#fff;text-decoration:underline;text-underline-offset:2px}
+.ytlab-ai-shorts-gate-status[hidden]{display:none}
 .ytlab-ai-shorts-addon-btn{flex-shrink:0;min-width:240px;padding:22px 34px!important;font-size:18px!important;background:#fff;color:#0b3f96}
 .ytlab-ai-shorts-addon-btn:hover{background:#eef4ff}
 @media(max-width:760px){.ytlab-ai-shorts-addon{padding:24px 22px}.ytlab-ai-shorts-addon-btn{width:100%;min-width:0}}
@@ -200,9 +214,11 @@
 @media (max-width:860px){
   .ytlab-grid-3,.ytlab-plans{grid-template-columns:1fr}
   .ytlab-grid-2,.ytlab-meta-grid,.ytlab-channel-alt{grid-template-columns:1fr}
+  .ytlab-fit-list-2col{grid-template-columns:1fr}
   .ytlab-steps{grid-template-columns:1fr 1fr}
   .ytlab-hero{padding:36px 0 28px}
   .ytlab-section{padding:40px 0}
+  .ytlab-section-blue{padding:32px 0}
   .ytlab-consult{padding:36px 24px}
   .ytlab-consult-grid{grid-template-columns:1fr;gap:28px}
   .ytlab-consult-info{margin-top:0}
