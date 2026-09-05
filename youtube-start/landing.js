@@ -1,9 +1,11 @@
 (function () {
   var YTLAB = window.YTLAB;
+  var modal = document.getElementById('consultModal');
+  var lastFocused = null;
 
   renderPlans();
   wireConsultForm();
-  wireConsultButtons();
+  wireConsultModal();
 
   function renderPlans() {
     var order = ['start', 'build', 'coach'];
@@ -23,19 +25,43 @@
     document.getElementById('plansGrid').innerHTML = html;
   }
 
-  function wireConsultButtons() {
-    var consult = document.getElementById('consult');
+  function wireConsultModal() {
     var interestField = document.getElementById('lInterest');
+    var closeBtn = document.getElementById('consultModalClose');
+
     document.getElementById('plansGrid').addEventListener('click', function (event) {
       var button = event.target.closest('[data-consult-plan]');
       if (!button) return;
       event.preventDefault();
-      consult.hidden = false;
       interestField.value = button.dataset.consultPlan;
-      window.requestAnimationFrame(function () {
-        consult.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
+      openModal();
     });
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', function (event) {
+      if (event.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && !modal.hidden) closeModal();
+    });
+  }
+
+  function openModal() {
+    lastFocused = document.activeElement;
+    var status = document.getElementById('consultStatus');
+    if (status) { status.textContent = ''; status.style.fontWeight = ''; }
+    modal.hidden = false;
+    document.body.classList.add('ytlab-modal-open');
+    var nameField = document.getElementById('lName');
+    window.requestAnimationFrame(function () {
+      if (nameField) nameField.focus();
+    });
+  }
+
+  function closeModal() {
+    modal.hidden = true;
+    document.body.classList.remove('ytlab-modal-open');
+    if (lastFocused && typeof lastFocused.focus === 'function') lastFocused.focus();
   }
 
   function wireConsultForm() {
@@ -75,6 +101,7 @@
         status.style.fontWeight = '700';
         status.textContent = '상담 신청이 접수되었습니다. 확인 후 연락드리겠습니다.';
         form.reset();
+        window.setTimeout(closeModal, 1600);
       }).catch(function () {
         status.style.color = '#ffb4b4';
         status.textContent = '상담 신청을 전송하지 못했습니다. 잠시 후 다시 시도해 주세요.';
