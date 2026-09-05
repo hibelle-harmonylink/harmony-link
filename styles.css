@@ -866,6 +866,13 @@ footer .footer-bottom{padding-top:11px!important}
   .auth-user-copy small{font-size:10px!important}
   .admin-member-link{min-width:auto!important;padding-inline:10px!important;font-size:11px!important}
 }
+/* Korean nav reads too left-hugging next to the logo; shift the whole
+   group toward the right so it ends flush with the container edge
+   (lining up with the app-install banner's close button below it).
+   English layout is left as-is per request. */
+@media(min-width:761px){
+  html[lang="ko"] .primary-nav{justify-content:flex-end!important}
+}
 .partner-upgrade-guide{margin-top:28px;padding:28px;border:1px solid #c9dff5;border-radius:20px;background:#fff;box-shadow:0 14px 38px rgba(14,66,130,.08)}.partner-guide-head{text-align:center}.partner-guide-head .eyebrow{margin-bottom:5px}.partner-guide-head h3{margin:0;color:#0a2f61;font-size:25px}.partner-guide-head>p:last-child{margin:6px 0 0;color:#607995;font-size:12px}.partner-upgrade-guide ol{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;list-style:none;padding:0;margin:24px 0}.partner-upgrade-guide li{min-width:0;padding:16px 13px;border-radius:14px;background:#eef6ff}.partner-upgrade-guide li>b{display:block;color:#0b65c8;font-size:11px}.partner-upgrade-guide li>span{display:block;margin:7px 0 5px;color:#092f61;font-size:14px;font-weight:900}.partner-upgrade-guide li>small{display:block;color:#59728e;font-size:10px;line-height:1.55}.partner-guide-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}.partner-guide-actions .btn{min-height:42px;padding:10px 16px;font-size:11px}@media(max-width:760px){.partner-upgrade-guide{width:calc(100% - 24px);margin-top:20px;padding:20px 15px}.partner-guide-head h3{font-size:21px}.partner-upgrade-guide ol{grid-template-columns:1fr;margin:18px 0}.partner-upgrade-guide li{display:grid;grid-template-columns:38px 1fr;column-gap:8px;padding:13px}.partner-upgrade-guide li>b{grid-row:1/3;align-self:center}.partner-upgrade-guide li>span{margin:0}.partner-upgrade-guide li>small{grid-column:2}.partner-guide-actions{display:grid}.partner-guide-actions .btn{width:100%}}
 
 /* Jangsu Daycare popup logo: the popup panel itself must stay the same size as every other rotating news item (no dedicated panel/media height or grid-template override here), so only the image box is sized as large as safely fits inside the shared, unmodified media area. box-sizing is border-box site-wide, so padding eats into the visible mark inside that box. Scoped to this item only. */
@@ -1049,7 +1056,6 @@ footer .footer-bottom{padding-top:11px!important}
 
 /* Current public program and community focus */
 .program-grid .program-card.coming-soon{display:none!important}
-.nav-community{color:var(--blue)!important;font-weight:800!important}
 .community-spotlight{padding:72px 0;background:linear-gradient(135deg,#075bb5,#073d82);color:#fff}
 .community-spotlight-wrap{display:flex;align-items:center;justify-content:space-between;gap:36px}
 .community-spotlight .eyebrow{color:#bfe0ff}
@@ -1088,5 +1094,6 @@ footer .footer-bottom{padding-top:11px!important}
 .messiah-support-list li:before{content:"✓";margin-right:10px;color:#9b1518}
 .messiah-detail-meta{margin:0 0 26px;padding:20px 0;border-top:1px solid #eadfce;border-bottom:1px solid #eadfce}
 .messiah-detail-meta div{margin:12px 0}.messiah-detail-meta dt{color:#9b6a27;font-size:11px;font-weight:800}.messiah-detail-meta dd{margin:3px 0 0;color:#173f31;font-weight:700}.messiah-detail-meta a{color:#075bb5;text-decoration:underline;text-underline-offset:3px}
+.messiah-detail-panel .event-map-link{display:inline-flex;margin:0 0 22px}
 .messiah-inquiry-button{width:100%;background:#9b1518;color:#fff;font-size:15px;box-shadow:0 14px 28px rgba(155,21,24,.22)}
 @media(max-width:760px){.messiah-detail-main{padding:40px 0 70px}.messiah-detail-hero h1{font-size:33px}.messiah-detail-layout{grid-template-columns:1fr}.messiah-detail-panel{position:static;padding:27px 22px}.messiah-detail-header .logo-name small{display:none}}
