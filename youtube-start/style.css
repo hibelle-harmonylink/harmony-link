@@ -60,12 +60,13 @@
 .ytlab-section-alt{background:#f7fafd}
 
 /* ---------- grids / cards ---------- */
-.ytlab-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.ytlab-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .ytlab-grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-.ytlab-card{background:#fff;border:1px solid var(--yt-line);border-radius:var(--yt-radius);padding:28px}
-.ytlab-card h3{font-size:20px;margin:0 0 10px}
-.ytlab-card p{color:var(--yt-muted);font-size:16px;margin:0}
-.ytlab-icon-badge{width:52px;height:52px;border-radius:14px;background:var(--yt-pale);color:var(--yt-blue);display:grid;place-items:center;font-size:26px;margin-bottom:16px}
+.ytlab-card{background:#fff;border:1px solid var(--yt-line);border-radius:16px;padding:18px}
+.ytlab-card h3{font-size:17px;margin:0 0 6px}
+.ytlab-card p{color:var(--yt-muted);font-size:14px;line-height:1.55;margin:0}
+.ytlab-icon-badge{width:38px;height:38px;border-radius:11px;background:var(--yt-pale);color:var(--yt-blue);display:grid;place-items:center;font-size:19px;margin-bottom:10px}
+#what-you-need{padding:42px 0}#what-you-need .ytlab-section-lead{margin-bottom:20px}
 
 /* ---------- fit-for list ---------- */
 .ytlab-fit-section{padding:42px 0;background:linear-gradient(145deg,#0c5fbd,#082f72);color:#fff}.ytlab-fit-section .ytlab-eyebrow,.ytlab-fit-section h2{color:#fff}.ytlab-fit-list{list-style:none;padding:0;margin:22px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}.ytlab-fit-list li{display:flex;gap:11px;align-items:flex-start;font-size:16px;padding:12px 15px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:12px}.ytlab-fit-list b{color:#9bd3ff;flex:none}.ytlab-process-section{background:var(--yt-sky)}
@@ -79,33 +80,30 @@
 
 /* ---------- pricing comparison ---------- */
 .ytlab-plans{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
-.ytlab-plan{border:2px solid #bcd7f5;border-radius:var(--yt-radius);padding:28px;background:#f5f9ff;display:flex;flex-direction:column}
+.ytlab-plan{border:2px solid #bcd7f5;border-radius:var(--yt-radius);padding:24px 22px;background:#f5f9ff;display:flex;flex-direction:column}
 .ytlab-plan.is-build{border-color:var(--yt-blue);background:#fff;box-shadow:0 20px 50px rgba(17,85,217,.14);position:relative}
 .ytlab-plan-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--yt-blue);color:#fff;font-size:12px;font-weight:700;padding:5px 14px;border-radius:100px}
 .ytlab-plan-key{font-size:13px;font-weight:800;letter-spacing:1.5px;color:var(--yt-blue);margin:0 0 6px}
-.ytlab-plan h3{font-size:20px;margin:0 0 12px}
+.ytlab-plan h3{font-size:20px;line-height:1.4;margin:0 0 10px;min-height:56px}
 .ytlab-plan-price{font-size:30px;font-weight:800;color:var(--yt-navy);margin:0 0 4px}
 .ytlab-plan-price small{font-size:16px;font-weight:600;color:var(--yt-muted);margin-left:6px}
 .ytlab-plan-price-highlight{font-size:22px;font-weight:800;color:var(--yt-blue);margin:0 0 6px}
 .ytlab-plan-price-note{font-size:13px;color:var(--yt-muted);margin:0 0 18px}
-.ytlab-plan-bestfor{font-size:14px;color:var(--yt-muted);margin:0 0 18px;min-height:42px}
-.ytlab-plan ul{list-style:none;padding:0;margin:0 0 22px;flex:1}
-.ytlab-plan li{display:flex;gap:8px;align-items:flex-start;font-size:15px;padding:6px 0}
+.ytlab-plan-bestfor{font-size:14px;color:var(--yt-muted);margin:0 0 14px;min-height:48px}
+.ytlab-plan ul{list-style:none;padding:0;margin:0 0 18px;flex:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:6px 12px}
+.ytlab-plan li{display:flex;gap:6px;align-items:flex-start;font-size:13px;line-height:1.45;padding:3px 0}
 .ytlab-plan li b{color:var(--yt-green);flex:none}
 .ytlab-plan-includes-note{font-size:13px;color:var(--yt-blue);font-weight:700;margin:0 0 10px}
 
 /* AI Shorts cross-promo: made deliberately bold/dark against the plain
    white plans grid so it reads as a highlighted add-on, not another
    plain plan card. */
-.ytlab-ai-shorts-addon{margin-top:28px;display:flex;flex-wrap:wrap;align-items:center;gap:22px;justify-content:space-between;padding:30px 32px;border-radius:20px;background:linear-gradient(145deg,#071f49,#0c4a98);box-shadow:0 20px 50px rgba(7,31,73,.3)}
+.ytlab-ai-shorts-addon{margin-top:24px;display:flex;flex-wrap:wrap;align-items:center;gap:22px;justify-content:space-between;padding:26px 30px;border-radius:20px;background:linear-gradient(145deg,#071f49,#0c4a98);box-shadow:0 20px 50px rgba(7,31,73,.3)}
 .ytlab-ai-shorts-addon-copy{flex:1;min-width:240px;color:#fff}
-.ytlab-ai-shorts-addon-badge{display:inline-block;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);border-radius:100px;padding:6px 14px;font-size:12px;font-weight:700;margin-bottom:12px}
 .ytlab-ai-shorts-addon-copy h3{margin:0 0 8px;font-size:22px;color:#fff}
-.ytlab-ai-shorts-addon-copy>p{margin:0 0 12px;color:#cddcf5;font-size:15px;line-height:1.6}
-.ytlab-ai-shorts-addon-notice{display:inline-block;max-width:100%;margin:0!important;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff2c9!important;font-size:13px!important;font-weight:700;line-height:1.6}
-.ytlab-ai-shorts-addon-btn{flex-shrink:0;min-width:240px;padding:22px 34px!important;font-size:18px!important;background:#fff;color:#0b3f96}
-.ytlab-ai-shorts-addon-btn:hover{background:#eef4ff}
-.ytlab-ai-shorts-addon-btn.is-locked{opacity:.72;cursor:not-allowed}
+.ytlab-ai-shorts-addon-copy>p{margin:0;color:#cddcf5;font-size:15px;line-height:1.6}
+.ytlab-ai-shorts-addon-btn{flex-shrink:0;min-width:240px;padding:22px 34px!important;font-size:18px!important;background:#fff!important;color:#0b3f96!important;border:1px solid #fff;box-shadow:0 10px 24px rgba(0,0,0,.18);cursor:pointer!important;opacity:1!important}
+.ytlab-ai-shorts-addon-btn:hover{background:#f3f8ff!important;color:#082c68!important;transform:translateY(-1px)}
 @media(max-width:760px){.ytlab-ai-shorts-addon{padding:24px 22px}.ytlab-ai-shorts-addon-btn{width:100%;min-width:0}}
 
 /* ---------- FAQ ---------- */
@@ -121,6 +119,7 @@
 .ytlab-disclaimer h3{margin:0 0 10px;font-size:17px;color:#6b4400}
 .ytlab-disclaimer ul{margin:0;padding-left:20px}
 .ytlab-disclaimer li{margin:4px 0}
+.ytlab-plans-disclaimer{margin-top:16px}
 
 /* ---------- consult form ---------- */
 .ytlab-consult{background:var(--yt-navy);color:#fff;border-radius:24px;padding:40px 44px}
@@ -196,7 +195,8 @@
 
 /* ---------- responsive ---------- */
 @media (max-width:860px){
-  .ytlab-grid-3,.ytlab-plans{grid-template-columns:1fr}
+  .ytlab-grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ytlab-plans{grid-template-columns:1fr}
   .ytlab-grid-2,.ytlab-meta-grid,.ytlab-channel-alt{grid-template-columns:1fr}
   .ytlab-steps{grid-template-columns:1fr 1fr}
   .ytlab-hero{padding:36px 0 28px}
@@ -211,4 +211,5 @@
   .ytlab-steps{grid-template-columns:1fr}
   .ytlab-option{font-size:17px;padding:16px}
   .ytlab-fit-list{grid-template-columns:1fr;gap:8px}.ytlab-fit-section{padding:34px 0}.ytlab-fit-list li{font-size:15px;padding:10px 12px}.ytlab-hero p br{display:none}
+  .ytlab-grid-3{grid-template-columns:1fr}.ytlab-card{padding:15px}.ytlab-plan h3,.ytlab-plan-bestfor{min-height:0}.ytlab-plan ul{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px}.ytlab-plan li{font-size:12px}.ytlab-ai-shorts-addon{padding:22px 20px}.ytlab-plans-disclaimer{margin-top:12px}
 }
