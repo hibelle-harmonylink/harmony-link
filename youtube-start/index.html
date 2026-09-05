@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body class="ytlab-page">
 
@@ -27,16 +27,15 @@
     <div class="ytlab-container-wide">
       <p class="ytlab-eyebrow">HARMONYLINK YOUTUBE INCOME LAB</p>
       <h1>당신의 경험과 시간에 맞는<br><em>현실적인 유튜브 시작 방법</em>을 찾아드립니다.</h1>
-      <p>"쉽게 돈 번다", "수익 보장" 같은 표현은 사용하지 않습니다.<br>대신 지금 갖고 계신 경험 · 시간 · 예산을 진단해 가장 현실적인 채널 방향과 실행 프로그램을 안내합니다.</p>
+      <p>현재의 경험 · 시간 · 예산을 진단해 현실적인 채널 방향을 찾고,<br>조건에 맞는 실행 프로그램까지 안내합니다.</p>
       <div class="ytlab-btn-row">
         <a class="ytlab-btn ytlab-btn-primary" href="assessment.html">무료 진단 시작하기 (3분)</a>
-        <a class="ytlab-btn ytlab-btn-outline" href="#plans">프로그램 먼저 보기</a>
       </div>
     </div>
   </section>
 
   <main>
-    <section class="ytlab-section" id="fit-for">
+    <section class="ytlab-section ytlab-fit-section" id="fit-for">
       <div class="ytlab-container-wide">
         <p class="ytlab-eyebrow">이런 분에게 적합합니다</p>
         <h2>다음 중 하나라도 해당된다면 진단을 받아보세요.</h2>
@@ -51,7 +50,7 @@
       </div>
     </section>
 
-    <section class="ytlab-section ytlab-section-alt" id="what-you-need">
+    <section class="ytlab-section" id="what-you-need">
       <div class="ytlab-container-wide">
         <p class="ytlab-eyebrow">유튜브에서 실제로 필요한 것</p>
         <h2>화려한 장비보다 이 6가지가 먼저입니다.</h2>
@@ -67,7 +66,7 @@
       </div>
     </section>
 
-    <section class="ytlab-section" id="process">
+    <section class="ytlab-section ytlab-process-section" id="process">
       <div class="ytlab-container-wide">
         <p class="ytlab-eyebrow">프로그램 진행 방식</p>
         <h2>진단부터 실행까지 4단계로 진행합니다.</h2>
@@ -93,12 +92,12 @@
             <p>주제를 몰라도 AI가 대본 · 목소리 · 이미지 · 자막을 만들어 쇼츠 영상 제작을 도와드립니다.</p>
             <p class="ytlab-ai-shorts-addon-notice">하모니링크 회원 전용이며 로그인 후 이용 가능 여부가 확인됩니다</p>
           </div>
-          <a class="ytlab-btn ytlab-ai-shorts-addon-btn" href="https://ai-shorts-maker-production.up.railway.app/" target="_blank" rel="noopener">AI 쇼츠 제작 실행하기</a>
+          <a class="ytlab-btn ytlab-ai-shorts-addon-btn" href="#" data-premium-href="https://ai-shorts-maker-production.up.railway.app/">AI 쇼츠 제작 실행하기</a>
         </div>
       </div>
     </section>
 
-    <section class="ytlab-section" id="faq">
+    <section class="ytlab-section" id="faq" hidden>
       <div class="ytlab-container-wide">
         <p class="ytlab-eyebrow">자주 묻는 질문</p>
         <h2>FAQ</h2>
@@ -175,6 +174,9 @@
   </footer>
 
   <script src="data.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../access-control.js?v=20260903-301"></script>
+  <script src="access.js?v=1"></script>
   <script src="landing.js"></script>
 </body>
 </html>
