@@ -820,10 +820,11 @@ footer .footer-bottom{padding-top:11px!important}
    cards stack into a very tall section. Poster stays on the left and
    the white info column on the right per card, just at a much smaller
    overall scale so three fit per row. */
-#events .event-grid{display:grid;grid-template-columns:repeat(3,1fr)!important;gap:22px;max-width:1180px;margin:32px auto 0}
-#events .event-card{display:flex;flex-direction:column;height:100%;min-height:0;overflow:hidden;border:1px solid #dbe4ea;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(23,51,76,.09);text-align:left}
+#events .event-grid,#events .past-event-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;max-width:1180px;margin:32px auto 0}
+#events .past-event-grid{margin-top:0}
+#events .event-card{display:flex;flex-direction:column;height:612px;min-height:0;overflow:hidden;border:1px solid #dbe4ea;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(23,51,76,.09);text-align:left}
 #events .event-poster{display:block;width:100%;aspect-ratio:4/3;height:auto!important;max-height:none!important;min-height:0;padding:0;background:#edf3f7;overflow:hidden;flex:none}
-#events .event-poster img{display:block;width:100%;height:100%;max-height:none;object-fit:cover;object-position:center top;border-radius:0;box-shadow:none}
+#events .event-poster img{display:block;width:100%;height:100%;max-height:none;object-fit:cover;object-position:center;border-radius:0;box-shadow:none}
 #events .special-event-card .event-poster{background:#f7efe2}
 #events .event-info{display:flex;min-width:0;flex:1;padding:16px 17px!important;flex-direction:column;justify-content:flex-start}
 /* Badges (특별 행사/지역 행사/무료 수업 etc.) hidden for now, not removed
@@ -845,7 +846,7 @@ footer .footer-bottom{padding-top:11px!important}
 #events .event-coming .event-detail-button{margin-top:auto}
 #events .event-coming h3{margin:0 0 5px;font-size:14.5px;line-height:1.3}
 #events .event-coming p{font-size:11px;line-height:1.45}
-@media(min-width:761px) and (max-width:980px){#events .event-grid{grid-template-columns:1fr 1fr!important}}
+@media(min-width:761px) and (max-width:980px){#events .event-grid,#events .past-event-grid{grid-template-columns:1fr 1fr}}
 #events .past-events{max-width:1180px;margin:28px auto 0}
 #events .past-events-disclosure>summary{list-style:none;cursor:pointer}
 #events .past-events-disclosure>.past-events-toggle{width:max-content;margin:-40px 0 18px auto}
@@ -864,8 +865,9 @@ footer .footer-bottom{padding-top:11px!important}
 .community-spotlight .btn-light{background:#fff!important;color:#073d82!important;border:2px solid rgba(255,255,255,.95);box-shadow:0 12px 30px rgba(0,20,54,.34)}
 
 @media(max-width:760px){
-  #events .event-grid{grid-template-columns:1fr!important;gap:22px;margin-top:30px}
-  #events .event-card,#events .event-coming{min-height:0}
+  #events .event-grid,#events .past-event-grid{grid-template-columns:1fr;gap:22px;margin-top:30px}
+  #events .past-event-grid{margin-top:0}
+  #events .event-card,#events .event-coming{height:612px;min-height:0}
   #events .event-poster{aspect-ratio:16/10;min-height:0;max-height:none!important;padding:0}
   #events .event-poster img{width:100%;height:100%;max-height:none}
   #events .event-info{padding:27px 23px!important}
@@ -1019,9 +1021,9 @@ footer .footer-bottom{padding-top:11px!important}
 .ad-partner-image[data-banner] .ad-partner-banner-hint{position:absolute;right:10px;bottom:10px;padding:7px 10px;border-radius:30px;background:rgba(4,32,70,.88);color:#fff;font-size:9px;font-weight:800;letter-spacing:0;pointer-events:none}
 
 /* Compact company introduction + video frame. */
-.about{padding:58px 0}.about-media-frame{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:30px;align-items:start;padding:32px;border:1px solid #cfe4f8;border-radius:28px;background:linear-gradient(145deg,#eef8ff,#dceeff);box-shadow:0 18px 48px rgba(15,81,151,.09)}
-.about-media-company{padding:8px 10px}.about-media-company h2,.about-media-video h2{margin:4px 0 12px;color:#082d61;font-size:clamp(22px,2.6vw,30px);letter-spacing:-1px}.about-media-company .company-link{display:inline-flex!important}.about-media-video>div{margin-bottom:12px}.about-media-video .intro-video-frame{min-height:0;aspect-ratio:16/9;border-radius:20px;overflow:hidden;box-shadow:0 16px 38px rgba(5,45,95,.22)}
-.about-media-company .brand-structure{margin-top:12px!important;padding:12px!important;border-radius:16px!important;max-width:none!important}
+.about{padding:58px 0}.about-media-frame{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:start;max-width:1040px;padding:28px;border:1px solid #cfe4f8;border-radius:28px;background:linear-gradient(145deg,#eef8ff,#dceeff);box-shadow:0 18px 48px rgba(15,81,151,.09)}
+.about-media-company{display:flex;flex-direction:column;min-width:0;padding:0}.about-media-company h2,.about-media-video h2{margin:4px 0 12px;color:#082d61;font-size:clamp(22px,2.6vw,30px);letter-spacing:-1px}.about-media-company .company-link{display:inline-flex;align-self:center;margin-top:12px}.about-media-video>div{margin-bottom:12px}.about-media-video .intro-video-frame{min-height:0;aspect-ratio:16/9;border-radius:20px;overflow:hidden;box-shadow:0 16px 38px rgba(5,45,95,.22)}
+.about-media-company .brand-structure{margin-top:-4px!important;padding:12px!important;border-radius:16px!important;max-width:none!important;width:100%}
 .about-media-company .structure-parent,.about-media-company .structure-project{max-width:none;padding:7px 12px}
 .about-media-company .structure-parent span,.about-media-company .structure-project span{font-size:7px}
 .about-media-company .structure-parent strong,.about-media-company .structure-project strong{font-size:14px;margin:1px 0}
@@ -1037,8 +1039,8 @@ footer .footer-bottom{padding-top:11px!important}
 @media(max-width:600px){.about-media-company .structure-branches{grid-template-columns:repeat(2,1fr)}}
 
 /* Inline business carousel replaces all automatic advertising popups. */
-.advertising{padding:58px 0;background:linear-gradient(145deg,#0c62c6,#072d69);color:#fff}.advertising .section-heading{margin-bottom:24px}.advertising .section-heading .eyebrow,.advertising .section-heading h2,.advertising .section-heading p{color:#fff}.ad-inline-carousel{display:grid;grid-template-columns:46px minmax(0,1fr) 46px;gap:16px;align-items:center}.ad-carousel-prev,.ad-carousel-next{width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;font-size:28px;cursor:pointer}.ad-carousel-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);height:234px;overflow:hidden;border:1px solid rgba(255,255,255,.35);border-radius:24px;background:#fff;color:#12345a;box-shadow:0 20px 48px rgba(0,0,0,.2)}.ad-carousel-logo{display:grid;place-items:center;padding:28px;background:#edf6ff}.ad-carousel-logo img{width:100%;height:150px;object-fit:contain}.ad-carousel-copy{display:flex;flex-direction:column;justify-content:center;padding:26px 34px;overflow:hidden}.ad-carousel-copy>span{color:#0b66c7;font-size:13px;font-weight:900;letter-spacing:1.5px}.ad-carousel-copy h3{margin:8px 0 10px;color:#082d61;font-size:28px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ad-carousel-copy p{margin:0 0 16px;color:#3c5670;font-size:16px;line-height:1.65;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}.ad-carousel-copy a{width:max-content;color:#075fb6;font-size:15px;font-weight:900;text-decoration:none;flex:none}.ad-carousel-dots{display:flex;justify-content:center;gap:7px;margin-top:18px}.ad-carousel-dots button{width:8px;height:8px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.38);cursor:pointer}.ad-carousel-dots button.active{width:24px;border-radius:999px;background:#fff}
-@media(max-width:760px){.about{padding:42px 0}.about-media-frame{grid-template-columns:1fr;padding:20px;gap:22px}.about-media-company{padding:0}.ad-inline-carousel{grid-template-columns:34px minmax(0,1fr) 34px;gap:7px}.ad-carousel-prev,.ad-carousel-next{width:34px;height:34px;font-size:22px}.ad-carousel-card{grid-template-columns:1fr;height:auto;min-height:0}.ad-carousel-logo{padding:18px}.ad-carousel-logo img{height:105px}.ad-carousel-copy{padding:22px 20px}.ad-carousel-copy>span{font-size:12px}.ad-carousel-copy h3{font-size:23px}.ad-carousel-copy p{font-size:14px}.ad-carousel-copy a{font-size:14px}.advertising{padding:44px 0}}
+.advertising{padding:58px 0;background:linear-gradient(145deg,#0c62c6,#072d69);color:#fff}.advertising .section-heading{margin-bottom:24px}.advertising .section-heading .eyebrow,.advertising .section-heading h2,.advertising .section-heading p{color:#fff}.ad-inline-carousel{display:grid;grid-template-columns:46px minmax(0,1fr) 46px;gap:16px;align-items:center}.ad-carousel-prev,.ad-carousel-next{width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;font-size:28px;cursor:pointer}.ad-carousel-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);width:100%;height:234px;overflow:hidden;border:1px solid rgba(255,255,255,.35);border-radius:24px;background:#fff;color:#12345a;box-shadow:0 20px 48px rgba(0,0,0,.2)}.ad-carousel-logo{display:grid;place-items:center;min-width:0;padding:24px;background:#edf6ff}.ad-carousel-logo>img{width:100%;height:150px;object-fit:contain}.ad-highline-logo{display:grid;justify-items:center;gap:8px;width:100%;color:#5d6670}.ad-highline-logo img{width:104px;height:104px;object-fit:contain;border-radius:12px}.ad-highline-logo small{font-size:11px;font-weight:800;letter-spacing:1.2px;white-space:nowrap}.ad-carousel-copy{display:flex;flex-direction:column;justify-content:center;min-width:0;padding:22px 32px;overflow:hidden}.ad-carousel-copy>span{color:#0b66c7;font-size:12px;font-weight:900;letter-spacing:1.5px}.ad-carousel-copy h3{margin:6px 0 8px;color:#082d61;font-size:26px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ad-carousel-copy p{display:block;margin:0;overflow:hidden;color:#3c5670;font-size:16px;line-height:1.45;white-space:nowrap;text-overflow:ellipsis}.ad-carousel-copy .ad-carousel-contact{margin-top:5px;color:#173f61;font-weight:800}.ad-carousel-copy a{width:max-content;margin-top:12px;color:#075fb6;font-size:15px;font-weight:900;text-decoration:none;flex:none}.ad-carousel-dots{display:flex;justify-content:center;gap:7px;margin-top:18px}.ad-carousel-dots button{width:8px;height:8px;padding:0;border:0;border-radius:50%;background:rgba(255,255,255,.38);cursor:pointer}.ad-carousel-dots button.active{width:24px;border-radius:999px;background:#fff}
+@media(max-width:760px){.about{padding:42px 0}.about-media-frame{grid-template-columns:1fr;padding:20px;gap:22px}.about-media-company{padding:0}.ad-inline-carousel{grid-template-columns:34px minmax(0,1fr) 34px;gap:7px}.ad-carousel-prev,.ad-carousel-next{width:34px;height:34px;font-size:22px}.ad-carousel-card{grid-template-columns:1fr;height:330px;min-height:0}.ad-carousel-logo{height:132px;padding:14px}.ad-carousel-logo>img{height:104px}.ad-highline-logo{grid-template-columns:auto auto;justify-content:center;align-items:center;gap:10px}.ad-highline-logo img{width:82px;height:82px}.ad-highline-logo small{font-size:9px}.ad-carousel-copy{padding:18px 20px}.ad-carousel-copy>span{font-size:10px}.ad-carousel-copy h3{font-size:21px}.ad-carousel-copy p{font-size:13px}.ad-carousel-copy a{font-size:13px}.advertising{padding:44px 0}}
 @media(max-width:760px){.ad-partner-image[data-banner] .ad-partner-banner-hint{right:6px;bottom:6px;padding:5px 8px;font-size:7px}}
 
 /* Homepage app-install banner: sits below the fixed header (margin-top matches .site-header's own height so it never overlaps), dismissible and remembered via localStorage. */
