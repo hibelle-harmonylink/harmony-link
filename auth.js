@@ -77,21 +77,16 @@
   const footerAccountLinks = document.querySelector('.footer-bottom div');
   const footerDeleteButton = document.getElementById('footerDeleteAccount');
 
-  // authGate and approvalGate sit side by side as a fixed pair so they
-  // never fight over layout space, but authGate's own content is
-  // session-aware (see renderAuthGate below): it shows a neutral loading
-  // state while the session is still being resolved, "회원 로그인 필요합니다"
-  // only once we're sure the visitor is actually signed out, and a
-  // "로그인 완료" state -- never the login prompt again -- once a session is
-  // confirmed. approvalGate always points into the (now publicly
-  // viewable) community regardless of sign-in state, so it never changes.
+  // The partner gate is only a signed-out entry point. Community remains
+  // a separate public destination in the primary navigation.
   const authGate = document.createElement('div');
   authGate.className = 'partner-auth-gate';
   accessCard.insertBefore(authGate, downloads);
   if (accessForm) accessForm.hidden = true;
 
-  const renderAuthGate = (session, approvedPartner) => {
+  const renderAuthGate = session => {
     const signedIn = Boolean(session?.user);
+    authGate.hidden = signedIn;
     const sessionLoading = signedIn && activeMemberRole === 'loading';
     if (sessionLoading) {
       authGate.innerHTML = `
@@ -103,27 +98,9 @@
         <span class="partner-auth-icon" aria-hidden="true">🔐</span>
         <h3 data-ko="회원 로그인 필요합니다" data-en="Sign-in required">회원 로그인 필요합니다</h3>
         <button type="button" class="btn btn-primary auth-open"><span data-ko="로그인하기" data-en="Sign In">로그인하기</span><b>✓</b></button>`;
-    } else if (approvedPartner) {
-      authGate.innerHTML = `
-        <span class="partner-auth-icon" aria-hidden="true">✅</span>
-        <h3 data-ko="로그인 완료" data-en="Signed in">로그인 완료</h3>
-        <button type="button" class="btn btn-primary partner-auth-view"><span data-ko="자료실 보기" data-en="View Resources">자료실 보기</span><b>✓</b></button>`;
-    } else {
-      authGate.innerHTML = `
-        <span class="partner-auth-icon" aria-hidden="true">✅</span>
-        <h3 data-ko="로그인 완료" data-en="Signed in">로그인 완료</h3>
-        <span class="btn btn-primary partner-auth-static" aria-hidden="true"><span data-ko="회원 확인됨" data-en="Member Verified">회원 확인됨</span><b>✓</b></span>`;
     }
     authGate.querySelectorAll('[data-ko][data-en]').forEach(element => { element.textContent = element.dataset[language()]; });
   };
-
-  const approvalGate = document.createElement('div');
-  approvalGate.className = 'partner-auth-gate partner-approval-gate';
-  approvalGate.innerHTML = `
-    <span class="partner-auth-icon" aria-hidden="true">💬</span>
-    <h3 data-ko="커뮤니티 이용하세요" data-en="Enter the community">커뮤니티 이용하세요</h3>
-    <a class="btn btn-primary" href="community.html?refresh=20260815-301"><span data-ko="커뮤니티 입장" data-en="Enter Community">커뮤니티 입장</span><b>✓</b></a>`;
-  accessCard.insertBefore(approvalGate, downloads);
 
   const setAuthMode = mode => {
     activeAuthMode = mode === 'signup' ? 'signup' : 'login';
@@ -314,7 +291,7 @@
       partnerNav.dataset.en = approvedPartner ? 'Partner Center' : 'Partner Center 🔒';
       partnerNav.textContent = t(partnerNav.dataset.ko, partnerNav.dataset.en);
     }
-    renderAuthGate(session, approvedPartner);
+    renderAuthGate(session);
   };
 
   const render = session => {
@@ -326,11 +303,6 @@
 
   const openPartnerStart = () => {
     if (downloads.hidden) return;
-    const firstToggle = downloads.querySelector('.partner-resource-toggle');
-    const firstPanel = firstToggle
-      ? downloads.querySelector(`#${firstToggle.getAttribute('aria-controls')}`)
-      : null;
-    if (firstPanel?.hidden) firstToggle.click();
     downloads.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
@@ -524,9 +496,6 @@
     authGate.querySelectorAll('[data-ko][data-en]').forEach(element => {
       element.textContent = element.dataset[language()];
     });
-    approvalGate.querySelectorAll('[data-ko][data-en]').forEach(element => {
-      element.textContent = element.dataset[language()];
-    });
     render(activeSession);
   };
 
@@ -580,12 +549,6 @@
     if (modeTab) {
       setAuthMode(modeTab.dataset.authModeTab);
       updateLanguage();
-      return;
-    }
-    const authGateViewButton = event.target.closest('.partner-auth-view');
-    if (authGateViewButton) {
-      event.preventDefault();
-      openPartnerStart();
       return;
     }
     const authOpenButton = event.target.closest('.auth-open');

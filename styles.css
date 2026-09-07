@@ -1337,3 +1337,70 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
   .footer-social-panel{max-width:260px!important}
   .footer-social-copy span{white-space:normal!important;line-height:1.45!important}
 }
+
+/* Partner library and participation UI refresh (2026-09-07). These
+   selectors intentionally live after the older iteration blocks so the
+   current layout has one clear source of truth without touching auth or
+   membership permission decisions. */
+#partner-center .container{width:min(1320px,calc(100% - 40px))}
+#partner-center .partner-center-card{max-width:1280px!important;padding:32px 34px!important}
+#partner-center .partner-center-shell{max-width:none!important}
+#partner-center .partner-access-card{max-width:none!important;display:block!important}
+#partner-center .partner-auth-gate[hidden]{display:none!important}
+#partner-center .partner-auth-gate{width:min(100%,520px)!important;margin:16px auto 0!important}
+#partner-center .partner-downloads{grid-column:auto!important;max-height:none!important;overflow:visible!important;padding:0!important}
+#partner-center .partner-library-head{margin:20px 0 22px!important}
+#partner-center .partner-library-status p{font-size:15px!important;line-height:1.55}
+#partner-center .partner-tier-guide{gap:12px!important;margin-top:16px!important}
+#partner-center .partner-tier-guide button{min-height:76px!important;flex-direction:column!important;gap:2px!important;border-radius:14px!important;font-size:16px!important}
+#partner-center .partner-tier-guide button strong{font-size:27px!important;line-height:1!important;letter-spacing:-.5px}
+#partner-center .partner-tier-guide button b{font-size:15px!important;letter-spacing:.5px}
+#partner-center .partner-tier-guide button:nth-child(1){background:#eef9f3!important;border-color:#72bc91!important;color:#176944!important}
+#partner-center .partner-tier-guide button:nth-child(2){background:#edf5ff!important;border-color:#72a9e9!important;color:#0a55a7!important}
+#partner-center .partner-tier-guide button:nth-child(3){background:#fff8e5!important;border-color:#d8ad45!important;color:#765209!important}
+#partner-center .partner-tier-guide button.active{background:#0b5fc2!important;border-color:#0b5fc2!important;color:#fff!important;box-shadow:0 9px 22px rgba(11,95,194,.25)!important}
+#partner-center .partner-tier-benefit{font-size:15px!important;min-height:0!important;margin:12px 0 0!important;padding:10px 14px!important}
+#partner-center .partner-tier-benefit[hidden]{display:none!important}
+#partner-center .partner-resource-library{gap:14px!important}
+#partner-center .partner-resource-toggle{min-height:112px!important;padding:18px!important;gap:14px!important}
+#partner-center .partner-resource-toggle>b{width:44px!important;height:44px!important;font-size:22px!important}
+#partner-center .partner-resource-toggle h3{font-size:18px!important;line-height:1.35}
+#partner-center .partner-resource-toggle h3 em{font-size:14px!important;padding:4px 9px!important;vertical-align:2px}
+#partner-center .partner-resource-toggle p{font-size:15px!important;line-height:1.5!important;margin-top:5px!important}
+#partner-center .partner-resource-toggle>i{font-size:23px!important}
+#partner-center .partner-resource-item{grid-template-columns:70px 1fr auto!important;gap:12px!important;padding:13px 0!important}
+#partner-center .partner-resource-item>span{font-size:14px!important}
+#partner-center .partner-resource-item>strong{font-size:15px!important}
+#partner-center .partner-resource-item>a,#partner-center .partner-resource-item>small{font-size:14px!important}
+#partner-center .partner-upgrade-guide small,#partner-center .partner-upgrade-guide p{font-size:14px!important}
+
+#community{padding:58px 0!important}
+#community .section-heading>p:last-child{font-size:15px!important}
+#community .audience-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:18px!important;max-width:1240px!important;margin:28px auto 0!important;align-items:stretch!important}
+#community .community-link{display:none!important}
+#community .audience-card{display:flex!important;flex-direction:column!important;min-height:286px!important;height:100%!important;padding:25px 27px!important}
+#community .audience-card>.audience-label{font-size:14px!important}
+#community .audience-card>h3{font-size:24px!important;line-height:1.35!important;margin:8px 0!important}
+#community .audience-card>p{font-size:15px!important;line-height:1.55!important;margin:0 0 10px!important}
+#community .audience-card>ul{display:grid!important;grid-template-columns:1fr!important;gap:5px!important;margin:4px 0 18px!important}
+#community .audience-card li{font-size:15px!important;line-height:1.45!important;margin:0!important}
+#community .audience-card>a.text-link{width:100%!important;min-height:52px!important;margin-top:auto!important;padding:13px 18px!important;font-size:16px!important;justify-content:center!important}
+#community .matching-disclaimer{display:none!important}
+
+@media(max-width:760px){
+  #partner-center .container{width:min(100% - 24px,1320px)}
+  #partner-center .partner-center-card{padding:24px 16px!important}
+  #partner-center .partner-tier-guide{gap:6px!important}
+  #partner-center .partner-tier-guide button{min-height:70px!important;font-size:14px!important}
+  #partner-center .partner-tier-guide button strong{font-size:23px!important}
+  #partner-center .partner-tier-guide button b{font-size:14px!important}
+  #partner-center .partner-resource-toggle{min-height:104px!important;padding:15px 12px!important;grid-template-columns:auto auto minmax(0,1fr) auto!important}
+  #partner-center .partner-resource-toggle h3{font-size:17px!important}
+  #partner-center .partner-resource-toggle p{font-size:14px!important}
+  #partner-center .partner-resource-item{grid-template-columns:62px minmax(0,1fr)!important}
+  #partner-center .partner-resource-item>a,#partner-center .partner-resource-item>small{grid-column:2}
+  #community{padding:48px 0!important}
+  #community .audience-grid{grid-template-columns:1fr!important;max-width:100%!important}
+  #community .audience-card{min-height:0!important;padding:23px 20px!important}
+  #community .audience-card>h3{font-size:21px!important}
+}
