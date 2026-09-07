@@ -166,7 +166,7 @@
   const initialize = async () => {
     if (!client) return;
     const { data } = await client.auth.getSession(); user = data.session?.user;
-    if (!user) { window.location.replace('https://hibelleharmony.com/?refresh=20260809-277#partner-center'); return; }
+    if (!user) { showAccessMessage('로그인이 필요합니다', '커뮤니티 게시판은 로그인 후 이용할 수 있습니다. 홈페이지에서 로그인한 뒤 다시 방문해 주세요.'); return; }
     const { data: member, error } = await client.from('member_profiles').select('role,account_status,display_name,member_type').eq('id', user.id).maybeSingle();
     if (error || !member || member.account_status !== 'active' || !['member','partner0','partner20','partner50','admin'].includes(member.role)) { showAccessMessage('커뮤니티를 이용할 수 없습니다', '활성 상태의 Harmony Link 회원만 이용할 수 있습니다.'); return; }
     profile = { ...member, display_name: member.display_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0] };

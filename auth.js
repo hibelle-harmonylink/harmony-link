@@ -81,9 +81,7 @@
   authGate.className = 'partner-auth-gate';
   authGate.innerHTML = `
     <span class="partner-auth-icon" aria-hidden="true">🔐</span>
-    <p class="eyebrow">SECURE MEMBER ACCESS</p>
-    <h3 data-ko="로그인 후 자료실을 이용하세요" data-en="Sign in to access partner resources">로그인 후 자료실을 이용하세요</h3>
-    <p data-ko="기존 접근코드 대신 Google 또는 카카오 계정으로 안전하게 접속합니다." data-en="Use your Google or Kakao account instead of a shared access code.">기존 접근코드 대신 Google 또는 카카오 계정으로 안전하게 접속합니다.</p>
+    <h3 data-ko="회원 로그인이 필요합니다" data-en="Sign-in required">회원 로그인이 필요합니다</h3>
     <button type="button" class="btn btn-primary auth-open"><span data-ko="로그인하기" data-en="Sign In">로그인하기</span><b>→</b></button>`;
   accessCard.insertBefore(authGate, downloads);
   if (accessForm) accessForm.hidden = true;
