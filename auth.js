@@ -77,24 +77,26 @@
   const footerAccountLinks = document.querySelector('.footer-bottom div');
   const footerDeleteButton = document.getElementById('footerDeleteAccount');
 
+  // authGate and approvalGate now sit side by side as a fixed pair rather
+  // than swapping based on sign-in state -- one is always the login entry
+  // point, the other always a direct path into the (now publicly
+  // viewable) community. This also avoids the two ever needing to toggle
+  // in and out at the same time.
   const authGate = document.createElement('div');
   authGate.className = 'partner-auth-gate';
   authGate.innerHTML = `
     <span class="partner-auth-icon" aria-hidden="true">🔐</span>
-    <h3 data-ko="회원 로그인이 필요합니다" data-en="Sign-in required">회원 로그인이 필요합니다</h3>
-    <button type="button" class="btn btn-primary auth-open"><span data-ko="로그인하기" data-en="Sign In">로그인하기</span><b>→</b></button>`;
+    <h3 data-ko="회원 로그인 필요합니다" data-en="Sign-in required">회원 로그인 필요합니다</h3>
+    <button type="button" class="btn btn-primary auth-open"><span data-ko="로그인하기" data-en="Sign In">로그인하기</span><b>✓</b></button>`;
   accessCard.insertBefore(authGate, downloads);
   if (accessForm) accessForm.hidden = true;
 
   const approvalGate = document.createElement('div');
   approvalGate.className = 'partner-auth-gate partner-approval-gate';
-  approvalGate.hidden = true;
   approvalGate.innerHTML = `
     <span class="partner-auth-icon" aria-hidden="true">💬</span>
-    <p class="eyebrow">MEMBER COMMUNITY</p>
-    <h3 data-ko="회원 커뮤니티를 이용하세요" data-en="Enter the member community">회원 커뮤니티를 이용하세요</h3>
-    <p data-ko="수강생은 가입 즉시 커뮤니티에서 공지와 게시글을 확인할 수 있습니다." data-en="Learners can enter the community immediately after joining.">수강생은 가입 즉시 커뮤니티에서 공지와 게시글을 확인할 수 있습니다.</p>
-    <a class="btn btn-primary" href="community.html?refresh=20260815-301"><span data-ko="커뮤니티 입장" data-en="Enter Community">커뮤니티 입장</span><b>→</b></a>`;
+    <h3 data-ko="커뮤니티 이용하세요" data-en="Enter the community">커뮤니티 이용하세요</h3>
+    <a class="btn btn-primary" href="community.html?refresh=20260815-301"><span data-ko="커뮤니티 입장" data-en="Enter Community">커뮤니티 입장</span><b>✓</b></a>`;
   accessCard.insertBefore(approvalGate, downloads);
 
   const setAuthMode = mode => {
@@ -249,8 +251,6 @@
     const isBasicPartner = signedIn && accountActive && memberAccess.user_type === 'partner' && memberAccess.membership === 'basic';
     const isPremiumPartner = signedIn && accountActive && memberAccess.user_type === 'partner' && memberAccess.membership === 'premium';
     const approvedPartner = signedIn && accessControl.canAccessPartnerCenter(memberAccess);
-    authGate.hidden = signedIn;
-    approvalGate.hidden = !signedIn || approvedPartner;
     downloads.hidden = !approvedPartner;
     if (accessForm) accessForm.hidden = true;
     const securityTitle = partnerCenter.querySelector('.partner-security-note b');

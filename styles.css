@@ -1166,20 +1166,26 @@ footer .footer-bottom{padding-top:11px!important}
 #partner-center .partner-center-copy .eyebrow{margin-bottom:4px!important}
 #partner-center .partner-center-copy h2{display:block!important;width:auto!important;max-width:100%!important;white-space:normal!important;font-size:clamp(20px,2.2vw,26px)!important;letter-spacing:-1px!important;margin:0 0 5px!important}
 #partner-center .partner-center-copy>p:not(.eyebrow){width:100%!important;max-width:none!important;white-space:normal!important;display:block!important;text-align:center!important;margin:0 auto!important;padding-left:0!important;font-size:12.5px!important}
-/* One slim, wide horizontal bar instead of a tall centered card: icon,
-   message and button sit in a single row so the section doesn't need the
-   vertical space a stacked card used to take. */
-#partner-center .partner-access-card{width:100%!important;max-width:680px!important;margin:14px auto 0!important;transform:none!important;align-self:auto!important;background:#f5f9ff!important;box-shadow:none!important;border:1px solid #e3edf7!important;border-radius:14px!important;padding:6px 10px!important}
-#partner-center .partner-auth-gate{display:flex!important;align-items:center!important;justify-content:center!important;gap:14px!important;text-align:left!important;padding:10px 14px!important;flex-wrap:wrap}
-#partner-center .partner-auth-icon{width:38px!important;height:38px!important;margin:0!important;font-size:18px!important;border-radius:11px!important;flex:none}
-#partner-center .partner-auth-gate h3{margin:0!important;font-size:14.5px!important;flex:1 1 auto;min-width:160px;text-align:left!important}
-#partner-center .partner-auth-gate .btn{margin:0!important;min-width:0!important;padding:9px 16px!important;font-size:11.5px!important}
+/* Two equal-size boxes side by side (login / community) instead of one
+   box that used to swap content based on sign-in state -- both are shown
+   as a fixed pair now, so they share one grid with identical box styling
+   applied via the same selector, guaranteeing matching size/height. The
+   downloads panel (shown only once a partner is approved) spans both
+   columns so it isn't squeezed into a half-width column. */
+#partner-center .partner-access-card{width:100%!important;max-width:680px!important;margin:14px auto 0!important;transform:none!important;align-self:auto!important;background:transparent!important;box-shadow:none!important;border:0!important;padding:0!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:14px!important}
+#partner-center .partner-auth-gate{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:10px!important;text-align:center!important;padding:22px 16px!important;background:#f5f9ff!important;border:1px solid #e3edf7!important;border-radius:14px!important;height:100%!important}
+#partner-center .partner-auth-icon{width:40px!important;height:40px!important;margin:0!important;font-size:19px!important;border-radius:12px!important;flex:none}
+#partner-center .partner-auth-gate h3{margin:0!important;font-size:15px!important;text-align:center!important}
+#partner-center .partner-auth-gate .btn{margin:0!important;width:100%!important;max-width:220px;justify-content:center!important;padding:11px 16px!important;font-size:12px!important}
+#partner-center .partner-downloads{grid-column:1/-1!important}
+#partner-center .partner-community-note{margin:14px 0 0!important;text-align:center!important;color:#5b7290!important;font-size:12.5px!important}
 #partner-center .partner-upgrade-guide{margin-top:14px!important;padding:16px 0 0!important;border:0!important;border-top:1px solid #e5eef7!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;width:100%!important}
 #partner-center .partner-guide-head h3{font-size:19px!important;margin:0!important}
 #partner-center .partner-guide-head>p:last-child{margin:4px 0 0!important}
 #partner-center .partner-upgrade-guide ol{margin:14px 0!important}
 #partner-center .partner-upgrade-guide li{padding:12px 11px!important}
-@media(max-width:520px){#partner-center .partner-center-card{padding:22px 18px!important;border-radius:20px!important}#partner-center .partner-center-copy{text-align:center!important}#partner-center .partner-auth-gate{justify-content:center!important;text-align:center!important}#partner-center .partner-auth-gate h3{text-align:center!important;min-width:0;flex-basis:100%}}
+@media(max-width:600px){#partner-center .partner-access-card{grid-template-columns:1fr!important}}
+@media(max-width:520px){#partner-center .partner-center-card{padding:22px 18px!important;border-radius:20px!important}#partner-center .partner-center-copy{text-align:center!important}}
 
 /* Compact the event/past-event cards: the white info area had a large
    empty gap between the map-link row and the "자세히 보기" button because
@@ -1268,15 +1274,27 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
 .orb-five{width:70px;height:70px;background:rgba(74,154,255,.08);left:6%;bottom:70px}
 @media(max-width:760px){.orb-three,.orb-four,.orb-five{display:none}}
 
-/* "참여하고 연결되세요" section: the provider/learner cards stretched to
-   fill the full container width, reading as two flat, wide slabs. Capping
-   their width and centering the (still 3-column) grid gives each card a
-   taller, more vertical proportion without changing its content. The
-   apply/request buttons are switched from a full-width bar to a centered
-   chip so they don't look like another wide flat stripe, and the current
-   service-area note is hidden per this round's request. */
+/* "원하는 이용 경로를 선택하세요" section: previously narrowed into two
+   side-by-side vertical cards; this round switches to one column of wide,
+   flatter cards stacked top-to-bottom, with the checklist laid out as an
+   inline row instead of a stacked list so a wide card doesn't also end up
+   tall. The apply/request buttons stay as a compact chip, and the
+   service-area note remains hidden per the previous round's request. */
 @media(min-width:981px){
-  #community .audience-grid{grid-template-columns:minmax(0,360px) 110px minmax(0,360px)!important;justify-content:center!important;max-width:900px;margin-left:auto!important;margin-right:auto!important}
+  #community .audience-grid{grid-template-columns:1fr!important;justify-content:stretch!important;max-width:900px;margin-left:auto!important;margin-right:auto!important}
+  #community .audience-card ul{display:flex!important;flex-wrap:wrap!important;gap:6px 22px!important;margin:12px 0!important}
+  #community .audience-card li{margin:0!important}
+  #community .community-link{margin:2px auto!important}
 }
 #community .audience-card .text-link{width:max-content!important;max-width:100%;min-height:0!important;justify-content:center!important;gap:10px}
 #community .service-note{display:none!important}
+
+/* Footer social (Instagram/Threads) block was sized to fit its sentence
+   on one line (white-space:nowrap), which made the whole right-hand box
+   about 400px wide -- roughly a third of the footer row. Halving its cap
+   and letting the sentence wrap keeps the icons the same size while the
+   box itself takes up much less width. */
+@media(min-width:761px){
+  .footer-social-panel{max-width:260px!important}
+  .footer-social-copy span{white-space:normal!important;line-height:1.45!important}
+}
