@@ -140,9 +140,11 @@
 
   const loadPosts = async () => {
     setMessage('게시글을 불러오고 있습니다.');
-    const { data, error } = await client.rpc('get_community_posts');
-    if (error) { setMessage(`게시글을 불러오지 못했습니다: ${error.message}`, true); return; }
-    if (!Array.isArray(data)) { setMessage('게시글 응답 형식이 올바르지 않습니다.', true); return; }
+    // get_community_posts_public() is readable by anyone (anon included);
+    // the board itself is public, only writing requires an active member.
+    const { data, error } = await client.rpc('get_community_posts_public');
+    if (error) { console.error('get_community_posts_public failed:', error); setMessage('게시글을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.', true); return; }
+    if (!Array.isArray(data)) { setMessage('게시글을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.', true); return; }
     posts = (data || []).map(post => ({ ...post, comments: (post.comments || []).sort((a, b) => new Date(a.created_at) - new Date(b.created_at)) })); renderPosts(); setMessage(`최근 게시글 ${posts.length}건을 표시합니다.`);
   };
 
