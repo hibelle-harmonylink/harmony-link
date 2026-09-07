@@ -1159,15 +1159,27 @@ footer .footer-bottom{padding-top:11px!important}
 
 /* Consolidated partner resource center -- one unified card instead of the
    copy text / access card / step guide reading as three separate areas. */
-#partner-center{padding:64px 0}
-#partner-center .partner-center-card{background:#fff;border:1px solid #d8e6f5!important;border-radius:28px!important;box-shadow:0 20px 55px rgba(15,60,120,.1)!important;padding:44px!important;max-width:1160px;margin:0 auto;overflow:hidden}
-#partner-center .partner-center-shell{grid-template-columns:1fr!important;gap:0!important;align-items:center!important;justify-items:center!important;width:100%!important;max-width:560px;margin:0 auto}
+#partner-center{padding:38px 0}
+#partner-center .partner-center-card{background:#fff;border:1px solid #d8e6f5!important;border-radius:24px!important;box-shadow:0 20px 55px rgba(15,60,120,.1)!important;padding:30px 40px!important;max-width:1160px;margin:0 auto;overflow:hidden}
+#partner-center .partner-center-shell{grid-template-columns:1fr!important;gap:0!important;align-items:center!important;justify-items:center!important;width:100%!important;max-width:640px;margin:0 auto}
 #partner-center .partner-center-copy{width:100%!important;max-width:none!important;text-align:center!important;min-width:0}
-#partner-center .partner-center-copy h2{display:block!important;width:auto!important;max-width:100%!important;white-space:normal!important;font-size:clamp(24px,2.6vw,32px)!important;letter-spacing:-1px!important}
-#partner-center .partner-center-copy>p:not(.eyebrow){width:100%!important;max-width:none!important;white-space:normal!important;display:block!important;text-align:center!important;margin-left:auto!important;margin-right:auto!important;padding-left:0!important}
-#partner-center .partner-access-card{width:100%!important;max-width:420px!important;margin:20px auto 0!important;transform:none!important;align-self:auto!important;background:#f5f9ff!important;box-shadow:none!important;border:1px solid #e3edf7!important;border-radius:18px!important;padding:28px!important}
-#partner-center .partner-upgrade-guide{margin-top:20px!important;padding:24px 0 0!important;border:0!important;border-top:1px solid #e5eef7!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;width:100%!important}
-@media(max-width:520px){#partner-center .partner-center-card{padding:24px 18px!important;border-radius:20px!important}#partner-center .partner-center-copy{text-align:center!important}}
+#partner-center .partner-center-copy .eyebrow{margin-bottom:4px!important}
+#partner-center .partner-center-copy h2{display:block!important;width:auto!important;max-width:100%!important;white-space:normal!important;font-size:clamp(20px,2.2vw,26px)!important;letter-spacing:-1px!important;margin:0 0 5px!important}
+#partner-center .partner-center-copy>p:not(.eyebrow){width:100%!important;max-width:none!important;white-space:normal!important;display:block!important;text-align:center!important;margin:0 auto!important;padding-left:0!important;font-size:12.5px!important}
+/* One slim, wide horizontal bar instead of a tall centered card: icon,
+   message and button sit in a single row so the section doesn't need the
+   vertical space a stacked card used to take. */
+#partner-center .partner-access-card{width:100%!important;max-width:680px!important;margin:14px auto 0!important;transform:none!important;align-self:auto!important;background:#f5f9ff!important;box-shadow:none!important;border:1px solid #e3edf7!important;border-radius:14px!important;padding:6px 10px!important}
+#partner-center .partner-auth-gate{display:flex!important;align-items:center!important;justify-content:center!important;gap:14px!important;text-align:left!important;padding:10px 14px!important;flex-wrap:wrap}
+#partner-center .partner-auth-icon{width:38px!important;height:38px!important;margin:0!important;font-size:18px!important;border-radius:11px!important;flex:none}
+#partner-center .partner-auth-gate h3{margin:0!important;font-size:14.5px!important;flex:1 1 auto;min-width:160px;text-align:left!important}
+#partner-center .partner-auth-gate .btn{margin:0!important;min-width:0!important;padding:9px 16px!important;font-size:11.5px!important}
+#partner-center .partner-upgrade-guide{margin-top:14px!important;padding:16px 0 0!important;border:0!important;border-top:1px solid #e5eef7!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;width:100%!important}
+#partner-center .partner-guide-head h3{font-size:19px!important;margin:0!important}
+#partner-center .partner-guide-head>p:last-child{margin:4px 0 0!important}
+#partner-center .partner-upgrade-guide ol{margin:14px 0!important}
+#partner-center .partner-upgrade-guide li{padding:12px 11px!important}
+@media(max-width:520px){#partner-center .partner-center-card{padding:22px 18px!important;border-radius:20px!important}#partner-center .partner-center-copy{text-align:center!important}#partner-center .partner-auth-gate{justify-content:center!important;text-align:center!important}#partner-center .partner-auth-gate h3{text-align:center!important;min-width:0;flex-basis:100%}}
 
 /* Compact the event/past-event cards: the white info area had a large
    empty gap between the map-link row and the "자세히 보기" button because
@@ -1228,13 +1240,43 @@ footer .footer-bottom{padding-top:11px!important}
    three of them (1200px + gaps) never fit the ~1120px container and the
    third card wrapped to its own line. Switching to a 3-column grid forces
    one row and makes all three equal width/height automatically. */
-#contact.contact-simple{background:radial-gradient(circle at 85% 0%,rgba(212,175,55,.14),transparent 55%),linear-gradient(155deg,#0a1636 0%,#0d2050 55%,#152040 100%)!important}
-.contact-simple-links{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;align-items:stretch!important;justify-content:stretch!important;gap:16px!important;max-width:1040px!important;width:100%!important;margin:30px auto 0!important}
-.contact-simple-link{width:100%!important;max-width:none!important;height:100%!important;padding:18px 16px!important;gap:12px!important}
-.contact-simple-icon{width:44px!important;height:44px!important;font-size:18px!important}
-.contact-simple-text strong{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important;word-break:break-word!important;font-size:15px!important}
+#contact.contact-simple{background:radial-gradient(circle at 85% 0%,rgba(212,175,55,.14),transparent 55%),linear-gradient(155deg,#0a1636 0%,#0d2050 55%,#152040 100%)!important;padding-bottom:40px!important}
+/* Shrink the overall section height: less padding around the card, less
+   gap before/after the divider, and a slimmer version of each of the
+   three contact cards (smaller icon, tighter padding, no flag/US/KR --
+   plain phone numbers only per this round's fallback). */
+#contact.contact-simple .contact-wrap{padding:34px 40px!important}
+.contact-simple-divider{margin:14px auto 0!important}
+.contact-simple-links{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;align-items:stretch!important;justify-content:stretch!important;gap:14px!important;max-width:1040px!important;width:100%!important;margin:20px auto 0!important}
+.contact-simple-link{width:100%!important;max-width:none!important;height:100%!important;padding:13px 14px!important;gap:10px!important}
+.contact-simple-icon{width:36px!important;height:36px!important;font-size:15px!important}
+.contact-simple-text{gap:3px!important}
+.contact-simple-text strong{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important;word-break:break-word!important;font-size:14px!important}
+.contact-simple-text small{font-size:10.5px!important}
 @media(max-width:700px){.contact-simple-links{grid-template-columns:1fr!important;max-width:420px!important}}
 /* Match the footer to the app-install banner's bright navy so it reads as
    a distinct section from the much darker contact block above it, instead
    of two dark-navy blocks blending into one. */
 body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-top:1px solid rgba(255,255,255,.16)!important}
+
+/* Hero background felt empty in the middle -- three more soft sky-blue
+   orbs in the same low-opacity family as .orb-one/.orb-two, spaced across
+   the section so the background reads as fuller without competing with
+   the copy/visual in front of them (they sit behind at default z-index). */
+.orb-three{width:90px;height:90px;background:rgba(74,154,255,.06);left:42%;top:60px}
+.orb-four{width:130px;height:130px;background:rgba(17,85,217,.05);right:18%;top:430px}
+.orb-five{width:70px;height:70px;background:rgba(74,154,255,.08);left:6%;bottom:70px}
+@media(max-width:760px){.orb-three,.orb-four,.orb-five{display:none}}
+
+/* "참여하고 연결되세요" section: the provider/learner cards stretched to
+   fill the full container width, reading as two flat, wide slabs. Capping
+   their width and centering the (still 3-column) grid gives each card a
+   taller, more vertical proportion without changing its content. The
+   apply/request buttons are switched from a full-width bar to a centered
+   chip so they don't look like another wide flat stripe, and the current
+   service-area note is hidden per this round's request. */
+@media(min-width:981px){
+  #community .audience-grid{grid-template-columns:minmax(0,360px) 110px minmax(0,360px)!important;justify-content:center!important;max-width:900px;margin-left:auto!important;margin-right:auto!important}
+}
+#community .audience-card .text-link{width:max-content!important;max-width:100%;min-height:0!important;justify-content:center!important;gap:10px}
+#community .service-note{display:none!important}

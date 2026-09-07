@@ -25,7 +25,6 @@
   };
 
   const setMessage = (text, error = false) => { message.textContent = text; message.classList.toggle('error', error); };
-  const showAccessMessage = (title, copy) => { access.querySelector('h1').textContent = title; access.querySelector('p').textContent = copy; access.hidden = false; app.hidden = true; };
   const formatDate = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'America/New_York', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(value));
   const escapeUrl = value => { try { const raw = String(value || '').trim(); const parsed = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`); return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : ''; } catch { return ''; } };
   const extractUrls = value => {
@@ -75,7 +74,7 @@
       const author = document.createElement('strong'); author.textContent = comment.author_name;
       const content = document.createElement('p'); content.textContent = comment.content;
       row.append(author, content);
-      if (comment.author_id === user.id || profile.role === 'admin') { const button = document.createElement('button'); button.type = 'button'; button.textContent = '삭제'; button.addEventListener('click', () => deleteComment(comment.id)); row.append(button); }
+      if (user && (comment.author_id === user.id || profile.role === 'admin')) { const button = document.createElement('button'); button.type = 'button'; button.textContent = '삭제'; button.addEventListener('click', () => deleteComment(comment.id)); row.append(button); }
       return row;
     }));
   };
@@ -121,7 +120,7 @@
 
     });
     links.hidden = relatedUrls.length === 0;
-    const editable = post.author_id === user.id || profile.role === 'admin';
+    const editable = !!user && (post.author_id === user.id || profile.role === 'admin');
     card.querySelector('.post-actions').hidden = !editable;
     card.querySelector('.edit-post').addEventListener('click', () => openComposer(post));
     card.querySelector('.delete-post').addEventListener('click', async () => { if (!confirm('이 게시글과 댓글을 모두 삭제할까요?')) return; const { error } = await client.from('partner_community_posts').delete().eq('id', post.id); if (error) setMessage(`삭제 실패: ${error.message}`, true); else await loadPosts(); });
@@ -129,7 +128,7 @@
     const panel = card.querySelector('.comment-panel');
     toggle.addEventListener('click', () => { panel.hidden = !panel.hidden; });
     renderComments(card.querySelector('.comment-list'), post.comments, post.id);
-    card.querySelector('.comment-form').addEventListener('submit', async event => { event.preventDefault(); const input = event.currentTarget.querySelector('input'); const content = input.value.trim(); if (!content) return; const { error } = await client.from('partner_community_comments').insert({ post_id: post.id, author_id: user.id, author_name: profile.display_name, content }); if (error) setMessage(`댓글 등록 실패: ${error.message}`, true); else { input.value = ''; await loadPosts(); } });
+    card.querySelector('.comment-form').addEventListener('submit', async event => { event.preventDefault(); if (!user) { setMessage('댓글 작성은 로그인 후 이용할 수 있습니다.', true); return; } const input = event.currentTarget.querySelector('input'); const content = input.value.trim(); if (!content) return; const { error } = await client.from('partner_community_comments').insert({ post_id: post.id, author_id: user.id, author_name: profile.display_name, content }); if (error) setMessage(`댓글 등록 실패: ${error.message}`, true); else { input.value = ''; await loadPosts(); } });
     return card;
   };
 
@@ -149,6 +148,7 @@
 
   form.addEventListener('submit', async event => {
     event.preventDefault();
+    if (!user) { document.getElementById('composerMessage').textContent = '글쓰기는 로그인 후 이용할 수 있습니다.'; return; }
     const id = document.getElementById('editingPostId').value;
     const payload = { category: document.getElementById('postCategory').value, title: document.getElementById('postTitle').value.trim(), content: document.getElementById('postContent').value.trim(), resource_url: document.getElementById('postResourceUrl').value.trim() || null };
     const request = id ? client.from('partner_community_posts').update(payload).eq('id', id) : client.from('partner_community_posts').insert({ ...payload, author_id: user.id, author_name: profile.display_name });
@@ -157,20 +157,39 @@
     closeComposer(); await loadPosts(); setMessage(id ? '게시글을 수정했습니다.' : '새 게시글을 등록했습니다.');
   });
 
-  document.getElementById('openComposer').addEventListener('click', () => openComposer());
+  document.getElementById('openComposer').addEventListener('click', () => { if (!user) { setMessage('글쓰기는 로그인 후 이용할 수 있습니다.', true); return; } openComposer(); });
   document.querySelectorAll('[data-close-composer]').forEach(button => button.addEventListener('click', closeComposer));
   document.getElementById('refreshPosts').addEventListener('click', loadPosts);
   categoryFilter.addEventListener('change', renderPosts); search.addEventListener('input', renderPosts);
   document.getElementById('signOutButton').addEventListener('click', async () => { await client.auth.signOut(); location.replace('https://hibelleharmony.com/'); });
 
+  const showGuestView = () => {
+    user = null; profile = null;
+    document.getElementById('openComposer').hidden = true;
+    document.querySelector('[data-admin-only]').hidden = true;
+    document.getElementById('memberBadge').textContent = '게스트';
+    document.getElementById('welcomeName').textContent = '';
+  };
+
+  // Community posts and the digital-volunteer section below are public --
+  // only actually writing (새 글 작성, 댓글, 수정/삭제) requires a signed-in,
+  // approved member. A signed-out or not-yet-approved visitor now gets a
+  // read-only guest view of this same page instead of being blocked.
   const initialize = async () => {
-    if (!client) return;
-    const { data } = await client.auth.getSession(); user = data.session?.user;
-    if (!user) { showAccessMessage('로그인이 필요합니다', '커뮤니티 게시판은 로그인 후 이용할 수 있습니다. 홈페이지에서 로그인한 뒤 다시 방문해 주세요.'); return; }
-    const { data: member, error } = await client.from('member_profiles').select('role,account_status,display_name,member_type').eq('id', user.id).maybeSingle();
-    if (error || !member || member.account_status !== 'active' || !['member','partner0','partner20','partner50','admin'].includes(member.role)) { showAccessMessage('커뮤니티를 이용할 수 없습니다', '활성 상태의 Harmony Link 회원만 이용할 수 있습니다.'); return; }
-    profile = { ...member, display_name: member.display_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0] };
-    document.querySelector('[data-admin-only]').hidden = profile.role !== 'admin'; document.getElementById('memberBadge').textContent = profile.role === 'member' ? (profile.member_type === 'student' ? '수강생 커뮤니티' : '일반회원 커뮤니티') : roleLabels[profile.role]; document.getElementById('welcomeName').textContent = `${profile.display_name}님, 반갑습니다.`;
+    if (!client) { showGuestView(); access.hidden = true; app.hidden = false; setMessage('게시글을 불러오지 못했습니다.', true); return; }
+    const { data } = await client.auth.getSession(); user = data.session?.user || null;
+    if (user) {
+      const { data: member, error } = await client.from('member_profiles').select('role,account_status,display_name,member_type').eq('id', user.id).maybeSingle();
+      if (error || !member || member.account_status !== 'active' || !['member','partner0','partner20','partner50','admin'].includes(member.role)) {
+        showGuestView();
+      } else {
+        profile = { ...member, display_name: member.display_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0] };
+        document.getElementById('openComposer').hidden = false;
+        document.querySelector('[data-admin-only]').hidden = profile.role !== 'admin'; document.getElementById('memberBadge').textContent = profile.role === 'member' ? (profile.member_type === 'student' ? '수강생 커뮤니티' : '일반회원 커뮤니티') : roleLabels[profile.role]; document.getElementById('welcomeName').textContent = `${profile.display_name}님, 반갑습니다.`;
+      }
+    } else {
+      showGuestView();
+    }
     const requestedCategory = new URLSearchParams(location.search).get('category');
     if (Object.hasOwn(labels, requestedCategory)) categoryFilter.value = requestedCategory;
     access.hidden = true; app.hidden = false; await loadPosts();
