@@ -1178,8 +1178,13 @@ footer .footer-bottom{padding-top:11px!important}
 #partner-center .partner-auth-gate h3{margin:0!important;font-size:15px!important;text-align:center!important}
 #partner-center .partner-auth-gate .btn{margin:0!important;width:100%!important;max-width:220px;justify-content:center!important;padding:11px 16px!important;font-size:12px!important}
 #partner-center .partner-downloads{grid-column:1/-1!important}
-#partner-center .partner-community-note{margin:14px 0 0!important;text-align:center!important;color:#5b7290!important;font-size:12.5px!important}
 #partner-center .partner-upgrade-guide{margin-top:14px!important;padding:16px 0 0!important;border:0!important;border-top:1px solid #e5eef7!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;width:100%!important}
+/* Non-interactive lookalike of the auth-gate button, used for the loading
+   and "signed in but not a partner" states so the box keeps the exact same
+   button-shaped footprint (and therefore the exact same height as its
+   neighbor gate) without implying it can be clicked. */
+#partner-center .partner-auth-static{cursor:default!important}
+#partner-center .partner-auth-static:hover{transform:none!important}
 #partner-center .partner-guide-head h3{font-size:19px!important;margin:0!important}
 #partner-center .partner-guide-head>p:last-child{margin:4px 0 0!important}
 #partner-center .partner-upgrade-guide ol{margin:14px 0!important}
@@ -1286,8 +1291,42 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
   #community .audience-card li{margin:0!important}
   #community .community-link{margin:2px auto!important}
 }
-#community .audience-card .text-link{width:max-content!important;max-width:100%;min-height:0!important;justify-content:center!important;gap:10px}
+#community .audience-card .text-link{width:100%!important;max-width:100%;min-height:0!important;justify-content:center!important;gap:10px}
 #community .service-note{display:none!important}
+
+/* Both cards were still a single tall column internally (label -> title ->
+   description -> checklist -> button -> note stacked top to bottom), which
+   kept the whole card tall even after the grid switched to one wide column.
+   This splits each card into a left text block and a right action column
+   (button + its one-line compact note stacked immediately under it)
+   instead, using CSS grid areas over the existing DOM order (both cards
+   already end in the same label/h3/p/ul/a.text-link/p.matching-disclaimer
+   sequence) rather than restructuring the markup. Forcing the button to
+   the column's full width (overriding the width:max-content rule above)
+   keeps the provider and learner buttons exactly the same width even
+   though their labels are different lengths. */
+@media(min-width:901px){
+  #community .audience-card{
+    display:grid!important;
+    grid-template-columns:1fr 250px!important;
+    grid-template-areas:"label label" "title cta" "desc cta" "list note"!important;
+    column-gap:26px!important;
+    row-gap:4px!important;
+    align-items:start!important;
+    padding:22px 28px!important;
+    min-height:230px!important;
+  }
+  #community .audience-card>.audience-label{grid-area:label!important}
+  #community .audience-card>h3{grid-area:title!important;margin:4px 0 6px!important;font-size:21px!important}
+  #community .audience-card>p:not(.matching-disclaimer){grid-area:desc!important;margin:0 0 4px!important;font-size:13px!important;line-height:1.55!important}
+  #community .audience-card>ul{grid-area:list!important;margin:2px 0 0!important}
+  #community .audience-card>a.text-link{grid-area:cta!important;align-self:start!important;justify-self:stretch!important;width:100%!important;max-width:none!important;margin:2px 0 0!important;text-align:center!important}
+  #community .audience-card>p.matching-disclaimer{grid-area:note!important;justify-self:end!important;align-self:start!important;text-align:right!important;min-height:0!important;background:none!important;border:0!important;padding:0!important;margin:6px 0 0!important;font-size:11.5px!important;line-height:1.4!important;max-width:250px!important;display:block!important}
+  #community .community-link{align-self:center!important}
+}
+@media(max-width:900px){
+  #community .audience-card>p.matching-disclaimer{margin-top:12px!important}
+}
 
 /* Footer social (Instagram/Threads) block was sized to fit its sentence
    on one line (white-space:nowrap), which made the whole right-hand box
