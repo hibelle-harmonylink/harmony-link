@@ -786,9 +786,14 @@ const partnerCenterHeading=partnerCenter.querySelector('.partner-center-copy h2'
 partnerCenterHeading.dataset.ko='입점 파트너 전용 자료실';partnerCenterHeading.dataset.en='Partner Resource Center';partnerCenterHeading.textContent=partnerCenterHeading.dataset[currentLanguage];
 const partnerCenterDescription=partnerCenter.querySelector('.partner-center-copy>p:not(.eyebrow)');
 partnerCenterDescription.dataset.ko='HarmonyLink 입점 강사와 교육업체를 위한 <br class="mobile-only-break">운영 정책 및 파트너 자료를 제공합니다.';partnerCenterDescription.dataset.en='Resources and operating policies for approved HarmonyLink instructors and education providers.';partnerCenterDescription.innerHTML=partnerCenterDescription.dataset[currentLanguage];
-const advertisingSection = document.getElementById('advertising');
+// Partner center now follows "원하는 이용 경로를 선택하세요" (#community)
+// directly, right under the About section, per the requested
+// About -> Community paths -> Partner library page order. Falls back to
+// its previous anchor point if #community is ever removed, so this can't
+// silently stop inserting the section at all.
 const contactForPartnerCenter = document.getElementById('contact');
-(advertisingSection || contactForPartnerCenter)?.before(partnerCenter);
+if (communitySection) communitySection.after(partnerCenter);
+else contactForPartnerCenter?.before(partnerCenter);
 
 const accessForm = partnerCenter.querySelector('#partnerAccessForm');
 const downloads = partnerCenter.querySelector('.partner-downloads');
@@ -1026,27 +1031,52 @@ document.querySelectorAll('.contact-form-open').forEach(button => button.addEven
 }));
 
 // Partner-only resource library. Available files download immediately; planned files are clearly labeled.
+// Twelve fixed categories, each gated by the tier it first unlocks at
+// (cumulative, same as before: a section shows once selectedTier >= its
+// tier). This is deliberately built so the counts fall out exactly right
+// without any per-tier special-casing: FREE (selected=0) keeps only the
+// two tier:0 entries, BASIC (selected=20) adds the four tier:20 entries
+// (6 total), PREMIUM (selected=50) adds the six tier:50 entries (12
+// total). Card numbers are NOT stored here -- setAccessTier() below
+// renumbers whichever cards are currently visible from 01, so switching
+// tiers always restarts the count instead of keeping each card's fixed
+// position in this full list.
 const partnerResourceSections = [
-  {no:'01',tier:0,icon:'🚀',title:'시작하기 (필수)',copy:'입점 후 가장 먼저 확인하는 필수 안내 자료',items:[['입점 파트너 시작 안내서','downloads/HarmonyLink_Partner_Getting_Started.pdf','PDF'],['플랫폼 이용 및 운영 정책','downloads/HarmonyLink_Partner_Policy_v1.0.pdf','PDF'],['입점 파트너 계약서','downloads/HarmonyLink_Partner_Agreement_v2.0.pdf','PDF'],['강사 활동 가이드','downloads/HarmonyLink_Instructor_Activity_Guide_v1.0.pdf','PDF'],['자주 묻는 질문 (FAQ)','downloads/HarmonyLink_Partner_FAQ_v1.0.pdf','PDF']]},
-  {no:'02',tier:20,icon:'📘',title:'운영 매뉴얼',copy:'기관 출강과 실제 수업 운영을 위한 기준',items:[['기관 수업 진행 방법'],['출강 체크리스트'],['첫 수업 준비 방법'],['수업 종료 후 해야 할 일'],['강사 매너·복장 가이드'],['안전 수칙']]},
-  {no:'03',tier:20,icon:'🗂️',title:'수업 자료',copy:'수업 현장에서 바로 활용하는 양식과 템플릿',items:[['수업계획서 양식'],['출석부'],['만족도 조사'],['수료증 양식'],['강의 노트 양식'],['PPT 템플릿'],['Canva 템플릿']]},
-  {no:'04',tier:20,icon:'📣',title:'홍보 자료',copy:'Harmony Link 브랜드 홍보용 디자인 자료',items:[['Harmony Link 로고','assets/harmony-logo.png','PNG'],['전단지 예시','assets/partners/partner-recruitment.png','PNG'],['브랜드 컬러 가이드'],['SNS 카드뉴스'],['배너'],['명함 디자인'],['프로필 이미지 템플릿']]},
-  {no:'05',tier:20,icon:'🏢',title:'기관 제출용 문서',copy:'기관 담당자에게 바로 전달할 수 있는 문서',items:[['강사 프로필 양식'],['프로그램 제안서'],['강의계획서'],['견적서'],['일정표'],['기관 소개서']]},
-  {no:'06',tier:20,icon:'💻',title:'디지털 교육 자료',copy:'디지털·AI 교육 강사를 위한 전문 교안',items:[['ChatGPT 자료'],['Canva 자료'],['AI 활용 자료'],['스마트폰 교안'],['컴퓨터 교안'],['영상편집 교안']]},
-  {no:'07',tier:20,icon:'🎵',title:'음악 교육 자료',copy:'합창과 음악 활동 수업을 위한 자료',items:[['합창곡'],['반주 자료'],['발성 자료'],['음악 활동지'],['악보'],['프로그램 예시']]},
-  {no:'08',tier:20,icon:'🎬',title:'영상 강의',copy:'파트너의 수업과 사업 운영 역량을 높이는 콘텐츠',items:[['Canva 사용법'],['ChatGPT 활용법'],['강의 잘하는 방법'],['시니어 수업 노하우'],['기관 계약 방법'],['마케팅 방법']]},
-  {no:'09',tier:20,icon:'⬇️',title:'다운로드 센터',copy:'로고·포스터·배너·문서 파일 모음',items:[['Harmony Link 로고','assets/harmony-logo.png','PNG'],['하이벨 디지털 이미지','assets/brands/hibelle-digital.jpg','JPG'],['하이벨 화상영어 이미지','assets/brands/hibelle-online-english.jpg','JPG'],['Meeran Melody 이미지','assets/brands/meeran-melody.jpg','JPG'],['입점 파트너 모집 포스터','assets/partners/partner-recruitment.png','PNG'],['PowerPoint'],['PDF']]},
-  {no:'10',tier:50,icon:'⭐',title:'회원 혜택',copy:'PREMIUM 파트너 전용 신청 서비스',premium:true,items:[['홍보 디자인 신청'],['홈페이지 추천 노출 신청'],['프로그램 등록 신청'],['배너 제작 신청']]},
-  {no:'11',tier:0,icon:'📌',title:'공지사항',copy:'매칭·행사·교육 및 시스템 소식',items:[['최신 공지사항 보기','https://hibelleharmony.com/community.html?refresh=20260815-301&category=notice','바로가기','view'],['파트너 공지사항 안내','downloads/HarmonyLink_Partner_Notice_Guide_v1.0.pdf','PDF'],['교육·행사 일정'],['자료실 업데이트']]},
+  {tier:0,icon:'🚀',title:'시작하기',copy:'입점 후 가장 먼저 확인하는 필수 안내 자료',items:[['입점 파트너 시작 안내서','downloads/HarmonyLink_Partner_Getting_Started.pdf','PDF'],['플랫폼 이용 및 운영 정책','downloads/HarmonyLink_Partner_Policy_v1.0.pdf','PDF'],['입점 파트너 계약서','downloads/HarmonyLink_Partner_Agreement_v2.0.pdf','PDF'],['강사 활동 가이드','downloads/HarmonyLink_Instructor_Activity_Guide_v1.0.pdf','PDF'],['자주 묻는 질문 (FAQ)','downloads/HarmonyLink_Partner_FAQ_v1.0.pdf','PDF']]},
+  {tier:0,icon:'📌',title:'공지사항',copy:'Harmony Link 운영 공지 및 주요 업데이트',items:[['최신 공지사항 보기','https://hibelleharmony.com/community.html?refresh=20260815-301&category=notice','바로가기','view'],['파트너 공지사항 안내','downloads/HarmonyLink_Partner_Notice_Guide_v1.0.pdf','PDF'],['교육·행사 일정'],['자료실 업데이트']]},
+  {tier:20,icon:'📘',title:'운영 매뉴얼',copy:'기관 출강과 실제 수업 운영을 위한 기본 가이드',items:[['기관 수업 진행 방법'],['출강 체크리스트'],['첫 수업 준비 방법'],['수업 종료 후 해야 할 일'],['강사 매너·복장 가이드'],['안전 수칙']]},
+  {tier:20,icon:'🗂️',title:'수업 자료',copy:'수업 준비와 진행에 활용할 수 있는 교육 자료',items:[['수업계획서 양식'],['출석부'],['만족도 조사'],['수료증 양식'],['강의 노트 양식'],['PPT 템플릿'],['스마트폰 교안'],['컴퓨터 교안'],['영상편집 교안'],['합창곡'],['반주 자료'],['발성 자료'],['음악 활동지'],['악보']]},
+  {tier:20,icon:'📣',title:'홍보 자료',copy:'Harmony Link 브랜드 홍보 및 프로그램 안내 자료',items:[['Harmony Link 로고','assets/harmony-logo.png','PNG'],['전단지 예시','assets/partners/partner-recruitment.png','PNG'],['브랜드 컬러 가이드'],['SNS 카드뉴스'],['배너'],['명함 디자인'],['프로필 이미지 템플릿']]},
+  {tier:20,icon:'🗒️',title:'서식 · 템플릿',copy:'강사 운영에 필요한 기본 문서와 실무 양식',items:[['강사 프로필 양식'],['강의계획서'],['일정표'],['기관 소개서'],['PowerPoint 템플릿'],['PDF 템플릿']]},
+  {tier:50,premium:true,icon:'🎨',title:'Canva 디자인 자료',copy:'전단지·배너·SNS 제작에 활용하는 디자인 자료',items:[['Canva 템플릿'],['Canva 디자인 자료'],['Canva 사용법']]},
+  {tier:50,premium:true,icon:'🏢',title:'기관 제안 · 영업 자료',copy:'기관 제안과 프로그램 영업에 활용하는 실전 자료',items:[['프로그램 제안서'],['견적서'],['기관 계약 방법'],['마케팅 방법']]},
+  {tier:50,premium:true,icon:'🤖',title:'AI 수업 활용 자료',copy:'AI·ChatGPT 등을 교육에 활용하기 위한 강의 자료',items:[['ChatGPT 자료'],['AI 활용 자료'],['ChatGPT 활용법']]},
+  {tier:50,premium:true,icon:'📱',title:'SNS · 콘텐츠 자료',copy:'SNS 홍보와 콘텐츠 제작에 활용하는 운영 자료',items:[['하이벨 디지털 이미지','assets/brands/hibelle-digital.jpg','JPG'],['하이벨 화상영어 이미지','assets/brands/hibelle-online-english.jpg','JPG'],['Meeran Melody 이미지','assets/brands/meeran-melody.jpg','JPG'],['입점 파트너 모집 포스터','assets/partners/partner-recruitment.png','PNG']]},
+  {tier:50,premium:true,icon:'🧭',title:'프로그램 기획 자료',copy:'새로운 강좌와 프로그램을 설계하기 위한 기획 자료',items:[['프로그램 예시'],['강의 잘하는 방법'],['시니어 수업 노하우']]},
+  {tier:50,premium:true,icon:'📈',title:'파트너 성장 자료',copy:'수업 확대·기관 확보·브랜드 성장에 활용하는 자료',items:[['홍보 디자인 신청'],['홈페이지 추천 노출 신청'],['프로그램 등록 신청'],['배너 제작 신청']]}
 ];
 if (downloads) {
   const resourceMarkup = partnerResourceSections.map((section,index) => `<article class="partner-resource-group${section.premium?' premium-resource':''}" data-resource-tier="${section.tier}">
-    <button type="button" class="partner-resource-toggle" aria-expanded="false" aria-controls="partnerResource${index}"><span class="resource-number">${section.no}</span><b>${section.icon}</b><div><h3>${section.title}<em class="resource-tier-label">$${section.tier}</em></h3><p>${section.copy}</p></div><i>＋</i></button>
+    <button type="button" class="partner-resource-toggle" aria-expanded="false" aria-controls="partnerResource${index}"><span class="resource-number"></span><b>${section.icon}</b><div><h3>${section.title}<em class="resource-tier-label">$${section.tier}</em></h3><p>${section.copy}</p></div><i>＋</i></button>
     <div class="partner-resource-items" id="partnerResource${index}" hidden>${section.items.map(item=>`<div class="partner-resource-item"><span>${item[2]||'준비 중'}</span><strong>${item[0]}</strong>${item[1]?(item[3]==='view'?`<a href="${item[1]}">자료 보기 →</a>`:`<a href="${item[1]}" download>다운로드 ↓</a>`):'<small>자료 준비 중</small>'}</div>`).join('')}</div>
   </article>`).join('');
   downloads.innerHTML = `<div class="partner-library-head"><div class="partner-library-status"><span class="unlocked-badge">접근 승인됨</span><p>필요한 영역을 선택하면 다운로드 가능한 파일과 준비 중인 자료를 확인할 수 있습니다.</p></div><div class="partner-tier-guide" aria-label="파트너 등급"><button type="button" data-tier="0"><strong>$0</strong><b>FREE</b></button><button type="button" data-tier="20"><strong>$20</strong><b>BASIC</b></button><button type="button" data-tier="50"><strong>$50</strong><b>PREMIUM</b></button></div><p class="partner-tier-benefit" aria-live="polite"></p></div><div class="partner-resource-library">${resourceMarkup}</div><p class="partner-download-warning">이 자료는 승인된 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다.</p>`;
-  const benefitText={0:'FREE · 시작 필수자료와 공지사항을 이용할 수 있습니다.',20:'BASIC · FREE 혜택과 운영·수업·홍보·기관 제출 자료를 이용할 수 있습니다.',50:''};
-  const setAccessTier=(maxTier=0,selectedTier=maxTier)=>{const allowed=[0,20,50].filter(tier=>tier<=maxTier);const selected=allowed.includes(Number(selectedTier))?Number(selectedTier):Math.max(...allowed);downloads.querySelectorAll('.partner-tier-guide button').forEach(button=>{const tier=Number(button.dataset.tier);button.disabled=tier>maxTier;button.classList.toggle('active',tier===selected);button.setAttribute('aria-pressed',String(tier===selected));});const benefit=downloads.querySelector('.partner-tier-benefit');benefit.textContent=benefitText[selected];benefit.hidden=!benefitText[selected];downloads.querySelectorAll('[data-resource-tier]').forEach(section=>{section.hidden=Number(section.dataset.resourceTier)>selected;});};
+  const benefitText={0:'FREE · 2개 시작 자료를 이용할 수 있습니다.',20:'BASIC · FREE 포함 총 6개 자료를 이용할 수 있습니다.',50:'PREMIUM · 전체 12개 자료를 모두 이용할 수 있습니다.'};
+  const library = downloads.querySelector('.partner-resource-library');
+  const setAccessTier=(maxTier=0,selectedTier=maxTier)=>{
+    const allowed=[0,20,50].filter(tier=>tier<=maxTier);
+    const selected=allowed.includes(Number(selectedTier))?Number(selectedTier):Math.max(...allowed);
+    downloads.querySelectorAll('.partner-tier-guide button').forEach(button=>{const tier=Number(button.dataset.tier);button.disabled=tier>maxTier;button.classList.toggle('active',tier===selected);button.setAttribute('aria-pressed',String(tier===selected));});
+    const benefit=downloads.querySelector('.partner-tier-benefit');benefit.textContent=benefitText[selected];benefit.hidden=!benefitText[selected];
+    const sections=[...downloads.querySelectorAll('[data-resource-tier]')];
+    let visibleCount=0;
+    sections.forEach(section=>{
+      const visible=Number(section.dataset.resourceTier)<=selected;
+      section.hidden=!visible;
+      if(visible){visibleCount+=1;section.querySelector('.resource-number').textContent=String(visibleCount).padStart(2,'0');}
+    });
+    if(library) library.dataset.count=String(visibleCount);
+  };
   downloads.querySelectorAll('.partner-tier-guide button').forEach(button=>button.addEventListener('click',()=>setAccessTier(Number(downloads.dataset.maxTier||0),Number(button.dataset.tier))));
   window.HarmonyPartnerResources={setAccessTier:(maxTier,selectedTier=maxTier)=>{downloads.dataset.maxTier=String(maxTier);setAccessTier(maxTier,selectedTier);}};
   setAccessTier(0,0);

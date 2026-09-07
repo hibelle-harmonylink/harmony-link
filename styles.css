@@ -1404,3 +1404,23 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
   #community .audience-card{min-height:0!important;padding:23px 20px!important}
   #community .audience-card>h3{font-size:21px!important}
 }
+
+/* Partner resource library: grade-differentiated grid + larger type.
+   FREE/BASIC/PREMIUM now show exactly 2/6/12 cards (script.js), so the
+   column count is picked per count so every tier fills complete rows with
+   no single trailing orphan card: FREE centers as 2x1, BASIC lays out as
+   3x2, PREMIUM as 4x3. script.js sets data-count on .partner-resource-library
+   on every tier switch so this stays in sync automatically. */
+@media(min-width:761px){
+  #partner-center .container{width:min(1360px,calc(100% - 32px))}
+  #partner-center .partner-center-card{padding:30px 26px!important}
+  #partner-center .partner-resource-library[data-count="2"]{grid-template-columns:repeat(2,minmax(0,1fr))!important;max-width:660px!important;margin:0 auto!important}
+  #partner-center .partner-resource-library[data-count="6"]{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  #partner-center .partner-resource-library[data-count="12"]{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+  #partner-center .partner-resource-toggle{padding:16px 14px!important}
+  #partner-center .partner-resource-toggle h3{font-size:19px!important}
+  #partner-center .partner-resource-toggle h3 em{font-size:15px!important}
+  #partner-center .resource-number{font-size:11px!important;color:#0b5fc2!important;font-weight:800!important}
+  #partner-center .partner-tier-guide button:nth-child(3){box-shadow:0 8px 20px rgba(216,173,69,.28)!important}
+  #partner-center .partner-tier-guide button.active:nth-child(3){box-shadow:0 9px 22px rgba(11,95,194,.25)!important}
+}
