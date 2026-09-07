@@ -173,21 +173,41 @@
     document.getElementById('welcomeName').textContent = '';
   };
 
+  // Session state is judged the same way every other page (auth.js,
+  // youtube-start/access.js) judges it: account_status in the shared
+  // ACTIVE_STATUSES set ('active' or 'expiring') and community/feature
+  // access itself decided by HarmonyAccess.hasFeatureAccess() rather than a
+  // hand-rolled role whitelist here, so this page can't quietly drift out
+  // of sync with the canonical access rules in access-control.js.
+  const showLoading = () => {
+    const heading = access.querySelector('h1');
+    const copy = access.querySelector('p');
+    if (heading) heading.textContent = '커뮤니티를 불러오고 있습니다';
+    if (copy) copy.textContent = '로그인 상태를 확인하고 있습니다.';
+    access.hidden = false; app.hidden = true;
+  };
+
   // Community posts and the digital-volunteer section below are public --
   // only actually writing (새 글 작성, 댓글, 수정/삭제) requires a signed-in,
   // approved member. A signed-out or not-yet-approved visitor now gets a
-  // read-only guest view of this same page instead of being blocked.
+  // read-only guest view of this same page instead of being blocked. The
+  // guest/loading view is never replaced by a "sign in required" prompt --
+  // it stays a neutral loading state until the session check resolves, so
+  // a signed-in user navigating in from index.html never sees a stale
+  // login prompt while their session is still being confirmed.
   const initialize = async () => {
+    showLoading();
     if (!client) { showGuestView(); access.hidden = true; app.hidden = false; setMessage('게시글을 불러오지 못했습니다.', true); return; }
     const { data } = await client.auth.getSession(); user = data.session?.user || null;
     if (user) {
       const { data: member, error } = await client.from('member_profiles').select('role,account_status,display_name,member_type').eq('id', user.id).maybeSingle();
-      if (error || !member || member.account_status !== 'active' || !['member','partner0','partner20','partner50','admin'].includes(member.role)) {
+      const allowed = !error && member && window.HarmonyAccess?.hasFeatureAccess(member, 'community');
+      if (!allowed) {
         showGuestView();
       } else {
         profile = { ...member, display_name: member.display_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0] };
         document.getElementById('openComposer').hidden = false;
-        document.querySelector('[data-admin-only]').hidden = profile.role !== 'admin'; document.getElementById('memberBadge').textContent = profile.role === 'member' ? (profile.member_type === 'student' ? '수강생 커뮤니티' : '일반회원 커뮤니티') : roleLabels[profile.role]; document.getElementById('welcomeName').textContent = `${profile.display_name}님, 반갑습니다.`;
+        document.querySelector('[data-admin-only]').hidden = profile.role !== 'admin'; document.getElementById('memberBadge').textContent = profile.role === 'member' ? (profile.member_type === 'student' ? '수강생 커뮤니티' : '일반회원 커뮤니티') : (roleLabels[profile.role] || '회원 커뮤니티'); document.getElementById('welcomeName').textContent = `${profile.display_name}님, 반갑습니다.`;
       }
     } else {
       showGuestView();

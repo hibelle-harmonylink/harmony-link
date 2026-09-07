@@ -77,19 +77,45 @@
   const footerAccountLinks = document.querySelector('.footer-bottom div');
   const footerDeleteButton = document.getElementById('footerDeleteAccount');
 
-  // authGate and approvalGate now sit side by side as a fixed pair rather
-  // than swapping based on sign-in state -- one is always the login entry
-  // point, the other always a direct path into the (now publicly
-  // viewable) community. This also avoids the two ever needing to toggle
-  // in and out at the same time.
+  // authGate and approvalGate sit side by side as a fixed pair so they
+  // never fight over layout space, but authGate's own content is
+  // session-aware (see renderAuthGate below): it shows a neutral loading
+  // state while the session is still being resolved, "회원 로그인 필요합니다"
+  // only once we're sure the visitor is actually signed out, and a
+  // "로그인 완료" state -- never the login prompt again -- once a session is
+  // confirmed. approvalGate always points into the (now publicly
+  // viewable) community regardless of sign-in state, so it never changes.
   const authGate = document.createElement('div');
   authGate.className = 'partner-auth-gate';
-  authGate.innerHTML = `
-    <span class="partner-auth-icon" aria-hidden="true">🔐</span>
-    <h3 data-ko="회원 로그인 필요합니다" data-en="Sign-in required">회원 로그인 필요합니다</h3>
-    <button type="button" class="btn btn-primary auth-open"><span data-ko="로그인하기" data-en="Sign In">로그인하기</span><b>✓</b></button>`;
   accessCard.insertBefore(authGate, downloads);
   if (accessForm) accessForm.hidden = true;
+
+  const renderAuthGate = (session, approvedPartner) => {
+    const signedIn = Boolean(session?.user);
+    const sessionLoading = signedIn && activeMemberRole === 'loading';
+    if (sessionLoading) {
+      authGate.innerHTML = `
+        <span class="partner-auth-icon" aria-hidden="true">⏳</span>
+        <h3 data-ko="로그인 확인 중입니다" data-en="Checking sign-in status">로그인 확인 중입니다</h3>
+        <span class="btn btn-primary partner-auth-static" aria-hidden="true"><span>&nbsp;</span><b>·</b></span>`;
+    } else if (!signedIn) {
+      authGate.innerHTML = `
+        <span class="partner-auth-icon" aria-hidden="true">🔐</span>
+        <h3 data-ko="회원 로그인 필요합니다" data-en="Sign-in required">회원 로그인 필요합니다</h3>
+        <button type="button" class="btn btn-primary auth-open"><span data-ko="로그인하기" data-en="Sign In">로그인하기</span><b>✓</b></button>`;
+    } else if (approvedPartner) {
+      authGate.innerHTML = `
+        <span class="partner-auth-icon" aria-hidden="true">✅</span>
+        <h3 data-ko="로그인 완료" data-en="Signed in">로그인 완료</h3>
+        <button type="button" class="btn btn-primary partner-auth-view"><span data-ko="자료실 보기" data-en="View Resources">자료실 보기</span><b>✓</b></button>`;
+    } else {
+      authGate.innerHTML = `
+        <span class="partner-auth-icon" aria-hidden="true">✅</span>
+        <h3 data-ko="로그인 완료" data-en="Signed in">로그인 완료</h3>
+        <span class="btn btn-primary partner-auth-static" aria-hidden="true"><span data-ko="회원 확인됨" data-en="Member Verified">회원 확인됨</span><b>✓</b></span>`;
+    }
+    authGate.querySelectorAll('[data-ko][data-en]').forEach(element => { element.textContent = element.dataset[language()]; });
+  };
 
   const approvalGate = document.createElement('div');
   approvalGate.className = 'partner-auth-gate partner-approval-gate';
@@ -288,6 +314,7 @@
       partnerNav.dataset.en = approvedPartner ? 'Partner Center' : 'Partner Center 🔒';
       partnerNav.textContent = t(partnerNav.dataset.ko, partnerNav.dataset.en);
     }
+    renderAuthGate(session, approvedPartner);
   };
 
   const render = session => {
@@ -297,17 +324,18 @@
     publishAuthState();
   };
 
+  const openPartnerStart = () => {
+    if (downloads.hidden) return;
+    const firstToggle = downloads.querySelector('.partner-resource-toggle');
+    const firstPanel = firstToggle
+      ? downloads.querySelector(`#${firstToggle.getAttribute('aria-controls')}`)
+      : null;
+    if (firstPanel?.hidden) firstToggle.click();
+    downloads.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
   const partnerStatusMark = partnerCenter.querySelector('.partner-lock');
   if (partnerStatusMark) {
-    const openPartnerStart = () => {
-      if (downloads.hidden) return;
-      const firstToggle = downloads.querySelector('.partner-resource-toggle');
-      const firstPanel = firstToggle
-        ? downloads.querySelector(`#${firstToggle.getAttribute('aria-controls')}`)
-        : null;
-      if (firstPanel?.hidden) firstToggle.click();
-      downloads.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    };
     partnerStatusMark.addEventListener('click', openPartnerStart);
     partnerStatusMark.addEventListener('keydown', event => {
       if (event.key !== 'Enter' && event.key !== ' ') return;
@@ -552,6 +580,12 @@
     if (modeTab) {
       setAuthMode(modeTab.dataset.authModeTab);
       updateLanguage();
+      return;
+    }
+    const authGateViewButton = event.target.closest('.partner-auth-view');
+    if (authGateViewButton) {
+      event.preventDefault();
+      openPartnerStart();
       return;
     }
     const authOpenButton = event.target.closest('.auth-open');

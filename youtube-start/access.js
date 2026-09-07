@@ -9,10 +9,15 @@
   });
   var state = { signedIn: false, premium: false };
 
+  // Uses the shared canAccessPremiumApps() helper (access-control.js) so
+  // this page's gate can never drift from the one every other page uses --
+  // it already returns true for an active admin regardless of membership,
+  // which a bare `membership === 'premium'` check here previously missed,
+  // showing the admin the Premium($50)-required alert.
   function setState(signedIn, profile) {
     var member = access.normalizeUser(profile || {});
     state.signedIn = signedIn;
-    state.premium = signedIn && member.account_status === 'active' && member.membership === 'premium';
+    state.premium = signedIn && access.canAccessPremiumApps(member);
   }
 
   async function loadAccess() {
