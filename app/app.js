@@ -52,7 +52,18 @@ function programCard(program){
 }
 function renderRecommended(){
   const featured=sharedContent.featuredPrograms||[];
-  $("#recommendedPrograms").innerHTML=featured.map(p=>`<article class="program-mini" data-open-program="${p.id}"><div class="program-art" style="background:${p.color}">${p.image?`<img src="${p.image}" alt="">`:p.emoji}</div><div><h3>${language==="ko"?p.ko:p.en}</h3><p>${language==="ko"?p.tagsKo:p.tagsEn}</p></div></article>`).join("");
+  const viewLabel=language==="ko"?"프로그램 보기":"View Program";
+  const homepageFlyers={
+    "hibelle-digital":"../assets/specialty/hibelle-digital-20260718.jpg",
+    "hibelle-english":"../assets/specialty/hibelle-online-english-20260718.jpg",
+    "meeran-melody":"../assets/specialty/meeran-melody.png"
+  };
+  $("#recommendedPrograms").innerHTML=featured.map(p=>{
+    const title=language==="ko"?p.ko:p.en;
+    const description=language==="ko"?p.tagsKo:p.tagsEn;
+    const image=homepageFlyers[p.id]||p.image;
+    return `<article class="app-specialty-card"><a class="app-specialty-poster" href="${p.url}" target="_blank" rel="noopener noreferrer" aria-label="${title} ${viewLabel}"><img src="${image}" alt="${title} 전단지"></a><div class="app-specialty-copy"><h3>${title}</h3><p>${description}</p><a class="app-specialty-link" href="${p.url}" target="_blank" rel="noopener noreferrer">${viewLabel}</a></div></article>`;
+  }).join("");
 }
 function renderPartners(){
   const container=$("#partnerPrograms");
@@ -60,9 +71,14 @@ function renderPartners(){
   const partners=(sharedContent.promotions||[]).filter(item=>item.kind==="advertising"||item.kind==="community");
   if(!partners.length){container.innerHTML="";return}
   partnerIndex=(partnerIndex+partners.length)%partners.length;
-  const item=partners[partnerIndex];
+  const visible=Array.from({length:Math.min(3,partners.length)},(_,offset)=>partners[(partnerIndex+offset)%partners.length]);
+  container.innerHTML=visible.map(item=>{
+    const title=language==="ko"?item.titleKo:item.titleEn;
+    const details=language==="ko"?item.textKo:item.textEn;
+    const action=language==="ko"?item.actionKo:item.actionEn;
     const isYura=item.image?.includes("highline-hl-symbol");
-  container.innerHTML=`<a class="program-mini" href="${item.url}" target="_blank" rel="noopener noreferrer"><div class="program-art${isYura?" yura-mini-logo":""}" style="background:#eef5ff">${isYura?"":`<img src="${item.image}" alt="">`}</div><div><h3>${language==="ko"?item.titleKo:item.titleEn}</h3><p>${language==="ko"?item.badgeKo:item.badgeEn}</p></div></a>`;
+    return `<article class="app-partner-card"><div class="app-partner-logo${isYura?" yura-mini-logo":""}">${isYura?"":`<img src="${item.image}" alt="${title.replace(/<[^>]*>/g,"")}">`}</div><div class="app-partner-copy"><h3>${title}</h3><p>${details}</p><a href="${item.url}" target="_blank" rel="noopener noreferrer">${action}</a></div></article>`;
+  }).join("");
 }
 function eventCard(item){
   const title=language==="ko"?item.titleKo:item.titleEn;
@@ -408,7 +424,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true;clos
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v91.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v92.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;
