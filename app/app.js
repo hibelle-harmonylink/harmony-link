@@ -22,11 +22,13 @@ const fallbackPopupNews=[
   {badgeKo:"파트너 모집",badgeEn:"PARTNER RECRUITMENT",titleKo:"입점 파트너 모집",titleEn:"Partner Recruitment",textKo:"전문 강사와 교육업체의 좋은 프로그램이 더 많은<br>사람과 만날 수 있도록 연결합니다.",textEn:"We connect trusted instructors and education providers<br>with more learners and organizations.",image:"../assets/partners/partner-recruitment.png",actionKo:"문의하기",actionEn:"Contact us",screen:"contact"}
 ];
 const popupNews=sharedContent.promotions?.length?sharedContent.promotions:fallbackPopupNews;
-const events=(sharedContent.events?.length?sharedContent.events:[
+const messiahEvent={id:"messiah",date:"2026-12-09",endDate:"2026-12-13",categoryKo:"특별 행사",categoryEn:"SPECIAL EVENT",badgeKo:"특별 행사",badgeEn:"SPECIAL EVENT",titleKo:"미란멜로디와 함께하는 헨델의 메시아",titleEn:"Handel's Messiah with Meeran Melody",textKo:"2026년 12월 9일(수)~13일(일)<br>David Geffen Hall at Lincoln Center<br>문의 817-905-3468",textEn:"December 9–13, 2026<br>David Geffen Hall at Lincoln Center<br>Contact 817-905-3468",image:"../assets/events/meeran-melody-messiah-20261209.png",url:"../special-event-messiah.html"};
+const sharedEvents=(sharedContent.events?.length?sharedContent.events:[
   {id:"free-music-class",date:"2026-08-22",endDate:"2026-11-22",badgeKo:"무료 체험",badgeEn:"FREE TRIAL",titleKo:"3개월 무료 음악 클래스",titleEn:"Three-Month Free Music Class",textKo:"매주 토요일 오전 10시, 할렐루야 교회에서 진행합니다.",textEn:"Every Saturday at 10 AM at Hallelujah Church.",image:"../assets/events/free-music-class-20260822.png"},
   {id:"one-day-class",date:"2026-08-01",endDate:"2026-08-01",badgeKo:"지난 무료 체험",badgeEn:"PAST FREE TRIAL",titleKo:"음악과 디지털 1일 체험 클래스",titleEn:"Music & Digital One-Day Experience",textKo:"2026년 8월 1일 진행된 무료 체험 클래스입니다.",textEn:"A free trial class held on August 1, 2026.",image:"../assets/events/one-day-class.jpg"},
   {id:"finance-ai-seminar",date:"2026-07-10",endDate:"2026-07-24",badgeKo:"지난 무료 세미나",badgeEn:"PAST FREE SEMINAR",badgeDark:true,titleKo:"재정과 AI의 협력, 더 나은 미래 설계",titleEn:"Finance and AI: Designing a Better Future",textKo:"2026년 7월에 진행된 무료 세미나입니다.",textEn:"A free seminar held in July 2026.",image:"../assets/events/finance-ai-seminar.jpg"}
 ]);
+const events=[messiahEvent,...sharedEvents.filter(item=>!item.isPlaceholder)];
 let language=localStorage.getItem("hl-language")||"ko";
 let activeCategory="전체";
 let saved=new Set(JSON.parse(localStorage.getItem("hl-saved")||"[]"));
@@ -37,6 +39,10 @@ let partnerIndex=0;
 let partnerTimer=null;
 let activeContactMode="general";
 let pastEventsOpen=false;
+let appAuthClient=null;
+let appAuthSession=null;
+let appAuthMode="login";
+let appSignupType="student";
 
 const $=(selector,root=document)=>root.querySelector(selector);
 const $$=(selector,root=document)=>[...root.querySelectorAll(selector)];
@@ -47,10 +53,9 @@ function programCard(program){
   return `<article class="program-card" data-id="${program.id}"${program.url?` data-program-url="${program.url}" tabindex="0"`:""}>
     <div class="program-art" style="background:${program.color}">${program.image?`<img src="${program.image}" alt="">`:program.emoji}</div>
     <div><h3>${title}</h3><p>${tags}</p></div>
-    <button class="save-button ${saved.has(program.id)?"saved":""}" type="button" data-save="${program.id}" aria-label="${saved.has(program.id)?"Remove from saved":"Save program"}">${saved.has(program.id)?"♥":"♡"}</button>
   </article>`;
 }
-function renderRecommended(){
+function specialtyCards(){
   const featured=sharedContent.featuredPrograms||[];
   const viewLabel=language==="ko"?"프로그램 보기":"View Program";
   const homepageFlyers={
@@ -58,12 +63,15 @@ function renderRecommended(){
     "hibelle-english":"../assets/specialty/hibelle-online-english-20260718.jpg",
     "meeran-melody":"../assets/specialty/meeran-melody.png"
   };
-  $("#recommendedPrograms").innerHTML=featured.map(p=>{
+  return featured.map(p=>{
     const title=language==="ko"?p.ko:p.en;
     const description=language==="ko"?p.tagsKo:p.tagsEn;
     const image=homepageFlyers[p.id]||p.image;
     return `<article class="app-specialty-card"><a class="app-specialty-poster" href="${p.url}" target="_blank" rel="noopener noreferrer" aria-label="${title} ${viewLabel}"><img src="${image}" alt="${title} 전단지"></a><div class="app-specialty-copy"><h3>${title}</h3><p>${description}</p><a class="app-specialty-link" href="${p.url}" target="_blank" rel="noopener noreferrer">${viewLabel}</a></div></article>`;
   }).join("");
+}
+function renderRecommended(){
+  $("#recommendedPrograms").innerHTML=specialtyCards();
 }
 function renderPartners(){
   const container=$("#partnerPrograms");
@@ -87,12 +95,14 @@ function eventCard(item){
   const zoomLabel=language==="ko"?"이미지 클릭 시 크게 보기":"Tap image to enlarge";
   const category=language==="ko"?(item.categoryKo||badge):(item.categoryEn||badge);
   const media=item.isPlaceholder?`<div class="event-placeholder-art" aria-hidden="true">✦</div>`:`<button class="event-image-open" type="button" data-event-image="${item.image}" data-event-alt="${title}" aria-label="${zoomLabel}"><img src="${item.image}" alt="${title}"><span>${zoomLabel}</span></button>`;
-  return `<article class="event-card${item.isPlaceholder?" event-placeholder":""}">${media}<div><span class="badge${item.badgeDark?" dark":""}">${category}</span><h2>${title}</h2><p>${text}</p></div></article>`;
+  const detailUrl=item.url||({"hole19-tournament":"../special-event-hole19.html","free-music-class":"../special-event-music-class.html"}[item.id]||"");
+  const detail=detailUrl?`<a class="event-detail-link" href="${detailUrl}">${language==="ko"?"자세히 보기":"View Details"}</a>`:"";
+  return `<article class="event-card${item.isPlaceholder?" event-placeholder":""}">${media}<div><span class="badge${item.badgeDark?" dark":""}">${category}</span><h2>${title}</h2><p>${text}</p>${detail}</div></article>`;
 }
 function renderEvents(){
   const today=new Date().toISOString().slice(0,10);
   const eventEnd=e=>e.endDate||e.date;
-  const upcoming=events.filter(e=>eventEnd(e)>=today).sort((a,b)=>a.date<b.date?-1:1);
+  const upcoming=events.filter(e=>eventEnd(e)>=today);
   const past=events.filter(e=>eventEnd(e)<today).sort((a,b)=>eventEnd(a)>eventEnd(b)?-1:1);
   $("#upcomingEventsList").innerHTML=upcoming.map(eventCard).join("");
   const toggle=$("#pastEventsToggle");
@@ -101,10 +111,21 @@ function renderEvents(){
   $("#pastEventsList").innerHTML=past.map(eventCard).join("");
   $("#pastEventsList").hidden=!pastEventsOpen;
 }
+function renderHomeEvents(){
+  const container=$("#homeEvents");
+  if(!container)return;
+  const today=new Date().toISOString().slice(0,10);
+  container.innerHTML=events.filter(item=>(item.endDate||item.date)>=today).slice(0,3).map(eventCard).join("");
+}
 function renderFilters(){
+  if(!$("#categoryFilters"))return;
   $("#categoryFilters").innerHTML=Object.keys(categoryNames).map(name=>`<button type="button" class="${activeCategory===name?"active":""}" data-filter="${name}">${language==="ko"?name:categoryNames[name]}</button>`).join("");
 }
 function renderPrograms(){
+  if(!$("#programSearch")){
+    $("#programList").innerHTML=specialtyCards();
+    return;
+  }
   const query=$("#programSearch").value.trim().toLowerCase();
   // The "전체" (all) browse view with no search stays to the 12 general category
   // cards only — featured businesses (하이벨 디지털, 화상영어, 미란멜로디, and any
@@ -117,6 +138,7 @@ function renderPrograms(){
   $("#programEmpty").hidden=filtered.length>0;
 }
 function renderSaved(){
+  if(!$("#savedList")||!$("#savedEmpty"))return;
   const items=programs.filter(p=>saved.has(p.id));
   $("#savedList").innerHTML=items.map(programCard).join("");
   $("#savedEmpty").hidden=items.length>0;
@@ -189,7 +211,8 @@ function applyLanguage(){
     button.setAttribute('aria-pressed',String(selected));
   });
   localStorage.setItem("hl-language",language);
-  renderRecommended();renderPartners();renderFilters();renderPrograms();renderSaved();renderEvents();renderPopup();
+  renderRecommended();renderPartners();renderFilters();renderPrograms();renderSaved();renderEvents();renderHomeEvents();renderPopup();
+  renderAppAuthCopy();
 }
 function navigate(screen,contactMode="general",historyAction="push"){
   const resetScroll=()=>window.scrollTo({top:0,left:0,behavior:"auto"});
@@ -250,7 +273,7 @@ document.addEventListener("keydown",event=>{
     openImageLightbox(eventImage.dataset.eventImage,eventImage.dataset.eventAlt||"");
   }
 });
-$("#programSearch").addEventListener("input",renderPrograms);
+$("#programSearch")?.addEventListener("input",renderPrograms);
 $("#pastEventsToggle").addEventListener("click",()=>{pastEventsOpen=!pastEventsOpen;renderEvents()});
 $$('[data-language]').forEach(button=>button.addEventListener('click',()=>{
   language=button.dataset.language;
@@ -348,6 +371,92 @@ $("#contactForm").addEventListener("submit",async event=>{
     status.innerHTML=language==="ko"?'전송하지 못했습니다. <a href="mailto:hibelle@hibelleconsulting.com">이메일로 문의해 주세요.</a>':'Could not send. Please <a href="mailto:hibelle@hibelleconsulting.com">email us</a>.';
   }finally{button.disabled=false}
 });
+
+function setAppSignedIn(signedIn){
+  const pathways=$("#appPathways");
+  pathways.hidden=!signedIn;
+  pathways.setAttribute("aria-hidden",String(!signedIn));
+  const authButton=$("#appAuthButton");
+  authButton.dataset.ko=signedIn?"로그아웃":"로그인";
+  authButton.dataset.en=signedIn?"Sign Out":"Sign In";
+  authButton.textContent=authButton.dataset[language];
+  authButton.dataset.signedIn=String(signedIn);
+}
+function renderAppAuthCopy(){
+  const heading=$("[data-app-auth-heading]");
+  const description=$("[data-app-auth-description]");
+  if(!heading||!description)return;
+  const signup=appAuthMode==="signup";
+  heading.textContent=language==="ko"?(signup?"가입 유형을 선택해주세요":"간편하게 로그인하세요"):(signup?"Choose your membership type":"Sign in to Harmony Link");
+  description.textContent=language==="ko"?(signup?"Google 또는 카카오 계정으로 가입할 수 있습니다.":"Google 또는 카카오 계정으로 로그인할 수 있습니다."):(signup?"Join with a Google or Kakao account.":"Sign in with a Google or Kakao account.");
+  $("[data-app-signup-types]").hidden=!signup;
+  $$('[data-app-auth-provider]').forEach(button=>{
+    const provider=button.dataset.appAuthProvider==="google"?"Google":"Kakao";
+    button.querySelector("span").textContent=language==="ko"?`${provider}로 ${signup?"가입하기":"로그인"}`:`${signup?"Join":"Continue"} with ${provider}`;
+  });
+}
+function openAppAuth(){
+  const modal=$("#appAuthModal");
+  modal.hidden=false;
+  document.body.classList.add("app-auth-open");
+  $("[data-app-auth-step='choice']").hidden=false;
+  $("[data-app-auth-step='flow']").hidden=true;
+}
+function closeAppAuth(){
+  $("#appAuthModal").hidden=true;
+  document.body.classList.remove("app-auth-open");
+}
+function showAppAuthFlow(mode){
+  appAuthMode=mode==="signup"?"signup":"login";
+  $("[data-app-auth-step='choice']").hidden=true;
+  $("[data-app-auth-step='flow']").hidden=false;
+  renderAppAuthCopy();
+}
+async function completePendingSignup(session){
+  const pending=localStorage.getItem("harmonyPendingAppSignupType");
+  if(!session?.user||!['student','partner'].includes(pending))return;
+  try{
+    const {error}=await appAuthClient.auth.updateUser({data:{requested_member_type:pending}});
+    if(error)throw error;
+    localStorage.removeItem("harmonyPendingAppSignupType");
+    if(pending==="partner")localStorage.setItem("harmonyPendingPartnerApplication","true");
+  }catch(error){console.error("App signup type could not be recorded.",error)}
+}
+async function startAppOAuth(provider){
+  const status=$(".app-auth-status");
+  if(!appAuthClient){status.textContent=language==="ko"?"로그인 서비스를 불러오지 못했습니다.":"The sign-in service is unavailable.";return}
+  status.textContent=language==="ko"?"로그인 화면으로 이동합니다…":"Opening secure sign-in…";
+  if(appAuthMode==="signup")localStorage.setItem("harmonyPendingAppSignupType",appSignupType);
+  const options={redirectTo:`${location.origin}${location.pathname}`};
+  if(provider==="kakao")options.scopes="profile_nickname profile_image";
+  const {error}=await appAuthClient.auth.signInWithOAuth({provider,options});
+  if(error)status.textContent=language==="ko"?`로그인 오류: ${error.message}`:`Sign-in error: ${error.message}`;
+}
+async function initAppAuth(){
+  if(!window.supabase?.createClient){setAppSignedIn(false);return}
+  appAuthClient=window.supabase.createClient("https://ricndeoiomzjacmrsjtg.supabase.co","sb_publishable_cGiclRJGjTqHBPVZqgTiQA_tvGKSQ60",{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  const {data}=await appAuthClient.auth.getSession();
+  appAuthSession=data.session;
+  await completePendingSignup(appAuthSession);
+  setAppSignedIn(Boolean(appAuthSession?.user));
+  appAuthClient.auth.onAuthStateChange((_event,session)=>{appAuthSession=session;setAppSignedIn(Boolean(session?.user));window.setTimeout(()=>completePendingSignup(session),0)});
+}
+$("#appAuthButton").addEventListener("click",async()=>{
+  if(appAuthSession?.user&&appAuthClient){await appAuthClient.auth.signOut();return}
+  openAppAuth();
+});
+$$('[data-app-auth-close]').forEach(button=>button.addEventListener('click',closeAppAuth));
+$("[data-app-auth-back]").addEventListener("click",openAppAuth);
+$$('[data-app-auth-mode]').forEach(button=>button.addEventListener('click',()=>showAppAuthFlow(button.dataset.appAuthMode)));
+$$('[data-app-signup-type]').forEach(button=>button.addEventListener('click',()=>{
+  appSignupType=button.dataset.appSignupType;
+  $$('[data-app-signup-type]').forEach(item=>item.classList.toggle('active',item===button));
+}));
+$$('[data-app-auth-provider]').forEach(button=>button.addEventListener('click',()=>startAppOAuth(button.dataset.appAuthProvider)));
+document.addEventListener('harmony-auth-change',event=>setAppSignedIn(Boolean(event.detail?.signedIn)));
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$("#appAuthModal").hidden)closeAppAuth()});
+initAppAuth().catch(error=>{console.error("App authentication could not be initialized.",error);setAppSignedIn(false)});
+
 function detectInstallPlatform(){
   const ua=navigator.userAgent;
   const isIos=/iphone|ipad|ipod/i.test(ua);
@@ -424,7 +533,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true;clos
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v92.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v93.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;

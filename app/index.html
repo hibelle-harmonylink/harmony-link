@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" href="icon-192-v71.png">
   <link rel="apple-touch-icon" href="icon-192-v71.png">
   <link rel="stylesheet" href="app.css?v=61">
-  <link rel="stylesheet" href="overrides.css?v=92">
+  <link rel="stylesheet" href="overrides.css?v=93">
 </head>
 <body>
   <div class="app-shell">
@@ -23,18 +23,17 @@
         <span class="logo-name">Harmony <b>Link</b><small data-ko="이음문화센터" data-en="E-eum Culture Center">이음문화센터</small></span>
       </a>
       <nav class="desktop-app-nav" aria-label="주요 메뉴">
-        <button type="button" data-go="home" data-ko="소개" data-en="About">소개</button>
-        <button type="button" data-go="programs" data-ko="전문 교육" data-en="Professional Programs">전문 교육</button>
-        <button type="button" data-go="events" data-ko="강좌·행사" data-en="Classes & Events">강좌·행사</button>
+        <button type="button" data-go="about" data-ko="소개" data-en="About">소개</button>
+        <button type="button" data-go="programs" data-ko="전문교육" data-en="Programs">전문교육</button>
+        <button type="button" data-go="events" data-ko="강좌행사" data-en="Events">강좌행사</button>
         <a href="../community.html" data-ko="커뮤니티" data-en="Community">커뮤니티</a>
-        <a href="../#partner-center" data-ko="파트너센터 <span class='menu-lock' aria-hidden='true'>🔒</span>" data-en="Partner Center <span class='menu-lock' aria-hidden='true'>🔒</span>">파트너센터 <span class="menu-lock" aria-hidden="true">🔒</span></a>
+        <a href="../#partner-center" data-ko="파트너 <span class='menu-lock' aria-hidden='true'>🔒</span>" data-en="Partner <span class='menu-lock' aria-hidden='true'>🔒</span>">파트너 <span class="menu-lock" aria-hidden="true">🔒</span></a>
         <button type="button" data-go="contact" data-ko="문의" data-en="Contact">문의</button>
       </nav>
       <div class="top-actions">
         <div class="app-language-toggle" role="group" aria-label="언어 변경"><button type="button" data-language="ko">KO</button><button type="button" data-language="en">EN</button></div>
         <button id="installButton" class="install-button" type="button" hidden aria-hidden="true">앱 설치</button>
-        <a class="member-button member-signup" href="../?auth=signup" target="_blank" rel="noopener" data-ko="가입" data-en="Join">가입</a>
-        <a class="member-button member-login" href="../?auth=login" target="_blank" rel="noopener" data-ko="로그인" data-en="Sign In">로그인</a>
+        <button class="member-button member-login" id="appAuthButton" type="button" data-ko="로그인" data-en="Sign In">로그인</button>
       </div>
     </header>
 
@@ -46,17 +45,33 @@
           <div class="hero-copy">
             <p class="eyebrow" data-ko="배움으로 연결되는 더 나은 일상" data-en="A BETTER LIFE THROUGH LEARNING">배움으로 연결되는 더 나은 일상</p>
             <h1 data-ko="마음을 잇고,<br><em>가능성을 열다</em>" data-en="Connecting hearts,<br><em>opening possibilities</em>">마음을 잇고,<br><em>가능성을 열다</em></h1>
-            <p class="hero-summary" data-ko="나에게 맞는 수업과 지역 프로그램을<br class='app-mobile-summary-break'>쉽고 빠르게 찾아보세요" data-en="Discover classes and community programs<br class='app-mobile-summary-break'>that fit you quickly and easily.">나에게 맞는 수업과 지역 프로그램을<br class="app-mobile-summary-break">쉽고 빠르게 찾아보세요</p>
+            <p class="hero-summary app-company-summary"><span data-ko="Harmony Link(이음문화센터)는 하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다." data-en="Harmony Link (E-eum Culture Center) is a culture and education project operated by Hibelle Consulting.">Harmony Link(이음문화센터)는 하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다.</span><span data-ko="전문 강사와 기관을 연결해 모두가 즐겁게 배우고 성장하는 맞춤형 프로그램을 만듭니다." data-en="We connect professional instructors and organizations to create tailored programs where everyone can learn and grow with joy.">전문 강사와 기관을 연결해 모두가 즐겁게 배우고 성장하는 맞춤형 프로그램을 만듭니다.</span></p>
             <button class="primary-action app-program-explore" type="button" data-go="programs"><span data-ko="프로그램 둘러보기" data-en="Explore Programs">프로그램 둘러보기</span><b>→</b></button>
           </div>
           <div class="hero-connection-visual" aria-hidden="true"><div class="hero-ripple hero-ripple-a"></div><div class="hero-ripple hero-ripple-b"></div><div class="hero-ripple hero-ripple-c"></div><div class="hero-connection-copy"><div class="hero-connection-symbol"><span>🎓</span><i>↔</i><span>👥</span></div><strong data-ko="교육과 사람을 잇다" data-en="Connecting Education & People">교육과 사람을 잇다</strong><small>HARMONY LINK</small></div></div>
         </div>
+
+        <section class="app-pathways" id="appPathways" hidden aria-hidden="true">
+          <div class="section-title"><div><p class="eyebrow">CHOOSE YOUR PATH</p><h2 data-ko="원하는 이용 경로를 선택하세요" data-en="Choose the Path That Fits You">원하는 이용 경로를 선택하세요</h2></div></div>
+          <div class="app-pathway-grid">
+            <article><h3 data-ko="입점 파트너" data-en="Partner Providers">입점 파트너</h3><p data-ko="업체와 전문 강사가 Harmony Link 입점 파트너로 참여할 수 있습니다." data-en="Companies and professional instructors can join Harmony Link as partners.">업체와 전문 강사가 Harmony Link 입점 파트너로 참여할 수 있습니다.</p><a href="https://forms.gle/pF4xy5Jz4ycVouKo9" target="_blank" rel="noopener noreferrer" data-ko="입점 파트너 신청하기" data-en="Apply as a Partner">입점 파트너 신청하기</a></article>
+            <article><h3 data-ko="교육 신청" data-en="Learning Request">교육 신청</h3><p data-ko="기관, 단체, 소그룹과 개인에게 맞는 교육을 신청할 수 있습니다." data-en="Organizations, groups, and individuals can request tailored learning.">기관, 단체, 소그룹과 개인에게 맞는 교육을 신청할 수 있습니다.</p><a href="https://docs.google.com/forms/d/1LfKkCnsfGLgsvs9ptLluwZkkGupY6iJYBzBbA7jMEK8/viewform" target="_blank" rel="noopener noreferrer" data-ko="교육 신청하기" data-en="Request Learning">교육 신청하기</a></article>
+          </div>
+        </section>
 
         <section class="home-programs">
           <div class="section-title">
             <div><p class="eyebrow">PROFESSIONAL PROGRAMS</p><h2 data-ko="전문 교육 프로그램" data-en="Professional Programs">전문 교육 프로그램</h2></div>
           </div>
           <div class="app-specialty-grid" id="recommendedPrograms"></div>
+        </section>
+
+        <section class="home-programs app-home-events">
+          <div class="section-title">
+            <div><p class="eyebrow">NEWS & EVENTS</p><h2 data-ko="하모니링크 소식·행사" data-en="Harmony Link News & Events">하모니링크 소식·행사</h2></div>
+            <button type="button" data-go="events" data-ko="행사 보기" data-en="View Events">행사 보기</button>
+          </div>
+          <div class="app-home-event-grid" id="homeEvents"></div>
         </section>
 
         <section class="home-programs app-partners-section" id="appPartners">
@@ -75,42 +90,33 @@
         </section>
       </section>
 
+      <section class="screen" id="about" data-screen="about">
+        <div class="page-heading app-about-heading"><p class="eyebrow">HARMONY LINK · 이음문화센터</p><h1 data-ko="Harmony Link 회사 소개" data-en="About Harmony Link">Harmony Link 회사 소개</h1></div>
+        <div class="app-about-grid">
+          <article class="app-about-company"><p><span data-ko="Harmony Link(이음문화센터)는 하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다." data-en="Harmony Link (E-eum Culture Center) is a culture and education project operated by Hibelle Consulting.">Harmony Link(이음문화센터)는 하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다.</span><span data-ko="전문 강사와 기관을 연결해 모두가 즐겁게 배우고 성장하는 맞춤형 프로그램을 만듭니다." data-en="We connect professional instructors and organizations to create tailored programs where everyone can learn and grow with joy.">전문 강사와 기관을 연결해 모두가 즐겁게 배우고 성장하는 맞춤형 프로그램을 만듭니다.</span></p><div class="app-company-structure"><span data-ko="운영 법인" data-en="OPERATING COMPANY">운영 법인</span><strong data-ko="하이벨컨설팅" data-en="Hibelle Consulting">하이벨컨설팅</strong><i>↓</i><span data-ko="운영 프로젝트" data-en="OPERATED PROJECT">운영 프로젝트</span><strong>Harmony Link · <b data-ko="이음문화센터" data-en="E-eum Culture Center">이음문화센터</b></strong></div><a href="https://hibelleconsulting.com/" target="_blank" rel="noopener noreferrer" data-ko="하이벨컨설팅 회사소개" data-en="About Hibelle Consulting">하이벨컨설팅 회사소개</a></article>
+          <article class="app-about-video"><p class="eyebrow">HARMONY LINK ON YOUTUBE</p><h2 data-ko="영상으로 만나는 Harmony Link" data-en="Meet Harmony Link through video">영상으로 만나는 Harmony Link</h2><a href="https://www.youtube.com/watch?v=7jo7Ovnq7Ew" target="_blank" rel="noopener noreferrer"><img src="https://i.ytimg.com/vi/7jo7Ovnq7Ew/maxresdefault.jpg" alt="Harmony Link 소개영상 미리보기"><span data-ko="소개영상 재생" data-en="Play Introduction Video">소개영상 재생</span></a></article>
+        </div>
+      </section>
+
       <section class="screen" id="programs" data-screen="programs">
         <div class="page-heading">
-          <p class="eyebrow">PROGRAMS</p>
-          <h1 data-ko="나에게 맞는 배움을 찾아보세요" data-en="Find learning that fits you">나에게 맞는 배움을<br>찾아보세요</h1>
-          <label class="search-box">
-            <span aria-hidden="true">⌕</span>
-            <input id="programSearch" type="search" data-ko-placeholder="프로그램 검색" data-en-placeholder="Search programs" placeholder="프로그램 검색">
-          </label>
+          <p class="eyebrow">PROFESSIONAL PROGRAMS</p>
+          <h1 data-ko="전문 교육 프로그램" data-en="Professional Programs">전문 교육 프로그램</h1>
+          <p data-ko="Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램입니다." data-en="Explore professional programs operated directly or jointly by Harmony Link.">Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램입니다.</p>
         </div>
-        <div class="filter-row" id="categoryFilters" aria-label="프로그램 분야"></div>
-        <div class="program-list" id="programList"></div>
-        <p class="empty-state" id="programEmpty" hidden data-ko="검색 결과가 없습니다." data-en="No programs found.">검색 결과가 없습니다.</p>
+        <div class="app-specialty-grid app-specialty-screen-grid" id="programList"></div>
       </section>
 
       <section class="screen" id="events" data-screen="events">
         <div class="page-heading">
           <p class="eyebrow">EVENTS</p>
-          <h1 class="events-main-title" data-ko="현재 진행 중인 강좌·세미나·지역 행사" data-en="Current classes, seminars & local events">현재 진행 중인 강좌·세미나·지역 행사</h1>
+          <h1 class="events-main-title" data-ko="하모니링크 소식·행사" data-en="Harmony Link News & Events">하모니링크 소식·행사</h1>
         </div>
         <div id="upcomingEventsList"></div>
         <button type="button" class="past-events-toggle" id="pastEventsToggle" hidden>
           <span data-ko="지난 강좌 보기" data-en="Show past classes">지난 강좌 보기</span><b>⌄</b>
         </button>
         <div id="pastEventsList" class="past-events-list" hidden></div>
-      </section>
-
-      <section class="screen" id="saved" data-screen="saved">
-        <div class="page-heading">
-          <p class="eyebrow">MY LIST</p>
-          <h1 data-ko="관심 프로그램" data-en="Saved programs">관심 프로그램</h1>
-          <p data-ko="저장한 프로그램을 한곳에서 확인하고 바로 문의할 수 있어요." data-en="Review saved programs and ask about them anytime.">저장한 프로그램을 한곳에서 확인하고 바로 문의할 수 있어요.</p>
-        </div>
-        <div class="program-list" id="savedList"></div>
-        <div class="empty-state saved-empty" id="savedEmpty">
-          <span>♡</span><h2 data-ko="아직 저장한 프로그램이 없어요" data-en="Nothing saved yet">아직 저장한 프로그램이 없어요</h2><p data-ko="프로그램의 하트를 눌러 관심 목록에 담아보세요." data-en="Tap the heart on a program to save it here.">프로그램의 하트를 눌러 관심 목록에 담아보세요.</p><button type="button" data-go="programs" data-ko="프로그램 둘러보기" data-en="Browse programs">프로그램 둘러보기</button>
-        </div>
       </section>
 
       <section class="screen" id="contact" data-screen="contact">
@@ -128,6 +134,7 @@
           <button class="submit-button" type="submit"><span id="contactSubmitLabel" data-ko="문의 보내기" data-en="Send inquiry">문의 보내기</span><b>→</b></button>
           <p class="form-status" id="formStatus" role="status"></p>
         </form>
+        <nav class="app-contact-social" aria-label="소셜미디어"><a href="https://www.instagram.com/hibelleconsulting/" target="_blank" rel="noopener noreferrer"><img src="../assets/instagram.svg" alt="">Instagram</a><a href="https://www.threads.net/@hibelleconsulting" target="_blank" rel="noopener noreferrer"><img src="../assets/threads.svg" alt="">Threads</a></nav>
         <div class="contact-toast" id="contactToast" role="alert" hidden><b>✓</b><span></span></div>
       </section>
     </main>
@@ -155,6 +162,16 @@
       </article>
     </div>
 
+    <div class="app-auth-modal" id="appAuthModal" hidden role="dialog" aria-modal="true" aria-labelledby="appAuthTitle">
+      <button class="app-auth-backdrop" type="button" data-app-auth-close aria-label="닫기"></button>
+      <section class="app-auth-panel">
+        <button class="app-auth-close" type="button" data-app-auth-close aria-label="닫기">×</button>
+        <div class="app-auth-brand"><img src="../assets/harmony-logo.png" alt=""><span>HARMONY LINK MEMBER</span></div>
+        <div class="app-auth-choice" data-app-auth-step="choice"><h2 id="appAuthTitle" data-ko="회원 메뉴를 선택해주세요" data-en="Choose a member option">회원 메뉴를 선택해주세요</h2><button type="button" data-app-auth-mode="login" data-ko="로그인하기" data-en="Sign In">로그인하기</button><button type="button" data-app-auth-mode="signup" data-ko="가입하기" data-en="Join">가입하기</button></div>
+        <div class="app-auth-flow" data-app-auth-step="flow" hidden><button class="app-auth-back" type="button" data-app-auth-back data-ko="← 이전" data-en="← Back">← 이전</button><h2 data-app-auth-heading></h2><p data-app-auth-description></p><div class="app-signup-types" data-app-signup-types hidden><button type="button" class="active" data-app-signup-type="student"><b data-ko="수강생" data-en="Learner">수강생</b><small data-ko="교육 신청과 수강 안내" data-en="Learning requests and class updates">교육 신청과 수강 안내</small></button><button type="button" data-app-signup-type="partner"><b data-ko="입점 파트너" data-en="Partner Provider">입점 파트너</b><small data-ko="신청 후 관리자 승인" data-en="Administrator approval required">신청 후 관리자 승인</small></button></div><div class="app-auth-providers"><button type="button" data-app-auth-provider="google"><img src="../assets/auth/google.svg" alt="Google"><span>Google</span></button><button type="button" class="kakao" data-app-auth-provider="kakao"><img src="../assets/auth/kakao.svg" alt="Kakao"><span>Kakao</span></button></div><p class="app-auth-status" role="status"></p></div>
+      </section>
+    </div>
+
     <div class="image-lightbox" id="imageLightbox" hidden role="dialog" aria-modal="true" aria-label="전단지 크게 보기">
       <button class="lightbox-backdrop" type="button" data-lightbox-close aria-label="크게 보기 닫기"></button>
       <img id="lightboxImage" src="" alt="">
@@ -177,11 +194,12 @@
       <button class="active" type="button" data-go="home"><span>⌂</span><small data-ko="홈" data-en="Home">홈</small></button>
       <button type="button" data-go="programs"><span>▦</span><small data-ko="프로그램" data-en="Programs">프로그램</small></button>
       <button type="button" data-go="events"><span>✦</span><small data-ko="강좌·행사" data-en="Events">강좌·행사</small></button>
-      <button type="button" data-go="saved"><span>♡</span><small data-ko="관심목록" data-en="Saved">관심목록</small></button>
+      <a href="../community.html"><span>◎</span><small data-ko="커뮤니티" data-en="Community">커뮤니티</small></a>
       <button type="button" data-go="contact"><span>✉</span><small data-ko="문의" data-en="Contact">문의</small></button>
     </nav>
   </div>
   <script src="../shared-content.js?v=87"></script>
-  <script src="app.js?v=92"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js?v=93"></script>
 </body>
 </html>
