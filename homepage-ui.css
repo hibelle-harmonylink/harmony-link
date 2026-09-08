@@ -5,7 +5,7 @@ body main>section.hero{background-color:#fff!important;background-image:none!imp
 .hero .connection-symbol{padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
 #about{background:linear-gradient(135deg,#f2fbff 0%,#def2ff 100%)!important}
 #about .about-media-frame{max-width:1180px!important}
-#about .about-media-frame{border-color:#c7e6f8!important;background:linear-gradient(145deg,rgba(255,255,255,.88),rgba(236,248,255,.94))!important;box-shadow:0 18px 44px rgba(47,128,208,.1)!important}
+#about .about-media-frame{border-color:#c7e6f8!important;background:transparent!important;background-image:none!important;box-shadow:0 18px 44px rgba(47,128,208,.1)!important}
 #about .about-title-row{justify-content:flex-start!important;gap:12px!important}
 #about .about-company-summary{margin:0 0 14px;color:#38536d;font-size:13px;line-height:1.65;letter-spacing:-.025em}
 #about .about-company-summary span{display:block;white-space:nowrap}
