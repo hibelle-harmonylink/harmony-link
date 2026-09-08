@@ -1115,9 +1115,10 @@ footer .footer-bottom{padding-top:11px!important}
 .app-install-icon{flex:0 0 auto;font-size:22px;line-height:1}
 .app-install-banner-inner p{flex:1 1 auto;min-width:0;margin:0;display:flex;flex-direction:column;gap:2px;font-size:12px;line-height:1.4;color:#dce8ff}
 .app-install-banner-inner p strong{font-size:13px;font-weight:800;color:#fff}
-.app-install-banner-cta{flex:0 0 auto;padding:9px 16px;border-radius:10px;background:#fff;color:#0b5fc2;font-weight:800;font-size:12px;white-space:nowrap}
+.app-install-banner-cta{flex:0 0 auto;padding:9px 16px;border:0;border-radius:10px;background:#fff;color:#0b5fc2;font-weight:800;font-size:12px;white-space:nowrap;cursor:pointer}
 .app-install-banner-close{flex:0 0 auto;width:28px;height:28px;border:0;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-size:17px;line-height:1;cursor:pointer;display:grid;place-items:center}
 .app-install-banner-close:hover{background:rgba(255,255,255,.3)}
+.pwa-install-help[hidden]{display:none}.pwa-install-help{position:fixed;inset:0;z-index:1800;display:grid;place-items:center;padding:20px}.pwa-install-help-backdrop{position:absolute;inset:0;border:0;background:rgba(4,22,50,.78);backdrop-filter:blur(6px)}.pwa-install-help-panel{position:relative;width:min(440px,calc(100vw - 32px));padding:32px;border-radius:22px;background:#fff;box-shadow:0 28px 75px rgba(0,0,0,.3);text-align:center}.pwa-install-help-panel h2{margin:0 0 13px;color:#042963;font-size:24px}.pwa-install-help-panel p{margin:0 0 22px;color:#53647b;font-size:15px;line-height:1.7;white-space:pre-line}.pwa-install-help-close{position:absolute;right:13px;top:12px;width:34px;height:34px;border:0;border-radius:50%;background:#eef5ff;color:#042963;font-size:21px;cursor:pointer}.pwa-install-help-confirm{width:100%}
 @media(max-width:760px){
   .app-install-banner{margin-top:70px}
   .app-install-banner-inner{padding:10px 0;gap:10px}

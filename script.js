@@ -230,12 +230,75 @@ window.addEventListener('scroll', () => {
 toTop.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth'}));
 
 const appInstallBanner = document.getElementById('appInstallBanner');
+const appInstallButton = document.getElementById('appInstallButton');
+const pwaInstallHelp = document.getElementById('pwaInstallHelp');
+const pwaInstallHelpMessage = document.getElementById('pwaInstallHelpMessage');
+let deferredPwaInstallPrompt = null;
+
+const isStandalonePwa = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+const pwaInstallFallbackMessage = () => {
+  const isEnglish = document.documentElement.lang === 'en';
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  if (isIos) return isEnglish
+    ? 'In Safari, tap Share, then choose “Add to Home Screen”.'
+    : 'Safari 공유 버튼을 누른 뒤 “홈 화면에 추가”를 선택해 주세요.';
+  return isEnglish
+    ? 'Please use Chrome or Edge to install the Harmony Link app.'
+    : 'Chrome 또는 Edge에서 Harmony Link 앱 설치를 이용해 주세요.';
+};
+const closePwaInstallHelp = () => {
+  if (!pwaInstallHelp) return;
+  pwaInstallHelp.hidden = true;
+  document.body.style.overflow = '';
+};
+const openPwaInstallHelp = () => {
+  if (!pwaInstallHelp || !pwaInstallHelpMessage) return;
+  pwaInstallHelpMessage.textContent = pwaInstallFallbackMessage();
+  pwaInstallHelp.hidden = false;
+  document.body.style.overflow = 'hidden';
+};
+
 if (appInstallBanner) {
-  if (localStorage.getItem('appInstallBannerDismissed') === '1') appInstallBanner.hidden = true;
+  if (isStandalonePwa() || localStorage.getItem('harmonyLinkPwaInstalled') === '1' || localStorage.getItem('appInstallBannerDismissed') === '1') appInstallBanner.hidden = true;
   document.getElementById('appInstallBannerClose')?.addEventListener('click', () => {
     appInstallBanner.hidden = true;
     localStorage.setItem('appInstallBannerDismissed', '1');
   });
+}
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  deferredPwaInstallPrompt = event;
+  if (appInstallBanner && !isStandalonePwa()) appInstallBanner.hidden = false;
+});
+appInstallButton?.addEventListener('click', async () => {
+  if (isStandalonePwa() || localStorage.getItem('harmonyLinkPwaInstalled') === '1') {
+    if (appInstallBanner) appInstallBanner.hidden = true;
+    return;
+  }
+  if (!deferredPwaInstallPrompt) {
+    openPwaInstallHelp();
+    return;
+  }
+  deferredPwaInstallPrompt.prompt();
+  const choice = await deferredPwaInstallPrompt.userChoice;
+  deferredPwaInstallPrompt = null;
+  if (choice.outcome === 'accepted' && appInstallButton) {
+    appInstallButton.textContent = document.documentElement.lang === 'en' ? 'Installed' : '설치됨';
+    appInstallButton.disabled = true;
+  }
+});
+window.addEventListener('appinstalled', () => {
+  deferredPwaInstallPrompt = null;
+  localStorage.setItem('harmonyLinkPwaInstalled', '1');
+  if (appInstallBanner) appInstallBanner.hidden = true;
+  closePwaInstallHelp();
+});
+pwaInstallHelp?.querySelectorAll('[data-pwa-help-close]').forEach(button => button.addEventListener('click', closePwaInstallHelp));
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && pwaInstallHelp && !pwaInstallHelp.hidden) closePwaInstallHelp();
+});
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js', { updateViaCache: 'none' }).then(registration => registration.update()).catch(error => console.error('PWA service worker registration failed:', error)));
 }
 
 const observer = new IntersectionObserver(entries => {
