@@ -33,6 +33,8 @@ let saved=new Set(JSON.parse(localStorage.getItem("hl-saved")||"[]"));
 let installPrompt=null;
 let popupIndex=Math.floor(Math.random()*popupNews.length);
 let popupTimer=null;
+let partnerIndex=0;
+let partnerTimer=null;
 let activeContactMode="general";
 let pastEventsOpen=false;
 
@@ -56,10 +58,11 @@ function renderPartners(){
   const container=$("#partnerPrograms");
   if(!container)return;
   const partners=(sharedContent.promotions||[]).filter(item=>item.kind==="advertising"||item.kind==="community");
-  container.innerHTML=partners.map(item=>{
+  if(!partners.length){container.innerHTML="";return}
+  partnerIndex=(partnerIndex+partners.length)%partners.length;
+  const item=partners[partnerIndex];
     const isYura=item.image?.includes("highline-hl-symbol");
-    return `<a class="program-mini" href="${item.url}" target="_blank" rel="noopener noreferrer"><div class="program-art${isYura?" yura-mini-logo":""}" style="background:#eef5ff">${isYura?"":`<img src="${item.image}" alt="">`}</div><div><h3>${language==="ko"?item.titleKo:item.titleEn}</h3><p>${language==="ko"?item.badgeKo:item.badgeEn}</p></div></a>`;
-  }).join("");
+  container.innerHTML=`<a class="program-mini" href="${item.url}" target="_blank" rel="noopener noreferrer"><div class="program-art${isYura?" yura-mini-logo":""}" style="background:#eef5ff">${isYura?"":`<img src="${item.image}" alt="">`}</div><div><h3>${language==="ko"?item.titleKo:item.titleEn}</h3><p>${language==="ko"?item.badgeKo:item.badgeEn}</p></div></a>`;
 }
 function eventCard(item){
   const title=language==="ko"?item.titleKo:item.titleEn;
@@ -186,6 +189,12 @@ function toggleSaved(id){
 }
 
 document.addEventListener("click",event=>{
+  if(event.target.closest('.app-partner-prev')){
+    partnerIndex-=1;renderPartners();restartPartnerTimer();return;
+  }
+  if(event.target.closest('.app-partner-next')){
+    partnerIndex+=1;renderPartners();restartPartnerTimer();return;
+  }
   const eventImage=event.target.closest("[data-event-image]");
   if(eventImage){
     openImageLightbox(eventImage.dataset.eventImage,eventImage.dataset.eventAlt||"");
@@ -209,6 +218,11 @@ document.addEventListener("click",event=>{
   const mini=event.target.closest("[data-open-program]");
   if(mini){const program=programs.find(p=>p.id===mini.dataset.openProgram);if(program.url){window.open(program.url,"_blank","noopener,noreferrer")}else{activeCategory="전체";navigate("programs");$("#programSearch").value=language==="ko"?program.ko:program.en;renderFilters();renderPrograms()}}
 });
+
+function restartPartnerTimer(){
+  clearInterval(partnerTimer);
+  partnerTimer=setInterval(()=>{partnerIndex+=1;renderPartners()},5000);
+}
 document.addEventListener("keydown",event=>{
   const eventImage=event.target.closest?.("[data-event-image]");
   if(eventImage&&(event.key==="Enter"||event.key===" ")){
@@ -402,6 +416,7 @@ if("serviceWorker" in navigator){
   }
 }
 applyLanguage();
+restartPartnerTimer();
 const initialParams=new URLSearchParams(location.search);
 if(initialParams.get("install")==="1"){
   const installButton=$("#installButton");
