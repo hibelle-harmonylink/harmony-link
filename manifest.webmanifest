@@ -1,7 +1,7 @@
 {
   "name": "Harmony Link · 이음문화센터",
   "short_name": "Harmony Link",
-  "id": "/app/",
+  "id": "/app/harmony-link",
   "description": "배움과 사람을 잇는 하모니링크 앱",
   "lang": "ko",
   "start_url": "/app/?source=pwa",

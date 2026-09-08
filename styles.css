@@ -1115,6 +1115,7 @@ footer .footer-bottom{padding-top:11px!important}
 .app-install-icon{flex:0 0 auto;font-size:22px;line-height:1}
 .app-install-banner-inner p{flex:1 1 auto;min-width:0;margin:0;display:flex;flex-direction:column;gap:2px;font-size:12px;line-height:1.4;color:#dce8ff}
 .app-install-banner-inner p strong{font-size:13px;font-weight:800;color:#fff}
+.app-install-status{color:#fff;font-weight:700}.app-install-status[hidden]{display:none}
 .app-install-banner-cta{flex:0 0 auto;padding:9px 16px;border:0;border-radius:10px;background:#fff;color:#0b5fc2;font-weight:800;font-size:12px;white-space:nowrap;cursor:pointer}
 .app-install-banner-close{flex:0 0 auto;width:28px;height:28px;border:0;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;font-size:17px;line-height:1;cursor:pointer;display:grid;place-items:center}
 .app-install-banner-close:hover{background:rgba(255,255,255,.3)}
