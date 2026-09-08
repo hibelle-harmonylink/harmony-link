@@ -234,6 +234,13 @@ const appInstallButton = document.getElementById('appInstallButton');
 const appInstallStatus = document.getElementById('appInstallStatus');
 const pwaInstallHelp = document.getElementById('pwaInstallHelp');
 const pwaInstallHelpMessage = document.getElementById('pwaInstallHelpMessage');
+const pwaInstallHelpTitle = document.getElementById('pwaInstallHelpTitle');
+const pwaInstallHelpConfirm = document.querySelector('.pwa-install-help-confirm');
+const pwaChromeOpen = document.getElementById('pwaChromeOpen');
+const pwaChromeFallback = document.getElementById('pwaChromeFallback');
+const pwaCurrentUrl = document.getElementById('pwaCurrentUrl');
+const pwaCopyUrl = document.getElementById('pwaCopyUrl');
+const pwaCopyComplete = document.getElementById('pwaCopyComplete');
 let deferredPwaInstallPrompt = null;
 let pwaInstallState = 'waiting';
 const setPwaInstallState = state => {
@@ -242,6 +249,14 @@ const setPwaInstallState = state => {
 };
 
 const isStandalonePwa = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+const detectAndroidInAppBrowser = (ua = navigator.userAgent) => {
+  if (!/android/i.test(ua)) return '';
+  if (/kakaotalk/i.test(ua)) return 'kakao';
+  if (/naver/i.test(ua)) return 'naver';
+  if (/instagram/i.test(ua)) return 'instagram';
+  if (/fban|fbav|fb_iab/i.test(ua)) return 'facebook';
+  return '';
+};
 const pwaInstallFallbackMessage = () => {
   const isEnglish = document.documentElement.lang === 'en';
   const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -254,6 +269,7 @@ const pwaInstallFallbackMessage = () => {
 };
 const pwaBrowserType = () => {
   const ua = navigator.userAgent;
+  if (detectAndroidInAppBrowser(ua)) return 'android-in-app';
   if (/iphone|ipad|ipod/i.test(ua) && /safari/i.test(ua) && !/crios|fxios|edgios/i.test(ua)) return 'ios';
   if (/android/i.test(ua) && /chrome/i.test(ua)) return 'android-chrome';
   if (/edg\//i.test(ua)) return 'edge';
@@ -314,13 +330,74 @@ const pwaInstallDiagnostics = async () => {
 const closePwaInstallHelp = () => {
   if (!pwaInstallHelp) return;
   pwaInstallHelp.hidden = true;
+  pwaInstallHelp.classList.remove('in-app-browser');
   document.body.style.overflow = '';
 };
 const openPwaInstallHelp = () => {
   if (!pwaInstallHelp || !pwaInstallHelpMessage) return;
+  pwaInstallHelp.classList.remove('in-app-browser');
+  pwaInstallHelpTitle.textContent = document.documentElement.lang === 'en' ? 'Install Harmony Link' : 'Harmony Link 앱 설치 안내';
   pwaInstallHelpMessage.textContent = pwaInstallFallbackMessage();
+  pwaInstallHelpConfirm.hidden = false;
+  pwaChromeOpen.hidden = true;
+  pwaChromeFallback.hidden = true;
   pwaInstallHelp.hidden = false;
   document.body.style.overflow = 'hidden';
+};
+const openInAppChromeGuide = (showFallback = false) => {
+  if (!pwaInstallHelp) return;
+  pwaInstallHelp.classList.add('in-app-browser');
+  pwaInstallHelpTitle.textContent = showFallback ? 'Chrome으로 자동 이동하지 않았어요.' : '앱 설치는 Chrome에서 가능합니다';
+  pwaInstallHelpMessage.textContent = showFallback ? '' : '아래 버튼을 누르면 현재 홈페이지를 Chrome으로 엽니다.';
+  pwaInstallHelpConfirm.hidden = true;
+  pwaChromeOpen.hidden = showFallback;
+  pwaChromeFallback.hidden = !showFallback;
+  pwaCurrentUrl.textContent = location.href;
+  pwaCopyComplete.hidden = true;
+  pwaInstallHelp.hidden = false;
+  document.body.style.overflow = 'hidden';
+};
+const chromeIntentUrl = () => {
+  const current = new URL(location.href);
+  const target = `${current.host}${current.pathname}${current.search}`;
+  return `intent://${target}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(current.href)};end`;
+};
+const openCurrentPageInChrome = () => {
+  try { sessionStorage.setItem('harmonyChromeIntentAttempt', location.href); } catch (error) {}
+  let leftPage = false;
+  const onVisibilityChange = () => { if (document.visibilityState === 'hidden') leftPage = true; };
+  document.addEventListener('visibilitychange', onVisibilityChange, { once: true });
+  try {
+    location.href = chromeIntentUrl();
+  } catch (error) {
+    document.removeEventListener('visibilitychange', onVisibilityChange);
+    openInAppChromeGuide(true);
+    return;
+  }
+  window.setTimeout(() => {
+    document.removeEventListener('visibilitychange', onVisibilityChange);
+    if (!leftPage && document.visibilityState === 'visible') openInAppChromeGuide(true);
+  }, 1600);
+};
+const copyCurrentPageUrl = async () => {
+  const url = location.href;
+  let copied = false;
+  try {
+    await navigator.clipboard.writeText(url);
+    copied = true;
+  } catch (error) {
+    const input = document.createElement('textarea');
+    input.value = url;
+    input.setAttribute('readonly', '');
+    input.style.position = 'fixed';
+    input.style.opacity = '0';
+    document.body.appendChild(input);
+    input.select();
+    copied = document.execCommand('copy');
+    input.remove();
+  }
+  pwaCopyComplete.textContent = copied ? '주소가 복사되었습니다' : '주소를 길게 눌러 복사해 주세요';
+  pwaCopyComplete.hidden = false;
 };
 
 if (appInstallBanner) {
@@ -329,6 +406,17 @@ if (appInstallBanner) {
   document.getElementById('appInstallBannerClose')?.addEventListener('click', () => {
     appInstallBanner.hidden = true;
   });
+}
+pwaChromeOpen?.addEventListener('click', openCurrentPageInChrome);
+pwaCopyUrl?.addEventListener('click', copyCurrentPageUrl);
+const androidInAppBrowser = detectAndroidInAppBrowser();
+if (androidInAppBrowser && !isStandalonePwa()) {
+  let attemptedCurrentUrl = false;
+  try {
+    attemptedCurrentUrl = sessionStorage.getItem('harmonyChromeIntentAttempt') === location.href;
+    if (attemptedCurrentUrl) sessionStorage.removeItem('harmonyChromeIntentAttempt');
+  } catch (error) {}
+  window.setTimeout(() => openInAppChromeGuide(attemptedCurrentUrl), 0);
 }
 window.addEventListener('beforeinstallprompt', event => {
   event.preventDefault();
@@ -345,6 +433,10 @@ appInstallButton?.addEventListener('click', async () => {
     return;
   }
   const browserType = pwaBrowserType();
+  if (browserType === 'android-in-app') {
+    openInAppChromeGuide(false);
+    return;
+  }
   if (browserType === 'ios') {
     openPwaInstallHelp();
     return;

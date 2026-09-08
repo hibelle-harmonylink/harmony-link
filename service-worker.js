@@ -1,10 +1,10 @@
-const CACHE_NAME = 'harmony-link-pwa-v3';
+const CACHE_NAME = 'harmony-link-pwa-v4';
 const APP_SHELL = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
-  '/styles.css?v=20260908-10',
-  '/script.js?v=20260908-12',
+  '/styles.css?v=20260908-11',
+  '/script.js?v=20260908-13',
   '/app/',
   '/app/index.html',
   '/app/app.css?v=61',
