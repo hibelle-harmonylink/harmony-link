@@ -34,7 +34,7 @@
     setState(true, profile);
   }
 
-  button.addEventListener('click', function (event) {
+  button.addEventListener('click', async function (event) {
     event.preventDefault();
     if (!state.signedIn) {
       window.alert('회원 로그인이 필요합니다.');
@@ -42,7 +42,25 @@
       return;
     }
     if (!state.premium) { window.alert('이 기능은 Premium($50) 회원 전용입니다.'); return; }
-    window.open(button.dataset.premiumHref, '_blank', 'noopener,noreferrer');
+
+    var programWindow = window.open('about:blank', '_blank');
+    if (programWindow) programWindow.opener = null;
+    var sessionResult = await client.auth.getSession();
+    var session = sessionResult.data && sessionResult.data.session;
+    if (sessionResult.error || !session || !session.access_token || !session.refresh_token) {
+      if (programWindow) programWindow.close();
+      window.alert('회원 로그인이 필요합니다.');
+      window.location.href = '../index.html?auth=login';
+      return;
+    }
+
+    var target = new URL(button.dataset.premiumHref, window.location.href);
+    target.hash = new URLSearchParams({
+      hl_at: session.access_token,
+      hl_rt: session.refresh_token
+    }).toString();
+    if (programWindow) programWindow.location.replace(target.toString());
+    else window.location.href = target.toString();
   });
   loadAccess();
 })();
