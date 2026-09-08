@@ -678,6 +678,52 @@ html[lang="en"] #events .event-poster:after{content:"Click to view the full flye
 footer .footer-top{padding-top:13px!important}footer .footer-top>.logo{transform:translateY(-7px)!important}
 }
 
+/* 2026-09-08: compact path cards, collapsible partner guide and section rhythm. */
+#community{background:linear-gradient(145deg,#0b5fc2,#072d69)!important;color:#fff!important}
+#community .section-heading{margin-bottom:22px!important}
+#community .section-heading .eyebrow{color:#a9d7ff!important}
+#community .section-heading h2{color:#fff!important}
+#community .audience-grid{grid-template-columns:1fr!important;gap:12px!important;margin-top:0!important}
+#community .audience-card{display:grid!important;grid-template-columns:220px minmax(0,1fr) 220px!important;grid-template-areas:"label description button" "title checklist button"!important;align-items:center!important;column-gap:24px!important;row-gap:5px!important;min-height:132px!important;padding:20px 26px!important;background:#fff!important;color:#0a2f61!important}
+#community .audience-card>.audience-label{grid-area:label!important;margin:0!important}
+#community .audience-card>h3{grid-area:title!important;margin:0!important;font-size:22px!important}
+#community .audience-card>p{grid-area:description!important;margin:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#community .audience-card>ul{grid-area:checklist!important;display:flex!important;align-items:center!important;gap:16px!important;margin:0!important;min-width:0!important;overflow:hidden!important}
+#community .audience-card li{white-space:nowrap!important;font-size:14px!important}
+#community .audience-card li+li{padding-left:16px!important;border-left:1px solid #c8d8e9!important}
+#community .audience-card>a.text-link{grid-area:button!important;width:100%!important;min-height:48px!important;margin:0!important}
+#partner-center{background:#fff!important}
+.advertising{background:#eaf5ff!important;color:#092f61!important}
+.advertising .section-heading .eyebrow{color:#0b65c8!important}
+.advertising .section-heading h2,.advertising .section-heading p{color:#092f61!important}
+.advertising .ad-carousel-prev,.advertising .ad-carousel-next{background:#0b5fc2!important;border-color:#0b5fc2!important;color:#fff!important}
+.advertising .ad-carousel-dots button{background:#9ab9d9!important}.advertising .ad-carousel-dots button.active{background:#0b5fc2!important}
+#digital-why{background:linear-gradient(145deg,#0b5fc2,#072d69)!important;color:#fff!important}
+#digital-why .section-heading .eyebrow,#digital-why .section-heading h2,#digital-why .section-heading p{color:#fff!important}
+#events{background:#fff!important}
+#contact.contact-simple{background:linear-gradient(145deg,#0b5fc2,#073777)!important}
+body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important}
+body>footer .footer-top{max-width:none!important;width:100%!important;padding:24px max(24px,calc((100% - 1180px)/2))!important;background:#eaf5ff!important;color:#092f61!important}
+body>footer .footer-top .logo-name,body>footer .footer-top p,body>footer .footer-top a{color:#092f61!important}
+#partner-center .partner-tier-guide{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+#partner-center .partner-tier-guide button{height:86px!important;min-height:86px!important;padding:12px 18px!important;justify-content:center!important}
+#partner-center .partner-tier-guide button strong{font-size:29px!important}
+#partner-center .partner-tier-guide button b{font-size:16px!important}
+#partner-center .partner-resource-toggle{min-height:104px!important}
+#partner-center .partner-resource-toggle h3{font-size:19px!important}
+#partner-center .partner-resource-toggle p{font-size:15px!important}
+#partner-center .partner-upgrade-guide{padding:0!important;border:1px solid #d5e3f1!important;border-radius:16px!important;overflow:hidden!important}
+#partner-center .partner-guide-toggle{display:flex!important;align-items:center!important;justify-content:space-between!important;width:100%!important;min-height:72px!important;padding:14px 20px!important;border:0!important;background:#f5f9fe!important;color:#0a2f61!important;text-align:left!important;cursor:pointer!important}
+#partner-center .partner-guide-toggle span{display:grid!important;gap:3px!important}
+#partner-center .partner-guide-toggle small{color:#0b65c8!important;font-size:11px!important;font-weight:900!important;letter-spacing:.12em!important}
+#partner-center .partner-guide-toggle strong{font-size:19px!important}
+#partner-center .partner-guide-toggle>b{font-size:25px!important;font-weight:500!important}
+#partner-center .partner-guide-details{padding:0 20px 20px!important}
+#partner-center .partner-guide-details[hidden]{display:none!important}
+#partner-center .partner-guide-details>p{text-align:center!important;margin:18px 0 0!important}
+@media(max-width:1000px){#community .audience-card{grid-template-columns:190px minmax(0,1fr) 190px!important;column-gap:14px!important}#community .audience-card>p{white-space:normal!important}#community .audience-card>ul{flex-wrap:wrap!important;gap:5px 10px!important}}
+@media(max-width:760px){#community .audience-card{display:grid!important;grid-template-columns:1fr!important;grid-template-areas:"label" "title" "description" "checklist" "button"!important;gap:8px!important;min-height:0!important;padding:20px!important}#community .audience-card>p{white-space:normal!important;overflow:visible!important}#community .audience-card>ul{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:4px!important;overflow:visible!important}#community .audience-card li{white-space:normal!important}#community .audience-card li+li{padding-left:0!important;border-left:0!important}#partner-center .partner-tier-guide button{height:78px!important;min-height:78px!important;padding:9px 5px!important}#partner-center .partner-tier-guide button strong{font-size:24px!important}body>footer .footer-top{padding:20px 18px!important}}
+
 /* Desktop Yura Kim advertiser logo: use the same visual treatment as the main update popup. */
 @media(min-width:761px){
   .ad-directory-list .ad-image-expand:has(img[alt^="Yura Kim"]){display:grid!important;grid-template-rows:120px auto!important;align-content:center!important;justify-items:center!important;gap:5px!important;padding:8px 0 10px!important;background:#fff!important}
@@ -1424,3 +1470,16 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
   #partner-center .partner-tier-guide button:nth-child(3){box-shadow:0 8px 20px rgba(216,173,69,.28)!important}
   #partner-center .partner-tier-guide button.active:nth-child(3){box-shadow:0 9px 22px rgba(11,95,194,.25)!important}
 }
+
+/* Final UI layer: keep these after the legacy responsive overrides. */
+#community{background:linear-gradient(145deg,#0b5fc2,#072d69)!important;color:#fff!important}
+#community .section-heading{margin-bottom:22px!important}#community .section-heading .eyebrow{color:#a9d7ff!important}#community .section-heading h2{color:#fff!important}
+#community .audience-grid{grid-template-columns:1fr!important;gap:12px!important;margin-top:0!important}
+#community .audience-card{display:grid!important;grid-template-columns:220px minmax(0,1fr) 220px!important;grid-template-areas:"label description button" "title checklist button"!important;align-items:center!important;column-gap:24px!important;row-gap:5px!important;min-height:132px!important;padding:20px 26px!important;background:#fff!important;color:#0a2f61!important}
+#community .audience-card>.audience-label{grid-area:label!important;margin:0!important}#community .audience-card>h3{grid-area:title!important;margin:0!important;font-size:22px!important}#community .audience-card>p{grid-area:description!important;margin:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}#community .audience-card>ul{grid-area:checklist!important;display:flex!important;align-items:center!important;gap:16px!important;margin:0!important;min-width:0!important;overflow:hidden!important}#community .audience-card li{white-space:nowrap!important;font-size:14px!important}#community .audience-card li+li{padding-left:16px!important;border-left:1px solid #c8d8e9!important}#community .audience-card>a.text-link{grid-area:button!important;width:100%!important;min-height:48px!important;margin:0!important}
+#partner-center{background:#fff!important}#advertising.advertising{background:#eaf5ff!important;color:#092f61!important}.advertising .section-heading .eyebrow{color:#0b65c8!important}.advertising .section-heading h2,.advertising .section-heading p{color:#092f61!important}.advertising .ad-carousel-prev,.advertising .ad-carousel-next{background:#0b5fc2!important;border-color:#0b5fc2!important;color:#fff!important}.advertising .ad-carousel-dots button{background:#9ab9d9!important}.advertising .ad-carousel-dots button.active{background:#0b5fc2!important}
+#digital-why,#specialty-banners{background:linear-gradient(145deg,#0b5fc2,#072d69)!important;color:#fff!important}#digital-why .section-heading .eyebrow,#digital-why .section-heading h2,#digital-why .section-heading p,#specialty-banners .section-heading .eyebrow,#specialty-banners .section-heading h2,#specialty-banners .section-heading p{color:#fff!important}#events{background:#fff!important}#contact.contact-simple{background:linear-gradient(145deg,#0b5fc2,#073777)!important}body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important}body>footer .footer-top{max-width:none!important;width:100%!important;padding:24px max(24px,calc((100% - 1180px)/2))!important;background:#eaf5ff!important;color:#092f61!important}body>footer .footer-top .logo-name,body>footer .footer-top p,body>footer .footer-top a{color:#092f61!important}
+#partner-center .partner-tier-guide{grid-template-columns:repeat(3,minmax(0,1fr))!important}#partner-center .partner-tier-guide button{height:86px!important;min-height:86px!important;padding:12px 18px!important;justify-content:center!important}#partner-center .partner-tier-guide button strong{font-size:29px!important}#partner-center .partner-tier-guide button b{font-size:16px!important}#partner-center .partner-resource-toggle{min-height:104px!important}#partner-center .partner-resource-toggle h3{font-size:19px!important}#partner-center .partner-resource-toggle p{font-size:15px!important}
+#partner-center .partner-upgrade-guide{padding:0!important;border:1px solid #d5e3f1!important;border-radius:16px!important;overflow:hidden!important}#partner-center .partner-guide-toggle{display:flex!important;align-items:center!important;justify-content:space-between!important;width:100%!important;min-height:72px!important;padding:14px 20px!important;border:0!important;background:#f5f9fe!important;color:#0a2f61!important;text-align:left!important;cursor:pointer!important}#partner-center .partner-guide-toggle span{display:grid!important;gap:3px!important}#partner-center .partner-guide-toggle small{color:#0b65c8!important;font-size:11px!important;font-weight:900!important;letter-spacing:.12em!important}#partner-center .partner-guide-toggle strong{font-size:19px!important}#partner-center .partner-guide-toggle>b{font-size:25px!important;font-weight:500!important}#partner-center .partner-guide-details{padding:0 20px 20px!important}#partner-center .partner-guide-details[hidden]{display:none!important}#partner-center .partner-guide-details>p{text-align:center!important;margin:18px 0 0!important}
+@media(max-width:1000px){#community .audience-card{grid-template-columns:190px minmax(0,1fr) 190px!important;column-gap:14px!important}#community .audience-card>p{white-space:normal!important}#community .audience-card>ul{flex-wrap:wrap!important;gap:5px 10px!important}}
+@media(max-width:760px){#community .audience-card{display:grid!important;grid-template-columns:1fr!important;grid-template-areas:"label" "title" "description" "checklist" "button"!important;gap:8px!important;min-height:0!important;padding:20px!important}#community .audience-card>p{white-space:normal!important;overflow:visible!important}#community .audience-card>ul{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:4px!important;overflow:visible!important}#community .audience-card li{white-space:normal!important}#community .audience-card li+li{padding-left:0!important;border-left:0!important}#partner-center .partner-tier-guide button{height:78px!important;min-height:78px!important;padding:9px 5px!important}#partner-center .partner-tier-guide button strong{font-size:24px!important}body>footer .footer-top{padding:20px 18px!important}}

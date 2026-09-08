@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" href="icon-192-v71.png">
   <link rel="apple-touch-icon" href="icon-192-v71.png">
   <link rel="stylesheet" href="app.css?v=61">
-  <link rel="stylesheet" href="overrides.css?v=88">
+  <link rel="stylesheet" href="overrides.css?v=89">
 </head>
 <body>
   <div class="app-shell">
@@ -22,6 +22,13 @@
         <span class="logo-mark brand-image" aria-hidden="true"><img src="../assets/harmony-logo.png" alt=""></span>
         <span class="logo-name">Harmony <b>Link</b><small data-ko="이음문화센터" data-en="E-eum Culture Center">이음문화센터</small></span>
       </a>
+      <nav class="desktop-app-nav" aria-label="주요 메뉴">
+        <button type="button" data-go="home" data-ko="홈" data-en="Home">홈</button>
+        <button type="button" data-go="programs" data-ko="전문 교육 프로그램" data-en="Professional Programs">전문 교육 프로그램</button>
+        <a href="#appPartners" data-ko="협력 업체" data-en="Partners">협력 업체</a>
+        <a href="../community.html" data-ko="커뮤니티" data-en="Community">커뮤니티</a>
+        <button type="button" data-go="contact" data-ko="문의" data-en="Contact">문의</button>
+      </nav>
       <div class="top-actions">
         <a class="top-community-link" href="../community.html" target="_blank" rel="noopener" data-ko="커뮤니티" data-en="Community">커뮤니티</a>
         <button id="languageButton" class="round-button" type="button" aria-label="언어 변경">EN</button>
@@ -35,35 +42,27 @@
         <div class="hero">
           <div class="hero-semicircle" aria-hidden="true"></div>
           <div class="hero-copy">
-            <p class="eyebrow" data-ko="오늘의 배움" data-en="LEARN SOMETHING TODAY">오늘의 배움</p>
-            <h1 data-ko="배움으로 이어지는<br><em>더 나은 일상</em>" data-en="A better everyday life,<br><em>connected by learning</em>">배움으로 이어지는<br><em>더 나은 일상</em></h1>
+            <p class="eyebrow" data-ko="배움으로 연결되는 더 나은 일상" data-en="A BETTER LIFE THROUGH LEARNING">배움으로 연결되는 더 나은 일상</p>
+            <h1 data-ko="마음을 잇고,<br><em>가능성을 열다</em>" data-en="Connecting hearts,<br><em>opening possibilities</em>">마음을 잇고,<br><em>가능성을 열다</em></h1>
             <p data-ko="나에게 맞는 수업과 지역 프로그램을<br>쉽고 빠르게 찾아보세요." data-en="Discover classes and community programs that fit you<br>quickly and easily.">나에게 맞는 수업과 지역 프로그램을<br>쉽고 빠르게 찾아보세요.</p>
-            <button class="primary-action" type="button" data-go="programs"><span data-ko="프로그램 찾기" data-en="Find a program">프로그램 찾기</span><b>→</b></button>
+            <button class="primary-action" type="button" data-go="programs"><span data-ko="전문 교육 프로그램" data-en="Professional Programs">전문 교육 프로그램</span><b>→</b></button>
           </div>
           <div class="hero-mark" aria-hidden="true"><span>H</span><i></i><b></b></div>
         </div>
 
         <section class="home-programs">
           <div class="section-title">
-            <div><p class="eyebrow">RECOMMENDED</p><h2 data-ko="추천 프로그램" data-en="Recommended">추천 프로그램</h2></div>
+            <div><p class="eyebrow">PROFESSIONAL PROGRAMS</p><h2 data-ko="전문 교육 프로그램" data-en="Professional Programs">전문 교육 프로그램</h2></div>
             <button type="button" data-go="programs" data-ko="전체보기" data-en="View all">전체보기</button>
           </div>
           <div class="horizontal-cards" id="recommendedPrograms"></div>
         </section>
 
-        <section class="feature-card">
-          <div>
-            <span class="badge" data-ko="무료 방문 지원" data-en="FREE HOME VISIT">무료 방문 지원</span>
-            <h2 data-ko="디지털이 어려운 이웃을 직접 찾아갑니다" data-en="We bring friendly digital help to your home">디지털이 어려운 이웃을 직접 찾아갑니다</h2>
-          </div>
-          <img id="volunteerImage" src="../assets/volunteer/digital-volunteer.png" data-ko-src="../assets/volunteer/digital-volunteer.png" data-en-src="../assets/volunteer/digital-volunteer-en.png" data-ko-alt="무료 방문 디지털 지원" data-en-alt="Free in-home digital support" alt="무료 방문 디지털 지원" role="button" tabindex="0">
-        </section>
-
-        <section class="home-programs">
+        <section class="home-programs app-partners-section" id="appPartners">
           <div class="section-title">
             <div><p class="eyebrow">PARTNERS</p><h2 data-ko="협력업체 · 광고" data-en="Partners & Advertisers">협력업체 · 광고</h2></div>
           </div>
-          <div class="horizontal-cards" id="partnerPrograms"></div>
+          <div class="app-partner-carousel"><button class="app-partner-prev" type="button" aria-label="이전 협력 업체">‹</button><div class="partner-program-stage" id="partnerPrograms"></div><button class="app-partner-next" type="button" aria-label="다음 협력 업체">›</button></div>
         </section>
 
         <section class="community-card">
@@ -72,7 +71,7 @@
             <h2 data-ko="Harmony Link 커뮤니티에서 함께 이야기해요" data-en="Join the conversation in the Harmony Link community">Harmony Link 커뮤니티에서 함께 이야기해요</h2>
             <p data-ko="무료회원으로 가입하면 누구나 소식과 경험을 나누고 질문할 수 있습니다." data-en="Anyone can join free to share updates, experiences and questions.">무료회원으로 가입하면 누구나 소식과 경험을 나누고 질문할 수 있습니다.</p>
           </div>
-          <a class="community-card-link" href="../community.html" target="_blank" rel="noopener"><span data-ko="커뮤니티 입장" data-en="Enter Community">커뮤니티 입장</span> →</a>
+          <a class="community-card-link" href="../community.html" target="_blank" rel="noopener"><span data-ko="커뮤니티 보기" data-en="View Community">커뮤니티 보기</span> →</a>
         </section>
       </section>
 
@@ -183,6 +182,6 @@
     </nav>
   </div>
   <script src="../shared-content.js?v=87"></script>
-  <script src="app.js?v=88"></script>
+  <script src="app.js?v=89"></script>
 </body>
 </html>
