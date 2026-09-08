@@ -50,7 +50,10 @@ body>footer .footer-top .logo-name,body>footer .footer-top .logo-name b,body>foo
 #specialty-banners .specialty-melody .specialty-operation-badge{background:#fde7f1!important;color:#9d2f67!important;box-shadow:0 8px 20px rgba(157,47,103,.12)!important}
 
 /* Homepage section palette (2026-09-08): approved Harmony Link colors. */
-body main>section.hero{background:#fff!important}
+body main>section.hero{background:#fffcf0!important}
+.site-header .header-signup{display:none!important}
+@media(min-width:761px){.hero-desc{font-size:15px;letter-spacing:-.02em}.hero-desc span{display:block;white-space:nowrap}}
+@media(max-width:760px){.hero-desc span{display:block;white-space:normal}}
 #about{background:#c1f9ff!important;color:#17233a!important}
 #community{background:#0b54c2!important;color:#fff!important}
 #partner-center{background:#fff!important;color:#17233a!important}
