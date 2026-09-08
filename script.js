@@ -231,9 +231,15 @@ toTop.addEventListener('click', () => window.scrollTo({top: 0, behavior: 'smooth
 
 const appInstallBanner = document.getElementById('appInstallBanner');
 const appInstallButton = document.getElementById('appInstallButton');
+const appInstallStatus = document.getElementById('appInstallStatus');
 const pwaInstallHelp = document.getElementById('pwaInstallHelp');
 const pwaInstallHelpMessage = document.getElementById('pwaInstallHelpMessage');
 let deferredPwaInstallPrompt = null;
+let pwaInstallState = 'waiting';
+const setPwaInstallState = state => {
+  pwaInstallState = state;
+  if (appInstallBanner) appInstallBanner.dataset.installState = state;
+};
 
 const isStandalonePwa = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 const pwaInstallFallbackMessage = () => {
@@ -241,10 +247,69 @@ const pwaInstallFallbackMessage = () => {
   const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
   if (isIos) return isEnglish
     ? 'In Safari, tap Share, then choose “Add to Home Screen”.'
-    : 'Safari 공유 버튼을 누른 뒤 “홈 화면에 추가”를 선택해 주세요.';
+    : 'Safari 하단의 공유 버튼을 누른 뒤 “홈 화면에 추가”를 선택하세요.';
   return isEnglish
     ? 'Please use Chrome or Edge to install the Harmony Link app.'
     : 'Chrome 또는 Edge에서 Harmony Link 앱 설치를 이용해 주세요.';
+};
+const pwaBrowserType = () => {
+  const ua = navigator.userAgent;
+  if (/iphone|ipad|ipod/i.test(ua) && /safari/i.test(ua) && !/crios|fxios|edgios/i.test(ua)) return 'ios';
+  if (/android/i.test(ua) && /chrome/i.test(ua)) return 'android-chrome';
+  if (/edg\//i.test(ua)) return 'edge';
+  if (/chrome/i.test(ua) && !/opr\//i.test(ua)) return 'chrome';
+  return 'unsupported';
+};
+const setPwaInstallStatus = message => {
+  if (!appInstallStatus) return;
+  appInstallStatus.textContent = message;
+  appInstallStatus.hidden = !message;
+};
+const waitForPwaInstallPrompt = timeout => new Promise(resolve => {
+  if (deferredPwaInstallPrompt) return resolve(deferredPwaInstallPrompt);
+  const started = Date.now();
+  const timer = window.setInterval(() => {
+    if (deferredPwaInstallPrompt || Date.now() - started >= timeout) {
+      window.clearInterval(timer);
+      resolve(deferredPwaInstallPrompt);
+    }
+  }, 100);
+});
+const pwaInstallDiagnostics = async () => {
+  const failures = [];
+  if (!window.isSecureContext) failures.push('HTTPS 보안 연결이 필요합니다.');
+  try {
+    const manifestResponse = await fetch('/manifest.webmanifest', { cache: 'no-store' });
+    if (!manifestResponse.ok) throw new Error(`HTTP ${manifestResponse.status}`);
+    const manifest = await manifestResponse.json();
+    if (manifest.display !== 'standalone') failures.push('manifest display 설정이 standalone이 아닙니다.');
+    const startResponse = await fetch(new URL(manifest.start_url, location.origin), { cache: 'no-store' });
+    if (!startResponse.ok) failures.push('앱 시작 주소에 접근할 수 없습니다.');
+    const requiredSizes = new Set(['192x192', '512x512']);
+    await Promise.all((manifest.icons || []).map(async icon => {
+      if (!requiredSizes.has(icon.sizes)) return;
+      const response = await fetch(new URL(icon.src, location.origin), { cache: 'no-store' });
+      if (response.ok) requiredSizes.delete(icon.sizes);
+    }));
+    if (requiredSizes.size) failures.push('필수 앱 아이콘을 불러올 수 없습니다.');
+  } catch (error) {
+    failures.push('앱 설치 정보(manifest)를 불러올 수 없습니다.');
+  }
+  if (!('serviceWorker' in navigator)) {
+    failures.push('이 브라우저는 service worker를 지원하지 않습니다.');
+  } else {
+    try {
+      const registration = await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise((_, reject) => window.setTimeout(() => reject(new Error('timeout')), 4000))
+      ]);
+      if (!registration.active) failures.push('service worker가 활성 상태가 아닙니다.');
+      if (registration.scope !== `${location.origin}/`) failures.push('service worker 범위가 올바르지 않습니다.');
+    } catch (error) {
+      failures.push('service worker 등록이 완료되지 않았습니다.');
+    }
+  }
+  return failures;
 };
 const closePwaInstallHelp = () => {
   if (!pwaInstallHelp) return;
@@ -259,6 +324,7 @@ const openPwaInstallHelp = () => {
 };
 
 if (appInstallBanner) {
+  setPwaInstallState(isStandalonePwa() ? 'installed' : 'waiting');
   appInstallBanner.hidden = isStandalonePwa();
   document.getElementById('appInstallBannerClose')?.addEventListener('click', () => {
     appInstallBanner.hidden = true;
@@ -267,27 +333,57 @@ if (appInstallBanner) {
 window.addEventListener('beforeinstallprompt', event => {
   event.preventDefault();
   deferredPwaInstallPrompt = event;
+  setPwaInstallState('ready');
+  setPwaInstallStatus('');
   if (appInstallBanner && !isStandalonePwa()) appInstallBanner.hidden = false;
 });
 appInstallButton?.addEventListener('click', async () => {
   if (isStandalonePwa()) {
+    setPwaInstallState('installed');
+    setPwaInstallStatus(document.documentElement.lang === 'en' ? 'The app is already installed.' : '앱이 이미 설치되어 있습니다.');
     if (appInstallBanner) appInstallBanner.hidden = true;
     return;
   }
-  if (!deferredPwaInstallPrompt) {
+  const browserType = pwaBrowserType();
+  if (browserType === 'ios') {
     openPwaInstallHelp();
     return;
   }
+  if (!deferredPwaInstallPrompt) {
+    setPwaInstallStatus(document.documentElement.lang === 'en' ? 'Checking installation availability…' : '앱 설치 가능 상태를 확인하고 있습니다…');
+    await waitForPwaInstallPrompt(1800);
+  }
+  if (!deferredPwaInstallPrompt) {
+    const failures = await pwaInstallDiagnostics();
+    if (deferredPwaInstallPrompt) {
+      setPwaInstallStatus('');
+    } else {
+      if (browserType === 'unsupported') {
+        setPwaInstallStatus(document.documentElement.lang === 'en' ? 'Please use Chrome or Edge to install the app.' : 'Chrome 또는 Edge에서 앱 설치를 이용해주세요.');
+      } else if (failures.length) {
+        setPwaInstallStatus(failures[0]);
+      } else {
+        setPwaInstallState('suppressed');
+        setPwaInstallStatus(document.documentElement.lang === 'en' ? 'The browser did not offer an install prompt. The app may already be installed; also check Install app in the browser menu.' : '브라우저가 설치창을 제공하지 않았습니다. 이미 설치되어 있는지 또는 브라우저 메뉴의 “앱 설치”를 확인해 주세요.');
+      }
+      return;
+    }
+  }
+  setPwaInstallState('prompting');
   deferredPwaInstallPrompt.prompt();
   const choice = await deferredPwaInstallPrompt.userChoice;
   deferredPwaInstallPrompt = null;
+  setPwaInstallState(choice.outcome === 'accepted' ? 'accepted' : 'dismissed');
   if (choice.outcome === 'accepted' && appInstallButton) {
     appInstallButton.textContent = document.documentElement.lang === 'en' ? 'Installed' : '설치됨';
     appInstallButton.disabled = true;
+  } else {
+    setPwaInstallStatus(document.documentElement.lang === 'en' ? 'Installation was canceled.' : '앱 설치가 취소되었습니다.');
   }
 });
 window.addEventListener('appinstalled', () => {
   deferredPwaInstallPrompt = null;
+  setPwaInstallState('installed');
   if (appInstallBanner) appInstallBanner.hidden = true;
   closePwaInstallHelp();
 });
@@ -296,7 +392,7 @@ document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && pwaInstallHelp && !pwaInstallHelp.hidden) closePwaInstallHelp();
 });
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js', { updateViaCache: 'none' }).then(registration => registration.update()).catch(error => console.error('PWA service worker registration failed:', error)));
+  navigator.serviceWorker.register('/service-worker.js', { updateViaCache: 'none' }).then(registration => registration.update()).catch(error => console.error('PWA service worker registration failed:', error));
 }
 
 const observer = new IntersectionObserver(entries => {
