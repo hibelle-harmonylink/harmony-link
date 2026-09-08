@@ -167,7 +167,11 @@ function applyLanguage(){
   $$("[data-ko-placeholder]").forEach(el=>{el.placeholder=el.dataset[`${language}Placeholder`]});
   $$("[data-ko-src]").forEach(el=>{el.src=el.dataset[`${language}Src`]});
   $$("[data-ko-alt]").forEach(el=>{el.alt=el.dataset[`${language}Alt`]});
-  $("#languageButton").textContent=language==="ko"?"EN":"한";
+  $$('[data-language]').forEach(button=>{
+    const selected=button.dataset.language===language;
+    button.classList.toggle('active',selected);
+    button.setAttribute('aria-pressed',String(selected));
+  });
   localStorage.setItem("hl-language",language);
   renderRecommended();renderPartners();renderFilters();renderPrograms();renderSaved();renderEvents();renderPopup();
 }
@@ -232,7 +236,10 @@ document.addEventListener("keydown",event=>{
 });
 $("#programSearch").addEventListener("input",renderPrograms);
 $("#pastEventsToggle").addEventListener("click",()=>{pastEventsOpen=!pastEventsOpen;renderEvents()});
-$("#languageButton").addEventListener("click",()=>{language=language==="ko"?"en":"ko";applyLanguage()});
+$$('[data-language]').forEach(button=>button.addEventListener('click',()=>{
+  language=button.dataset.language;
+  applyLanguage();
+}));
 function openImageLightbox(src,alt,action){
   $("#lightboxImage").src=src;
   $("#lightboxImage").alt=alt;
@@ -269,7 +276,7 @@ $$("[data-lightbox-close]").forEach(button=>button.addEventListener("click",clos
 $("#brandHome").addEventListener("click",event=>{
   event.preventDefault();
   navigate("home");
-  openPopup();
+  closePopup();
 });
 $$("[data-popup-close]").forEach(button=>button.addEventListener("click",closePopup));
 $("#newsPrev").addEventListener("click",()=>{popupIndex=(popupIndex-1+popupNews.length)%popupNews.length;renderPopup()});
@@ -401,7 +408,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true;clos
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v87.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v90.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;
@@ -454,7 +461,4 @@ if(initialScreen==="contact"&&initialParams.get("topic")==="partner"){
   submitLabel.dataset.en="Contact us";
   submitLabel.textContent=submitLabel.dataset[language];
 }
-if(initialParams.get("popup")==="off") closePopup();
-else if(initialParams.get("install")==="1") openPopup();
-else if(localStorage.getItem("hl-popup-hidden-date-v3")!==new Date().toLocaleDateString("en-CA")) openPopup();
-else closePopup();
+closePopup();
