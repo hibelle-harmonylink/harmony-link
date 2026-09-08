@@ -235,7 +235,8 @@ const appInstallStatus = document.getElementById('appInstallStatus');
 const pwaInstallHelp = document.getElementById('pwaInstallHelp');
 const pwaInstallHelpMessage = document.getElementById('pwaInstallHelpMessage');
 const pwaInstallHelpTitle = document.getElementById('pwaInstallHelpTitle');
-const pwaInstallHelpConfirm = document.querySelector('.pwa-install-help-confirm');
+const pwaInstallHelpBackdrop = document.querySelector('.pwa-install-help-backdrop');
+const pwaInstallHelpClose = document.querySelector('.pwa-install-help-close');
 const pwaChromeOpen = document.getElementById('pwaChromeOpen');
 const pwaChromeFallback = document.getElementById('pwaChromeFallback');
 const pwaCurrentUrl = document.getElementById('pwaCurrentUrl');
@@ -336,9 +337,10 @@ const closePwaInstallHelp = () => {
 const openPwaInstallHelp = () => {
   if (!pwaInstallHelp || !pwaInstallHelpMessage) return;
   pwaInstallHelp.classList.remove('in-app-browser');
+  pwaInstallHelpBackdrop.disabled = false;
+  pwaInstallHelpClose.hidden = false;
   pwaInstallHelpTitle.textContent = document.documentElement.lang === 'en' ? 'Install Harmony Link' : 'Harmony Link 앱 설치 안내';
   pwaInstallHelpMessage.textContent = pwaInstallFallbackMessage();
-  pwaInstallHelpConfirm.hidden = false;
   pwaChromeOpen.hidden = true;
   pwaChromeFallback.hidden = true;
   pwaInstallHelp.hidden = false;
@@ -347,9 +349,10 @@ const openPwaInstallHelp = () => {
 const openInAppChromeGuide = (showFallback = false) => {
   if (!pwaInstallHelp) return;
   pwaInstallHelp.classList.add('in-app-browser');
+  pwaInstallHelpBackdrop.disabled = true;
+  pwaInstallHelpClose.hidden = true;
   pwaInstallHelpTitle.textContent = showFallback ? 'Chrome으로 자동 이동하지 않았어요.' : '앱 설치는 Chrome에서 가능합니다';
   pwaInstallHelpMessage.textContent = showFallback ? '' : '아래 버튼을 누르면 현재 홈페이지를 Chrome으로 엽니다.';
-  pwaInstallHelpConfirm.hidden = true;
   pwaChromeOpen.hidden = showFallback;
   pwaChromeFallback.hidden = !showFallback;
   pwaCurrentUrl.textContent = location.href;
