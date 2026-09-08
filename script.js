@@ -259,10 +259,9 @@ const openPwaInstallHelp = () => {
 };
 
 if (appInstallBanner) {
-  if (isStandalonePwa() || localStorage.getItem('harmonyLinkPwaInstalled') === '1' || localStorage.getItem('appInstallBannerDismissed') === '1') appInstallBanner.hidden = true;
+  appInstallBanner.hidden = isStandalonePwa();
   document.getElementById('appInstallBannerClose')?.addEventListener('click', () => {
     appInstallBanner.hidden = true;
-    localStorage.setItem('appInstallBannerDismissed', '1');
   });
 }
 window.addEventListener('beforeinstallprompt', event => {
@@ -271,7 +270,7 @@ window.addEventListener('beforeinstallprompt', event => {
   if (appInstallBanner && !isStandalonePwa()) appInstallBanner.hidden = false;
 });
 appInstallButton?.addEventListener('click', async () => {
-  if (isStandalonePwa() || localStorage.getItem('harmonyLinkPwaInstalled') === '1') {
+  if (isStandalonePwa()) {
     if (appInstallBanner) appInstallBanner.hidden = true;
     return;
   }
@@ -289,7 +288,6 @@ appInstallButton?.addEventListener('click', async () => {
 });
 window.addEventListener('appinstalled', () => {
   deferredPwaInstallPrompt = null;
-  localStorage.setItem('harmonyLinkPwaInstalled', '1');
   if (appInstallBanner) appInstallBanner.hidden = true;
   closePwaInstallHelp();
 });
