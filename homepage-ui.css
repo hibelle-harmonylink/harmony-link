@@ -47,3 +47,19 @@ body>footer .footer-top .logo-name,body>footer .footer-top .logo-name b,body>foo
 #specialty-banners .specialty-operation-badge{background:#e7f1ff!important;color:#042963!important;box-shadow:0 8px 20px rgba(4,41,99,.12)!important}
 #specialty-banners .specialty-english .specialty-operation-badge{background:#ffeadb!important;color:#a84a16!important;box-shadow:0 8px 20px rgba(168,74,22,.12)!important}
 #specialty-banners .specialty-melody .specialty-operation-badge{background:#fde7f1!important;color:#9d2f67!important;box-shadow:0 8px 20px rgba(157,47,103,.12)!important}
+
+/* Homepage section palette (2026-09-08): cream -> sky -> blue rhythm. */
+body main>section.hero{background:#fffcf0!important}
+#about{background:#dcf2ff!important;color:#17233a!important}
+#community{background:#1a34ac!important;color:#fff!important}
+#partner-center{background:#fffcf0!important;color:#17233a!important}
+#advertising.advertising{background:#dcf2ff!important;color:#17233a!important}
+#specialty-banners{background:#1a34ac!important;color:#fff!important}
+#events{background:#fffcf0!important;color:#17233a!important}
+#community .section-heading .eyebrow,#community .section-heading h2,#community .section-heading p,#specialty-banners .section-heading .eyebrow,#specialty-banners .section-heading h2,#specialty-banners .section-heading p{color:#fff!important}
+#about .section-heading h2,#about .section-heading p,#advertising .section-heading h2,#advertising .section-heading p,#events .section-heading h2,#events .section-heading p{color:#17233a!important}
+body>footer,body>footer .footer-top,body>footer .footer-bottom{background:#1a34ac!important;color:#fff!important}
+body>footer .footer-top .logo-name,body>footer .footer-top .logo-name b,body>footer .footer-top p,body>footer .footer-top a,body>footer .footer-bottom,body>footer .footer-bottom a{color:#fff!important}
+body>footer .footer-social-copy span{color:#fff!important}
+#footerDeleteAccount{border-color:#1a34ac!important;background:#dcf2ff!important;color:#1a34ac!important;box-shadow:none!important}
+#footerDeleteAccount:hover{border-color:#dcf2ff!important;background:#dcf2ff!important;color:#1a34ac!important}
