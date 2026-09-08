@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" href="icon-192-v71.png">
   <link rel="apple-touch-icon" href="icon-192-v71.png">
   <link rel="stylesheet" href="app.css?v=61">
-  <link rel="stylesheet" href="overrides.css?v=89">
+  <link rel="stylesheet" href="overrides.css?v=90">
 </head>
 <body>
   <div class="app-shell">
@@ -23,17 +23,16 @@
         <span class="logo-name">Harmony <b>Link</b><small data-ko="이음문화센터" data-en="E-eum Culture Center">이음문화센터</small></span>
       </a>
       <nav class="desktop-app-nav" aria-label="주요 메뉴">
-        <button type="button" data-go="home" data-ko="홈" data-en="Home">홈</button>
-        <button type="button" data-go="programs" data-ko="전문 교육 프로그램" data-en="Professional Programs">전문 교육 프로그램</button>
+        <button type="button" data-go="programs" data-ko="전문 교육" data-en="Professional Programs">전문 교육</button>
         <a href="#appPartners" data-ko="협력 업체" data-en="Partners">협력 업체</a>
         <a href="../community.html" data-ko="커뮤니티" data-en="Community">커뮤니티</a>
-        <button type="button" data-go="contact" data-ko="문의" data-en="Contact">문의</button>
+        <a href="../#partner-center" data-ko="파트너센터" data-en="Partner Center">파트너센터</a>
       </nav>
       <div class="top-actions">
-        <a class="top-community-link" href="../community.html" target="_blank" rel="noopener" data-ko="커뮤니티" data-en="Community">커뮤니티</a>
-        <button id="languageButton" class="round-button" type="button" aria-label="언어 변경">EN</button>
+        <div class="app-language-toggle" role="group" aria-label="언어 변경"><button type="button" data-language="ko">KO</button><button type="button" data-language="en">EN</button></div>
         <button id="installButton" class="install-button" type="button" hidden aria-hidden="true">앱 설치</button>
-        <a id="memberButton" class="member-button" href="../?auth=signup" target="_blank" rel="noopener" data-ko="가입 · 로그인" data-en="Join · Sign In">가입 · 로그인</a>
+        <a class="member-button member-signup" href="../?auth=signup" target="_blank" rel="noopener" data-ko="가입" data-en="Join">가입</a>
+        <a class="member-button member-login" href="../?auth=login" target="_blank" rel="noopener" data-ko="로그인" data-en="Sign In">로그인</a>
       </div>
     </header>
 
@@ -44,10 +43,10 @@
           <div class="hero-copy">
             <p class="eyebrow" data-ko="배움으로 연결되는 더 나은 일상" data-en="A BETTER LIFE THROUGH LEARNING">배움으로 연결되는 더 나은 일상</p>
             <h1 data-ko="마음을 잇고,<br><em>가능성을 열다</em>" data-en="Connecting hearts,<br><em>opening possibilities</em>">마음을 잇고,<br><em>가능성을 열다</em></h1>
-            <p data-ko="나에게 맞는 수업과 지역 프로그램을<br>쉽고 빠르게 찾아보세요." data-en="Discover classes and community programs that fit you<br>quickly and easily.">나에게 맞는 수업과 지역 프로그램을<br>쉽고 빠르게 찾아보세요.</p>
+            <p class="hero-summary" data-ko="나에게 맞는 수업과 지역 프로그램을 쉽고 빠르게 찾아보세요." data-en="Discover classes and community programs that fit you quickly and easily.">나에게 맞는 수업과 지역 프로그램을 쉽고 빠르게 찾아보세요.</p>
             <button class="primary-action" type="button" data-go="programs"><span data-ko="전문 교육 프로그램" data-en="Professional Programs">전문 교육 프로그램</span><b>→</b></button>
           </div>
-          <div class="hero-mark" aria-hidden="true"><span>H</span><i></i><b></b></div>
+          <div class="hero-connection-visual" aria-hidden="true"><div class="hero-ripple hero-ripple-a"></div><div class="hero-ripple hero-ripple-b"></div><div class="hero-ripple hero-ripple-c"></div><div class="hero-connection-copy"><div class="hero-connection-symbol"><span>🎓</span><i>↔</i><span>👥</span></div><strong data-ko="교육과 사람을 잇다" data-en="Connecting Education & People">교육과 사람을 잇다</strong><small>HARMONY LINK</small></div></div>
         </div>
 
         <section class="home-programs">
@@ -132,7 +131,7 @@
       </section>
     </main>
 
-    <div class="news-popup" id="newsPopup" role="dialog" aria-modal="true" aria-labelledby="newsPopupTitle">
+    <div class="news-popup" id="newsPopup" hidden role="dialog" aria-modal="true" aria-labelledby="newsPopupTitle">
       <button class="news-backdrop" type="button" data-popup-close aria-label="팝업 닫기"></button>
       <article class="news-panel">
         <div class="news-media"><img id="newsPopupImage" src="" alt="" role="button" tabindex="0"><span id="newsPopupBadge"></span></div>
@@ -182,6 +181,6 @@
     </nav>
   </div>
   <script src="../shared-content.js?v=87"></script>
-  <script src="app.js?v=89"></script>
+  <script src="app.js?v=90"></script>
 </body>
 </html>
