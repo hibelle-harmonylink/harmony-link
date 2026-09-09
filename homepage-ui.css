@@ -150,3 +150,9 @@ body>footer .footer-social-copy span{color:#fff!important}
 #events .event-card,#events .past-event-grid .event-card{border:1px solid #fff!important}
 #events .event-info>p{color:#243b55!important}
 #events .past-events h3{color:#fff!important}
+
+/* Final text contrast and the one-day flyer edge cleanup. */
+#partner-center .partner-center-copy h2{color:#fff!important}
+#events .section-heading>p:last-child{color:#fff!important}
+#events .event-poster[href*="one-day-class"]{border:0!important;outline:0!important;box-shadow:none!important;background:#fff!important}
+#events .event-poster[href*="one-day-class"] img{border:0!important;outline:0!important;box-shadow:none!important;clip-path:inset(1px);transform:scale(1.01)}

@@ -1223,6 +1223,8 @@ footer .footer-bottom{padding-top:11px!important}
 .messiah-support-list li:before{content:"✓";margin-right:10px;color:#9b1518}
 .messiah-detail-meta{margin:0 0 26px;padding:20px 0;border-top:1px solid #eadfce;border-bottom:1px solid #eadfce}
 .messiah-detail-meta div{margin:12px 0}.messiah-detail-meta dt{color:#9b6a27;font-size:11px;font-weight:800}.messiah-detail-meta dd{margin:3px 0 0;color:#173f31;font-weight:700}.messiah-detail-meta a{color:#075bb5;text-decoration:underline;text-underline-offset:3px}
+.hole19-address{white-space:nowrap}
+@media(max-width:760px){.hole19-address{white-space:normal}}
 .messiah-detail-panel .event-map-link{display:inline-flex;margin:0 0 22px}
 .messiah-inquiry-button{width:100%;margin-top:auto;background:#9b1518;color:#fff;font-size:15px;box-shadow:0 14px 28px rgba(155,21,24,.22)}
 @media(max-width:760px){.messiah-detail-main{padding:40px 0 70px}.messiah-detail-hero h1{font-size:33px}.messiah-detail-layout{grid-template-columns:1fr}.messiah-detail-panel{position:static;padding:27px 22px}.messiah-detail-header .logo-name small{display:none}}
