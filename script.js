@@ -1393,7 +1393,7 @@ eventFlyerModal.className='event-flyer-modal';
 eventFlyerModal.hidden=true;
 eventFlyerModal.innerHTML=`<div class="event-flyer-backdrop" data-event-flyer-close></div><section class="event-flyer-panel" role="dialog" aria-modal="true" aria-label="전단지 크게 보기"><button type="button" class="event-flyer-close" data-event-flyer-close aria-label="닫기">×</button><div class="event-flyer-scroll"><img src="" alt=""></div><button type="button" class="event-flyer-collapse" data-event-flyer-close><span data-ko="작게 보기" data-en="Close flyer">작게 보기</span></button></section>`;
 document.body.appendChild(eventFlyerModal);
-const closeEventFlyer=()=>{eventFlyerModal.hidden=true;eventFlyerModal.classList.remove('volunteer-flyer-open','past-flyer-open');document.body.classList.remove('modal-open');};
+const closeEventFlyer=()=>{eventFlyerModal.hidden=true;eventFlyerModal.classList.remove('volunteer-flyer-open','past-flyer-open','one-day-trial-flyer-open');document.body.classList.remove('modal-open');};
 const openVolunteerImage=trigger=>{
   const image=eventFlyerModal.querySelector('img');
   const imageSource=(currentLanguage==='en'?trigger.dataset.volunteerImageEn:null)||trigger.dataset.volunteerImage||trigger.getAttribute('href')||'assets/volunteer/digital-volunteer.png';
@@ -1430,6 +1430,7 @@ document.addEventListener('click',event=>{
   eventFlyerModal.classList.remove('volunteer-flyer-open');
   eventFlyerModal.classList.toggle('past-flyer-open',Boolean(flyerLink.closest('.past-event-grid')));
   eventFlyerModal.classList.toggle('trial-flyer-open',Boolean(flyerLink.closest('.trial-type')));
+  eventFlyerModal.classList.toggle('one-day-trial-flyer-open',flyerLink.href.includes('one-day-class.jpg'));
   image.src=flyerLink.href;
   image.alt=flyerLink.getAttribute('aria-label')||flyerLink.closest('.event-card')?.querySelector('h3')?.textContent||'전단지';
   eventFlyerModal.hidden=false;
