@@ -169,3 +169,21 @@ body>footer .footer-social-panel a.instagram img,
 body>footer .footer-social-panel a.threads img{width:21px!important;height:21px!important;max-width:21px!important;max-height:21px!important;object-fit:contain!important}
 @media(max-width:760px){body>footer .footer-social-copy span{white-space:normal!important}}
 @media(prefers-reduced-motion:reduce){body>footer .footer-social-panel a{animation:none!important}}
+
+/* Keep social labels fixed below independently floating, optically balanced icons. */
+body>footer .footer-social-panel nav{display:grid!important;grid-template-columns:repeat(2,52px)!important;width:114px!important;gap:10px!important}
+body>footer .footer-social-panel a{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;width:52px!important;min-width:52px!important;height:58px!important;padding:6px 4px!important;gap:6px!important;animation:none!important}
+body>footer .footer-social-panel a img{position:static!important;inset:auto!important;margin:0!important;transform:none!important;flex:0 0 auto!important;animation:footer-social-float 3.6s ease-in-out infinite}
+body>footer .footer-social-panel a.instagram img{width:19px!important;height:19px!important;max-width:19px!important;max-height:19px!important}
+body>footer .footer-social-panel a.threads img{width:21px!important;height:21px!important;max-width:21px!important;max-height:21px!important;animation-delay:.45s}
+body>footer .footer-social-panel .footer-social-label{display:block!important;color:#fff!important;font-size:9px!important;font-weight:700!important;line-height:1!important;white-space:nowrap!important}
+@media(max-width:760px){body>footer .footer-social-panel{grid-template-columns:minmax(0,1fr) 114px!important}}
+@media(prefers-reduced-motion:reduce){body>footer .footer-social-panel a img{animation:none!important}}
+
+/* UI-only administrator identity and entry-point emphasis. */
+.site-header .admin-auth-user .auth-user-copy b{font-size:12px!important;font-weight:800!important}
+.site-header .admin-member-link{font-size:11px!important;font-weight:900!important}
+
+/* Country flags replace generic phone icons without changing card geometry. */
+#contact .contact-simple-link[href^="tel:"] .contact-simple-icon,
+#contact .contact-simple-link[href^="sms:"] .contact-simple-icon{font-size:20px!important;line-height:1!important}
