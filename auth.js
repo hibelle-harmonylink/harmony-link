@@ -37,7 +37,6 @@
   let activeMemberName = '';
   let activeMemberType = 'student';
   let activeMembership = 'free';
-  let selectedSignupType = 'student';
 
   const authSlot = document.createElement('div');
   authSlot.className = 'auth-nav-slot';
@@ -59,12 +58,6 @@
       </div>
       <h2 id="authTitle" data-ko="간편하게 로그인하세요" data-en="Sign in to Harmony Link">간편하게 로그인하세요</h2>
       <p data-ko="Google 또는 카카오 계정으로 안전하게 시작할 수 있습니다." data-en="Continue securely with your Google or Kakao account.">Google 또는 카카오 계정으로 안전하게 시작할 수 있습니다.</p>
-      <div class="auth-member-type" hidden>
-        <span data-ko="가입 유형을 선택해 주세요" data-en="Choose your membership type">가입 유형을 선택해 주세요</span>
-        <div>
-          <button type="button" class="active" data-signup-type="student"><b data-ko="수강생" data-en="Learner">수강생</b><small data-ko="교육 신청과 수강 안내" data-en="Learning requests and class updates">교육 신청과 수강 안내</small></button>
-        </div>
-      </div>
       <div class="auth-provider-list">
         <button type="button" class="auth-provider google" data-auth-provider="google"><img src="assets/auth/google.svg" alt="Google"><span data-ko="Google로 로그인" data-en="Continue with Google">Google로 로그인</span></button>
         <button type="button" class="auth-provider kakao" data-auth-provider="kakao"><img src="assets/auth/kakao.svg" alt="Kakao"><span data-ko="카카오로 로그인" data-en="Continue with Kakao">카카오로 로그인</span></button>
@@ -105,8 +98,6 @@
   const setAuthMode = mode => {
     activeAuthMode = mode === 'signup' ? 'signup' : 'login';
     const signup = activeAuthMode === 'signup';
-    const memberTypePicker = authModal.querySelector('.auth-member-type');
-    if (memberTypePicker) memberTypePicker.hidden = !signup;
     authModal.querySelector('.auth-panel')?.classList.toggle('signup-mode', signup);
     authModal.querySelectorAll('[data-auth-mode-tab]').forEach(tab => {
       const selected = tab.dataset.authModeTab === activeAuthMode;
@@ -122,15 +113,15 @@
       title.dataset.en = signup ? 'Join Harmony Link' : 'Sign in to Harmony Link';
     }
     if (description) {
-      description.dataset.ko = signup ? 'Google 또는 카카오 계정으로 별도의 비밀번호 없이 가입할 수 있습니다.' : 'Google 또는 카카오 계정으로 안전하게 시작할 수 있습니다.';
-      description.dataset.en = signup ? 'Join with Google or Kakao—no separate password needed.' : 'Continue securely with your Google or Kakao account.';
+      description.dataset.ko = signup ? 'Google 또는 카카오 계정으로 가입할 수 있습니다.' : 'Google 또는 카카오 계정으로 안전하게 시작할 수 있습니다.';
+      description.dataset.en = signup ? 'You can join with a Google or Kakao account.' : 'Continue securely with your Google or Kakao account.';
     }
     if (googleLabel) {
-      googleLabel.dataset.ko = signup ? 'Google로 가입하기' : 'Google로 로그인';
+      googleLabel.dataset.ko = signup ? 'Google 가입' : 'Google로 로그인';
       googleLabel.dataset.en = signup ? 'Join with Google' : 'Continue with Google';
     }
     if (kakaoLabel) {
-      kakaoLabel.dataset.ko = signup ? '카카오로 가입하기' : '카카오로 로그인';
+      kakaoLabel.dataset.ko = signup ? 'Kakao 가입' : '카카오로 로그인';
       kakaoLabel.dataset.en = signup ? 'Join with Kakao' : 'Continue with Kakao';
     }
   };
@@ -524,7 +515,9 @@
     }
     status.textContent = t('로그인 화면으로 이동합니다…', 'Opening secure sign-in…');
     localStorage.setItem('harmonyAuthReturn', 'partner-center');
-    if (activeAuthMode === 'signup') localStorage.setItem('harmonyPendingMemberType', selectedSignupType);
+    // New social signups always start as students. Partner status remains an
+    // administrator-managed user_type change after registration.
+    if (activeAuthMode === 'signup') localStorage.setItem('harmonyPendingMemberType', 'student');
     const redirectTo = `${window.location.origin}${window.location.pathname}`;
     const oauthOptions = { redirectTo };
     if (provider === 'kakao') {
@@ -538,13 +531,6 @@
   };
 
   document.addEventListener('click', async event => {
-    const signupTypeButton = event.target.closest('[data-signup-type]');
-    if (signupTypeButton) {
-      event.preventDefault();
-      selectedSignupType = 'student';
-      authModal.querySelectorAll('[data-signup-type]').forEach(button => button.classList.toggle('active', button === signupTypeButton));
-      return;
-    }
     const modeTab = event.target.closest('[data-auth-mode-tab]');
     if (modeTab) {
       setAuthMode(modeTab.dataset.authModeTab);
