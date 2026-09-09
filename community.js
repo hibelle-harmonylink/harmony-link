@@ -140,11 +140,9 @@
         if (!otherBody || !otherToggle) return;
         otherBody.hidden = true;
         otherToggle.setAttribute('aria-expanded', 'false');
-        otherToggle.querySelector('i').textContent = '＋';
       });
       postBody.hidden = !willOpen;
       accordionToggle.setAttribute('aria-expanded', String(willOpen));
-      accordionToggle.querySelector('i').textContent = willOpen ? '−' : '＋';
     });
     renderComments(card.querySelector('.comment-list'), post.comments, post.id);
     card.querySelector('.comment-form').addEventListener('submit', async event => { event.preventDefault(); if (!user) { setMessage('댓글 작성은 로그인 후 이용할 수 있습니다.', true); return; } const input = event.currentTarget.querySelector('input'); const content = input.value.trim(); if (!content) return; const { error } = await client.from('partner_community_comments').insert({ post_id: post.id, author_id: user.id, author_name: profile.display_name, content }); if (error) setMessage(`댓글 등록 실패: ${error.message}`, true); else { input.value = ''; await loadPosts(); } });
