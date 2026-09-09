@@ -55,7 +55,25 @@ body main>section.hero{background:#fffcf0!important}
 @media(min-width:761px){.site-header .header-login{min-width:88px;padding-inline:22px!important;text-align:center}}
 @media(min-width:761px){.hero-desc{font-size:15px;letter-spacing:-.02em}.hero-desc span{display:block;white-space:nowrap}}
 @media(max-width:760px){.hero-desc span{display:block;white-space:normal}}
-#about{background:#c1f9ff!important;color:#17233a!important}
+#about{background:#dcf2ff!important;color:#17233a!important}
+#about .about-media-frame{background:#fff!important;background-image:none!important}
+#about .about-media-company,#about .about-media-video{display:grid!important;grid-template-rows:auto minmax(0,1fr);height:100%}
+#about .about-media-heading{min-height:76px}
+#about .about-media-video>div{margin-bottom:0}
+#about .about-media-company .brand-structure,#about .about-media-video .intro-video-frame{width:100%;height:100%;min-height:288px;margin:0!important}
+#about .about-media-video .intro-video-frame{aspect-ratio:auto}
+#about .about-media-company .brand-structure{padding:24px!important;border:1px solid #d4e8f5!important;background:#fff!important}
+#about .about-media-company .structure-parent,#about .about-media-company .structure-project{min-width:250px;padding:12px 30px}
+#about .about-media-company .structure-parent span,#about .about-media-company .structure-project span{font-size:8px}
+#about .about-media-company .structure-parent strong,#about .about-media-company .structure-project strong{font-size:17px}
+#about .about-media-company .structure-parent small,#about .about-media-company .structure-project b{font-size:9px}
+#about .about-media-company .structure-branches>div{min-height:72px;padding:10px 7px}
+#about .about-media-company .structure-branches .status{font-size:8px;padding:4px 7px}
+#about .about-media-company .structure-branches strong{font-size:11px}
+#about .about-media-company .structure-branches small{font-size:8px}
+#about .structure-project{background:#1a34ac!important;color:#fff!important}
+#about .structure-project span,#about .structure-project strong,#about .structure-project b{color:#fff!important}
+@media(max-width:760px){#about .about-media-heading{min-height:0}#about .about-media-company .brand-structure,#about .about-media-video .intro-video-frame{height:auto;min-height:0}#about .about-media-video .intro-video-frame{aspect-ratio:16/9}#about .about-media-company .brand-structure{padding:18px!important}#about .about-media-company .structure-parent,#about .about-media-company .structure-project{min-width:0;width:100%;padding:12px 14px}#about .about-media-company .structure-branches>div{min-height:82px}}
 #community{background:#0b54c2!important;color:#fff!important}
 #partner-center{background:#fff!important;color:#17233a!important}
 #advertising.advertising{background:#c1f9ff!important;color:#17233a!important}
