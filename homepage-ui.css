@@ -216,3 +216,15 @@ body>footer .footer-social-panel a::before{display:none!important}
 body>footer .footer-social-panel a.instagram{background:radial-gradient(circle at 30% 107%,#fdf497 0 5%,#fd5949 45%,#d6249f 62%,#285aeb 90%)!important;border-color:rgba(255,255,255,.5)!important}
 body>footer .footer-social-panel a.threads{background:#000!important;border-color:rgba(255,255,255,.5)!important}
 body>footer .footer-social-panel a img{filter:none!important}
+
+/* Homepage visual tone refinements: typography, outlines, and two soft-green sections. */
+@media(min-width:761px){.site-header .header-login{min-width:82px!important;padding-inline:18px!important;font-size:15px!important;font-weight:800!important;line-height:1!important}}
+#advertising .ad-carousel-card{border-color:#6f9fd4!important}
+#community .section-heading .eyebrow,
+#advertising .section-heading .eyebrow,
+#specialty-banners .section-heading .eyebrow{color:#2d66a3!important;font-size:11px!important;font-weight:800!important;letter-spacing:1.8px!important}
+#partner-center,#events{background:#e8f5e9!important}
+#events .section-heading .eyebrow,#events .section-heading h2,#events .section-heading>p:last-child{color:#172b3d!important}
+body>footer .footer-top .logo-name{color:#080b10!important}
+body>footer .footer-top .logo-name b{color:#fff!important}
+body>footer .footer-top .logo-name small{color:#d4af37!important}

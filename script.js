@@ -601,7 +601,7 @@ if (oldSpecialtyStart) {
   const specialtySection = document.createElement('section');
   specialtySection.className = 'specialty-banners section';
   specialtySection.id = 'specialty-banners';
-  specialtySection.innerHTML = `<div class="container"><div class="section-heading centered reveal"><p class="eyebrow">PREMIUM SPECIALTY PROGRAMS</p><h2 data-ko="전문 교육 프로그램" data-en="Specialty Programs">전문 교육 프로그램</h2><p data-ko="Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요." data-en="Explore specialty programs operated directly or jointly by Harmony Link.">Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요.</p></div><div class="specialty-banner-grid">${specialtyPrograms.map((program,index)=>{
+  specialtySection.innerHTML = `<div class="container"><div class="section-heading centered reveal"><p class="eyebrow">PROFESSIONAL EDUCATION PROGRAMS</p><h2 data-ko="전문 교육 프로그램" data-en="Specialty Programs">전문 교육 프로그램</h2><p data-ko="Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요." data-en="Explore specialty programs operated directly or jointly by Harmony Link.">Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요.</p></div><div class="specialty-banner-grid">${specialtyPrograms.map((program,index)=>{
     const actionHtml = program.id === 'digital'
       ? `<a class="btn specialty-programs-link" href="digital-classes/index.html"><span data-ko="프로그램 보기" data-en="View Programs">프로그램 보기</span><b>↗</b></a>`
       : `<button type="button" class="btn specialty-open" data-specialty="${program.id}"><span data-ko="프로그램 보기" data-en="View Program">프로그램 보기</span><b>↗</b></button>`;
@@ -903,7 +903,7 @@ if (currentEventGrid) {
 
 const contactSectionForAds = document.getElementById('specialty-banners');
 if (contactSectionForAds) {
-  contactSectionForAds.insertAdjacentHTML('beforebegin', `<section class="advertising section" id="advertising"><div class="container"><div class="section-heading centered reveal visible"><p class="eyebrow">COMMUNITY PARTNERS</p><h2 data-ko="업체 광고 · 제휴 공간" data-en="Business Advertising & Partnerships">업체 광고 · 제휴 공간</h2><p data-ko="지역사회와 함께 성장하는 업체를 만나보세요." data-en="Meet businesses growing with our community.">지역사회와 함께 성장하는 업체를 만나보세요.</p></div><div class="ad-inline-carousel" aria-live="polite"><button type="button" class="ad-carousel-prev" aria-label="이전 업체">‹</button><div class="ad-carousel-track"></div><button type="button" class="ad-carousel-next" aria-label="다음 업체">›</button></div><div class="ad-carousel-dots"></div></div></section>`);
+  contactSectionForAds.insertAdjacentHTML('beforebegin', `<section class="advertising section" id="advertising"><div class="container"><div class="section-heading centered reveal visible"><p class="eyebrow">PARTNER SPECIALTY PROGRAMS</p><h2 data-ko="업체 광고 · 제휴 공간" data-en="Business Advertising & Partnerships">업체 광고 · 제휴 공간</h2><p data-ko="지역사회와 함께 성장하는 업체를 만나보세요." data-en="Meet businesses growing with our community.">지역사회와 함께 성장하는 업체를 만나보세요.</p></div><div class="ad-inline-carousel" aria-live="polite"><button type="button" class="ad-carousel-prev" aria-label="이전 업체">‹</button><div class="ad-carousel-track"></div><button type="button" class="ad-carousel-next" aria-label="다음 업체">›</button></div><div class="ad-carousel-dots"></div></div></section>`);
 }
 setLanguage(currentLanguage);
 
