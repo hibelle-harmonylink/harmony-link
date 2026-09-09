@@ -127,6 +127,25 @@
     const toggle = card.querySelector('.comment-toggle'); toggle.querySelector('b').textContent = String(post.comments.length);
     const panel = card.querySelector('.comment-panel');
     toggle.addEventListener('click', () => { panel.hidden = !panel.hidden; });
+    const accordionToggle = card.querySelector('.post-accordion-toggle');
+    const postBody = card.querySelector('.post-body');
+    const postBodyId = `post-body-${String(post.id).replace(/[^a-z0-9_-]/gi, '-')}`;
+    postBody.id = postBodyId;
+    accordionToggle.setAttribute('aria-controls', postBodyId);
+    accordionToggle.addEventListener('click', () => {
+      const willOpen = postBody.hidden;
+      list.querySelectorAll('.post-card').forEach(otherCard => {
+        const otherBody = otherCard.querySelector('.post-body');
+        const otherToggle = otherCard.querySelector('.post-accordion-toggle');
+        if (!otherBody || !otherToggle) return;
+        otherBody.hidden = true;
+        otherToggle.setAttribute('aria-expanded', 'false');
+        otherToggle.querySelector('i').textContent = '＋';
+      });
+      postBody.hidden = !willOpen;
+      accordionToggle.setAttribute('aria-expanded', String(willOpen));
+      accordionToggle.querySelector('i').textContent = willOpen ? '−' : '＋';
+    });
     renderComments(card.querySelector('.comment-list'), post.comments, post.id);
     card.querySelector('.comment-form').addEventListener('submit', async event => { event.preventDefault(); if (!user) { setMessage('댓글 작성은 로그인 후 이용할 수 있습니다.', true); return; } const input = event.currentTarget.querySelector('input'); const content = input.value.trim(); if (!content) return; const { error } = await client.from('partner_community_comments').insert({ post_id: post.id, author_id: user.id, author_name: profile.display_name, content }); if (error) setMessage(`댓글 등록 실패: ${error.message}`, true); else { input.value = ''; await loadPosts(); } });
     return card;
@@ -207,7 +226,7 @@
       } else {
         profile = { ...member, display_name: member.display_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0] };
         document.getElementById('openComposer').hidden = false;
-        document.querySelector('[data-admin-only]').hidden = profile.role !== 'admin'; document.getElementById('memberBadge').textContent = profile.role === 'member' ? (profile.member_type === 'student' ? '수강생 커뮤니티' : '일반회원 커뮤니티') : (roleLabels[profile.role] || '회원 커뮤니티'); document.getElementById('welcomeName').textContent = `${profile.display_name}님, 반갑습니다.`;
+        document.querySelector('[data-admin-only]').hidden = profile.role !== 'admin'; document.getElementById('memberBadge').textContent = profile.role === 'member' ? (profile.member_type === 'student' ? '수강생 커뮤니티' : '일반회원 커뮤니티') : (roleLabels[profile.role] || '회원 커뮤니티'); document.getElementById('welcomeName').textContent = profile.role === 'admin' ? '하이벨님' : `${profile.display_name}님, 반갑습니다.`;
       }
     } else {
       showGuestView();
