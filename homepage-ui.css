@@ -128,3 +128,13 @@ body>footer .footer-social-copy span{color:#fff!important}
 #footerDeleteAccount{border:1px solid #2f6fb5!important;background:#fff!important;color:#2f6fb5!important;box-shadow:none!important}
 #footerDeleteAccount:hover,#footerDeleteAccount:focus-visible{border-color:#2f6fb5!important;background:#eaf7fb!important;color:#245a8d!important}
 @media(max-width:760px){.advertising .ad-carousel-track{height:330px}}
+
+/* 2026-09-09: blue tokens measured from the live primary CTA and BASIC tier. */
+:root{--brand-blue:#0b54c2;--brand-light-blue:#edf5ff}
+#about,#advertising.advertising,#specialty-banners{background:var(--brand-light-blue)!important}
+#partner-center,#events,body>footer .footer-top{background:var(--brand-blue)!important}
+#about .structure-project{background:var(--brand-blue)!important}
+.btn-primary,.nav-cta,.admin-member-link,.hero-actions .btn-explore,#about .company-link,#specialty-banners .specialty-open,#specialty-banners .specialty-programs-link,#events .event-detail-button,.contact-page-submit{background:var(--brand-blue)!important;color:#fff!important}
+#partner-center .partner-center-copy h2{display:block!important;visibility:visible!important;opacity:1!important;color:#fff!important}
+#partner-center .partner-center-copy h2::before{content:"🔒 ";font-size:.82em}
+.advertising .ad-carousel-card{border:0!important;border-radius:26px!important;box-shadow:0 8px 22px rgba(11,84,194,.08)!important}
