@@ -25,14 +25,6 @@
   let user = null;
   let profile = null;
   let posts = [];
-  const PUBLIC_POST_COOLDOWN_MS = 30000;
-  const publicPostCategories = [
-    { value: 'question', label: '질문과 답변' },
-    { value: 'info', label: '정보 공유' },
-    { value: 'free', label: '자유게시판' },
-    { value: 'jobs', label: '구인·구직' },
-    { value: 'resource', label: '자료방' }
-  ];
   const legacyPostLinks = {
     '1일 무료 체험 후기': 'https://www.youtube.com/shorts/zr_CoDfcEbI',
     '미란멜로디 소개합니다.': 'https://www.instagram.com/meeranmelody',
@@ -42,18 +34,8 @@
   const setMessage = (text, error = false) => { message.textContent = text; message.classList.toggle('error', error); };
   const displayAuthorName = value => /^(harmony\s*link|하모니\s*링크)$/i.test(String(value || '').trim()) ? '하이벨' : String(value || '익명').trim();
   const matchesCategory = (postCategory, selected) => !selected || postCategory === selected || (selected === 'info' && postCategory === 'review') || (selected === 'free' && postCategory === 'intro');
-  const getPublicClientToken = () => {
-    const storageKey = 'harmony-community-public-writer';
-    let token = localStorage.getItem(storageKey);
-    if (!token) {
-      token = crypto.randomUUID ? crypto.randomUUID() : `${Math.random().toString(16).slice(2, 10).padEnd(8, '0')}-0000-4000-8000-${Math.random().toString(16).slice(2, 14).padEnd(12, '0')}`;
-      localStorage.setItem(storageKey, token);
-    }
-    return token;
-  };
-  const populateComposerCategories = isGuest => {
-    const categories = isGuest ? publicPostCategories : boardCategories;
-    document.getElementById('postCategory').replaceChildren(...categories.map(category => {
+  const populateComposerCategories = () => {
+    document.getElementById('postCategory').replaceChildren(...boardCategories.map(category => {
       const option = new Option(category.label, category.value);
       if (category.adminOnly && profile?.role !== 'admin') option.hidden = true;
       return option;
@@ -61,7 +43,7 @@
   };
   const populateCategoryMenus = () => {
     categoryFilter.replaceChildren(new Option('전체 게시글', ''), ...boardCategories.map(category => new Option(category.label, category.value)));
-    populateComposerCategories(true);
+    populateComposerCategories();
   };
   populateCategoryMenus();
   const escapeUrl = value => { try { const raw = String(value || '').trim(); const parsed = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`); return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : ''; } catch { return ''; } };
@@ -90,15 +72,12 @@
   };
   const closeComposer = () => { modal.hidden = true; document.body.style.overflow = ''; form.reset(); document.getElementById('editingPostId').value = ''; };
   const openComposer = (post = null) => {
+    if (!user || !profile) { setMessage('글 작성은 로그인 후 이용할 수 있습니다.', true); return; }
     form.reset();
-    populateComposerCategories(!profile);
+    populateComposerCategories();
     document.getElementById('editingPostId').value = post?.id || '';
     document.getElementById('composerTitle').textContent = post ? '글 수정' : '새 글 작성';
     document.getElementById('postCategory').value = post?.category || 'free';
-    const authorInput = document.getElementById('postAuthorName');
-    authorInput.value = post ? displayAuthorName(post.author_name) : profile ? (profile.role === 'admin' ? '하이벨' : profile.display_name) : (localStorage.getItem('harmony-community-guest-name') || '');
-    authorInput.readOnly = !!profile;
-    document.getElementById('postAuthorLabel').hidden = !!profile;
     document.getElementById('postTitle').value = post?.title || '';
     document.getElementById('postContent').value = post?.content || '';
     document.getElementById('postResourceUrl').value = post?.resource_url || '';
@@ -209,28 +188,13 @@
 
   form.addEventListener('submit', async event => {
     event.preventDefault();
+    if (!user || !profile) { document.getElementById('composerMessage').textContent = '글 작성은 로그인 후 이용할 수 있습니다.'; return; }
     const id = document.getElementById('editingPostId').value;
-    const authorName = document.getElementById('postAuthorName').value.trim();
     const payload = { category: document.getElementById('postCategory').value, title: document.getElementById('postTitle').value.trim(), content: document.getElementById('postContent').value.trim(), resource_url: document.getElementById('postResourceUrl').value.trim() || null };
-    if (authorName.length < 2 || payload.title.length < 2 || payload.content.length < 2) { document.getElementById('composerMessage').textContent = '작성자, 제목, 내용을 모두 입력해 주세요.'; return; }
-    let error;
-    if (profile) {
-      const request = id ? client.from('partner_community_posts').update(payload).eq('id', id) : client.from('partner_community_posts').insert({ ...payload, author_id: user.id, author_name: profile.display_name });
-      ({ error } = await request);
-    } else {
-      if (id) { document.getElementById('composerMessage').textContent = '비회원 게시글은 관리자에게 수정을 요청해 주세요.'; return; }
-      const lastSubmitted = Number(localStorage.getItem('harmony-community-last-public-post') || 0);
-      if (Date.now() - lastSubmitted < PUBLIC_POST_COOLDOWN_MS) { document.getElementById('composerMessage').textContent = '잠시 후 다시 작성해주세요.'; return; }
-      localStorage.setItem('harmony-community-guest-name', authorName);
-      const result = await client.rpc('create_public_community_post', { p_category: payload.category, p_author_name: authorName, p_title: payload.title, p_content: payload.content, p_resource_url: payload.resource_url, p_client_token: getPublicClientToken() });
-      error = result.error;
-      if (!error) localStorage.setItem('harmony-community-last-public-post', String(Date.now()));
-    }
-    if (error) {
-      const detail = String(error.message || '').toLowerCase();
-      document.getElementById('composerMessage').textContent = /wait|rate|잠시/.test(detail) ? '잠시 후 다시 작성해주세요.' : /invalid|length|category|author|input|url/.test(detail) ? '입력 내용을 다시 확인해주세요.' : '글을 등록하지 못했습니다. 잠시 후 다시 시도해주세요.';
-      return;
-    }
+    if (payload.title.length < 2 || payload.content.length < 2) { document.getElementById('composerMessage').textContent = '제목과 내용을 모두 입력해 주세요.'; return; }
+    const request = id ? client.from('partner_community_posts').update(payload).eq('id', id) : client.from('partner_community_posts').insert({ ...payload, author_id: user.id, author_name: profile.display_name });
+    const { error } = await request;
+    if (error) { document.getElementById('composerMessage').textContent = `저장 실패: ${error.message}`; return; }
     closeComposer(); await loadPosts(); setMessage(id ? '게시글을 수정했습니다.' : '새 게시글을 등록했습니다.');
   });
 
@@ -242,8 +206,7 @@
 
   const showGuestView = () => {
     user = null; profile = null;
-    document.getElementById('openComposer').hidden = false;
-    populateComposerCategories(true);
+    document.getElementById('openComposer').hidden = true;
     document.getElementById('memberBadge').textContent = '게스트';
     document.getElementById('welcomeName').textContent = '';
   };
@@ -262,9 +225,9 @@
     access.hidden = false; app.hidden = true;
   };
 
-  // Community posts, public post creation, and the digital-volunteer section
-  // are public. Comments and member-owned edit/delete actions require an
-  // approved signed-in member. The
+  // Community posts and the digital-volunteer section are public. Writing,
+  // comments and member-owned edit/delete actions require an approved signed-in
+  // member. The
   // guest/loading view is never replaced by a "sign in required" prompt --
   // it stays a neutral loading state until the session check resolves, so
   // a signed-in user navigating in from index.html never sees a stale
@@ -283,7 +246,7 @@
       } else {
         profile = { ...member, display_name: member.display_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0] };
         document.getElementById('openComposer').hidden = false;
-        populateComposerCategories(false); document.getElementById('memberBadge').textContent = profile.role === 'member' ? (profile.member_type === 'student' ? '수강생 커뮤니티' : '일반회원 커뮤니티') : (roleLabels[profile.role] || '회원 커뮤니티'); document.getElementById('welcomeName').textContent = profile.role === 'admin' ? '하이벨님' : `${profile.display_name}님, 반갑습니다.`;
+        populateComposerCategories(); document.getElementById('memberBadge').textContent = profile.role === 'member' ? (profile.member_type === 'student' ? '수강생 커뮤니티' : '일반회원 커뮤니티') : (roleLabels[profile.role] || '회원 커뮤니티'); document.getElementById('welcomeName').textContent = profile.role === 'admin' ? '하이벨님' : `${profile.display_name}님, 반갑습니다.`;
       }
     } else {
       showGuestView();
