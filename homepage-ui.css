@@ -208,3 +208,11 @@ body>footer .footer-social-panel a.instagram img{width:18px!important;height:18p
 body>footer .footer-social-panel a.threads img{width:20px!important;height:20px!important;max-width:20px!important;max-height:20px!important}
 @media(max-width:760px){body>footer .footer-social-panel{display:flex!important;width:100%!important;max-width:100%!important}body>footer .footer-social-copy span{white-space:normal!important}}
 @media(prefers-reduced-motion:reduce){body>footer .footer-social-panel a{animation:none!important}}
+
+/* Final social presentation: platform colors and right-edge icon alignment. */
+body>footer .footer-social-panel nav{align-self:flex-end!important;justify-content:flex-end!important}
+body>footer .footer-social-copy{width:100%!important;text-align:right!important}
+body>footer .footer-social-panel a::before{display:none!important}
+body>footer .footer-social-panel a.instagram{background:radial-gradient(circle at 30% 107%,#fdf497 0 5%,#fd5949 45%,#d6249f 62%,#285aeb 90%)!important;border-color:rgba(255,255,255,.5)!important}
+body>footer .footer-social-panel a.threads{background:#000!important;border-color:rgba(255,255,255,.5)!important}
+body>footer .footer-social-panel a img{filter:none!important}
