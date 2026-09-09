@@ -170,6 +170,15 @@ body>footer .footer-social-panel a.threads img{width:21px!important;height:21px!
 @media(max-width:760px){body>footer .footer-social-copy span{white-space:normal!important}}
 @media(prefers-reduced-motion:reduce){body>footer .footer-social-panel a{animation:none!important}}
 
+/* Polished social buttons with restrained depth and a gentle glossy highlight. */
+@media(min-width:761px){body>footer .footer-social-panel{position:relative!important;left:14px!important}}
+body>footer .footer-social-panel a{position:relative!important;overflow:hidden!important;border:1px solid rgba(255,255,255,.34)!important;box-shadow:0 5px 11px rgba(1,20,55,.2),inset 0 1px 1px rgba(255,255,255,.38)!important}
+body>footer .footer-social-panel a::before{content:"";position:absolute;inset:1px 3px auto;height:42%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,0));pointer-events:none}
+body>footer .footer-social-panel a.instagram{background:radial-gradient(circle at 30% 105%,#ffd36b 0 16%,transparent 42%),linear-gradient(145deg,#f26b68 12%,#d84792 52%,#7059cb 100%)!important;border-color:rgba(255,210,224,.64)!important}
+body>footer .footer-social-panel a.threads{background:linear-gradient(145deg,#414141 0%,#181818 52%,#050505 100%)!important;border-color:rgba(255,255,255,.34)!important}
+body>footer .footer-social-panel a img{position:relative!important;z-index:1!important;filter:drop-shadow(0 1px 1px rgba(0,0,0,.2))}
+@media(max-width:760px){body>footer .footer-social-panel{left:auto!important}}
+
 /* Keep social labels fixed below independently floating, optically balanced icons. */
 body>footer .footer-social-panel nav{display:grid!important;grid-template-columns:repeat(2,52px)!important;width:114px!important;gap:10px!important}
 body>footer .footer-social-panel a{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;width:52px!important;min-width:52px!important;height:58px!important;padding:6px 4px!important;gap:6px!important;animation:none!important}

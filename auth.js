@@ -230,7 +230,7 @@
       const adminLink = document.createElement('a');
       adminLink.className = 'admin-member-link';
       adminLink.href = 'admin.html';
-      adminLink.textContent = t('관리자 모드', 'Admin Mode');
+      adminLink.textContent = t('회원 관리', 'Member Management');
       authSlot.appendChild(adminLink);
     }
     authSlot.appendChild(wrapper);
