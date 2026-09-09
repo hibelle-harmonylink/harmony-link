@@ -1312,6 +1312,10 @@ footer .footer-bottom{padding-top:11px!important}
   .event-flyer-modal:not(.volunteer-flyer-open) .event-flyer-collapse{min-height:48px;border:0;background:#0b5fc2;color:#fff;font-size:13px;font-weight:800;cursor:pointer}
 }
 .event-flyer-modal.past-flyer-open .event-flyer-scroll img{border:none!important;outline:none!important;box-shadow:none!important}
+.event-flyer-modal.past-flyer-open .event-flyer-panel{width:min(960px,94vw)!important;max-height:94vh!important;background:#fff!important}
+.event-flyer-modal.past-flyer-open .event-flyer-scroll{padding:10px!important;background:#fff!important}
+.event-flyer-modal.past-flyer-open .event-flyer-scroll img{width:auto!important;height:auto!important;max-width:100%!important;max-height:calc(94vh - 70px)!important;object-fit:contain!important;border-radius:0!important}
+@media(max-width:760px){.event-flyer-modal.past-flyer-open{padding:0!important}.event-flyer-modal.past-flyer-open .event-flyer-panel{width:100vw!important;max-height:100svh!important;border-radius:0!important}.event-flyer-modal.past-flyer-open .event-flyer-scroll{padding:44px 0 58px!important}.event-flyer-modal.past-flyer-open .event-flyer-scroll img{width:100%!important;max-height:calc(100svh - 102px)!important}}
 
 /* Contact section: force the three cards into one row on PC, equalize
    their width/height, drop the US/KR text labels for flag icons, and

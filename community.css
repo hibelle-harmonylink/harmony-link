@@ -106,7 +106,6 @@ body{background:#fffcf0!important}
 
 /* Public board author column and session-safe controls. */
 .community-topbar #signOutButton[hidden]{display:none!important}
-.community-volunteer-program p>span{display:block}
 .community-volunteer-btn{font-family:inherit;cursor:pointer}
 .volunteer-request-modal .composer-panel{width:min(520px,calc(100vw - 28px))}
 .volunteer-request-modal select{width:100%;min-height:46px}
@@ -114,3 +113,11 @@ body{background:#fffcf0!important}
 .post-list-author{justify-self:end;color:#405b73;font-size:13px;font-weight:700;white-space:nowrap}
 .composer-panel input[readonly]{background:#f2f6f9;color:#405b73;cursor:default}
 @media(max-width:700px){.post-list-row{grid-template-columns:auto minmax(0,1fr)!important;padding-left:16px!important;padding-right:16px!important}.post-list-author{grid-column:2;justify-self:start;font-size:12px;white-space:normal}.post-body{padding-left:16px!important;padding-right:16px!important}}
+
+/* Keep volunteer actions and accordion cards consistent with Harmony Link's blue UI. */
+.community-volunteer-actions .community-volunteer-btn{min-height:44px;border:1px solid #6f9fd4!important;border-radius:12px;font-family:"DM Sans","Noto Sans KR",sans-serif;font-size:13px;font-weight:700}
+.community-volunteer-programs{align-items:start}
+.community-volunteer-program{width:100%;border:1px solid #6f9fd4!important;font-family:"DM Sans","Noto Sans KR",sans-serif}
+.community-volunteer-program h3{font-size:15px!important}.community-volunteer-program p{font-size:14px!important;line-height:1.55!important;white-space:nowrap}
+.community-account-actions{gap:10px!important}.community-topbar .home-button,.community-topbar #signOutButton{display:inline-flex;align-items:center;justify-content:center;min-height:40px;border-radius:10px;font-size:14px!important;font-weight:800!important}
+@media(max-width:700px){.community-volunteer-program p{white-space:normal}.community-account-actions{gap:7px!important}.community-topbar .home-button,.community-topbar #signOutButton{min-height:38px;padding:0 11px!important;font-size:12px!important}}
