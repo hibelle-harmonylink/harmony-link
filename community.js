@@ -257,6 +257,7 @@
     if (!client) { showGuestView(); access.hidden = true; app.hidden = false; setMessage('게시글을 불러오지 못했습니다.', true); return; }
     const { data } = await client.auth.getSession(); user = data.session?.user || null;
     document.getElementById('signOutButton').hidden = !user;
+    document.getElementById('communityHomeButton').hidden = !user;
     if (user) {
       const { data: member, error } = await client.from('member_profiles').select('role,account_status,display_name,member_type').eq('id', user.id).maybeSingle();
       const allowed = !error && member && window.HarmonyAccess?.hasFeatureAccess(member, 'community');
@@ -275,4 +276,34 @@
     access.hidden = true; app.hidden = false; await loadPosts();
   };
   initialize();
+
+  const volunteerModal = document.getElementById('volunteerRequestModal');
+  const volunteerForm = document.getElementById('volunteerRequestForm');
+  const closeVolunteerModal = () => { volunteerModal.hidden = true; document.body.style.overflow = ''; };
+  document.querySelectorAll('[data-volunteer-request]').forEach(button => button.addEventListener('click', () => {
+    volunteerForm.reset();
+    document.getElementById('volunteerRequestType').value = button.dataset.volunteerRequest;
+    document.getElementById('volunteerRequestMessage').textContent = '';
+    volunteerModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    volunteerForm.querySelector('input[name="이름"]').focus();
+  }));
+  document.querySelectorAll('[data-close-volunteer-request]').forEach(button => button.addEventListener('click', closeVolunteerModal));
+  volunteerForm.addEventListener('submit', async event => {
+    event.preventDefault();
+    const submit = volunteerForm.querySelector('[type="submit"]');
+    const status = document.getElementById('volunteerRequestMessage');
+    status.textContent = '보내는 중입니다...';
+    submit.disabled = true;
+    try {
+      const response = await fetch('https://formsubmit.co/ajax/hibelle@hibelleconsulting.com', { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(volunteerForm) });
+      if (!response.ok) throw new Error('submit failed');
+      status.textContent = '신청이 접수되었습니다. 확인 후 연락드리겠습니다.';
+      volunteerForm.reset();
+    } catch (error) {
+      status.textContent = '전송에 실패했습니다. hibelle@hibelleconsulting.com으로 이메일을 보내주세요.';
+    } finally {
+      submit.disabled = false;
+    }
+  });
 })();

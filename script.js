@@ -1159,11 +1159,11 @@ const adRooms={
   premium:{ko:'프리미엄 광고 업체',en:'Premium Advertisers',label:'PREMIUM ADVERTISER',slots:4,items:[
     {name:'Yura Kim · High Line Residential',displayNameKo:'Yura Kim',displayNameEn:'Yura Kim',summaryKo:'뉴욕 부동산 매물 선정부터 계약·입주까지 함께합니다.',summaryEn:'Guidance from property selection through closing and move-in.',contactKo:'전화 516-390-1383',contactEn:'Phone 516-390-1383',copy:'뉴욕 부동산 매물 선정부터 계약·입주까지 함께합니다.<br>연락처 516-390-1383',copyEn:'Guiding you from property selection through closing and move-in.<br>Contact 516-390-1383',image:'assets/ads/highline-hl-mark.png',logoVariant:'highline',banners:['assets/ads/highline-residential-ko.png'],chatUrl:'https://open.kakao.com/me/hlresy',brokerUrl:'https://www.hlres.com/yura-kim',imageOnly:true},
     {name:'OrganicOne',displayNameKo:'올가닉 원 유기농원',displayNameEn:'OrganicOne',summaryKo:'유아동·유기농 건강식품과 한국 전통 식품을 만나보세요.',summaryEn:'Organic family foods, health foods, and Korean traditional foods.',contactKo:'팰팍 201-585-0958 · 플러싱 929-845-0958',contactEn:'Palisades Park 201-585-0958 · Flushing 929-845-0958',copy:'유아동 식품·유기농 건강식품·한국 전통 식품을<br>팰팍과 플러싱 매장에서 만나보세요.<br>연락처 팰팍 201-585-0958 · 플러싱 929-845-0958',copyEn:'Organic children’s foods, health foods, and Korean traditional foods.<br>Available in Palisades Park and Flushing.<br>Contact<br>Palisades Park 201-585-0958 / Flushing 929-845-0958',image:'assets/ads/organic-one/logo-green.png',banners:['assets/ads/organic-one/family-products.png','assets/ads/organic-one/traditional-foods.png'],chatUrl:'https://www.instagram.com/organicone_/',brokerUrl:'https://www.organiconestore.com/',imageOnly:true},
-    {name:'HOLE19 Golf Lounge',displayNameKo:'HOLE19 골프라운지',displayNameEn:'HOLE19 Golf Lounge',summaryKo:'최신 시뮬레이터와 음료·음식을 함께 즐기는 골프라운지입니다.',summaryEn:'Modern simulators with coffee, beer, and food in one golf lounge.',contactKo:'전화 929-766-0088',contactEn:'Phone 929-766-0088',copy:'최신 골프 시뮬레이터와 커피·맥주·음식을 함께 즐기는 골프라운지입니다.<br>연락처 929-766-0088',copyEn:'A premium golf lounge with modern simulators, coffee, beer, and food.<br>Contact 929-766-0088',image:'assets/ads/hole19/logo.png?v=20260819-2',banners:['assets/ads/hole19/open-banner.png','assets/ads/hole19/promotion.png','assets/ads/hole19/features.png'],chatUrl:'tel:+19297660088',brokerUrl:'https://www.google.com/maps/search/?api=1&query=154-05%20Northern%20Blvd%2C%202F%2C%20Flushing%2C%20NY%2011354',primaryLabelKo:'전화 연결 ↗',primaryLabelEn:'Call Now ↗',secondaryLabelKo:'지도에서 보기 ↗',secondaryLabelEn:'View Map ↗',imageOnly:true}
+    {name:'HOLE19 Golf Lounge',displayNameKo:'HOLE19 골프라운지',displayNameEn:'HOLE19 Golf Lounge',summaryKo:'최신 시뮬레이터와 음료·음식을 함께 즐기는 골프라운지입니다.',summaryEn:'Modern simulators with coffee, beer, and food in one golf lounge.',contactKo:'전화 929-766-0088',contactEn:'Phone 929-766-0088',copy:'최신 골프 시뮬레이터와 커피·맥주·음식을 함께 즐기는 골프라운지입니다.<br>연락처 929-766-0088',copyEn:'A premium golf lounge with modern simulators, coffee, beer, and food.<br>Contact 929-766-0088',image:'assets/ads/hole19/logo.png?v=20260819-2',banners:['assets/ads/hole19/open-banner.png','assets/ads/hole19/promotion.png','assets/ads/hole19/features.png'],chatUrl:'tel:+19297660088',brokerUrl:'https://hole19golflounge.com/',primaryLabelKo:'전화 연결 ↗',primaryLabelEn:'Call Now ↗',secondaryLabelKo:'업체 홈페이지 ↗',secondaryLabelEn:'Official Website ↗',imageOnly:true}
   ]},
   community:{ko:'협력 업체',en:'Community Partners',label:'COMMUNITY PARTNER',slots:4,items:[
     {name:'AALEAC',displayNameKo:'AALEAC',displayNameEn:'AALEAC',summaryKo:'아시안 커뮤니티와 사법기관의 소통과 협력을 지원합니다.',summaryEn:'Supporting cooperation between Asian communities and law enforcement.',contactKo:'전화 646-996-8093',contactEn:'Phone 646-996-8093',copy:'아시안 커뮤니티와 사법기관의 소통과 협력을 지원합니다.<br>연락처 646-996-8093',copyEn:'Supporting communication and cooperation between<br>Asian American communities and law enforcement.<br>Contact 646-996-8093',url:'https://aaleac.org/',image:'assets/partners/aaleac-shield.png?v=20260819-1'},
-    {name:'Jangsu Daycare',displayNameKo:'장수 데이케어',displayNameEn:'Jangsu Daycare',summaryKo:'어르신을 가족처럼 모시며 건강하고 행복한 하루를 함께합니다.',summaryEn:'Family-like care supporting healthy and happy days for seniors.',contactKo:'전화 718-799-0133 · 718-864-6430',contactEn:'Phone 718-799-0133 · 718-864-6430',copy:'어르신 한 분 한 분을 가족처럼 모시며 건강하고 행복한 하루를 함께하는<br class="jangsu-card-break-mobile"> 데이케어 센터입니다.<br class="jangsu-card-break-desktop"> 연락처 718-799-0133 · 718-864-6430',popupCopy:'어르신 한 분 한 분을 가족처럼 모시며 <br class="jangsu-popup-break-desktop">건강하고 행복한 하루를 함께하는 <br class="jangsu-popup-break-mobile">데이케어 센터입니다.<br>연락처 718-799-0133 · 718-864-6430',copyEn:'A daycare center caring for each senior like family, supporting a healthy and happy day together.<br>Phone 718-799-0133 · 718-864-6430',url:'mailto:Jangsuadc1@gmail.com',image:'assets/partners/jangsu-daycare-logo.png?v=20260815-304',banner:'assets/partners/jangsu-daycare-banner.png'}
+    {name:'Jangsu Daycare',displayNameKo:'장수 데이케어',displayNameEn:'Jangsu Daycare',summaryKo:'어르신을 가족처럼 모시며 건강하고 행복한 하루를 함께합니다.',summaryEn:'Family-like care supporting healthy and happy days for seniors.',contactKo:'전화 718-799-0133 · 718-864-6430',contactEn:'Phone 718-799-0133 · 718-864-6430',copy:'어르신 한 분 한 분을 가족처럼 모시며 건강하고 행복한 하루를 함께하는<br class="jangsu-card-break-mobile"> 데이케어 센터입니다.<br class="jangsu-card-break-desktop"> 연락처 718-799-0133 · 718-864-6430',popupCopy:'어르신 한 분 한 분을 가족처럼 모시며 <br class="jangsu-popup-break-desktop">건강하고 행복한 하루를 함께하는 <br class="jangsu-popup-break-mobile">데이케어 센터입니다.<br>연락처 718-799-0133 · 718-864-6430',copyEn:'A daycare center caring for each senior like family, supporting a healthy and happy day together.<br>Phone 718-799-0133 · 718-864-6430',url:'https://www.google.com/maps/search/?api=1&query=Jangsu%20Daycare%20718-799-0133',image:'assets/partners/jangsu-daycare-logo.png?v=20260815-304',banner:'assets/partners/jangsu-daycare-banner.png'}
   ]},
   culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',label:'CULTURE & EDUCATION PARTNER',slots:4,items:[]}
 };
@@ -1213,11 +1213,11 @@ renderAdvertisingCarousel();restartAdvertisingCarousel();
 const hole19Advertiser=adRooms.premium.items.find(item=>item.name==='HOLE19 Golf Lounge');
 if(hole19Advertiser){
   hole19Advertiser.chatUrl='https://www.instagram.com/hole19_golflounge/';
-  hole19Advertiser.brokerUrl='https://www.facebook.com/hole19golflounge/?ref=PROFILE_EDIT_xav_ig_profile_page_web#';
+  hole19Advertiser.brokerUrl='https://hole19golflounge.com/';
   hole19Advertiser.primaryLabelKo='인스타그램 ↗';
   hole19Advertiser.primaryLabelEn='Instagram ↗';
-  hole19Advertiser.secondaryLabelKo='페이스북 ↗';
-  hole19Advertiser.secondaryLabelEn='Facebook ↗';
+  hole19Advertiser.secondaryLabelKo='업체 홈페이지 ↗';
+  hole19Advertiser.secondaryLabelEn='Official Website ↗';
 }
 
 document.querySelectorAll('[data-ad-room]').forEach(button=>button.addEventListener('click',()=>{
@@ -1393,7 +1393,7 @@ eventFlyerModal.className='event-flyer-modal';
 eventFlyerModal.hidden=true;
 eventFlyerModal.innerHTML=`<div class="event-flyer-backdrop" data-event-flyer-close></div><section class="event-flyer-panel" role="dialog" aria-modal="true" aria-label="전단지 크게 보기"><button type="button" class="event-flyer-close" data-event-flyer-close aria-label="닫기">×</button><div class="event-flyer-scroll"><img src="" alt=""></div><button type="button" class="event-flyer-collapse" data-event-flyer-close><span data-ko="작게 보기" data-en="Close flyer">작게 보기</span></button></section>`;
 document.body.appendChild(eventFlyerModal);
-const closeEventFlyer=()=>{eventFlyerModal.hidden=true;eventFlyerModal.classList.remove('volunteer-flyer-open');document.body.classList.remove('modal-open');};
+const closeEventFlyer=()=>{eventFlyerModal.hidden=true;eventFlyerModal.classList.remove('volunteer-flyer-open','past-flyer-open');document.body.classList.remove('modal-open');};
 const openVolunteerImage=trigger=>{
   const image=eventFlyerModal.querySelector('img');
   const imageSource=(currentLanguage==='en'?trigger.dataset.volunteerImageEn:null)||trigger.dataset.volunteerImage||trigger.getAttribute('href')||'assets/volunteer/digital-volunteer.png';
@@ -1428,6 +1428,7 @@ document.addEventListener('click',event=>{
   event.preventDefault();
   const image=eventFlyerModal.querySelector('img');
   eventFlyerModal.classList.remove('volunteer-flyer-open');
+  eventFlyerModal.classList.toggle('past-flyer-open',Boolean(flyerLink.closest('.past-event-grid')));
   eventFlyerModal.classList.toggle('trial-flyer-open',Boolean(flyerLink.closest('.trial-type')));
   image.src=flyerLink.href;
   image.alt=flyerLink.getAttribute('aria-label')||flyerLink.closest('.event-card')?.querySelector('h3')?.textContent||'전단지';

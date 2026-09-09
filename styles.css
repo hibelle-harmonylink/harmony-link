@@ -1311,6 +1311,7 @@ footer .footer-bottom{padding-top:11px!important}
   .event-flyer-modal:not(.volunteer-flyer-open) .event-flyer-scroll img{display:block;width:auto;height:auto;max-width:100%;max-height:76vh;object-fit:contain;margin:auto;border-radius:12px;background:#fff}
   .event-flyer-modal:not(.volunteer-flyer-open) .event-flyer-collapse{min-height:48px;border:0;background:#0b5fc2;color:#fff;font-size:13px;font-weight:800;cursor:pointer}
 }
+.event-flyer-modal.past-flyer-open .event-flyer-scroll img{border:none!important;outline:none!important;box-shadow:none!important}
 
 /* Contact section: force the three cards into one row on PC, equalize
    their width/height, drop the US/KR text labels for flag icons, and
