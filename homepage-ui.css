@@ -89,3 +89,21 @@ body>footer .footer-top .logo-name,body>footer .footer-top .logo-name b,body>foo
 body>footer .footer-social-copy span{color:#fff!important}
 #footerDeleteAccount{border-color:#0b54c2!important;background:#c1f9ff!important;color:#042963!important;box-shadow:none!important}
 #footerDeleteAccount:hover{border-color:#c1f9ff!important;background:#c1f9ff!important;color:#042963!important}
+
+/* Homepage section refinements: pathways visibility, partner entry, and program spacing. */
+#community{display:none!important}
+#partner-center{padding:48px 0!important;background:#1a34ac!important}
+#partner-center .partner-center-card{max-width:1120px!important;padding:24px 28px!important}
+#partner-center .partner-center-copy h2::before{content:"🔒 ";font-size:.82em}
+#partner-center .partner-access-card{margin-top:8px!important}
+#partner-center .partner-auth-gate{width:auto!important;margin:0 auto!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+#partner-center .partner-auth-gate .partner-auth-icon,#partner-center .partner-auth-gate h3{display:none!important}
+#partner-center .partner-auth-gate .btn{min-width:200px;margin:0 auto!important}
+#partner-center .partner-center-card:has(.partner-auth-gate:not([hidden])) .partner-upgrade-guide{display:none!important}
+#advertising.advertising{background:#fffcf0!important}
+#specialty-banners{background:#dcf2ff!important;color:#17233a!important}
+#specialty-banners .section-heading .eyebrow,#specialty-banners .section-heading h2,#specialty-banners .section-heading p{color:#17233a!important}
+#specialty-banners .specialty-banner-info{display:grid!important;grid-template-rows:auto auto minmax(42px,auto) auto;padding:18px!important}
+#specialty-banners .specialty-card-description{min-height:42px!important;margin:0!important}
+#specialty-banners .specialty-open,#specialty-banners .specialty-programs-link{margin-top:8px!important}
+@media(max-width:760px){#partner-center{padding:40px 0!important}#partner-center .partner-center-card{padding:20px 16px!important}#specialty-banners .specialty-banner-info{padding:17px!important}}
