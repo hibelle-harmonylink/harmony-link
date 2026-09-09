@@ -1168,8 +1168,10 @@ const adRooms={
   culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',label:'CULTURE & EDUCATION PARTNER',slots:4,items:[]}
 };
 const advertisingCarouselItems=Object.values(adRooms).flatMap(room=>room.items.map(item=>({...item,roomLabel:room.label})));
+advertisingCarouselItems.forEach(item=>{if(item.image){const image=new Image();image.src=item.image;}});
 let advertisingCarouselIndex=0;
 let advertisingCarouselTimer;
+let advertisingCarouselTransition;
 function renderAdvertisingCarousel(){
   const track=document.querySelector('.ad-carousel-track');
   const dots=document.querySelector('.ad-carousel-dots');
@@ -1181,7 +1183,25 @@ function renderAdvertisingCarousel(){
   const contact=english?(item.contactEn||''):(item.contactKo||'');
   const target=item.brokerUrl||item.url||item.chatUrl||'#contact';
   const logo=item.logoVariant==='highline'?`<div class="ad-highline-logo"><img src="${item.image}" alt="HL"><small>HIGH LINE RESIDENTIAL</small></div>`:`<img src="${item.image}" alt="${name} logo">`;
-  track.innerHTML=`<article class="ad-carousel-card"><div class="ad-carousel-logo">${logo}</div><div class="ad-carousel-copy"><span>${item.roomLabel}</span><h3>${name}</h3><p class="ad-carousel-summary">${summary}</p><p class="ad-carousel-contact">${contact}</p><a href="${target}" ${target.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}>${english?'Related information':'관련 정보 보기'} →</a></div></article>`;
+  const cardMarkup=`<article class="ad-carousel-card"><div class="ad-carousel-logo">${logo}</div><div class="ad-carousel-copy"><span>${item.roomLabel}</span><h3>${name}</h3><p class="ad-carousel-summary">${summary}</p><p class="ad-carousel-contact">${contact}</p><a href="${target}" ${target.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}>${english?'Related information':'관련 정보 보기'} →</a></div></article>`;
+  const currentCard=track.querySelector('.ad-carousel-card:last-child');
+  if(!currentCard){
+    track.innerHTML=cardMarkup;
+  }else{
+    const holder=document.createElement('div');
+    holder.innerHTML=cardMarkup;
+    const nextCard=holder.firstElementChild;
+    nextCard.classList.add('ad-carousel-enter');
+    track.appendChild(nextCard);
+    window.clearTimeout(advertisingCarouselTransition);
+    window.requestAnimationFrame(()=>window.requestAnimationFrame(()=>{
+      currentCard.classList.add('ad-carousel-leave');
+      nextCard.classList.remove('ad-carousel-enter');
+    }));
+    advertisingCarouselTransition=window.setTimeout(()=>{
+      track.querySelectorAll('.ad-carousel-card').forEach(card=>{if(card!==nextCard)card.remove();});
+    },540);
+  }
   dots.innerHTML=advertisingCarouselItems.map((_,index)=>`<button type="button" class="${index===advertisingCarouselIndex?'active':''}" data-ad-carousel-index="${index}" aria-label="${index+1}번 업체"></button>`).join('');
   dots.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{advertisingCarouselIndex=Number(button.dataset.adCarouselIndex);renderAdvertisingCarousel();restartAdvertisingCarousel();}));
 }
