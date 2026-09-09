@@ -107,3 +107,24 @@ body>footer .footer-social-copy span{color:#fff!important}
 #specialty-banners .specialty-card-description{min-height:42px!important;margin:0!important}
 #specialty-banners .specialty-open,#specialty-banners .specialty-programs-link{margin-top:8px!important}
 @media(max-width:760px){#partner-center{padding:40px 0!important}#partner-center .partner-center-card{padding:20px 16px!important}#specialty-banners .specialty-banner-info{padding:17px!important}}
+
+/* 2026-09-09: homepage palette and gentle advertising-card transitions. */
+#about{background:#eaf7fb!important}
+#partner-center{background:#2f6fb5!important}
+#partner-center .partner-center-copy .eyebrow,#partner-center .partner-center-copy h2,#partner-center .partner-center-copy>p{color:#fff!important}
+#advertising.advertising{background:#fffcf0!important}
+#specialty-banners{background:#ddf3fa!important;color:#17233a!important}
+#specialty-banners .section-heading .eyebrow,#specialty-banners .section-heading h2,#specialty-banners .section-heading p{color:#17233a!important}
+#events{background:#245a8d!important}
+#events .section-heading .eyebrow,#events .section-heading h2,#events .section-heading p{color:#fff!important}
+#events .event-card{border:1px solid #bfe8f4!important}
+.advertising .ad-carousel-track{position:relative;height:234px;overflow:hidden}
+.advertising .ad-carousel-card{position:absolute;inset:0;opacity:1;transform:translateX(0);transition:opacity .5s ease,transform .5s ease;will-change:opacity,transform}
+.advertising .ad-carousel-card.ad-carousel-enter{opacity:0;transform:translateX(10px)}
+.advertising .ad-carousel-card.ad-carousel-leave{opacity:0;transform:translateX(-10px);pointer-events:none}
+.footer-social-panel a{border-width:.75px!important}
+.footer-social-panel a.instagram img{width:20px!important;height:20px!important}
+.footer-social-panel a.threads img{width:22px!important;height:22px!important}
+#footerDeleteAccount{border:1px solid #2f6fb5!important;background:#fff!important;color:#2f6fb5!important;box-shadow:none!important}
+#footerDeleteAccount:hover,#footerDeleteAccount:focus-visible{border-color:#2f6fb5!important;background:#eaf7fb!important;color:#245a8d!important}
+@media(max-width:760px){.advertising .ad-carousel-track{height:330px}}
