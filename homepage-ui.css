@@ -238,8 +238,7 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
 #events .past-event-grid .event-card{border:1px solid #6f9fd4!important}
 #events .past-events h3{color:#000!important}
 
-/* Footer brand lettering and supplied social artwork. */
-body>footer .footer-top .logo-name b{color:#dcf2ff!important}
-body>footer .footer-social-panel a{overflow:hidden!important}
-body>footer .footer-social-panel a.instagram img{width:20px!important;height:20px!important;max-width:20px!important;max-height:20px!important;transform:scale(1.38)!important}
-body>footer .footer-social-panel a.threads img{width:20px!important;height:20px!important;max-width:20px!important;max-height:20px!important;transform:scale(1.5)!important}
+/* Footer brand lettering: Harmony light blue, Link white, subtitle gold. */
+body>footer .footer-top .logo-name{color:#dcf2ff!important}
+body>footer .footer-top .logo-name b{color:#fff!important}
+body>footer .footer-top .logo-name small{color:#d4af37!important}

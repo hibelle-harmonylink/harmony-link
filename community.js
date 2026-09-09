@@ -13,7 +13,14 @@
   const template = document.getElementById('postTemplate');
   const categoryFilter = document.getElementById('categoryFilter');
   const search = document.getElementById('postSearch');
-  const labels = { notice: '공지사항', question: '질문과 답변', info: '정보 공유', review: '정보 공유', free: '자유 게시판', intro: '자유 게시판', jobs: '구인구직', resource: '자료방' };
+  const boardCategories = [
+    { value: 'notice', label: '공지사항', adminOnly: true },
+    { value: 'question', label: '질문과 답변' },
+    { value: 'info', label: '정보 공유' },
+    { value: 'jobs', label: '구인·구직' },
+    { value: 'free', label: '자유게시판' }
+  ];
+  const labels = { ...Object.fromEntries(boardCategories.map(category => [category.value, category.label])), review: '정보 공유', intro: '자유게시판', resource: '자료방' };
   const roleLabels = { member: '회원 커뮤니티', partner0: '무료 파트너', partner20: '$20 BASIC 파트너', partner50: '$50 PREMIUM 파트너', admin: '관리자' };
   let user = null;
   let profile = null;
@@ -34,6 +41,16 @@
     if (!token) { token = crypto.randomUUID ? crypto.randomUUID() : `${Math.random().toString(16).slice(2, 10).padEnd(8, '0')}-0000-4000-8000-${Math.random().toString(16).slice(2, 14).padEnd(12, '0')}`; localStorage.setItem(storageKey, token); }
     return token;
   };
+  const populateCategoryMenus = () => {
+    categoryFilter.replaceChildren(new Option('전체 게시글', ''), ...boardCategories.map(category => new Option(category.label, category.value)));
+    const postCategory = document.getElementById('postCategory');
+    postCategory.replaceChildren(...boardCategories.map(category => {
+      const option = new Option(category.label, category.value);
+      if (category.adminOnly) { option.dataset.adminOnly = ''; option.hidden = true; }
+      return option;
+    }));
+  };
+  populateCategoryMenus();
   const escapeUrl = value => { try { const raw = String(value || '').trim(); const parsed = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`); return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : ''; } catch { return ''; } };
   const extractUrls = value => {
     const matches = String(value || '').match(/(?:https?:\/\/|www\.)[^\s<]+|(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s<]*)?/gi) || [];
@@ -67,6 +84,7 @@
     const authorInput = document.getElementById('postAuthorName');
     authorInput.value = post ? displayAuthorName(post.author_name) : profile ? (profile.role === 'admin' ? '하이벨' : profile.display_name) : (localStorage.getItem('harmony-community-guest-name') || '');
     authorInput.readOnly = !!profile;
+    document.getElementById('postAuthorLabel').hidden = !!profile;
     document.getElementById('postTitle').value = post?.title || '';
     document.getElementById('postContent').value = post?.content || '';
     document.getElementById('postResourceUrl').value = post?.resource_url || '';
