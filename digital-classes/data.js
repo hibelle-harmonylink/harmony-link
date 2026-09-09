@@ -12,7 +12,7 @@ window.DIGITAL_CATEGORIES = (function () {
       title: '기기활용',
       icon: '📱',
       image: '../assets/digital-classes/device-class.png',
-      shortDesc: '스마트폰부터 컴퓨터까지, 기초부터 차근차근 익히는 기기 활용 수업',
+      shortDesc: '스마트폰과 기기를 쉽게 배우는 기초 과정',
       accent: '#1155d9',
       programs: [
         {
@@ -37,7 +37,7 @@ window.DIGITAL_CATEGORIES = (function () {
       title: '문서작성',
       icon: '📝',
       image: '../assets/digital-classes/document-class.png',
-      shortDesc: '한글 입력부터 표 만들기, 저장과 공유까지 실습으로 배우는 문서작성',
+      shortDesc: '문서 작성과 실무 활용을 배우는 과정',
       accent: '#0c4a9e',
       programs: [
         {
@@ -65,7 +65,7 @@ window.DIGITAL_CATEGORIES = (function () {
       title: '디자인',
       icon: '🎨',
       image: '../assets/digital-classes/design-class.png',
-      shortDesc: 'Canva로 쉽고 예쁘게! 전단지부터 SNS 이미지까지 직접 만드는 디자인 수업',
+      shortDesc: 'Canva로 쉽게 만드는 실전 디자인',
       accent: '#7c3aed',
       programs: [
         {
@@ -91,7 +91,7 @@ window.DIGITAL_CATEGORIES = (function () {
       title: '유튜브',
       icon: '▶️',
       image: '../assets/digital-classes/youtube-class.png',
-      shortDesc: '기본 활용부터 나만의 콘텐츠 제작까지, 목적에 맞는 유튜브 프로그램',
+      shortDesc: '채널 운영과 영상 제작을 배우는 과정',
       accent: '#e02424',
       programs: [
         {
@@ -136,7 +136,7 @@ window.DIGITAL_CATEGORIES = (function () {
       title: 'SNS·실생활 앱',
       icon: '💬',
       image: '../assets/digital-classes/apps-class.png',
-      shortDesc: '카카오톡부터 모바일 뱅킹까지, 생활에 꼭 필요한 앱을 배우는 수업',
+      shortDesc: 'SNS와 생활 필수 앱 활용 과정',
       accent: '#0f9d78',
       programs: [
         {
@@ -164,7 +164,7 @@ window.DIGITAL_CATEGORIES = (function () {
       title: 'AI',
       icon: '🤖',
       image: '../assets/digital-classes/ai-class.png',
-      shortDesc: 'AI 첫걸음부터 바이브코딩, 홈페이지 제작까지 - 계속 늘어나는 AI 프로그램',
+      shortDesc: 'ChatGPT와 AI 도구를 배우는 과정',
       accent: '#4338ca',
       programs: [
         {
