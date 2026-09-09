@@ -187,3 +187,15 @@ body>footer .footer-social-panel .footer-social-label{display:block!important;co
 /* Country flags replace generic phone icons without changing card geometry. */
 #contact .contact-simple-link[href^="tel:"] .contact-simple-icon,
 #contact .contact-simple-link[href^="sms:"] .contact-simple-icon{font-size:20px!important;line-height:1!important}
+
+/* Social icons above the fixed message, without platform-name labels. */
+body>footer .footer-social-panel{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;width:auto!important;max-width:none!important;gap:11px!important}
+body>footer .footer-social-panel nav{order:1;display:flex!important;align-items:center!important;justify-content:center!important;width:auto!important;gap:10px!important}
+body>footer .footer-social-copy{order:2;max-width:none!important;text-align:center!important}
+body>footer .footer-social-panel a{display:grid!important;place-items:center!important;width:40px!important;min-width:40px!important;height:40px!important;padding:0!important;border-radius:50%!important;animation:footer-social-float 3.6s ease-in-out infinite!important}
+body>footer .footer-social-panel a.threads{animation-delay:.45s!important}
+body>footer .footer-social-panel a img{position:static!important;margin:0!important;transform:none!important;animation:none!important;object-fit:contain!important}
+body>footer .footer-social-panel a.instagram img{width:18px!important;height:18px!important;max-width:18px!important;max-height:18px!important}
+body>footer .footer-social-panel a.threads img{width:20px!important;height:20px!important;max-width:20px!important;max-height:20px!important}
+@media(max-width:760px){body>footer .footer-social-panel{display:flex!important;width:100%!important;max-width:100%!important}body>footer .footer-social-copy span{white-space:normal!important}}
+@media(prefers-reduced-motion:reduce){body>footer .footer-social-panel a{animation:none!important}}

@@ -203,7 +203,7 @@
       ? `<img src="${avatar}" alt="">`
       : `<span class="auth-avatar-fallback">${profile.name.trim().charAt(0).toUpperCase() || 'H'}</span>`;
     wrapper.innerHTML = `<button type="button" class="auth-avatar-edit" title="${t('프로필 사진 변경', 'Change profile photo')}" aria-label="${t('프로필 사진 변경', 'Change profile photo')}">${picture}</button><input class="auth-avatar-input" type="file" accept="image/jpeg,image/png,image/webp" hidden><span class="auth-user-copy"><b></b><small></small></span><button type="button" class="auth-signout" data-ko="로그아웃" data-en="Sign Out">${t('로그아웃', 'Sign Out')}</button>`;
-    wrapper.querySelector('.auth-user-copy b').textContent = activeMemberRole === 'admin' ? t('하이벨 관리자', 'Hibelle Administrator') : profile.name;
+    wrapper.querySelector('.auth-user-copy b').textContent = activeMemberRole === 'admin' ? t('하이벨', 'Hibelle') : profile.name;
     wrapper.querySelector('.auth-user-copy small').textContent = roleLabel;
     const avatarButton = wrapper.querySelector('.auth-avatar-edit');
     const avatarInput = wrapper.querySelector('.auth-avatar-input');
