@@ -142,3 +142,11 @@ body>footer .footer-social-copy span{color:#fff!important}
 /* Advertising cards use a clean outline instead of a rectangular shadow. */
 #advertising.advertising{background:#fffcf0!important;border-bottom:1px solid #d6e7f5!important}
 #advertising .ad-carousel-card{border:1px solid #bfddf5!important;border-radius:26px!important;box-shadow:none!important}
+
+/* Card outlines and text contrast on the current blue section backgrounds. */
+#partner-center .partner-center-copy h2{display:block!important;visibility:visible!important;opacity:1!important;color:var(--brand-blue)!important}
+#partner-center .partner-center-copy h2::before{content:"🔒 ";font-size:.82em}
+#specialty-banners .specialty-banner-card{border:1px solid #bfddf5!important}
+#events .event-card,#events .past-event-grid .event-card{border:1px solid #fff!important}
+#events .event-info>p{color:#243b55!important}
+#events .past-events h3{color:#fff!important}
