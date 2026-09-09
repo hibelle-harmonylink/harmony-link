@@ -63,12 +63,13 @@
 .dclass-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
 .dclass-card{border:1px solid var(--dc-line);border-radius:var(--dc-radius);overflow:hidden;background:#fff;display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:.2s;box-shadow:0 8px 24px rgba(18,65,132,.06)}
 .dclass-card:hover{transform:translateY(-4px);box-shadow:var(--dc-shadow)}
-.dclass-card-image{width:100%;height:320px;overflow:hidden;background:var(--dc-pale);display:flex;align-items:center;justify-content:center}
+.dclass-card-image{width:100%;height:280px;overflow:hidden;background:var(--dc-pale);display:flex;align-items:center;justify-content:center}
 .dclass-card-image img{width:100%;height:100%;object-fit:contain;display:block}
-.dclass-card-body{padding:22px 22px 24px;display:flex;flex-direction:column;flex:1}
-.dclass-card-icon{font-size:22px;margin-bottom:8px}
-.dclass-card h3{font-size:21px;margin:0 0 8px}
-.dclass-card p{color:var(--dc-muted);font-size:15px;margin:0 0 18px;flex:1}
+.dclass-card-body{padding:18px 20px 20px;display:flex;flex-direction:column;flex:1}
+.dclass-card-heading{display:flex;align-items:center;gap:10px;margin:0 0 7px;min-height:33px}
+.dclass-card-icon{display:inline-grid;place-items:center;flex:0 0 auto;font-size:22px;line-height:1}
+.dclass-card h3{font-size:21px;line-height:1.3;margin:0}
+.dclass-card p{color:var(--dc-muted);font-size:14px;line-height:1.55;margin:0 0 14px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dclass-card-btn{margin-top:auto}
 
 /* program list (category page) */

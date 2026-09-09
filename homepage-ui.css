@@ -1,5 +1,5 @@
 /* Homepage visual recovery layer. Functional/auth styles remain in styles.css. */
-:root{--ui-premium-blue:#2f80d0;--ui-basic-blue:#e9f6ff;--ui-free-green:#edf9f2;--ui-free-accent:#39a96b;--ui-deep-navy:#123a63;--ui-soft-blue:#eaf3f8;--ui-off-white:#fafbfc;--ui-gold:#b08d57;--ui-green:#e7f2ea;--ui-text:#1f2f46;--ui-radius:20px;--ui-shadow:0 12px 32px rgba(31,47,70,.09)}
+:root{--ui-premium-blue:#2f80d0;--ui-basic-blue:#e9f6ff;--ui-free-green:#edf9f2;--ui-free-accent:#39a96b;--ui-deep-navy:#123a63;--ui-soft-blue:#eaf3f8;--ui-off-white:#fafbfc;--ui-gold:#b08d57;--ui-green:#e7f2ea;--ui-text:#1f2f46;--ui-radius:20px;--ui-shadow:0 12px 32px rgba(31,47,70,.09);--section-eyebrow-color:#2d66a3;--section-description-color:#d8bd91;--section-description-size:16px;--section-description-weight:700;--section-description-line-height:1.65}
 .hero{min-height:610px!important;padding:92px 0 48px!important}.hero-grid{gap:45px!important}.hero .eyebrow{margin-bottom:14px!important}.hero-desc{margin:18px 0 22px!important}.trust-row{margin-top:38px!important}.hero-visual{height:410px!important}.visual-main{width:360px!important;height:360px!important;top:22px!important}.scroll-note{bottom:18px!important}
 body main>section.hero{background-color:#fff!important;background-image:none!important}
 .hero .connection-symbol{padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
@@ -228,6 +228,14 @@ body>footer .footer-social-panel a img{filter:none!important}
 body>footer .footer-top .logo-name{color:#080b10!important}
 body>footer .footer-top .logo-name b{color:#fff!important}
 body>footer .footer-top .logo-name small{color:#d4af37!important}
+
+/* Match the selected homepage section copy to the specialty-program heading system. */
+#events .section-heading .eyebrow{color:var(--section-eyebrow-color)!important}
+.hero-desc,
+#partner-center .partner-center-copy>p:not(.eyebrow),
+#advertising .section-heading>p:last-child,
+#specialty-banners .section-heading>p:last-child,
+#events .section-heading>p:last-child{color:var(--section-description-color)!important;font-size:var(--section-description-size)!important;font-weight:var(--section-description-weight)!important;line-height:var(--section-description-line-height)!important}
 
 /* Consistent outlines for the homepage's primary content cards. */
 #about .about-media-frame,
