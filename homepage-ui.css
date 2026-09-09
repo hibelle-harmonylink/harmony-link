@@ -73,6 +73,7 @@ body main>section.hero{background:#fffcf0!important}
 #about .about-media-company .structure-branches small{font-size:8px}
 #about .structure-project{background:#1a34ac!important;color:#fff!important}
 #about .structure-project span,#about .structure-project strong,#about .structure-project b{color:#fff!important}
+#about .about-media-company .brand-structure,#about .about-media-video .intro-video-frame,#about .structure-parent,#about .structure-project,#about .structure-branches>div{border:2px solid #d4af37!important}
 @media(max-width:760px){#about .about-media-heading{min-height:0}#about .about-media-company .brand-structure,#about .about-media-video .intro-video-frame{height:auto;min-height:0}#about .about-media-video .intro-video-frame{aspect-ratio:16/9}#about .about-media-company .brand-structure{padding:18px!important}#about .about-media-company .structure-parent,#about .about-media-company .structure-project{min-width:0;width:100%;padding:12px 14px}#about .about-media-company .structure-branches>div{min-height:82px}}
 #community{background:#0b54c2!important;color:#fff!important}
 #partner-center{background:#fff!important;color:#17233a!important}
