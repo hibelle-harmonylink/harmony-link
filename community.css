@@ -102,3 +102,10 @@ body{background:#fffcf0!important}
 .community-volunteer-programs{max-width:900px!important;margin-top:18px!important;gap:12px!important}
 .community-volunteer-program{box-shadow:0 4px 14px rgba(15,60,120,.05)!important}.volunteer-accordion-toggle{padding:14px 16px!important}.volunteer-accordion-panel{padding-bottom:14px!important}
 @media(max-width:700px){.community-hero{align-items:flex-start!important;padding:22px 19px!important}.community-hero h1{font-size:30px!important}.community-hero p{font-size:15px!important}.post-list-row{grid-template-columns:auto minmax(0,1fr);gap:8px 10px;min-height:56px;padding:10px 12px}.post-list-row time{grid-column:2;justify-self:start;font-size:12px!important}.post-accordion-toggle .post-title-text{font-size:16px!important}.post-body{padding:15px 14px 17px!important}.community-volunteer{padding:30px 16px 26px!important}.community-volunteer-inner{grid-template-columns:1fr!important;gap:20px!important}.community-volunteer-image{max-width:240px!important;justify-self:center!important}.community-volunteer-programs{margin-top:16px!important}}
+
+/* Public board author column and session-safe controls. */
+.community-topbar #signOutButton[hidden]{display:none!important}
+.post-list-row{grid-template-columns:auto minmax(0,1fr) minmax(110px,auto)!important;padding-left:22px!important;padding-right:22px!important}
+.post-list-author{justify-self:end;color:#405b73;font-size:13px;font-weight:700;white-space:nowrap}
+.composer-panel input[readonly]{background:#f2f6f9;color:#405b73;cursor:default}
+@media(max-width:700px){.post-list-row{grid-template-columns:auto minmax(0,1fr)!important;padding-left:16px!important;padding-right:16px!important}.post-list-author{grid-column:2;justify-self:start;font-size:12px;white-space:normal}.post-body{padding-left:16px!important;padding-right:16px!important}}
