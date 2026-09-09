@@ -159,3 +159,13 @@ body>footer .footer-social-copy span{color:#fff!important}
 
 /* Restore the partner resource title against its light content card. */
 #partner-center .partner-center-copy h2{display:block!important;visibility:visible!important;opacity:1!important;color:#000000!important}
+
+/* Footer social copy and icons: aligned sizing with a subtle accessible float. */
+@keyframes footer-social-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@media(min-width:761px){body>footer .footer-social-copy span{white-space:nowrap!important}}
+body>footer .footer-social-panel a{animation:footer-social-float 3.6s ease-in-out infinite}
+body>footer .footer-social-panel a.threads{animation-delay:.45s}
+body>footer .footer-social-panel a.instagram img,
+body>footer .footer-social-panel a.threads img{width:21px!important;height:21px!important;max-width:21px!important;max-height:21px!important;object-fit:contain!important}
+@media(max-width:760px){body>footer .footer-social-copy span{white-space:normal!important}}
+@media(prefers-reduced-motion:reduce){body>footer .footer-social-panel a{animation:none!important}}
