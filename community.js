@@ -13,11 +13,12 @@
   const template = document.getElementById('postTemplate');
   const categoryFilter = document.getElementById('categoryFilter');
   const search = document.getElementById('postSearch');
-  const labels = { notice: '공지사항', intro: '파트너 소개', question: '질문과 답변', review: '수업 후기·성공 사례', resource: '자료 공유' };
+  const labels = { notice: '공지사항', question: '질문과 답변', info: '정보 공유', review: '정보 공유', free: '자유 게시판', intro: '자유 게시판', jobs: '구인구직', resource: '자료방' };
   const roleLabels = { member: '회원 커뮤니티', partner0: '무료 파트너', partner20: '$20 BASIC 파트너', partner50: '$50 PREMIUM 파트너', admin: '관리자' };
   let user = null;
   let profile = null;
   let posts = [];
+  const PUBLIC_POST_COOLDOWN_MS = 30000;
   const legacyPostLinks = {
     '1일 무료 체험 후기': 'https://www.youtube.com/shorts/zr_CoDfcEbI',
     '미란멜로디 소개합니다.': 'https://www.instagram.com/meeranmelody',
@@ -25,7 +26,14 @@
   };
 
   const setMessage = (text, error = false) => { message.textContent = text; message.classList.toggle('error', error); };
-  const formatDate = value => new Intl.DateTimeFormat('ko-KR', { timeZone: 'America/New_York', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(value));
+  const displayAuthorName = value => /^(harmony\s*link|하모니\s*링크)$/i.test(String(value || '').trim()) ? '하이벨' : String(value || '익명').trim();
+  const matchesCategory = (postCategory, selected) => !selected || postCategory === selected || (selected === 'info' && postCategory === 'review') || (selected === 'free' && postCategory === 'intro');
+  const getPublicClientToken = () => {
+    const storageKey = 'harmony-community-public-writer';
+    let token = localStorage.getItem(storageKey);
+    if (!token) { token = crypto.randomUUID ? crypto.randomUUID() : `${Math.random().toString(16).slice(2, 10).padEnd(8, '0')}-0000-4000-8000-${Math.random().toString(16).slice(2, 14).padEnd(12, '0')}`; localStorage.setItem(storageKey, token); }
+    return token;
+  };
   const escapeUrl = value => { try { const raw = String(value || '').trim(); const parsed = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`); return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : ''; } catch { return ''; } };
   const extractUrls = value => {
     const matches = String(value || '').match(/(?:https?:\/\/|www\.)[^\s<]+|(?:[a-z0-9-]+\.)+[a-z]{2,}(?:\/[^\s<]*)?/gi) || [];
@@ -55,7 +63,10 @@
     form.reset();
     document.getElementById('editingPostId').value = post?.id || '';
     document.getElementById('composerTitle').textContent = post ? '글 수정' : '새 글 작성';
-    document.getElementById('postCategory').value = post?.category || 'intro';
+    document.getElementById('postCategory').value = post?.category || 'free';
+    const authorInput = document.getElementById('postAuthorName');
+    authorInput.value = post ? displayAuthorName(post.author_name) : profile ? (profile.role === 'admin' ? '하이벨' : profile.display_name) : (localStorage.getItem('harmony-community-guest-name') || '');
+    authorInput.readOnly = !!profile;
     document.getElementById('postTitle').value = post?.title || '';
     document.getElementById('postContent').value = post?.content || '';
     document.getElementById('postResourceUrl').value = post?.resource_url || '';
@@ -82,13 +93,12 @@
   const createCard = post => {
     const card = template.content.firstElementChild.cloneNode(true);
     const category = card.querySelector('.post-category'); category.textContent = labels[post.category]; category.classList.add(post.category);
-    card.querySelector('time').textContent = formatDate(post.created_at);
     const titleText = card.querySelector('.post-title-text') || card.querySelector('.post-title');
     titleText.textContent = post.title;
     const contentElement = card.querySelector('.post-content');
     renderLinkedText(contentElement, post.content);
-    const isExistingHarmonyLinkPost = new Date(post.created_at) < new Date('2026-08-06T04:00:00Z');
-    const visibleAuthorName = isExistingHarmonyLinkPost ? '하모니링크' : post.author_name;
+    const visibleAuthorName = displayAuthorName(post.author_name);
+    card.querySelector('.post-list-author').textContent = `작성자: ${visibleAuthorName}`;
     card.querySelector('.post-author').textContent = `${visibleAuthorName} · ${post.comments.length}개의 댓글`;
     let links = card.querySelector('.post-links');
     if (!links) {
@@ -151,7 +161,7 @@
 
   const renderPosts = () => {
     const term = search.value.trim().toLowerCase(); const selected = categoryFilter.value;
-    const filtered = posts.filter(post => (!selected || post.category === selected) && (!term || `${post.title} ${post.content}`.toLowerCase().includes(term)));
+    const filtered = posts.filter(post => matchesCategory(post.category, selected) && (!term || `${post.title} ${post.content}`.toLowerCase().includes(term)));
     list.replaceChildren(...filtered.map(createCard)); empty.hidden = filtered.length > 0;
   };
 
@@ -167,16 +177,28 @@
 
   form.addEventListener('submit', async event => {
     event.preventDefault();
-    if (!user) { document.getElementById('composerMessage').textContent = '글쓰기는 로그인 후 이용할 수 있습니다.'; return; }
     const id = document.getElementById('editingPostId').value;
+    const authorName = document.getElementById('postAuthorName').value.trim();
     const payload = { category: document.getElementById('postCategory').value, title: document.getElementById('postTitle').value.trim(), content: document.getElementById('postContent').value.trim(), resource_url: document.getElementById('postResourceUrl').value.trim() || null };
-    const request = id ? client.from('partner_community_posts').update(payload).eq('id', id) : client.from('partner_community_posts').insert({ ...payload, author_id: user.id, author_name: profile.display_name });
-    const { error } = await request;
+    if (authorName.length < 2 || payload.title.length < 2 || payload.content.length < 2) { document.getElementById('composerMessage').textContent = '작성자, 제목, 내용을 모두 입력해 주세요.'; return; }
+    let error;
+    if (profile) {
+      const request = id ? client.from('partner_community_posts').update(payload).eq('id', id) : client.from('partner_community_posts').insert({ ...payload, author_id: user.id, author_name: profile.display_name });
+      ({ error } = await request);
+    } else {
+      if (id) { document.getElementById('composerMessage').textContent = '비회원 게시글의 수정과 삭제는 관리자에게 문의해 주세요.'; return; }
+      const lastSubmitted = Number(localStorage.getItem('harmony-community-last-public-post') || 0);
+      if (Date.now() - lastSubmitted < PUBLIC_POST_COOLDOWN_MS) { document.getElementById('composerMessage').textContent = '잠시 후 다시 등록해 주세요.'; return; }
+      localStorage.setItem('harmony-community-guest-name', authorName);
+      const result = await client.rpc('create_public_community_post', { p_category: payload.category, p_author_name: authorName, p_title: payload.title, p_content: payload.content, p_resource_url: payload.resource_url, p_client_token: getPublicClientToken() });
+      error = result.error;
+      if (!error) localStorage.setItem('harmony-community-last-public-post', String(Date.now()));
+    }
     if (error) { document.getElementById('composerMessage').textContent = `저장 실패: ${error.message}`; return; }
     closeComposer(); await loadPosts(); setMessage(id ? '게시글을 수정했습니다.' : '새 게시글을 등록했습니다.');
   });
 
-  document.getElementById('openComposer').addEventListener('click', () => { if (!user) { setMessage('글쓰기는 로그인 후 이용할 수 있습니다.', true); return; } openComposer(); });
+  document.getElementById('openComposer').addEventListener('click', () => openComposer());
   document.querySelectorAll('[data-close-composer]').forEach(button => button.addEventListener('click', closeComposer));
   document.getElementById('refreshPosts').addEventListener('click', loadPosts);
   categoryFilter.addEventListener('change', renderPosts); search.addEventListener('input', renderPosts);
@@ -184,7 +206,7 @@
 
   const showGuestView = () => {
     user = null; profile = null;
-    document.getElementById('openComposer').hidden = true;
+    document.getElementById('openComposer').hidden = false;
     document.querySelector('[data-admin-only]').hidden = true;
     document.getElementById('memberBadge').textContent = '게스트';
     document.getElementById('welcomeName').textContent = '';
@@ -204,10 +226,10 @@
     access.hidden = false; app.hidden = true;
   };
 
-  // Community posts and the digital-volunteer section below are public --
-  // only actually writing (새 글 작성, 댓글, 수정/삭제) requires a signed-in,
-  // approved member. A signed-out or not-yet-approved visitor now gets a
-  // read-only guest view of this same page instead of being blocked. The
+  // Community posts, public post creation, and the digital-volunteer section
+  // are public. Comments and member-owned edit/delete actions still require
+  // an approved signed-in member. A signed-out visitor gets the same board
+  // with the restricted public composer instead of being blocked. The
   // guest/loading view is never replaced by a "sign in required" prompt --
   // it stays a neutral loading state until the session check resolves, so
   // a signed-in user navigating in from index.html never sees a stale
@@ -216,6 +238,7 @@
     showLoading();
     if (!client) { showGuestView(); access.hidden = true; app.hidden = false; setMessage('게시글을 불러오지 못했습니다.', true); return; }
     const { data } = await client.auth.getSession(); user = data.session?.user || null;
+    document.getElementById('signOutButton').hidden = !user;
     if (user) {
       const { data: member, error } = await client.from('member_profiles').select('role,account_status,display_name,member_type').eq('id', user.id).maybeSingle();
       const allowed = !error && member && window.HarmonyAccess?.hasFeatureAccess(member, 'community');
@@ -230,7 +253,7 @@
       showGuestView();
     }
     const requestedCategory = new URLSearchParams(location.search).get('category');
-    if (Object.hasOwn(labels, requestedCategory)) categoryFilter.value = requestedCategory;
+    if ([...categoryFilter.options].some(option => option.value === requestedCategory)) categoryFilter.value = requestedCategory;
     access.hidden = true; app.hidden = false; await loadPosts();
   };
   initialize();
