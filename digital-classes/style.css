@@ -90,6 +90,10 @@
 .dclass-highlight-more{display:inline-block;margin-top:16px;font-size:14px;font-weight:700;color:var(--dc-blue);text-decoration:none}
 
 /* program detail */
+.dclass-course-layout{display:grid;grid-template-columns:minmax(300px,360px) minmax(0,1fr);align-items:start;gap:32px}
+.dclass-course-flyer{position:sticky;top:20px;display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:4/5;padding:16px;border:1px solid var(--dc-line);border-radius:20px;background:var(--dc-pale);overflow:hidden}
+.dclass-course-flyer img{display:block;width:100%;height:100%;object-fit:contain}
+.dclass-course-content{min-width:0}
 .dclass-program-summary{color:var(--dc-muted);font-size:16px;font-weight:500;line-height:1.6;margin:0 0 18px;white-space:nowrap}
 .dclass-detail-grid{display:grid;grid-template-columns:1fr;gap:12px;margin:0 0 24px}
 .dclass-step-block{display:grid;grid-template-columns:58px minmax(175px,220px) 1fr;align-items:center;gap:16px;border:1px solid color-mix(in srgb,var(--step-accent) 22%,#dbe4ef);border-radius:18px;padding:16px 20px;background:linear-gradient(110deg,color-mix(in srgb,var(--step-accent) 5%,#fff),#fff 48%);box-shadow:0 6px 18px rgba(18,65,132,.06)}
@@ -99,7 +103,6 @@
 .dclass-step-copy p{font-size:14px;line-height:1.5;color:var(--dc-muted);margin:0}
 .dclass-step-block ul{display:flex;flex-wrap:wrap;gap:4px 22px;margin:0;padding-left:20px;font-size:16px;line-height:1.55}
 .dclass-step-block li{margin:0}
-.dclass-step-upcoming{background:linear-gradient(110deg,#f3f1ff,#fff 52%);border-style:dashed}
 .dclass-shorts-card{display:grid;grid-template-columns:58px minmax(0,1fr) auto;align-items:center;gap:16px;margin:28px 0 18px;padding:20px;border:1px solid #b9ccef;border-radius:18px;background:linear-gradient(120deg,#eef5ff,#fff);box-shadow:0 8px 22px rgba(18,65,132,.07)}
 .dclass-shorts-icon{width:54px;height:54px;display:grid;place-items:center;border-radius:16px;background:#e3edff;font-size:27px}
 .dclass-shorts-copy span{display:inline-block;margin-bottom:3px;color:#765300;font-size:12px;font-weight:800}
@@ -114,13 +117,18 @@
 
 @media (max-width:900px){
   .dclass-grid{grid-template-columns:repeat(2,1fr)}
+  .dclass-course-layout{grid-template-columns:minmax(250px,300px) minmax(0,1fr);gap:24px}
   .dclass-detail-grid{grid-template-columns:1fr}
+  .dclass-step-block{grid-template-columns:50px 1fr;align-items:start;gap:10px 12px}
+  .dclass-step-block ul{grid-column:1/-1}
 }
 @media (max-width:640px){
   .dclass-grid{grid-template-columns:1fr}
   .dclass-page{font-size:17px}
   .dclass-hero{padding:20px 0 24px}
   .dclass-section{padding:36px 0}
+  .dclass-course-layout{grid-template-columns:1fr;gap:26px}
+  .dclass-course-flyer{position:static;width:min(100%,350px);margin:0 auto;padding:12px}
   .dclass-program-summary{white-space:normal}
   .dclass-step-block{grid-template-columns:50px 1fr;align-items:start;gap:10px 12px;padding:15px 16px}
   .dclass-step-visual{width:48px;height:48px;border-radius:14px}
