@@ -12,7 +12,7 @@ window.DIGITAL_CATEGORIES = (function () {
       title: '기기활용',
       icon: '📱',
       image: '../assets/digital-classes/device-class.png',
-      shortDesc: '스마트폰과 기기를 쉽게 배우는 기초 과정',
+      shortDesc: '스마트폰과 디지털 기기의 기본 사용법을 배우는 과정',
       accent: '#1155d9',
       programs: [
         {
@@ -37,7 +37,7 @@ window.DIGITAL_CATEGORIES = (function () {
       title: '문서작성',
       icon: '📝',
       image: '../assets/digital-classes/document-class.png',
-      shortDesc: '문서 작성과 실무 활용을 배우는 과정',
+      shortDesc: '문서 작성과 실무 활용을 익히는 과정',
       accent: '#0c4a9e',
       programs: [
         {
@@ -65,7 +65,7 @@ window.DIGITAL_CATEGORIES = (function () {
       title: '디자인',
       icon: '🎨',
       image: '../assets/digital-classes/design-class.png',
-      shortDesc: 'Canva로 쉽게 만드는 실전 디자인',
+      shortDesc: 'Canva로 실용적인 디자인을 만드는 과정',
       accent: '#7c3aed',
       programs: [
         {
@@ -136,7 +136,7 @@ window.DIGITAL_CATEGORIES = (function () {
       title: 'SNS·실생활 앱',
       icon: '💬',
       image: '../assets/digital-classes/apps-class.png',
-      shortDesc: 'SNS와 생활 필수 앱 활용 과정',
+      shortDesc: 'SNS와 생활 필수 앱 활용을 배우는 과정',
       accent: '#0f9d78',
       programs: [
         {
@@ -164,7 +164,7 @@ window.DIGITAL_CATEGORIES = (function () {
       title: 'AI',
       icon: '🤖',
       image: '../assets/digital-classes/ai-class.png',
-      shortDesc: 'ChatGPT와 AI 도구를 배우는 과정',
+      shortDesc: 'ChatGPT와 AI 도구 활용을 배우는 과정',
       accent: '#4338ca',
       programs: [
         {
