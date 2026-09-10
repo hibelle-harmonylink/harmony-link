@@ -93,7 +93,7 @@
 .dclass-course-layout{display:grid;grid-template-columns:minmax(300px,360px) minmax(0,1fr);grid-template-areas:"blank heading" "flyer content";align-items:start;gap:0 32px}
 .dclass-course-heading{grid-area:heading}
 .dclass-course-heading h2{margin-bottom:12px}
-.dclass-course-flyer{grid-area:flyer;position:sticky;top:20px;display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:4/5;padding:16px;border:1px solid var(--dc-line);border-radius:20px;background:var(--dc-pale);overflow:hidden;cursor:zoom-in;font:inherit}
+.dclass-course-flyer{grid-area:flyer;position:static;display:flex;align-items:center;justify-content:center;width:100%;aspect-ratio:4/5;padding:16px;border:1px solid var(--dc-line);border-radius:20px;background:var(--dc-pale);overflow:hidden;cursor:zoom-in;font:inherit}
 .dclass-course-flyer img{display:block;width:100%;height:100%;object-fit:contain}
 .dclass-course-content{grid-area:content;min-width:0}
 .dclass-program-summary{color:var(--dc-muted);font-size:16px;font-weight:500;line-height:1.6;margin:0 0 18px;white-space:nowrap}
