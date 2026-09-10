@@ -92,10 +92,14 @@
 /* program detail */
 .dclass-program-summary{color:var(--dc-muted);font-size:16px;font-weight:500;line-height:1.6;margin:0 0 18px;white-space:nowrap}
 .dclass-detail-grid{display:grid;grid-template-columns:1fr;gap:12px;margin:0 0 24px}
-.dclass-step-block{display:grid;grid-template-columns:minmax(150px,220px) 1fr;align-items:start;gap:18px;border:1px solid var(--dc-line);border-radius:16px;padding:16px 20px;background:#fff;box-shadow:0 4px 14px rgba(18,65,132,.04)}
-.dclass-step-block h4{font-size:17px;line-height:1.5;color:var(--dc-blue);margin:0}
+.dclass-step-block{display:grid;grid-template-columns:58px minmax(175px,220px) 1fr;align-items:center;gap:16px;border:1px solid color-mix(in srgb,var(--step-accent) 22%,#dbe4ef);border-radius:18px;padding:16px 20px;background:linear-gradient(110deg,color-mix(in srgb,var(--step-accent) 5%,#fff),#fff 48%);box-shadow:0 6px 18px rgba(18,65,132,.06)}
+.dclass-step-visual{width:54px;height:54px;display:grid;place-items:center;border-radius:16px;background:color-mix(in srgb,var(--step-accent) 10%,#fff);border:1px solid color-mix(in srgb,var(--step-accent) 20%,#fff)}
+.dclass-step-visual span{font-size:28px;line-height:1;filter:saturate(.9)}
+.dclass-step-copy h4{font-size:18px;line-height:1.45;color:var(--step-accent);margin:0 0 4px}
+.dclass-step-copy p{font-size:14px;line-height:1.5;color:var(--dc-muted);margin:0}
 .dclass-step-block ul{display:flex;flex-wrap:wrap;gap:4px 22px;margin:0;padding-left:20px;font-size:16px;line-height:1.55}
 .dclass-step-block li{margin:0}
+.dclass-step-upcoming{background:linear-gradient(110deg,#f3f1ff,#fff 52%);border-style:dashed}
 .dclass-audience-list{list-style:none;padding:0;margin:0;display:grid;gap:12px}
 .dclass-audience-list li{display:flex;gap:12px;align-items:flex-start;font-size:16px;padding:14px 16px;background:var(--dc-pale);border-radius:12px}
 .dclass-audience-list b{color:var(--dc-blue);flex:none}
@@ -116,7 +120,12 @@
   .dclass-hero{padding:20px 0 24px}
   .dclass-section{padding:36px 0}
   .dclass-program-summary{white-space:normal}
-  .dclass-step-block{grid-template-columns:1fr;gap:8px;padding:15px 16px}
+  .dclass-step-block{grid-template-columns:50px 1fr;align-items:start;gap:10px 12px;padding:15px 16px}
+  .dclass-step-visual{width:48px;height:48px;border-radius:14px}
+  .dclass-step-visual span{font-size:25px}
+  .dclass-step-copy h4{font-size:17px}
+  .dclass-step-copy p{font-size:14px}
   .dclass-step-block ul{display:block;font-size:15px}
+  .dclass-step-block ul{grid-column:1/-1;margin-top:2px}
   .dclass-step-block li{margin:3px 0}
 }
