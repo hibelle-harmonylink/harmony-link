@@ -15,12 +15,7 @@
     '<a href="index.html">디지털 클래스</a> / <a href="category.html?id=' + category.id + '">' + category.title + '</a> / ' + program.title;
 
   var comingSoon = program.status === 'comingSoon';
-  document.getElementById('programHero').innerHTML =
-    '<p class="dclass-eyebrow">' + category.icon + ' ' + category.title.toUpperCase() + '</p>' +
-    '<h1>' + program.title + '</h1>' +
-    (program.tagline ? '<p style="font-weight:700;color:var(--dc-blue);margin:0 0 10px">' + program.tagline + '</p>' : '') +
-    '<p>' + program.intro + '</p>' +
-    (comingSoon ? '<span class="dclass-comingsoon-badge" style="margin-top:16px">준비 중 · COMING SOON</span>' : '');
+  document.getElementById('programSummary').textContent = category.shortDesc;
 
   document.getElementById('stepGrid').innerHTML = program.steps.map(function (step) {
     return '<div class="dclass-step-block"><h4>' + step.title + '</h4><ul>' +
