@@ -26,6 +26,31 @@
   var programFlyer = document.getElementById('programFlyer');
   programFlyer.src = category.image;
   programFlyer.alt = category.title + ' 교육 프로그램 전단지';
+  var flyerButton = document.getElementById('programFlyerButton');
+  var flyerLightbox = document.getElementById('flyerLightbox');
+  var flyerLightboxImage = document.getElementById('flyerLightboxImage');
+  var flyerLightboxClose = document.getElementById('flyerLightboxClose');
+
+  function closeFlyerLightbox() {
+    flyerLightbox.hidden = true;
+    document.body.classList.remove('dclass-lightbox-open');
+    flyerButton.focus();
+  }
+
+  flyerButton.addEventListener('click', function () {
+    flyerLightboxImage.src = programFlyer.src;
+    flyerLightboxImage.alt = programFlyer.alt;
+    flyerLightbox.hidden = false;
+    document.body.classList.add('dclass-lightbox-open');
+    flyerLightboxClose.focus();
+  });
+  flyerLightboxClose.addEventListener('click', closeFlyerLightbox);
+  flyerLightbox.addEventListener('click', function (event) {
+    if (event.target === flyerLightbox) closeFlyerLightbox();
+  });
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && !flyerLightbox.hidden) closeFlyerLightbox();
+  });
   document.getElementById('programSummary').textContent = category.shortDesc;
 
   var stepIcons = {
