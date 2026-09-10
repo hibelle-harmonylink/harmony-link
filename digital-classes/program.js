@@ -17,11 +17,36 @@
   var comingSoon = program.status === 'comingSoon';
   document.getElementById('programSummary').textContent = category.shortDesc;
 
-  document.getElementById('stepGrid').innerHTML = program.steps.map(function (step) {
-    return '<div class="dclass-step-block"><h4>' + step.title + '</h4><ul>' +
+  var stepIcons = {
+    device: ['📱', '💻', '🔗'],
+    documents: ['⌨️', '✨', '📄', '🗂️', '📤', '☁️'],
+    design: ['🖥️', '🎨', '🖼️', '📤'],
+    youtube: ['▶️', '🔎', '🔔', '🔗', '📱', '🎬'],
+    apps: ['💬', '🗺️', '📅', '💳', '🛍️', '🧭'],
+    ai: ['🧠', '💬', '📄', '🎨', '✨', '⚙️']
+  };
+  var categoryIcons = stepIcons[category.id] || [category.icon];
+  var stepCards = program.steps.map(function (step, index) {
+    var icon = categoryIcons[index % categoryIcons.length];
+    var summary = step.title + '의 핵심 내용을 쉽고 실용적으로 익힙니다.';
+    return '<article class="dclass-step-block" style="--step-accent:' + category.accent + '">' +
+      '<div class="dclass-step-visual" aria-hidden="true"><span>' + icon + '</span></div>' +
+      '<div class="dclass-step-copy"><h4>' + step.title + '</h4><p>' + summary + '</p></div><ul>' +
       step.items.map(function (item) { return '<li>' + item + '</li>'; }).join('') +
-      '</ul></div>';
-  }).join('');
+      '</ul></article>';
+  });
+
+  var upcoming = category.programs.filter(function (p) { return p.status === 'comingSoon' && p.id !== program.id; });
+  if (category.id === 'ai' && program.id === 'ai-start' && upcoming.length) {
+    stepCards.push(
+      '<article class="dclass-step-block dclass-step-upcoming" style="--step-accent:' + category.accent + '">' +
+      '<div class="dclass-step-visual" aria-hidden="true"><span>🧩</span></div>' +
+      '<div class="dclass-step-copy"><h4>단계별 AI 심화 과정</h4><p>실전 중심의 AI 수업을 단계별로 확장합니다.</p></div>' +
+      '<ul>' + upcoming.map(function (p) { return '<li>' + p.title + ' · 순차 오픈 예정</li>'; }).join('') + '</ul>' +
+      '</article>'
+    );
+  }
+  document.getElementById('stepGrid').innerHTML = stepCards.join('');
 
   document.getElementById('audienceList').innerHTML = program.audience.map(function (a) {
     return '<li><b>✓</b><span>' + a + '</span></li>';
@@ -48,10 +73,9 @@
   }
   document.getElementById('ctaArea').innerHTML = ctaHtml;
 
-  var upcoming = category.programs.filter(function (p) { return p.status === 'comingSoon' && p.id !== program.id; });
   var upcomingEl = document.getElementById('upcomingArea');
   if (upcomingEl) {
-    upcomingEl.innerHTML = upcoming.length
+    upcomingEl.innerHTML = upcoming.length && !(category.id === 'ai' && program.id === 'ai-start')
       ? '<div class="dclass-note"><b>세부 프로그램은 순차적으로 추가됩니다.</b><ul style="margin:10px 0 0;padding-left:20px">' +
         upcoming.map(function (p) { return '<li>' + p.title + ' <span style="color:var(--dc-muted)">(준비 중)</span></li>'; }).join('') +
         '</ul></div>'
