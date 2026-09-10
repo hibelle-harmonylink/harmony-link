@@ -61,14 +61,15 @@
       </a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
       <nav class="primary-nav" id="primary-nav" aria-label="주 메뉴">
-        <a href="#about" data-ko="소개" data-en="About">소개</a>
-        <a href="#digital-why" data-ko="전문 교육" data-en="Specialty">전문 교육</a>
+        <a href="#digital-why" data-ko="프로그램" data-en="Programs">프로그램</a>
         <a href="#events" data-ko="강좌·행사" data-en="Classes & Events">강좌·행사</a>
+        <a class="header-partner-link" href="#partner-center" data-ko="파트너" data-en="Partners">파트너</a>
         <a class="nav-community" href="community.html" data-ko="커뮤니티" data-en="Community">커뮤니티</a>
-        <a href="#membership" data-ko="회원 안내" data-en="Membership">회원 안내</a>
+        <a href="#about" data-ko="소개" data-en="About">소개</a>
         <a href="#contact" data-ko="문의" data-en="Contact">문의</a>
         <button class="lang-toggle" type="button" aria-label="Switch to English"><span class="active">KO</span><i></i><span>EN</span></button>
-        <a class="nav-cta" href="#community" data-ko="신청하기" data-en="Apply">신청하기</a>
+        <span class="nav-cta auth-slot-anchor" hidden aria-hidden="true"></span>
+        <a class="header-education-cta request-form-link" href="https://docs.google.com/forms/d/1LfKkCnsfGLgsvs9ptLluwZkkGupY6iJYBzBbA7jMEK8/viewform" data-ko="교육 신청" data-en="Request Education">교육 신청</a>
       </nav>
     </div>
   </header>
@@ -103,27 +104,28 @@
       <div class="hero-orb orb-one"></div><div class="hero-orb orb-two"></div><div class="hero-orb orb-three"></div><div class="hero-orb orb-four"></div><div class="hero-orb orb-five"></div>
       <div class="container hero-grid">
         <div class="hero-copy reveal">
-          <p class="eyebrow" data-ko="배움으로 연결되는 더 나은 일상" data-en="A better life, connected through learning">배움으로 연결되는 더 나은 일상</p>
-          <h1 data-ko="마음을 잇고,<br><em>가능성을 열다</em>" data-en="Connecting hearts,<br><em>unlocking potential</em>">마음을 잇고,<br><em>가능성을 열다</em></h1>
-          <p class="hero-desc" data-ko="<span>Harmony Link(이음문화센터)는 하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다.</span><span>전문 강사와 기관을 연결해 모두가 즐겁게 배우고 성장하는 맞춤형 프로그램을 만듭니다.</span>" data-en="<span>Harmony Link (E-eum Culture Center) is a cultural and educational project operated by Hibelle Consulting,</span><span>connecting expert instructors with organizations through tailored programs.</span>"><span>Harmony Link(이음문화센터)는 하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다.</span><span>전문 강사와 기관을 연결해 모두가 즐겁게 배우고 성장하는 맞춤형 프로그램을 만듭니다.</span></p>
+          <p class="eyebrow" data-ko="HARMONY LINK · 이음문화센터" data-en="HARMONY LINK · E-EUM CULTURE CENTER">HARMONY LINK · 이음문화센터</p>
+          <h1 data-ko="배우고 싶은 사람과<br><em>가르치는 사람을 연결합니다.</em>" data-en="Connecting people who want to learn<br><em>with people ready to teach.</em>">배우고 싶은 사람과<br><em>가르치는 사람을 연결합니다.</em></h1>
+          <p class="hero-desc" data-ko="디지털 · 음악 · 언어 · 건강 · 문화 · 생활교육까지<br>필요한 교육을 찾고 전문 강사와 연결하세요." data-en="From digital skills, music, and language to wellness, culture, and everyday learning,<br>find the education you need and connect with expert instructors.">디지털 · 음악 · 언어 · 건강 · 문화 · 생활교육까지<br>필요한 교육을 찾고 전문 강사와 연결하세요.</p>
           <div class="hero-actions">
-            <a class="btn btn-explore" href="#digital-why"><span data-ko="프로그램 둘러보기" data-en="Explore Programs">프로그램 둘러보기</span><b aria-hidden="true">→</b></a>
+            <a class="btn btn-explore" href="#digital-why"><span data-ko="교육 프로그램 찾기" data-en="Find Programs">교육 프로그램 찾기</span><b aria-hidden="true">→</b></a>
+            <a class="btn hero-partner-cta" href="#partner-center"><span data-ko="강사·업체로 참여하기" data-en="Join as an Instructor or Provider">강사·업체로 참여하기</span></a>
           </div>
-          <div class="trust-row">
+          <div class="trust-row" hidden aria-hidden="true">
             <div><strong>98%</strong><span data-ko="참여자 만족도" data-en="Satisfaction">참여자 만족도</span></div>
             <div><strong>120+</strong><span data-ko="함께한 기관" data-en="Partner organizations">함께한 기관</span></div>
             <div><strong>4.9</strong><span data-ko="평균 프로그램 평점" data-en="Average rating">평균 프로그램 평점</span></div>
           </div>
         </div>
         <div class="hero-visual reveal delay-1" aria-label="Harmony Link program highlights">
-          <div class="visual-main">
-            <div class="ripple ripple-a"></div><div class="ripple ripple-b"></div><div class="ripple ripple-c"></div>
-            <div class="center-note"><span>H</span><small data-ko="교육과 사람을 잇는" data-en="Connecting Education & People">교육과 사람을 잇는</small></div>
+          <div class="hero-learning-image">
+            <img src="assets/specialty/hibelle-digital.jpg" alt="전문 강사와 함께 스마트 기기를 배우는 성인 학습자들" data-ko-alt="전문 강사와 함께 스마트 기기를 배우는 성인 학습자들" data-en-alt="Adult learners exploring smart devices with an expert instructor">
           </div>
           <div class="hero-topics" aria-label="교육 분야">
             <span style="--i:0">💻 <b data-ko="디지털" data-en="Digital">디지털</b></span><span style="--i:1">🎵 <b data-ko="음악" data-en="Music">음악</b></span><span style="--i:2">🌍 <b data-ko="언어" data-en="Language">언어</b></span><span style="--i:3">🧘 <b data-ko="건강·운동" data-en="Wellness">건강·운동</b></span><span style="--i:4">🎨 <b data-ko="미술·공예" data-en="Art">미술·공예</b></span><span style="--i:5">🍳 <b data-ko="생활·취미" data-en="Lifestyle">생활·취미</b></span><span style="--i:6">💰 <b data-ko="금융·생활" data-en="Finance">금융·생활</b></span><span style="--i:7">🧠 <b data-ko="인지" data-en="Cognitive">인지</b></span><span style="--i:8">👨‍👩‍👧 <b data-ko="가족" data-en="Family">가족</b></span><span style="--i:9">🎭 <b data-ko="문화·공연" data-en="Culture">문화·공연</b></span><span style="--i:10">💼 <b data-ko="직업교육" data-en="Career">직업교육</b></span>
           </div>
-          <div class="float-pill"><span class="pulse-dot"></span><span data-ko="지금, 배움을 시작하세요" data-en="Start learning today">지금, 배움을 시작하세요</span></div>
+          <div class="hero-platform-card hero-platform-card-teacher"><span aria-hidden="true">✓</span><b data-ko="전문 강사 연결" data-en="Expert instructor matching">전문 강사 연결</b></div>
+          <div class="hero-platform-card hero-platform-card-visit"><span aria-hidden="true">↗</span><b data-ko="기관 방문 교육" data-en="On-site education">기관 방문 교육</b></div>
         </div>
       </div>
       <div class="scroll-note"><span data-ko="SCROLL TO DISCOVER" data-en="SCROLL TO DISCOVER">SCROLL TO DISCOVER</span><i></i></div>

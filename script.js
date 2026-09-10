@@ -103,15 +103,6 @@ document.querySelectorAll('.instructors, .instructor-fields').forEach(section =>
 const primaryNav = document.getElementById('primary-nav');
 if (primaryNav) {
   primaryNav.querySelector('a[href="#membership"]:not(.nav-cta)')?.remove();
-  const freeEventsLink = primaryNav.querySelector('a[href="#events"]');
-  if (freeEventsLink) {
-    const communityNavLink = document.createElement('a');
-    communityNavLink.href = '#community';
-    communityNavLink.dataset.ko = '함께하기';
-    communityNavLink.dataset.en = 'Join Us';
-    communityNavLink.textContent = '함께하기';
-    freeEventsLink.before(communityNavLink);
-  }
 }
 
 function connectForm(link, url) {
@@ -1021,12 +1012,12 @@ setLanguage(currentLanguage);
 // Partner Center access is controlled by the Supabase session in auth.js.
 const contactNavLink = document.querySelector('#primary-nav a[href="#contact"]');
 if (contactNavLink) {
-  const partnerCenterNav = document.createElement('a');
+  const partnerCenterNav = document.querySelector('#primary-nav a[href="#partner-center"]') || document.createElement('a');
   partnerCenterNav.href = '#partner-center';
-  partnerCenterNav.dataset.ko = '파트너센터 🔒';
-  partnerCenterNav.dataset.en = 'Partner Center 🔒';
+  partnerCenterNav.dataset.ko = '파트너';
+  partnerCenterNav.dataset.en = 'Partners';
   partnerCenterNav.textContent = currentLanguage === 'ko' ? partnerCenterNav.dataset.ko : partnerCenterNav.dataset.en;
-  contactNavLink.before(partnerCenterNav);
+  if (!partnerCenterNav.isConnected) contactNavLink.before(partnerCenterNav);
 }
 
 const partnerCenter = document.createElement('section');
