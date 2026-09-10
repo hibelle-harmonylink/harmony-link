@@ -1094,6 +1094,104 @@ if (finalHeroCenterNote) finalHeroCenterNote.innerHTML = `<div class="connection
 
 document.querySelector('#about .values-grid')?.remove();
 
+const aboutStructureToggle = document.querySelector('#about .about-structure-toggle');
+const aboutBrandStructure = document.getElementById('aboutBrandStructure');
+if (aboutStructureToggle && aboutBrandStructure) {
+  aboutStructureToggle.addEventListener('click', () => {
+    const willOpen = aboutBrandStructure.hidden;
+    aboutBrandStructure.hidden = !willOpen;
+    aboutStructureToggle.setAttribute('aria-expanded', String(willOpen));
+  });
+}
+
+const aboutVideoToggle = document.querySelector('#about .video-watch-link');
+const aboutVideoPanel = document.getElementById('aboutVideoPanel');
+if (aboutVideoToggle && aboutVideoPanel) {
+  aboutVideoToggle.addEventListener('click', (event) => {
+    event.preventDefault();
+    const willOpen = aboutVideoPanel.hidden;
+    aboutVideoPanel.hidden = !willOpen;
+    aboutVideoToggle.setAttribute('aria-expanded', String(willOpen));
+    const iframe = aboutVideoPanel.querySelector('iframe');
+    if (willOpen && iframe?.dataset.src && iframe.src === 'about:blank') iframe.src = iframe.dataset.src;
+  });
+}
+
+const aboutCompactModal = document.getElementById('aboutCompactModal');
+const aboutCompactStructure = aboutCompactModal?.querySelector('.about-compact-structure');
+const aboutCompactVideo = aboutCompactModal?.querySelector('.about-compact-video');
+const aboutMenuLinks = [...document.querySelectorAll('a[href="#about"]')];
+let aboutModalReturnFocus = null;
+if (aboutCompactModal && aboutCompactStructure && aboutCompactVideo && aboutBrandStructure) {
+  const compactDiagram = aboutBrandStructure.cloneNode(true);
+  compactDiagram.removeAttribute('id');
+  compactDiagram.hidden = false;
+  compactDiagram.classList.add('about-modal-diagram');
+  aboutCompactStructure.appendChild(compactDiagram);
+  const companyNode = compactDiagram.querySelector('.structure-parent');
+  const harmonyNode = compactDiagram.querySelector('.structure-project');
+  const harmonyName = harmonyNode?.querySelector('strong');
+  const harmonyCenterName = harmonyNode?.querySelector('b');
+  if (harmonyName) {
+    harmonyName.dataset.ko = 'Harmony Link · 이음문화센터';
+    harmonyName.dataset.en = 'Harmony Link · E-eum Culture Center';
+    harmonyName.textContent = currentLanguage === 'en' ? harmonyName.dataset.en : harmonyName.dataset.ko;
+  }
+  if (harmonyCenterName) harmonyCenterName.hidden = true;
+  companyNode?.setAttribute('role', 'link');
+  companyNode?.setAttribute('tabindex', '0');
+  companyNode?.setAttribute('aria-label', 'Hibelle Consulting official website');
+  harmonyNode?.setAttribute('role', 'button');
+  harmonyNode?.setAttribute('tabindex', '0');
+  harmonyNode?.setAttribute('aria-expanded', 'false');
+  harmonyNode?.setAttribute('aria-controls', 'aboutCompactVideo');
+  aboutCompactVideo.id = 'aboutCompactVideo';
+  const openCompanySite = () => window.open('https://hibelleconsulting.com/', '_blank', 'noopener,noreferrer');
+  companyNode?.addEventListener('click', openCompanySite);
+  companyNode?.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openCompanySite(); } });
+  const toggleCompactVideo = () => {
+    const willOpen = aboutCompactVideo.hidden;
+    aboutCompactVideo.hidden = !willOpen;
+    harmonyNode?.setAttribute('aria-expanded', String(willOpen));
+    if (!willOpen) {
+      const iframe = aboutCompactVideo.querySelector('iframe');
+      const poster = aboutCompactVideo.querySelector('.about-video-poster');
+      if (iframe) { iframe.src = 'about:blank'; iframe.hidden = true; }
+      if (poster) poster.hidden = false;
+    }
+  };
+  harmonyNode?.addEventListener('click', toggleCompactVideo);
+  harmonyNode?.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggleCompactVideo(); } });
+  aboutCompactVideo.querySelector('.about-video-poster')?.addEventListener('click', event => {
+    const poster = event.currentTarget;
+    const iframe = aboutCompactVideo.querySelector('iframe');
+    if (!iframe?.dataset.src) return;
+    poster.hidden = true;
+    iframe.hidden = false;
+    iframe.src = iframe.dataset.src;
+  });
+  const closeAboutModal = () => {
+    aboutCompactModal.hidden = true;
+    document.body.classList.remove('modal-open');
+    aboutCompactVideo.hidden = true;
+    harmonyNode?.setAttribute('aria-expanded', 'false');
+    const iframe = aboutCompactVideo.querySelector('iframe');
+    const poster = aboutCompactVideo.querySelector('.about-video-poster');
+    if (iframe) { iframe.src = 'about:blank'; iframe.hidden = true; }
+    if (poster) poster.hidden = false;
+    aboutModalReturnFocus?.focus();
+  };
+  const openAboutModal = trigger => {
+    aboutModalReturnFocus = trigger;
+    aboutCompactModal.hidden = false;
+    document.body.classList.add('modal-open');
+    aboutCompactModal.querySelector('.about-compact-close')?.focus();
+  };
+  aboutMenuLinks.forEach(link => link.addEventListener('click', event => { event.preventDefault(); openAboutModal(link); }));
+  aboutCompactModal.querySelectorAll('[data-about-modal-close]').forEach(button => button.addEventListener('click', closeAboutModal));
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && !aboutCompactModal.hidden) closeAboutModal(); });
+}
+
 const relatedPartnersLabel = reasonModal?.querySelector('.reason-partners > div:first-child > span');
 const relatedPartnersTitle = reasonModal?.querySelector('.reason-partners > div:first-child > h3');
 if (relatedPartnersLabel) {relatedPartnersLabel.dataset.ko='관련 업체·강사';relatedPartnersLabel.dataset.en='RELATED PROVIDERS';relatedPartnersLabel.textContent=currentLanguage==='en'?'RELATED PROVIDERS':'관련 업체·강사';}

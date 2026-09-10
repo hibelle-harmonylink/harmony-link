@@ -1,8 +1,9 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <link rel="icon" type="image/png" href="/app/icon-512.png?v=2">
-  <link rel="shortcut icon" href="/app/icon-512.png?v=2">
+  <link rel="icon" type="image/png" sizes="512x512" href="app/icon-512.png?v=2">
+  <link rel="shortcut icon" type="image/png" href="app/icon-512.png?v=2">
+  <link rel="apple-touch-icon" href="app/icon-512.png?v=2">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -99,6 +100,26 @@
     </div>
   </div>
 
+  <div class="about-compact-modal" id="aboutCompactModal" hidden>
+    <button class="about-compact-backdrop" type="button" data-about-modal-close aria-label="닫기"></button>
+    <section class="about-compact-panel" role="dialog" aria-modal="true" aria-labelledby="aboutCompactTitle">
+      <button class="about-compact-close" type="button" data-about-modal-close aria-label="닫기">×</button>
+      <header class="about-compact-head">
+        <p>ABOUT HARMONY LINK</p>
+        <h2 id="aboutCompactTitle" data-ko="Harmony Link 소개" data-en="About Harmony Link">Harmony Link 소개</h2>
+        <span data-ko="필요한 교육과 전문 강사를 연결하는 찾아가는 이동식 문화교육 플랫폼입니다." data-en="A mobile community learning platform connecting learners with professional instructors and educational opportunities.">필요한 교육과 전문 강사를 연결하는 찾아가는 이동식 문화교육 플랫폼입니다.</span>
+      </header>
+      <div class="about-compact-structure" aria-label="Harmony Link 운영 구조"></div>
+      <div class="about-compact-video" hidden>
+        <button class="about-video-poster" type="button" aria-label="Harmony Link 소개 영상 재생">
+          <img src="https://i.ytimg.com/vi/7jo7Ovnq7Ew/maxresdefault.jpg" alt="Harmony Link 소개 영상 썸네일">
+          <span aria-hidden="true">▶</span>
+        </button>
+        <iframe src="about:blank" data-src="https://www.youtube.com/embed/7jo7Ovnq7Ew?autoplay=1" title="Harmony Link 소개 영상" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen hidden></iframe>
+      </div>
+    </section>
+  </div>
+
   <main id="main">
     <section class="hero">
       <div class="hero-orb orb-one"></div><div class="hero-orb orb-two"></div><div class="hero-orb orb-three"></div><div class="hero-orb orb-four"></div><div class="hero-orb orb-five"></div>
@@ -156,10 +177,15 @@
     </section>
 
     <section class="about section" id="about">
+      <div class="container about-section-intro section-heading centered reveal">
+        <p class="eyebrow">ABOUT HARMONY LINK</p>
+        <h2 data-ko="Harmony Link를 소개합니다" data-en="Meet Harmony Link">Harmony Link를 소개합니다</h2>
+        <p data-ko="필요한 교육과 전문 강사를 연결하는 찾아가는 이동식 문화교육 플랫폼입니다." data-en="A mobile community learning platform connecting learners with professional instructors and educational opportunities.">필요한 교육과 전문 강사를 연결하는 찾아가는 이동식 문화교육 플랫폼입니다.</p>
+      </div>
       <div class="container about-media-frame reveal">
-        <div class="about-media-company"><div class="about-media-heading"><p class="eyebrow" data-ko="HARMONY LINK · 이음문화센터" data-en="HARMONY LINK · E-EUM CULTURE CENTER">HARMONY LINK · 이음문화센터</p>
-          <div class="about-title-row"><h2 data-ko="회사 소개" data-en="About Harmony Link">회사 소개</h2><a class="text-link company-link" href="https://hibelleconsulting.com/" target="_blank" rel="noopener noreferrer"><span data-ko="하이벨컨설팅 회사소개" data-en="About Hibelle Consulting">하이벨컨설팅 회사소개</span><b>↗</b></a></div></div>
-          <div class="brand-structure" aria-label="Harmony Link 운영 구조">
+        <div class="about-media-company">
+          <button class="about-action about-structure-toggle" type="button" aria-expanded="false" aria-controls="aboutBrandStructure"><span class="when-closed" data-ko="회사 구조 보기" data-en="View Company Structure">회사 구조 보기</span><span class="when-open" data-ko="회사 구조 접기" data-en="Hide Company Structure">회사 구조 접기</span><b class="when-closed" aria-hidden="true">▼</b><b class="when-open" aria-hidden="true">▲</b></button>
+          <div class="brand-structure" id="aboutBrandStructure" aria-label="Harmony Link 운영 구조" hidden>
             <div class="structure-parent"><span data-ko="운영 법인" data-en="OPERATING COMPANY">운영 법인</span><strong data-ko="하이벨컨설팅" data-en="Hibelle Consulting">하이벨컨설팅</strong><small data-ko="문화·교육·디지털 사업 기획 및 운영" data-en="Culture, education, and digital initiatives">문화·교육·디지털 사업 기획 및 운영</small></div>
             <div class="structure-arrow" aria-hidden="true">↓</div>
             <div class="structure-project"><span data-ko="운영 프로젝트" data-en="OPERATED PROJECT">운영 프로젝트</span><strong>Harmony Link</strong><b data-ko="이음문화센터" data-en="E-eum Culture Center">이음문화센터</b></div>
@@ -172,7 +198,7 @@
             </div>
           </div>
         </div>
-        <div class="about-media-video"><div class="about-media-heading"><p class="eyebrow">HARMONY LINK ON YOUTUBE</p><h2 data-ko="영상으로 만나는 Harmony Link" data-en="Meet Harmony Link through video">영상으로 만나는 Harmony Link</h2></div><a class="intro-video-frame video-watch-link" href="https://www.youtube.com/watch?v=7jo7Ovnq7Ew" target="_blank" rel="noopener noreferrer" aria-label="Harmony Link 소개영상 유튜브에서 보기"><img src="https://i.ytimg.com/vi/7jo7Ovnq7Ew/maxresdefault.jpg" alt="Harmony Link 소개영상 미리보기"><span class="video-play"><b>▶</b><em data-ko="소개영상 재생" data-en="Play introduction video">소개영상 재생</em></span></a></div>
+        <div class="about-media-video"><a class="about-action intro-video-frame video-watch-link" href="https://www.youtube.com/watch?v=7jo7Ovnq7Ew" aria-expanded="false" aria-controls="aboutVideoPanel" aria-label="Harmony Link 소개영상 보기"><span class="video-play"><b>▶</b><em class="when-closed" data-ko="소개 영상 보기" data-en="Watch Introduction Video">소개 영상 보기</em><em class="when-open" data-ko="소개 영상 접기" data-en="Hide Introduction Video">소개 영상 접기</em></span></a><div class="about-video-panel" id="aboutVideoPanel" hidden><iframe src="about:blank" data-src="https://www.youtube.com/embed/7jo7Ovnq7Ew" title="Harmony Link 소개 영상" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div></div>
       </div>
       <div class="container values-grid">
         <article class="value-card reveal"><span>01</span><div class="value-icon">◎</div><h3 data-ko="전문성" data-en="Expertise">전문성</h3><p data-ko="검증된 강사진과 체계적인 커리큘럼" data-en="Trusted instructors and structured curricula">검증된 강사진과 체계적인 커리큘럼</p></article>
