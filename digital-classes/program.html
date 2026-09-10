@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body class="dclass-page">
 
@@ -22,12 +22,14 @@
   <main>
     <section class="dclass-section">
       <div class="dclass-container dclass-course-layout">
-        <aside class="dclass-course-flyer">
-          <img id="programFlyer" src="" alt="">
-        </aside>
-        <div class="dclass-course-content">
-          <h2>교육과정</h2>
+        <div class="dclass-course-heading">
+          <h2>교육 과정</h2>
           <p class="dclass-program-summary" id="programSummary"></p>
+        </div>
+        <button class="dclass-course-flyer" id="programFlyerButton" type="button" aria-label="전단지 크게 보기">
+          <img id="programFlyer" src="" alt="">
+        </button>
+        <div class="dclass-course-content">
           <div class="dclass-detail-grid" id="stepGrid"></div>
 
           <div id="shortsArea"></div>
@@ -36,6 +38,11 @@
       </div>
     </section>
   </main>
+
+  <div class="dclass-flyer-lightbox" id="flyerLightbox" role="dialog" aria-modal="true" aria-label="전단지 크게 보기" hidden>
+    <button class="dclass-lightbox-close" id="flyerLightboxClose" type="button" aria-label="닫기">×</button>
+    <img id="flyerLightboxImage" src="" alt="">
+  </div>
 
   <footer class="dclass-footer">
     <div class="dclass-container">
@@ -47,6 +54,6 @@
   <script src="data.js?v=2"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../access-control.js?v=20260904-1"></script>
-  <script src="program.js?v=6"></script>
+  <script src="program.js?v=7"></script>
 </body>
 </html>
