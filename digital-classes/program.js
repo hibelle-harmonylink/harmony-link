@@ -23,6 +23,9 @@
     '<a href="index.html">디지털 클래스</a> / ' + (breadcrumbTitles[category.id] || program.title);
 
   var comingSoon = program.status === 'comingSoon';
+  var programFlyer = document.getElementById('programFlyer');
+  programFlyer.src = category.image;
+  programFlyer.alt = category.title + ' 교육 프로그램 전단지';
   document.getElementById('programSummary').textContent = category.shortDesc;
 
   var stepIcons = {
@@ -44,13 +47,13 @@
       '</ul></article>';
   });
 
-  var upcoming = category.programs.filter(function (p) { return p.status === 'comingSoon' && p.id !== program.id; });
-  if (category.id === 'ai' && program.id === 'ai-start' && upcoming.length) {
+  if (category.id === 'ai' && program.id === 'ai-start') {
+    var aiAdvancedTopics = ['ChatGPT 활용', '바이브 코딩', '앱 만들기', '홈페이지 만들기', '업무용 AI 활용', 'Claude 활용', 'Gemini 활용'];
     stepCards.push(
-      '<article class="dclass-step-block dclass-step-upcoming" style="--step-accent:' + category.accent + '">' +
+      '<article class="dclass-step-block" style="--step-accent:' + category.accent + '">' +
       '<div class="dclass-step-visual" aria-hidden="true"><span>🧩</span></div>' +
-      '<div class="dclass-step-copy"><h4>단계별 AI 심화 과정</h4><p>실전 중심의 AI 수업을 단계별로 확장합니다.</p></div>' +
-      '<ul>' + upcoming.map(function (p) { return '<li>' + p.title + ' · 순차 오픈 예정</li>'; }).join('') + '</ul>' +
+      '<div class="dclass-step-copy"><h4>단계별 심화 과정</h4><p>다양한 AI 도구를 실전 중심으로 깊이 있게 활용합니다.</p></div>' +
+      '<ul>' + aiAdvancedTopics.map(function (topic) { return '<li>' + topic + '</li>'; }).join('') + '</ul>' +
       '</article>'
     );
   }
