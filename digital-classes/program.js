@@ -11,8 +11,16 @@
   }
 
   document.title = program.title + ' | 하이벨 디지털 클래스';
+  var breadcrumbTitles = {
+    device: '기기 활용반',
+    documents: '문서 작성반',
+    design: '디자인반',
+    youtube: '유튜브 활용반',
+    apps: 'SNS·실생활 앱 활용반',
+    ai: 'AI 활용반'
+  };
   document.getElementById('breadcrumb').innerHTML =
-    '<a href="index.html">디지털 클래스</a> / <a href="category.html?id=' + category.id + '">' + category.title + '</a> / ' + program.title;
+    '<a href="index.html">디지털 클래스</a> / ' + (breadcrumbTitles[category.id] || program.title);
 
   var comingSoon = program.status === 'comingSoon';
   document.getElementById('programSummary').textContent = category.shortDesc;
@@ -48,15 +56,20 @@
   }
   document.getElementById('stepGrid').innerHTML = stepCards.join('');
 
-  document.getElementById('audienceList').innerHTML = program.audience.map(function (a) {
-    return '<li><b>✓</b><span>' + a + '</span></li>';
-  }).join('');
-
-  document.getElementById('noteArea').innerHTML = program.note
-    ? '<div class="dclass-note">' + program.note + '</div>' : '';
-
-  document.getElementById('disclaimerArea').innerHTML = program.disclaimer
-    ? '<div class="dclass-disclaimer"><h3 style="margin:0 0 8px;font-size:16px">수익 관련 안내</h3><p style="margin:0">' + program.disclaimer + '</p></div>' : '';
+  var shortsArea = document.getElementById('shortsArea');
+  if (shortsArea && category.id === 'youtube' && program.id === 'youtube-basic') {
+    shortsArea.innerHTML =
+      '<section class="dclass-shorts-card" aria-labelledby="dclassShortsTitle">' +
+      '<div class="dclass-shorts-icon" aria-hidden="true">🎬</div>' +
+      '<div class="dclass-shorts-copy"><span>Premium $50 회원 전용</span>' +
+      '<h3 id="dclassShortsTitle">AI 쇼츠 제작 프로그램</h3>' +
+      '<p>AI를 활용해 짧은 영상 콘텐츠를 빠르고 쉽게 제작할 수 있습니다.</p></div>' +
+      '<a class="dclass-btn dclass-btn-primary ytlab-ai-shorts-addon-btn" href="#" data-premium-href="https://ai-shorts-maker-production.up.railway.app/">AI 쇼츠 제작 실행하기</a>' +
+      '</section>';
+    var shortsAccessScript = document.createElement('script');
+    shortsAccessScript.src = '../youtube-start/access.js?v=10';
+    document.body.appendChild(shortsAccessScript);
+  }
 
   var ctaHtml = '';
   if (comingSoon) {
@@ -73,12 +86,4 @@
   }
   document.getElementById('ctaArea').innerHTML = ctaHtml;
 
-  var upcomingEl = document.getElementById('upcomingArea');
-  if (upcomingEl) {
-    upcomingEl.innerHTML = upcoming.length && !(category.id === 'ai' && program.id === 'ai-start')
-      ? '<div class="dclass-note"><b>세부 프로그램은 순차적으로 추가됩니다.</b><ul style="margin:10px 0 0;padding-left:20px">' +
-        upcoming.map(function (p) { return '<li>' + p.title + ' <span style="color:var(--dc-muted)">(준비 중)</span></li>'; }).join('') +
-        '</ul></div>'
-      : '';
-  }
 })();
