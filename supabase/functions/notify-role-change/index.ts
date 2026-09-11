@@ -98,7 +98,13 @@ Deno.serve(async (request) => {
       syncFormData.set('member_email', syncTargetUser.user.email);
       syncFormData.set('member_name', syncMemberName);
       syncFormData.set('member_type', String(syncProfile.member_type || 'general'));
-      syncFormData.set('role', String(syncProfile.role || 'member'));
+      // `role` is a protected compatibility column. Never send it as a
+      // mutable profile-sync field: older roster webhooks reject that with
+      // HTTP 409 even when the administrator only changed a name, membership,
+      // or account status. The roster only needs the derived partner tier, so
+      // send that under its own explicit field instead.
+      syncFormData.set('partner_tier', String(syncProfile.role || 'member'));
+      syncFormData.set('membership', String(syncProfile.membership || 'free'));
       syncFormData.set('premium', syncIsPremium ? 'true' : 'false');
       syncFormData.set('account_status', String(syncProfile.account_status || 'active'));
 
