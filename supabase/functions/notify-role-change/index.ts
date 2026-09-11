@@ -88,18 +88,18 @@ Deno.serve(async (request) => {
       const { data: syncTargetUser, error: syncTargetError } = await adminClient.auth.admin.getUserById(syncMemberId);
       if (syncTargetError || !syncTargetUser?.user?.email) return json({ error: 'Member not found' }, 404);
 
-      // Re-read the profile fresh from the database -- this is the single
-      // source of truth the roster gets synced from, not whatever values
-      // the caller happened to pass in.
-      const { data: syncProfile, error: syncProfileError } = await adminClient
-        .from('member_profiles')
-        .select('display_name,member_type,user_type,role,membership,account_status')
-        .eq('id', syncMemberId)
-        .maybeSingle();
+      // member_profiles intentionally denies direct table SELECT to
+      // service_role. Reuse the same narrow, security-definer admin RPC that
+      // backs the member-management screen instead of widening table grants.
+      const { data: syncProfiles, error: syncProfileError } = await userClient.rpc('admin_list_members', {
+        p_search: syncTargetUser.user.email,
+        p_role: null,
+      });
       if (syncProfileError) {
         console.error('Member profile lookup failed', syncProfileError);
         return json({ error: 'Member profile lookup failed' }, 500);
       }
+      const syncProfile = (syncProfiles || []).find((profile: { id?: string }) => profile.id === syncMemberId) || null;
       if (!syncProfile) return json({ error: 'Member profile not found' }, 404);
 
       const syncMetadata = syncTargetUser.user.user_metadata || {};

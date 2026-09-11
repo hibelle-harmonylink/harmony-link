@@ -44,6 +44,15 @@ test('profile sync never transmits protected role as a mutable field', () => {
   assert.ok(profileSync.indexOf('syncProfileError') < profileSync.indexOf("Member profile not found"));
 });
 
+test('profile sync reuses the security-definer admin lookup instead of direct table access', () => {
+  const start = functionSource.indexOf("if (requestBody.action === 'profile_sync')");
+  const end = functionSource.indexOf('const isMemberTypeChange', start);
+  const profileSync = functionSource.slice(start, end);
+  assert.match(profileSync, /userClient\.rpc\('admin_list_members'/);
+  assert.doesNotMatch(profileSync, /adminClient\s*\.from\('member_profiles'\)/);
+  assert.match(profileSync, /profile\.id === syncMemberId/);
+});
+
 test('role notifications normalize user types without changing stored member data', () => {
   assert.match(functionSource, /normalizedRole === 'student'/);
   assert.match(functionSource, /normalizedUserType === 'student'/);
