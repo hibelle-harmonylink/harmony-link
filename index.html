@@ -1,8 +1,9 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <link rel="icon" type="image/png" href="/app/icon-512.png?v=2">
-  <link rel="shortcut icon" href="/app/icon-512.png?v=2">
+  <link rel="icon" type="image/png" sizes="512x512" href="app/icon-512.png?v=2">
+  <link rel="shortcut icon" type="image/png" href="app/icon-512.png?v=2">
+  <link rel="apple-touch-icon" href="app/icon-512.png?v=2">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -49,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260909-15">
-  <link rel="stylesheet" href="homepage-ui.css?v=20260909-38">
+  <link rel="stylesheet" href="homepage-ui.css?v=20260911-42">
 </head>
 <body>
   <a class="skip-link" href="#main" data-ko="본문으로 이동" data-en="Skip to content">본문으로 이동</a>
@@ -61,14 +62,15 @@
       </a>
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
       <nav class="primary-nav" id="primary-nav" aria-label="주 메뉴">
-        <a href="#about" data-ko="소개" data-en="About">소개</a>
-        <a href="#digital-why" data-ko="전문 교육" data-en="Specialty">전문 교육</a>
+        <a href="#digital-why" data-ko="프로그램" data-en="Programs">프로그램</a>
         <a href="#events" data-ko="강좌·행사" data-en="Classes & Events">강좌·행사</a>
+        <a class="header-partner-link" href="#partner-center" data-ko="파트너" data-en="Partners">파트너</a>
         <a class="nav-community" href="community.html" data-ko="커뮤니티" data-en="Community">커뮤니티</a>
-        <a href="#membership" data-ko="회원 안내" data-en="Membership">회원 안내</a>
+        <a href="#about" data-ko="소개" data-en="About">소개</a>
         <a href="#contact" data-ko="문의" data-en="Contact">문의</a>
         <button class="lang-toggle" type="button" aria-label="Switch to English"><span class="active">KO</span><i></i><span>EN</span></button>
-        <a class="nav-cta" href="#community" data-ko="신청하기" data-en="Apply">신청하기</a>
+        <span class="nav-cta auth-slot-anchor" hidden aria-hidden="true"></span>
+        <a class="header-education-cta request-form-link" href="https://docs.google.com/forms/d/1LfKkCnsfGLgsvs9ptLluwZkkGupY6iJYBzBbA7jMEK8/viewform" data-ko="교육 신청" data-en="Request Education">교육 신청</a>
       </nav>
     </div>
   </header>
@@ -98,42 +100,92 @@
     </div>
   </div>
 
+  <div class="about-compact-modal" id="aboutCompactModal" hidden>
+    <button class="about-compact-backdrop" type="button" data-about-modal-close aria-label="닫기"></button>
+    <section class="about-compact-panel" role="dialog" aria-modal="true" aria-labelledby="aboutCompactTitle">
+      <button class="about-compact-close" type="button" data-about-modal-close aria-label="닫기">×</button>
+      <header class="about-compact-head">
+        <p>ABOUT HARMONY LINK</p>
+        <h2 id="aboutCompactTitle" data-ko="Harmony Link 소개" data-en="About Harmony Link">Harmony Link 소개</h2>
+        <span data-ko="필요한 교육과 전문 강사를 연결하는 찾아가는 이동식 문화교육 플랫폼입니다." data-en="A mobile community learning platform connecting learners with professional instructors and educational opportunities.">필요한 교육과 전문 강사를 연결하는 찾아가는 이동식 문화교육 플랫폼입니다.</span>
+      </header>
+      <div class="about-compact-structure" aria-label="Harmony Link 운영 구조"></div>
+      <div class="about-compact-video" hidden>
+        <button class="about-video-poster" type="button" aria-label="Harmony Link 소개 영상 재생">
+          <img src="https://i.ytimg.com/vi/7jo7Ovnq7Ew/maxresdefault.jpg" alt="Harmony Link 소개 영상 썸네일">
+          <span aria-hidden="true">▶</span>
+        </button>
+        <iframe src="about:blank" data-src="https://www.youtube.com/embed/7jo7Ovnq7Ew?autoplay=1" title="Harmony Link 소개 영상" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen hidden></iframe>
+      </div>
+    </section>
+  </div>
+
   <main id="main">
     <section class="hero">
       <div class="hero-orb orb-one"></div><div class="hero-orb orb-two"></div><div class="hero-orb orb-three"></div><div class="hero-orb orb-four"></div><div class="hero-orb orb-five"></div>
       <div class="container hero-grid">
         <div class="hero-copy reveal">
-          <p class="eyebrow" data-ko="배움으로 연결되는 더 나은 일상" data-en="A better life, connected through learning">배움으로 연결되는 더 나은 일상</p>
-          <h1 data-ko="마음을 잇고,<br><em>가능성을 열다</em>" data-en="Connecting hearts,<br><em>unlocking potential</em>">마음을 잇고,<br><em>가능성을 열다</em></h1>
-          <p class="hero-desc" data-ko="<span>Harmony Link(이음문화센터)는 하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다.</span><span>전문 강사와 기관을 연결해 모두가 즐겁게 배우고 성장하는 맞춤형 프로그램을 만듭니다.</span>" data-en="<span>Harmony Link (E-eum Culture Center) is a cultural and educational project operated by Hibelle Consulting,</span><span>connecting expert instructors with organizations through tailored programs.</span>"><span>Harmony Link(이음문화센터)는 하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다.</span><span>전문 강사와 기관을 연결해 모두가 즐겁게 배우고 성장하는 맞춤형 프로그램을 만듭니다.</span></p>
+          <p class="eyebrow" data-ko="HARMONY LINK · 이음문화센터" data-en="HARMONY LINK · E-EUM CULTURE CENTER">HARMONY LINK · 이음문화센터</p>
+          <h1 data-ko="배우고 싶은 사람과<br><em>가르치는 사람을 연결합니다.</em>" data-en="Connecting people who want to learn<br><em>with people ready to teach.</em>">배우고 싶은 사람과<br><em>가르치는 사람을 연결합니다.</em></h1>
+          <p class="hero-desc" data-ko="디지털 · 음악 · 언어 · 건강 · 문화 · 생활교육까지<br>필요한 교육을 찾고 전문 강사와 연결하세요." data-en="From digital skills, music, and language to wellness, culture, and everyday learning,<br>find the education you need and connect with expert instructors.">디지털 · 음악 · 언어 · 건강 · 문화 · 생활교육까지<br>필요한 교육을 찾고 전문 강사와 연결하세요.</p>
           <div class="hero-actions">
-            <a class="btn btn-explore" href="#digital-why"><span data-ko="프로그램 둘러보기" data-en="Explore Programs">프로그램 둘러보기</span><b aria-hidden="true">→</b></a>
+            <a class="btn btn-explore" href="#digital-why"><span data-ko="교육 프로그램 찾기" data-en="Find Programs">교육 프로그램 찾기</span><b aria-hidden="true">→</b></a>
+            <a class="btn hero-partner-cta" href="#partner-center"><span data-ko="강사·업체로 참여하기" data-en="Join as an Instructor or Provider">강사·업체로 참여하기</span></a>
           </div>
-          <div class="trust-row">
+          <div class="trust-row" hidden aria-hidden="true">
             <div><strong>98%</strong><span data-ko="참여자 만족도" data-en="Satisfaction">참여자 만족도</span></div>
             <div><strong>120+</strong><span data-ko="함께한 기관" data-en="Partner organizations">함께한 기관</span></div>
             <div><strong>4.9</strong><span data-ko="평균 프로그램 평점" data-en="Average rating">평균 프로그램 평점</span></div>
           </div>
         </div>
         <div class="hero-visual reveal delay-1" aria-label="Harmony Link program highlights">
-          <div class="visual-main">
-            <div class="ripple ripple-a"></div><div class="ripple ripple-b"></div><div class="ripple ripple-c"></div>
-            <div class="center-note"><span>H</span><small data-ko="교육과 사람을 잇는" data-en="Connecting Education & People">교육과 사람을 잇는</small></div>
+          <div class="hero-learning-image">
+            <img src="assets/specialty/hibelle-digital.jpg" alt="전문 강사와 함께 스마트 기기를 배우는 성인 학습자들" data-ko-alt="전문 강사와 함께 스마트 기기를 배우는 성인 학습자들" data-en-alt="Adult learners exploring smart devices with an expert instructor">
           </div>
           <div class="hero-topics" aria-label="교육 분야">
             <span style="--i:0">💻 <b data-ko="디지털" data-en="Digital">디지털</b></span><span style="--i:1">🎵 <b data-ko="음악" data-en="Music">음악</b></span><span style="--i:2">🌍 <b data-ko="언어" data-en="Language">언어</b></span><span style="--i:3">🧘 <b data-ko="건강·운동" data-en="Wellness">건강·운동</b></span><span style="--i:4">🎨 <b data-ko="미술·공예" data-en="Art">미술·공예</b></span><span style="--i:5">🍳 <b data-ko="생활·취미" data-en="Lifestyle">생활·취미</b></span><span style="--i:6">💰 <b data-ko="금융·생활" data-en="Finance">금융·생활</b></span><span style="--i:7">🧠 <b data-ko="인지" data-en="Cognitive">인지</b></span><span style="--i:8">👨‍👩‍👧 <b data-ko="가족" data-en="Family">가족</b></span><span style="--i:9">🎭 <b data-ko="문화·공연" data-en="Culture">문화·공연</b></span><span style="--i:10">💼 <b data-ko="직업교육" data-en="Career">직업교육</b></span>
           </div>
-          <div class="float-pill"><span class="pulse-dot"></span><span data-ko="지금, 배움을 시작하세요" data-en="Start learning today">지금, 배움을 시작하세요</span></div>
+          <div class="hero-platform-card hero-platform-card-teacher"><span aria-hidden="true">✓</span><b data-ko="전문 강사 연결" data-en="Expert instructor matching">전문 강사 연결</b></div>
+          <div class="hero-platform-card hero-platform-card-visit"><span aria-hidden="true">↗</span><b data-ko="기관 방문 교육" data-en="On-site education">기관 방문 교육</b></div>
         </div>
       </div>
       <div class="scroll-note"><span data-ko="SCROLL TO DISCOVER" data-en="SCROLL TO DISCOVER">SCROLL TO DISCOVER</span><i></i></div>
     </section>
 
+    <section class="program-categories section" id="program-categories">
+      <div class="container">
+        <div class="section-heading centered reveal">
+          <p class="eyebrow">PROGRAM CATEGORIES</p>
+          <h2 data-ko="무엇을 배우고 싶으세요?" data-en="What would you like to learn?">무엇을 배우고 싶으세요?</h2>
+          <p data-ko="관심 있는 분야를 선택해 다양한 교육 프로그램을 만나보세요." data-en="Choose an area of interest and explore available learning programs.">관심 있는 분야를 선택해 다양한 교육 프로그램을 만나보세요.</p>
+        </div>
+        <div class="program-category-grid" aria-label="교육 분야">
+          <a class="program-category-card is-linked reveal" href="digital-classes/index.html"><span class="program-category-icon" aria-hidden="true">💻</span><strong data-ko="디지털" data-en="Digital">디지털</strong></a>
+          <a class="program-category-card is-linked reveal" href="#specialty-banners"><span class="program-category-icon" aria-hidden="true">🎵</span><strong data-ko="음악" data-en="Music">음악</strong></a>
+          <a class="program-category-card is-linked reveal" href="#specialty-banners"><span class="program-category-icon" aria-hidden="true">🌍</span><strong data-ko="언어" data-en="Language">언어</strong></a>
+          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">🧘</span><strong data-ko="건강" data-en="Health">건강</strong></article>
+          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">🎨</span><strong data-ko="미술" data-en="Art">미술</strong></article>
+          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">🍳</span><strong data-ko="생활" data-en="Lifestyle">생활</strong></article>
+          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">💰</span><strong data-ko="금융" data-en="Finance">금융</strong></article>
+          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">🧠</span><strong data-ko="인지" data-en="Cognitive">인지</strong></article>
+          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">👨‍👩‍👧</span><strong data-ko="가족" data-en="Family">가족</strong></article>
+          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">🎭</span><strong data-ko="문화" data-en="Culture">문화</strong></article>
+          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">💼</span><strong data-ko="직업" data-en="Career">직업</strong></article>
+          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">🧩</span><strong data-ko="취미" data-en="Hobby">취미</strong></article>
+        </div>
+      </div>
+    </section>
+
     <section class="about section" id="about">
+      <div class="container about-section-intro section-heading centered reveal">
+        <p class="eyebrow">ABOUT HARMONY LINK</p>
+        <h2 data-ko="Harmony Link를 소개합니다" data-en="Meet Harmony Link">Harmony Link를 소개합니다</h2>
+        <p data-ko="필요한 교육과 전문 강사를 연결하는 찾아가는 이동식 문화교육 플랫폼입니다." data-en="A mobile community learning platform connecting learners with professional instructors and educational opportunities.">필요한 교육과 전문 강사를 연결하는 찾아가는 이동식 문화교육 플랫폼입니다.</p>
+      </div>
       <div class="container about-media-frame reveal">
-        <div class="about-media-company"><div class="about-media-heading"><p class="eyebrow" data-ko="HARMONY LINK · 이음문화센터" data-en="HARMONY LINK · E-EUM CULTURE CENTER">HARMONY LINK · 이음문화센터</p>
-          <div class="about-title-row"><h2 data-ko="회사 소개" data-en="About Harmony Link">회사 소개</h2><a class="text-link company-link" href="https://hibelleconsulting.com/" target="_blank" rel="noopener noreferrer"><span data-ko="하이벨컨설팅 회사소개" data-en="About Hibelle Consulting">하이벨컨설팅 회사소개</span><b>↗</b></a></div></div>
-          <div class="brand-structure" aria-label="Harmony Link 운영 구조">
+        <div class="about-media-company">
+          <button class="about-action about-structure-toggle" type="button" aria-expanded="false" aria-controls="aboutBrandStructure"><span class="when-closed" data-ko="회사 구조 보기" data-en="View Company Structure">회사 구조 보기</span><span class="when-open" data-ko="회사 구조 접기" data-en="Hide Company Structure">회사 구조 접기</span><b class="when-closed" aria-hidden="true">▼</b><b class="when-open" aria-hidden="true">▲</b></button>
+          <div class="brand-structure" id="aboutBrandStructure" aria-label="Harmony Link 운영 구조" hidden>
             <div class="structure-parent"><span data-ko="운영 법인" data-en="OPERATING COMPANY">운영 법인</span><strong data-ko="하이벨컨설팅" data-en="Hibelle Consulting">하이벨컨설팅</strong><small data-ko="문화·교육·디지털 사업 기획 및 운영" data-en="Culture, education, and digital initiatives">문화·교육·디지털 사업 기획 및 운영</small></div>
             <div class="structure-arrow" aria-hidden="true">↓</div>
             <div class="structure-project"><span data-ko="운영 프로젝트" data-en="OPERATED PROJECT">운영 프로젝트</span><strong>Harmony Link</strong><b data-ko="이음문화센터" data-en="E-eum Culture Center">이음문화센터</b></div>
@@ -146,7 +198,7 @@
             </div>
           </div>
         </div>
-        <div class="about-media-video"><div class="about-media-heading"><p class="eyebrow">HARMONY LINK ON YOUTUBE</p><h2 data-ko="영상으로 만나는 Harmony Link" data-en="Meet Harmony Link through video">영상으로 만나는 Harmony Link</h2></div><a class="intro-video-frame video-watch-link" href="https://www.youtube.com/watch?v=7jo7Ovnq7Ew" target="_blank" rel="noopener noreferrer" aria-label="Harmony Link 소개영상 유튜브에서 보기"><img src="https://i.ytimg.com/vi/7jo7Ovnq7Ew/maxresdefault.jpg" alt="Harmony Link 소개영상 미리보기"><span class="video-play"><b>▶</b><em data-ko="소개영상 재생" data-en="Play introduction video">소개영상 재생</em></span></a></div>
+        <div class="about-media-video"><a class="about-action intro-video-frame video-watch-link" href="https://www.youtube.com/watch?v=7jo7Ovnq7Ew" aria-expanded="false" aria-controls="aboutVideoPanel" aria-label="Harmony Link 소개영상 보기"><span class="video-play"><b>▶</b><em class="when-closed" data-ko="소개 영상 보기" data-en="Watch Introduction Video">소개 영상 보기</em><em class="when-open" data-ko="소개 영상 접기" data-en="Hide Introduction Video">소개 영상 접기</em></span></a><div class="about-video-panel" id="aboutVideoPanel" hidden><iframe src="about:blank" data-src="https://www.youtube.com/embed/7jo7Ovnq7Ew" title="Harmony Link 소개 영상" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div></div>
       </div>
       <div class="container values-grid">
         <article class="value-card reveal"><span>01</span><div class="value-icon">◎</div><h3 data-ko="전문성" data-en="Expertise">전문성</h3><p data-ko="검증된 강사진과 체계적인 커리큘럼" data-en="Trusted instructors and structured curricula">검증된 강사진과 체계적인 커리큘럼</p></article>

@@ -35,10 +35,10 @@
           el.innerHTML = el.dataset[language];
         });
         document.querySelectorAll('[data-ko-src]').forEach(function (el) {
-          el.src = el.dataset[language + 'Src'];
+          el.src = el.dataset.koSrc;
         });
         document.querySelectorAll('[data-ko-href]').forEach(function (el) {
-          el.href = el.dataset[language + 'Href'];
+          el.href = el.dataset.koHref;
         });
         if (langButton) {
           langButton.querySelectorAll('span').forEach(function (item, index) {

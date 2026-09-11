@@ -52,16 +52,13 @@
     <section class="auth-panel" role="dialog" aria-modal="true" aria-labelledby="authTitle">
       <button class="auth-close" type="button" data-auth-close aria-label="닫기">×</button>
       <div class="auth-brand"><img src="assets/harmony-logo.png" alt=""><span>HARMONY LINK MEMBER</span></div>
-      <div class="auth-mode-tabs" role="tablist" aria-label="회원 접속 방식">
-        <button type="button" role="tab" data-auth-mode-tab="login" data-ko="로그인" data-en="Sign In">로그인</button>
-        <button type="button" role="tab" data-auth-mode-tab="signup" data-ko="가입하기" data-en="Join">가입하기</button>
-      </div>
-      <h2 id="authTitle" data-ko="간편하게 로그인하세요" data-en="Sign in to Harmony Link">간편하게 로그인하세요</h2>
+      <h2 id="authTitle" data-ko="로그인" data-en="Sign In">로그인</h2>
       <p data-ko="Google 또는 카카오 계정으로 안전하게 시작할 수 있습니다." data-en="Continue securely with your Google or Kakao account.">Google 또는 카카오 계정으로 안전하게 시작할 수 있습니다.</p>
       <div class="auth-provider-list">
         <button type="button" class="auth-provider google" data-auth-provider="google"><img src="assets/auth/google.svg" alt="Google"><span data-ko="Google로 로그인" data-en="Continue with Google">Google로 로그인</span></button>
         <button type="button" class="auth-provider kakao" data-auth-provider="kakao"><img src="assets/auth/kakao.svg" alt="Kakao"><span data-ko="카카오로 로그인" data-en="Continue with Kakao">카카오로 로그인</span></button>
       </div>
+      <p class="auth-mode-switch"><span data-auth-switch-copy data-ko="아직 회원이 아니신가요?" data-en="Not a member yet?">아직 회원이 아니신가요?</span> <button type="button" data-auth-mode-tab="signup" data-auth-switch-action data-ko="가입하기" data-en="Join">가입하기</button></p>
       <p class="auth-status" role="status"></p>
       <small data-ko="로그인하면 이용약관과 개인정보처리방침에 동의한 것으로 간주됩니다." data-en="By signing in, you agree to the Terms and Privacy Policy.">로그인하면 이용약관과 개인정보처리방침에 동의한 것으로 간주됩니다.</small>
     </section>`;
@@ -90,7 +87,7 @@
       authGate.innerHTML = `
         <span class="partner-auth-icon" aria-hidden="true">🔐</span>
         <h3 data-ko="회원 로그인 필요합니다" data-en="Sign-in required">회원 로그인 필요합니다</h3>
-        <button type="button" class="btn btn-primary auth-open"><span data-ko="로그인하기" data-en="Sign In">로그인하기</span><b>✓</b></button>`;
+        <button type="button" class="btn btn-primary auth-open"><span data-ko="파트너 자료실" data-en="Partner Resources">파트너 자료실</span><b>✓</b></button>`;
     }
     authGate.querySelectorAll('[data-ko][data-en]').forEach(element => { element.textContent = element.dataset[language()]; });
   };
@@ -108,9 +105,11 @@
     const description = title?.nextElementSibling;
     const googleLabel = authModal.querySelector('[data-auth-provider="google"] span');
     const kakaoLabel = authModal.querySelector('[data-auth-provider="kakao"] span');
+    const switchCopy = authModal.querySelector('[data-auth-switch-copy]');
+    const switchAction = authModal.querySelector('[data-auth-switch-action]');
     if (title) {
-      title.dataset.ko = signup ? '간편하게 가입하세요' : '간편하게 로그인하세요';
-      title.dataset.en = signup ? 'Join Harmony Link' : 'Sign in to Harmony Link';
+      title.dataset.ko = signup ? '회원가입' : '로그인';
+      title.dataset.en = signup ? 'Join Harmony Link' : 'Sign In';
     }
     if (description) {
       description.dataset.ko = signup ? 'Google 또는 카카오 계정으로 가입할 수 있습니다.' : 'Google 또는 카카오 계정으로 안전하게 시작할 수 있습니다.';
@@ -123,6 +122,15 @@
     if (kakaoLabel) {
       kakaoLabel.dataset.ko = signup ? 'Kakao 가입' : '카카오로 로그인';
       kakaoLabel.dataset.en = signup ? 'Join with Kakao' : 'Continue with Kakao';
+    }
+    if (switchCopy) {
+      switchCopy.dataset.ko = signup ? '이미 회원이신가요?' : '아직 회원이 아니신가요?';
+      switchCopy.dataset.en = signup ? 'Already a member?' : 'Not a member yet?';
+    }
+    if (switchAction) {
+      switchAction.dataset.authModeTab = signup ? 'login' : 'signup';
+      switchAction.dataset.ko = signup ? '로그인' : '가입하기';
+      switchAction.dataset.en = signup ? 'Sign In' : 'Join';
     }
   };
 

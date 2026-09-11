@@ -47,12 +47,15 @@
 .dclass-hero-icon{font-size:44px;margin-bottom:10px}
 
 /* instructor block - reuses the same profile shown in the main site's 하이벨 디지털 modal */
-.dclass-instructor{display:flex;align-items:center;gap:18px;padding:22px;margin-top:8px;background:var(--dc-pale);border-radius:var(--dc-radius)}
-.dclass-instructor img{width:64px;height:64px;border-radius:50%;object-fit:cover;flex:none;background:#fff}
-.dclass-instructor-copy small{display:block;color:var(--dc-blue);font-weight:800;font-size:12px;letter-spacing:.5px;margin-bottom:3px}
-.dclass-instructor-copy h3{margin:0 0 4px;font-size:17px}
-.dclass-instructor-copy p{margin:0;color:var(--dc-muted);font-size:14px}
-@media (max-width:640px){.dclass-instructor{padding:16px;gap:14px}.dclass-instructor img{width:52px;height:52px}}
+.dclass-instructor-heading{margin-top:26px;margin-bottom:14px}
+.dclass-instructor-heading h2{margin:0;color:var(--dc-text);font-size:27px;line-height:1.3;font-weight:700}
+.dclass-instructor{display:grid;grid-template-columns:84px minmax(0,1fr);align-items:center;width:100%;height:92px;overflow:hidden;border:1px solid var(--dc-line);border-radius:16px;background:#f8fbff}
+.dclass-instructor img{display:block;width:84px;height:90px;object-fit:cover;object-position:top;flex:none;background:#fff}
+.dclass-instructor-copy{display:grid;grid-template-columns:120px minmax(0,1fr);align-items:center;gap:18px;padding:14px 20px}
+.dclass-instructor-copy h3{margin:0;font-size:18px;font-weight:800;line-height:1.4;color:var(--dc-text)}
+.dclass-instructor-copy p{margin:0;color:var(--dc-muted);font-size:14px;line-height:1.55;white-space:nowrap}
+html[lang="en"] .dclass-instructor-copy h3{white-space:nowrap}
+@media (max-width:640px){.dclass-instructor-heading{margin-top:22px;margin-bottom:12px}.dclass-instructor-heading h2{font-size:23px}.dclass-instructor{grid-template-columns:72px minmax(0,1fr);width:100%;height:auto;min-height:96px}.dclass-instructor img{width:72px;height:94px}.dclass-instructor-copy{display:block;padding:12px 14px}.dclass-instructor-copy h3{margin-bottom:3px;font-size:18px}.dclass-instructor-copy p{font-size:13px;white-space:normal}}
 
 /* sections */
 .dclass-section{padding:48px 0}

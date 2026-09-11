@@ -2,13 +2,15 @@
   var params = new URLSearchParams(window.location.search);
   var categoryId = params.get('id');
   var category = window.DIGITAL_CATEGORIES.getCategory(categoryId);
+  var text = window.digitalText || function (ko) { return ko; };
+  document.documentElement.lang = window.DIGITAL_LANGUAGE || 'ko';
 
   if (!category) {
     window.location.replace('index.html');
     return;
   }
 
-  document.title = category.title + ' | 하이벨 디지털 클래스';
+  document.title = category.title + text(' | 하이벨 디지털 클래스', ' | Harmony Link Digital Classes');
   document.getElementById('breadcrumbCurrent').textContent = '/ ' + category.title;
 
   document.getElementById('categoryHero').innerHTML =
@@ -40,7 +42,7 @@
     }
 
     var badgeHtml = program.status === 'comingSoon'
-      ? '<span class="dclass-comingsoon-badge">준비 중 · COMING SOON</span>'
+      ? '<span class="dclass-comingsoon-badge">' + text('준비 중 · COMING SOON', 'COMING SOON') + '</span>'
       : (program.badge ? '<span class="dclass-program-badge">' + program.badge + '</span>' : '');
 
     return '' +
@@ -49,7 +51,13 @@
       '<h3>' + program.title + '</h3>' +
       (program.tagline ? '<p class="dclass-program-tagline">' + program.tagline + '</p>' : '') +
       '<p class="intro">' + program.intro + '</p>' +
-      '<a class="dclass-btn dclass-btn-primary" href="program.html?category=' + category.id + '&program=' + program.id + '">자세히 보기</a>' +
+      '<a class="dclass-btn dclass-btn-primary" href="program.html?category=' + category.id + '&program=' + program.id + '">' + text('자세히 보기', 'View Details') + '</a>' +
       '</article>';
   }).join('');
+
+  document.querySelector('.dclass-breadcrumb a').textContent = text('디지털 클래스', 'Digital Classes');
+  document.querySelectorAll('.dclass-footer p').forEach(function (paragraph, index) {
+    if (index === 0) paragraph.textContent = text('하이벨 디지털은 하이벨컨설팅이 운영하는 Harmony Link 이음문화센터의 디지털 교육 프로그램입니다.', 'Hibelle Digital is a Harmony Link digital education program operated by Hibelle Consulting.');
+    if (index === 1) paragraph.innerHTML = '<a href="index.html">' + text('디지털 클래스 전체 보기', 'All Digital Classes') + '</a> · <a href="../index.html">' + text('HarmonyLink 홈', 'Harmony Link Home') + '</a>';
+  });
 })();
