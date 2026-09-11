@@ -186,10 +186,10 @@ function setLanguage(language) {
     element.placeholder = element.dataset[`placeholder${language === 'ko' ? 'Ko' : 'En'}`];
   });
   document.querySelectorAll('[data-ko-src]').forEach(element => {
-    element.src = element.dataset[`${language}Src`];
+    element.src = element.matches('#events .event-poster img') ? element.dataset.koSrc : element.dataset[`${language}Src`];
   });
   document.querySelectorAll('[data-ko-href]').forEach(element => {
-    element.href = element.dataset[`${language}Href`];
+    element.href = element.matches('#events .event-poster') ? element.dataset.koHref : element.dataset[`${language}Href`];
   });
   document.querySelectorAll('[data-ko-alt]').forEach(element => {
     element.alt = element.dataset[`${language}Alt`];
@@ -593,10 +593,9 @@ if (oldSpecialtyStart) {
   specialtySection.className = 'specialty-banners section';
   specialtySection.id = 'specialty-banners';
   specialtySection.innerHTML = `<div class="container"><div class="section-heading centered reveal"><p class="eyebrow">PROFESSIONAL EDUCATION PROGRAMS</p><h2 data-ko="전문 교육 프로그램" data-en="Specialty Programs">전문 교육 프로그램</h2><p data-ko="Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요." data-en="Explore specialty programs operated directly or jointly by Harmony Link.">Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요.</p></div><div class="specialty-banner-grid">${specialtyPrograms.map((program,index)=>{
-    const actionHtml = program.id === 'digital'
-      ? `<a class="btn specialty-programs-link" href="digital-classes/index.html"><span data-ko="프로그램 보기" data-en="View Programs">프로그램 보기</span><b>↗</b></a>`
-      : `<button type="button" class="btn specialty-open" data-specialty="${program.id}"><span data-ko="프로그램 보기" data-en="View Program">프로그램 보기</span><b>↗</b></button>`;
-    return `<article class="specialty-banner-card ${program.tone} specialty-${program.id} reveal delay-${Math.min(index,2)}"><a class="specialty-poster-preview" href="${program.image}" target="_blank" rel="noopener noreferrer" aria-label="${program.titleKo} 전단지 크게 보기"><img src="${program.image}" alt="${program.titleKo} 프로그램 전단지"><span data-ko="전단지 크게 보기 ↗" data-en="View Flyer ↗">전단지 크게 보기 ↗</span></a><div class="specialty-banner-info"><span class="specialty-operation-badge" data-ko="${program.operationKo}" data-en="${program.operationEn}">${program.operationKo}</span><h3 data-ko="${program.titleKo}" data-en="${program.titleEn}">${program.titleKo}</h3><p class="specialty-card-description" data-ko="${program.descriptionKo}" data-en="${program.descriptionEn}">${program.descriptionKo}</p>${actionHtml}</div></article>`;
+    const programRoutes = {digital:'digital-classes/index.html',english:'online-english/',melody:'meeran-melody/'};
+    const actionHtml = `<a class="btn specialty-programs-link" href="${programRoutes[program.id]}"><span data-ko="프로그램 보기" data-en="View Program">프로그램 보기</span></a>`;
+    return `<article class="specialty-banner-card ${program.tone} specialty-${program.id} reveal delay-${Math.min(index,2)}"><a class="specialty-poster-preview" href="${program.image}" aria-label="${program.titleKo} 전단지 크게 보기"><img src="${program.image}" alt="${program.titleKo} 프로그램 전단지"><span data-ko="전단지 크게 보기" data-en="View Flyer">전단지 크게 보기</span></a><div class="specialty-banner-info"><span class="specialty-operation-badge" data-ko="${program.operationKo}" data-en="${program.operationEn}">${program.operationKo}</span><h3 data-ko="${program.titleKo}" data-en="${program.titleEn}">${program.titleKo}</h3><p class="specialty-card-description" data-ko="${program.descriptionKo}" data-en="${program.descriptionEn}">${program.descriptionKo}</p>${actionHtml}</div></article>`;
   }).join('')}</div></div>`;
   oldSpecialtyStart.before(specialtySection);
   specialtySection.querySelectorAll('.reveal').forEach(item=>item.classList.add('visible'));
@@ -606,13 +605,59 @@ if (oldSpecialtyStart) {
   const specialtyModal = document.createElement('div');
   specialtyModal.className = 'specialty-modal';
   specialtyModal.hidden = true;
-  specialtyModal.innerHTML = `<div class="specialty-modal-backdrop" data-specialty-close></div><div class="specialty-modal-panel" role="dialog" aria-modal="true" aria-labelledby="specialtyModalTitle"><div class="specialty-modal-head"><div><p>PREMIUM SPECIALTY PROGRAM</p><h2 id="specialtyModalTitle"></h2></div><button type="button" class="specialty-close" data-specialty-close aria-label="닫기">×</button></div><div class="specialty-teacher"><img src="" alt=""><div><span data-ko="대표 강사" data-en="FEATURED INSTRUCTOR">대표 강사</span><h3></h3><p></p></div></div><div class="specialty-modal-scroll"><a class="specialty-modal-image-link" href="#" target="_blank" rel="noopener noreferrer"><img class="specialty-modal-image" src="" alt=""><span data-ko="전단지 크게 보기 ↗" data-en="View Flyer ↗">전단지 크게 보기 ↗</span></a><section class="melody-program-list" hidden><div class="melody-program-heading"><span>MEERAN MELODY PROGRAMS</span><h3 data-ko="미란멜로디 프로그램" data-en="Meeran Melody Programs">미란멜로디 프로그램</h3><p data-ko="기관과 모임의 목적에 맞춰 세 가지 프로그램을 준비합니다. 전단지를 누르면 크게 볼 수 있습니다." data-en="Three programs are prepared for each organization and group. Select a flyer to view it full size.">기관과 모임의 목적에 맞춰 세 가지 프로그램을 준비합니다. 전단지를 누르면 크게 볼 수 있습니다.</p></div><div class="melody-program-grid"><article><a class="melody-program-flyer" href="assets/specialty/melody-piece-20260718.png" target="_blank" rel="noopener noreferrer"><img src="assets/specialty/melody-piece-20260718.png" alt="멜로디 한조각 전단지"><span data-ko="크게 보기" data-en="View Flyer">크게 보기</span></a><div class="melody-program-card-copy"><b>01</b><h4 data-ko="멜로디 한조각 - 작은 위로 콘서트" data-en="A Piece of Melody - A Small Comfort Concert">멜로디 한조각 - 작은 위로 콘서트</h4><p data-ko="노래와 이야기를 통해 일상에 따뜻한 위로를 전하는 소규모 음악 프로그램입니다." data-en="A small-format music program offering comfort through songs and stories.">노래와 이야기를 통해 일상에 따뜻한 위로를 전하는 소규모 음악 프로그램입니다.</p></div></article><article><a class="melody-program-flyer" href="assets/specialty/melody-culture-walk-20260718.png" target="_blank" rel="noopener noreferrer"><img src="assets/specialty/melody-culture-walk-20260718.png" alt="멜로디 문화 산책 전단지"><span data-ko="크게 보기" data-en="View Flyer">크게 보기</span></a><div class="melody-program-card-copy"><b>02</b><h4 data-ko="멜로디 문화 산책" data-en="Melody Cultural Walk">멜로디 문화 산책</h4><p data-ko="익숙한 음악과 문화 이야기를 함께 나누며 즐겁게 소통하는 참여형 프로그램입니다." data-en="An interactive program exploring familiar music, culture, and shared stories.">익숙한 음악과 문화 이야기를 함께 나누며 즐겁게 소통하는 참여형 프로그램입니다.</p></div></article><article><a class="melody-program-flyer" href="assets/specialty/healing-melody-20260718.png" target="_blank" rel="noopener noreferrer"><img src="assets/specialty/healing-melody-20260718.png" alt="힐링 멜로디 전단지"><span data-ko="크게 보기" data-en="View Flyer">크게 보기</span></a><div class="melody-program-card-copy"><b>03</b><h4 data-ko="힐링 멜로디" data-en="Healing Melody">힐링 멜로디</h4><p data-ko="노래와 호흡, 편안한 음악 활동으로 마음의 쉼과 활력을 돕는 힐링 프로그램입니다." data-en="A healing program using singing, breathing, and gentle music activities.">노래와 호흡, 편안한 음악 활동으로 마음의 쉼과 활력을 돕는 힐링 프로그램입니다.</p></div></article></div></section></div><div class="specialty-modal-actions"><p data-ko="프로그램 전단지를 확인하고 자세한 상담을 신청해 주세요." data-en="Review the program flyer and request a consultation.">프로그램 전단지를 확인하고 자세한 상담을 신청해 주세요.</p><div><a class="btn btn-primary specialty-form-link" href="#" target="_blank" rel="noopener noreferrer"><span data-ko="신청서 작성" data-en="Complete Application">신청서 작성</span><b>↗</b></a></div></div></div>`;
+  specialtyModal.innerHTML = `<div class="specialty-modal-backdrop" data-specialty-close></div><div class="specialty-modal-panel specialty-detail-panel" role="dialog" aria-modal="true" aria-labelledby="specialtyModalTitle"><div class="specialty-modal-head"><div><p>HARMONY LINK SPECIALTY PROGRAM</p><h2 id="specialtyModalTitle"></h2><p class="specialty-modal-intro"></p></div><button type="button" class="specialty-close" data-specialty-close aria-label="닫기">×</button></div><div class="specialty-modal-scroll"><div class="specialty-teacher"><img src="" alt=""><div><span data-ko="강사 소개" data-en="INSTRUCTOR">강사 소개</span><h3></h3><p></p></div></div><section class="specialty-detail-section"><p class="eyebrow specialty-detail-eyebrow"></p><h3 class="specialty-detail-title"></h3><div class="specialty-detail-grid"></div></section></div><div class="specialty-modal-actions"><p class="specialty-application-copy"></p><div><a class="btn btn-primary specialty-form-link" href="#" target="_blank" rel="noopener noreferrer"><span data-ko="신청서 작성하기" data-en="Complete Application">신청서 작성하기</span></a></div></div></div>`;
   document.body.append(specialtyModal);
+
+  const specialtyFlyerLightbox = document.createElement('div');
+  specialtyFlyerLightbox.className = 'specialty-flyer-lightbox';
+  specialtyFlyerLightbox.hidden = true;
+  specialtyFlyerLightbox.innerHTML = `<button type="button" class="specialty-flyer-backdrop" data-specialty-flyer-close aria-label="닫기"></button><section class="specialty-flyer-panel" role="dialog" aria-modal="true" aria-label="프로그램 전단지 크게 보기"><button type="button" class="specialty-flyer-close" data-specialty-flyer-close aria-label="닫기">×</button><div class="specialty-flyer-scroll"><button type="button" class="specialty-flyer-image-close" data-specialty-flyer-close aria-label="확대 전단지 닫기"><img src="" alt=""></button></div></section>`;
+  document.body.append(specialtyFlyerLightbox);
+  const specialtyFlyerImage = specialtyFlyerLightbox.querySelector('img');
+  let specialtyFlyerTrigger = null;
+  const closeSpecialtyFlyer = () => {
+    if (specialtyFlyerLightbox.hidden) return;
+    specialtyFlyerLightbox.hidden = true;
+    document.body.classList.remove('modal-open');
+    specialtyFlyerImage.removeAttribute('src');
+    specialtyFlyerTrigger?.focus();
+  };
+  const openSpecialtyFlyer = trigger => {
+    specialtyFlyerTrigger = trigger;
+    specialtyFlyerImage.src = trigger.href;
+    specialtyFlyerImage.alt = trigger.querySelector('img')?.alt || '';
+    specialtyFlyerLightbox.hidden = false;
+    document.body.classList.add('modal-open');
+    specialtyFlyerLightbox.querySelector('.specialty-flyer-close')?.focus();
+  };
+  specialtySection.querySelectorAll('.specialty-poster-preview').forEach(link => link.addEventListener('click', event => {
+    event.preventDefault();
+    openSpecialtyFlyer(link);
+  }));
+  specialtyFlyerLightbox.querySelectorAll('[data-specialty-flyer-close]').forEach(control => control.addEventListener('click', closeSpecialtyFlyer));
+  const specialtyDetails = {
+    english: {
+      labelKo:'수업 종류',labelEn:'LESSON TYPES',titleKo:'목표에 맞춘 1:1 실용 회화',titleEn:'Practical 1:1 Lessons for Your Goals',
+      items:[
+        {titleKo:'1:1 맞춤 회화',titleEn:'Personalized 1:1 Conversation',copyKo:'현재 수준과 학습 목표에 맞춰 수업을 세심하게 구성합니다.',copyEn:'Lessons are tailored to your current level and learning goals.',metaKo:'수준별 맞춤 수업',metaEn:'Level-based personalized lessons'},
+        {titleKo:'실용 생활 회화',titleEn:'Practical Daily Conversation',copyKo:'일상에서 바로 활용할 수 있는 표현과 말하기를 익힙니다.',copyEn:'Build speaking skills and expressions for everyday situations.',metaKo:'생활 중심 실전 표현',metaEn:'Everyday practical expressions'},
+        {titleKo:'일상·업무 회화',titleEn:'Daily & Workplace Conversation',copyKo:'일상과 업무에서 필요한 영어 표현을 반복 대화로 연습합니다.',copyEn:'Practice useful English for daily life and workplace situations.',metaKo:'온라인 유연 수업',metaEn:'Flexible online lessons'}
+      ]
+    },
+    melody: {
+      labelKo:'프로그램 소개',labelEn:'PROGRAMS',titleKo:'노래와 문화로 이어지는 세 가지 프로그램',titleEn:'Three Programs Connecting Music and Culture',
+      items:[
+        {titleKo:'멜로디 한조각 - 작은 위로 콘서트',titleEn:'A Piece of Melody - A Small Comfort Concert',copyKo:'노래와 이야기를 통해 일상에 따뜻한 위로를 전합니다.',copyEn:'Offers warm comfort through songs and stories.',metaKo:'소규모 음악 프로그램',metaEn:'Small-format music program'},
+        {titleKo:'멜로디 문화 산책',titleEn:'Melody Cultural Walk',copyKo:'익숙한 음악과 문화 이야기를 나누며 즐겁게 소통합니다.',copyEn:'Shares familiar music and cultural stories in an interactive setting.',metaKo:'참여형 음악·문화 프로그램',metaEn:'Interactive music and culture program'},
+        {titleKo:'힐링 멜로디',titleEn:'Healing Melody',copyKo:'노래와 호흡, 편안한 음악 활동으로 마음의 쉼을 돕습니다.',copyEn:'Supports relaxation through singing, breathing, and gentle music.',metaKo:'힐링 음악 활동',metaEn:'Healing music activities'}
+      ]
+    }
+  };
   const closeSpecialtyModal=()=>{specialtyModal.hidden=true;document.body.classList.remove('modal-open');};
   specialtySection.querySelectorAll('[data-specialty]').forEach(button=>button.addEventListener('click',()=>{
     const program=specialtyPrograms.find(item=>item.id===button.dataset.specialty);if(!program)return;
     specialtyModal.querySelector('#specialtyModalTitle').textContent=currentLanguage==='en'?program.titleEn:program.titleKo;
-    const modalImage=specialtyModal.querySelector('.specialty-modal-image');modalImage.src=program.image;modalImage.closest('.specialty-modal-image-link').href=program.image;modalImage.alt=`${program.titleKo} 프로그램 전단지`;
+    specialtyModal.querySelector('.specialty-modal-intro').textContent=currentLanguage==='en'?program.descriptionEn:program.descriptionKo;
     const teacher=specialtyModal.querySelector('.specialty-teacher');
     teacher.hidden=program.id==='english';
     const englishTeachers=specialtyModal.querySelector('.english-teachers');
@@ -627,26 +672,27 @@ if (oldSpecialtyStart) {
     const teacherDescription=teacherDescriptions[program.id]?.[currentLanguage]||'';
     teacher.querySelector('p').innerHTML=teacherDescription?`<strong>${teacherRole}</strong><small>${teacherDescription}</small>`:teacherRole;
     const formLink=specialtyModal.querySelector('.specialty-form-link');
-    const melodyProgramList=specialtyModal.querySelector('.melody-program-list');
-    melodyProgramList.hidden=program.id!=='melody';
-    specialtyModal.querySelector('.specialty-modal-scroll').hidden=false;
+    const detail=specialtyDetails[program.id];
+    specialtyModal.querySelector('.specialty-detail-eyebrow').textContent=currentLanguage==='en'?detail.labelEn:detail.labelKo;
+    specialtyModal.querySelector('.specialty-detail-title').textContent=currentLanguage==='en'?detail.titleEn:detail.titleKo;
+    specialtyModal.querySelector('.specialty-detail-grid').innerHTML=detail.items.map(item=>`<article><h4 data-ko="${item.titleKo}" data-en="${item.titleEn}">${currentLanguage==='en'?item.titleEn:item.titleKo}</h4><p data-ko="${item.copyKo}" data-en="${item.copyEn}">${currentLanguage==='en'?item.copyEn:item.copyKo}</p><small data-ko="${item.metaKo}" data-en="${item.metaEn}">${currentLanguage==='en'?item.metaEn:item.metaKo}</small></article>`).join('');
     formLink.hidden=!program.form;
     formLink.href=program.form||'#';
     formLink.setAttribute('aria-disabled',String(!program.form));
-    formLink.querySelector('span').textContent=currentLanguage==='en'?'Complete Application':'신청서 작성';
-    specialtyModal.querySelector('.specialty-modal-actions p').textContent=program.form
-      ? (currentLanguage==='ko'?'아래 버튼에서 신청서를 작성해 주세요.':'Use the button below to complete the application.')
-      : (currentLanguage==='ko'?'대표 프로필과 전단지, 세 가지 미란멜로디 프로그램을 확인해 보세요.':'View the featured profile, flyer, and three Meeran Melody programs.');
+    formLink.querySelector('span').textContent=currentLanguage==='en'?'Complete Application':'신청서 작성하기';
+    specialtyModal.querySelector('.specialty-application-copy').textContent=program.form
+      ? (currentLanguage==='ko'?'수업 목표와 일정을 알려주시면 맞춤 상담을 도와드립니다.':'Share your goals and schedule to receive a personalized consultation.')
+      : (currentLanguage==='ko'?'현재 신청서 링크를 준비 중입니다.':'The application link is currently being prepared.');
+    setLanguage(currentLanguage);
     specialtyModal.hidden=false;document.body.classList.add('modal-open');
   }));
-  specialtySection.querySelectorAll('.specialty-banner-card').forEach(card=>{
-    card.setAttribute('role','button');card.tabIndex=0;
-    card.addEventListener('click',event=>{if(!event.target.closest('.specialty-open'))card.querySelector('.specialty-open').click();});
-    card.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();card.querySelector('.specialty-open').click();}});
-  });
   specialtyModal.querySelectorAll('[data-specialty-close]').forEach(button=>button.addEventListener('click',closeSpecialtyModal));
   specialtyModal.querySelector('.specialty-form-link').addEventListener('click',event=>{if(event.currentTarget.getAttribute('aria-disabled')==='true')event.preventDefault();});
-  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!specialtyModal.hidden)closeSpecialtyModal();});
+  document.addEventListener('keydown',event=>{
+    if(event.key!=='Escape')return;
+    if(!specialtyFlyerLightbox.hidden)closeSpecialtyFlyer();
+    else if(!specialtyModal.hidden)closeSpecialtyModal();
+  });
   setLanguage(currentLanguage);
 }
 
@@ -894,7 +940,7 @@ if (currentEventGrid) {
 
 const contactSectionForAds = document.getElementById('specialty-banners');
 if (contactSectionForAds) {
-  contactSectionForAds.insertAdjacentHTML('beforebegin', `<section class="advertising section" id="advertising"><div class="container"><div class="section-heading centered reveal visible"><p class="eyebrow">PARTNER SPECIALTY PROGRAMS</p><h2 data-ko="업체 광고 · 제휴 공간" data-en="Business Advertising & Partnerships">업체 광고 · 제휴 공간</h2><p data-ko="지역사회와 함께 성장하는 업체를 만나보세요." data-en="Meet businesses growing with our community.">지역사회와 함께 성장하는 업체를 만나보세요.</p></div><div class="ad-inline-carousel" aria-live="polite"><button type="button" class="ad-carousel-prev" aria-label="이전 업체">‹</button><div class="ad-carousel-track"></div><button type="button" class="ad-carousel-next" aria-label="다음 업체">›</button></div><div class="ad-carousel-dots"></div></div></section>`);
+  contactSectionForAds.insertAdjacentHTML('beforebegin', `<section class="advertising section" id="advertising"><div class="container"><div class="section-heading centered reveal visible"><p class="eyebrow">HARMONY LINK PARTNERS</p><h2 data-ko="함께하는 지역 파트너" data-en="Community Partners">함께하는 지역 파트너</h2><p data-ko="Harmony Link와 함께 지역사회를 연결하는 파트너를 만나보세요." data-en="Meet local partners connecting and supporting our community with Harmony Link.">Harmony Link와 함께 지역사회를 연결하는 파트너를 만나보세요.</p></div><div class="ad-inline-carousel" aria-live="polite"><button type="button" class="ad-carousel-prev" aria-label="이전 업체">‹</button><div class="ad-carousel-track"></div><button type="button" class="ad-carousel-next" aria-label="다음 업체">›</button></div><div class="ad-carousel-dots"></div></div></section>`);
 }
 setLanguage(currentLanguage);
 
@@ -1036,7 +1082,7 @@ partnerGuideToggle?.addEventListener('click',()=>{
 const partnerCenterHeading=partnerCenter.querySelector('.partner-center-copy h2');
 partnerCenterHeading.dataset.ko='입점 파트너 전용 자료실';partnerCenterHeading.dataset.en='Partner Resource Center';partnerCenterHeading.textContent=partnerCenterHeading.dataset[currentLanguage];
 const partnerCenterDescription=partnerCenter.querySelector('.partner-center-copy>p:not(.eyebrow)');
-partnerCenterDescription.dataset.ko='HarmonyLink 입점 강사와 교육업체를 위한 <br class="mobile-only-break">운영 정책 및 파트너 자료를 제공합니다.';partnerCenterDescription.dataset.en='Resources and operating policies for approved HarmonyLink instructors and education providers.';partnerCenterDescription.innerHTML=partnerCenterDescription.dataset[currentLanguage];
+partnerCenterDescription.dataset.ko='Harmony Link 입점 파트너를 위한 운영 및 홍보 자료를 제공합니다.';partnerCenterDescription.dataset.en='Resources and promotional materials for approved Harmony Link partners.';partnerCenterDescription.textContent=partnerCenterDescription.dataset[currentLanguage];
 // Partner center now follows "원하는 이용 경로를 선택하세요" (#community)
 // directly, right under the About section, per the requested
 // About -> Community paths -> Partner library page order. Falls back to
@@ -1222,7 +1268,7 @@ document.querySelectorAll('.contact-form-open').forEach(button => button.addEven
 const advertisingArea = document.getElementById('advertising');
 if (advertisingArea) {
   const adHeading=advertisingArea.querySelector('.section-heading h2');
-  if(adHeading){adHeading.dataset.ko='업체 광고 · 제휴 공간';adHeading.dataset.en='Business Advertising & Partnerships';adHeading.textContent=currentLanguage==='en'?adHeading.dataset.en:adHeading.dataset.ko;}
+  if(adHeading){adHeading.dataset.ko='함께하는 지역 파트너';adHeading.dataset.en='Community Partners';adHeading.textContent=currentLanguage==='en'?adHeading.dataset.en:adHeading.dataset.ko;}
   const adGrid=advertisingArea.querySelector('.ad-grid');
   if(adGrid){
     adGrid.innerHTML=`<button type="button" data-ad-room="premium"><span>AD 01</span><b data-ko="프리미엄 광고" data-en="Premium Advertising">프리미엄 광고</b><small data-ko="업체 둘러보기 →" data-en="View businesses →">업체 둘러보기 →</small></button><button type="button" data-ad-room="community"><span>PARTNERS</span><b data-ko="협력 업체" data-en="Community Partners">협력 업체</b><small data-ko="협력 업체 둘러보기 →" data-en="View partners →">협력 업체 둘러보기 →</small></button><button type="button" data-ad-room="culture"><span>AD 03</span><b data-ko="문화·교육 제휴" data-en="Culture & Education">문화·교육 제휴</b><small data-ko="제휴 업체 둘러보기 →" data-en="View partners →">제휴 업체 둘러보기 →</small></button>`;
@@ -1245,18 +1291,18 @@ document.addEventListener('click',event=>{
   openAdGallery(['assets/ads/banner-size-guide.png'],'하모니링크 광고 배너 사이즈 안내');
 });
 const adRooms={
-  premium:{ko:'프리미엄 광고 업체',en:'Premium Advertisers',label:'PREMIUM ADVERTISER',slots:4,items:[
+  premium:{ko:'프리미엄 파트너',en:'Premium Partners',labelKo:'프리미엄 파트너',labelEn:'PREMIUM PARTNER',slots:4,items:[
     {name:'Yura Kim · High Line Residential',displayNameKo:'Yura Kim',displayNameEn:'Yura Kim',summaryKo:'뉴욕 부동산 매물 선정부터 계약·입주까지 함께합니다.',summaryEn:'Guidance from property selection through closing and move-in.',contactKo:'전화 516-390-1383',contactEn:'Phone 516-390-1383',copy:'뉴욕 부동산 매물 선정부터 계약·입주까지 함께합니다.<br>연락처 516-390-1383',copyEn:'Guiding you from property selection through closing and move-in.<br>Contact 516-390-1383',image:'assets/ads/highline-hl-mark.png',logoVariant:'highline',banners:['assets/ads/highline-residential-ko.png'],chatUrl:'https://open.kakao.com/me/hlresy',brokerUrl:'https://www.hlres.com/yura-kim',imageOnly:true},
     {name:'OrganicOne',displayNameKo:'올가닉 원 유기농원',displayNameEn:'OrganicOne',summaryKo:'유아동·유기농 건강식품과 한국 전통 식품을 만나보세요.',summaryEn:'Organic family foods, health foods, and Korean traditional foods.',contactKo:'팰팍 201-585-0958 · 플러싱 929-845-0958',contactEn:'Palisades Park 201-585-0958 · Flushing 929-845-0958',copy:'유아동 식품·유기농 건강식품·한국 전통 식품을<br>팰팍과 플러싱 매장에서 만나보세요.<br>연락처 팰팍 201-585-0958 · 플러싱 929-845-0958',copyEn:'Organic children’s foods, health foods, and Korean traditional foods.<br>Available in Palisades Park and Flushing.<br>Contact<br>Palisades Park 201-585-0958 / Flushing 929-845-0958',image:'assets/ads/organic-one/logo-green.png',banners:['assets/ads/organic-one/family-products.png','assets/ads/organic-one/traditional-foods.png'],chatUrl:'https://www.instagram.com/organicone_/',brokerUrl:'https://www.organiconestore.com/',imageOnly:true},
     {name:'HOLE19 Golf Lounge',displayNameKo:'HOLE19 골프라운지',displayNameEn:'HOLE19 Golf Lounge',summaryKo:'최신 시뮬레이터와 음료·음식을 함께 즐기는 골프라운지입니다.',summaryEn:'Modern simulators with coffee, beer, and food in one golf lounge.',contactKo:'전화 929-766-0088',contactEn:'Phone 929-766-0088',copy:'최신 골프 시뮬레이터와 커피·맥주·음식을 함께 즐기는 골프라운지입니다.<br>연락처 929-766-0088',copyEn:'A premium golf lounge with modern simulators, coffee, beer, and food.<br>Contact 929-766-0088',image:'assets/ads/hole19/logo.png?v=20260819-2',banners:['assets/ads/hole19/open-banner.png','assets/ads/hole19/promotion.png','assets/ads/hole19/features.png'],chatUrl:'tel:+19297660088',brokerUrl:'https://hole19golflounge.com/',primaryLabelKo:'전화 연결 ↗',primaryLabelEn:'Call Now ↗',secondaryLabelKo:'업체 홈페이지 ↗',secondaryLabelEn:'Official Website ↗',imageOnly:true}
   ]},
-  community:{ko:'협력 업체',en:'Community Partners',label:'COMMUNITY PARTNER',slots:4,items:[
+  community:{ko:'협력 업체',en:'Community Partners',labelKo:'커뮤니티 파트너',labelEn:'COMMUNITY PARTNER',slots:4,items:[
     {name:'AALEAC',displayNameKo:'AALEAC',displayNameEn:'AALEAC',summaryKo:'아시안 커뮤니티와 사법기관의 소통과 협력을 지원합니다.',summaryEn:'Supporting cooperation between Asian communities and law enforcement.',contactKo:'전화 646-996-8093',contactEn:'Phone 646-996-8093',copy:'아시안 커뮤니티와 사법기관의 소통과 협력을 지원합니다.<br>연락처 646-996-8093',copyEn:'Supporting communication and cooperation between<br>Asian American communities and law enforcement.<br>Contact 646-996-8093',url:'https://aaleac.org/',image:'assets/partners/aaleac-shield.png?v=20260819-1'},
     {name:'Jangsu Daycare',displayNameKo:'장수 데이케어',displayNameEn:'Jangsu Daycare',summaryKo:'어르신을 가족처럼 모시며 건강하고 행복한 하루를 함께합니다.',summaryEn:'Family-like care supporting healthy and happy days for seniors.',contactKo:'전화 718-799-0133 · 718-864-6430',contactEn:'Phone 718-799-0133 · 718-864-6430',copy:'어르신 한 분 한 분을 가족처럼 모시며 건강하고 행복한 하루를 함께하는<br class="jangsu-card-break-mobile"> 데이케어 센터입니다.<br class="jangsu-card-break-desktop"> 연락처 718-799-0133 · 718-864-6430',popupCopy:'어르신 한 분 한 분을 가족처럼 모시며 <br class="jangsu-popup-break-desktop">건강하고 행복한 하루를 함께하는 <br class="jangsu-popup-break-mobile">데이케어 센터입니다.<br>연락처 718-799-0133 · 718-864-6430',copyEn:'A daycare center caring for each senior like family, supporting a healthy and happy day together.<br>Phone 718-799-0133 · 718-864-6430',url:'https://www.google.com/maps/search/?api=1&query=Jangsu%20Daycare%20718-799-0133',image:'assets/partners/jangsu-daycare-logo.png?v=20260815-304',banner:'assets/partners/jangsu-daycare-banner.png'}
   ]},
   culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',label:'CULTURE & EDUCATION PARTNER',slots:4,items:[]}
 };
-const advertisingCarouselItems=Object.values(adRooms).flatMap(room=>room.items.map(item=>({...item,roomLabel:room.label})));
+const advertisingCarouselItems=Object.values(adRooms).flatMap(room=>room.items.map(item=>({...item,roomLabelKo:room.labelKo,roomLabelEn:room.labelEn})));
 advertisingCarouselItems.forEach(item=>{if(item.image){const image=new Image();image.src=item.image;}});
 let advertisingCarouselIndex=0;
 let advertisingCarouselTimer;
@@ -1272,7 +1318,8 @@ function renderAdvertisingCarousel(){
   const contact=english?(item.contactEn||''):(item.contactKo||'');
   const target=item.brokerUrl||item.url||item.chatUrl||'#contact';
   const logo=item.logoVariant==='highline'?`<div class="ad-highline-logo"><img src="${item.image}" alt="HL"><small>HIGH LINE RESIDENTIAL</small></div>`:`<img src="${item.image}" alt="${name} logo">`;
-  const cardMarkup=`<article class="ad-carousel-card"><div class="ad-carousel-logo">${logo}</div><div class="ad-carousel-copy"><span>${item.roomLabel}</span><h3>${name}</h3><p class="ad-carousel-summary">${summary}</p><p class="ad-carousel-contact">${contact}</p><a href="${target}" ${target.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}>${english?'Related information':'관련 정보 보기'} →</a></div></article>`;
+  const roomLabel=english?item.roomLabelEn:item.roomLabelKo;
+  const cardMarkup=`<article class="ad-carousel-card"><div class="ad-carousel-logo">${logo}</div><div class="ad-carousel-copy"><span>${roomLabel}</span><h3>${name}</h3><p class="ad-carousel-summary">${summary}</p><p class="ad-carousel-contact">${contact}</p><a href="${target}" ${target.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}>${english?'View details':'자세히 보기'} →</a></div></article>`;
   const currentCard=track.querySelector('.ad-carousel-card:last-child');
   if(!currentCard){
     track.innerHTML=cardMarkup;
@@ -1312,7 +1359,7 @@ if(hole19Advertiser){
 document.querySelectorAll('[data-ad-room]').forEach(button=>button.addEventListener('click',()=>{
   const room=adRooms[button.dataset.adRoom];
   adDirectoryModal.querySelector('h2').textContent=currentLanguage==='en'?room.en:room.ko;
-  const registeredCards=room.items.map(item=>{const english=currentLanguage==='en';const displayName=english?(item.displayNameEn||item.name):(item.displayNameKo||item.name);const logoHint=english?'Click logo to enlarge':'로고 클릭 · 배너 크게 보기';const chatLabel=english?(item.primaryLabelEn||(item.name==='OrganicOne'?'Instagram ↗':'Open Kakao Chat ↗')):(item.primaryLabelKo||(item.name==='OrganicOne'?'인스타그램 ↗':'오픈카톡 상담 ↗'));const pageLabel=english?(item.secondaryLabelEn||(item.name==='OrganicOne'?'Official Website ↗':'Broker Website ↗')):(item.secondaryLabelKo||(item.name==='OrganicOne'?'공식 홈페이지 ↗':'브로커 페이지 ↗'));const galleryImages=item.banners||[item.bannerEn||item.banner||item.image,item.secondaryBanner].filter(Boolean);return `<article class="ad-partner-card ${english?'is-english':'is-korean'}">${item.imageOnly?`<button type="button" class="ad-partner-image ad-image-expand${item.name.includes('Yura Kim')?' yura-logo-wrap':''}" data-images="${galleryImages.join('|')}" data-alt="${item.name} advertising image"><img src="${item.image}" alt="${item.name} logo"><span>${logoHint}</span></button>`:`<div class="ad-partner-image aaleac-logo-wrap"${item.banner?` data-banner="${item.banner}"`:''}><img src="${item.image}" alt="${displayName} logo">${item.banner?`<span class="ad-partner-banner-hint">${logoHint}</span>`:''}</div>`}<div class="ad-partner-copy"><span>${room.label}</span>${item.imageOnly?`<h3>${displayName}</h3>`:`<a class="ad-partner-name" href="${item.url}" target="_blank" rel="noopener noreferrer"><h3>${displayName}</h3></a>`}<p>${english?(item.copyEn||'Click the logo for a larger view, or use the links below.'):(item.copy)}</p>${item.imageOnly?`<div class="ad-partner-actions"><a href="${item.chatUrl}" ${item.chatUrl?.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}>${chatLabel}</a><a href="${item.brokerUrl}" target="_blank" rel="noopener noreferrer">${pageLabel}</a></div>`:''}</div></article>`;}).join('');
+  const registeredCards=room.items.map(item=>{const english=currentLanguage==='en';const displayName=english?(item.displayNameEn||item.name):(item.displayNameKo||item.name);const logoHint=english?'Click logo to enlarge':'로고 클릭 · 배너 크게 보기';const chatLabel=english?(item.primaryLabelEn||(item.name==='OrganicOne'?'Instagram ↗':'Open Kakao Chat ↗')):(item.primaryLabelKo||(item.name==='OrganicOne'?'인스타그램 ↗':'오픈카톡 상담 ↗'));const pageLabel=english?(item.secondaryLabelEn||(item.name==='OrganicOne'?'Official Website ↗':'Broker Website ↗')):(item.secondaryLabelKo||(item.name==='OrganicOne'?'공식 홈페이지 ↗':'브로커 페이지 ↗'));const galleryImages=item.banners||[item.bannerEn||item.banner||item.image,item.secondaryBanner].filter(Boolean);return `<article class="ad-partner-card ${english?'is-english':'is-korean'}">${item.imageOnly?`<button type="button" class="ad-partner-image ad-image-expand${item.name.includes('Yura Kim')?' yura-logo-wrap':''}" data-images="${galleryImages.join('|')}" data-alt="${item.name} advertising image"><img src="${item.image}" alt="${item.name} logo"><span>${logoHint}</span></button>`:`<div class="ad-partner-image aaleac-logo-wrap"${item.banner?` data-banner="${item.banner}"`:''}><img src="${item.image}" alt="${displayName} logo">${item.banner?`<span class="ad-partner-banner-hint">${logoHint}</span>`:''}</div>`}<div class="ad-partner-copy"><span>${english?room.labelEn:room.labelKo}</span>${item.imageOnly?`<h3>${displayName}</h3>`:`<a class="ad-partner-name" href="${item.url}" target="_blank" rel="noopener noreferrer"><h3>${displayName}</h3></a>`}<p>${english?(item.copyEn||'Click the logo for a larger view, or use the links below.'):(item.copy)}</p>${item.imageOnly?`<div class="ad-partner-actions"><a href="${item.chatUrl}" ${item.chatUrl?.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}>${chatLabel}</a><a href="${item.brokerUrl}" target="_blank" rel="noopener noreferrer">${pageLabel}</a></div>`:''}</div></article>`;}).join('');
   const emptySlots=Array.from({length:Math.max(0,room.slots-room.items.length)},(_,index)=>`<article class="ad-slot-card"><div class="ad-slot-visual"><b>＋</b><small>1600 × 900</small></div><div><span>AVAILABLE SPACE ${String(room.items.length+index+1).padStart(2,'0')}</span><h3 data-ko="새 업체 등록 공간" data-en="Available listing space">새 업체 등록 공간</h3><p data-ko="새로운 업체가 등록되면 이 자리에 배너와 업체명이 표시됩니다." data-en="A new business banner and name will appear here after registration.">새로운 업체가 등록되면 이 자리에 배너와 업체명이 표시됩니다.</p></div></article>`).join('');
   adDirectoryModal.querySelector('.ad-directory-list').innerHTML=registeredCards+emptySlots;
   adDirectoryModal.querySelectorAll('.ad-partner-card').forEach((card,index)=>{const item=room.items[index];if(item&&!item.imageOnly&&item.url){const isJangsu=item.name==='Jangsu Daycare';const isAaleac=item.name==='AALEAC';const actionHref=isJangsu?'tel:+17187990133':item.url;const labelKo=isJangsu?'전화 바로걸기 ↗':isAaleac?'업체 바로가기 ↗':'공식 홈페이지 ↗';const labelEn=isJangsu?'Call Now ↗':isAaleac?'Visit Business ↗':'Official Website ↗';const actions=document.createElement('div');actions.className='ad-partner-actions';actions.innerHTML=`<a href="${actionHref}" ${isJangsu?'':'target="_blank" rel="noopener noreferrer"'} data-ko="${labelKo}" data-en="${labelEn}">${currentLanguage==='en'?labelEn:labelKo}</a>`;card.querySelector('.ad-partner-copy')?.appendChild(actions);}});
