@@ -39,5 +39,25 @@ test('profile sync never transmits protected role as a mutable field', () => {
   assert.match(profileSync, /syncFormData\.set\('partner_tier'/);
   assert.match(profileSync, /syncFormData\.set\('membership'/);
   assert.match(profileSync, /syncFormData\.set\('account_status'/);
+  assert.doesNotMatch(profileSync, /premium_member/);
+  assert.match(profileSync, /syncProfileError/);
+  assert.ok(profileSync.indexOf('syncProfileError') < profileSync.indexOf("Member profile not found"));
+});
+
+test('role notifications normalize user types without changing stored member data', () => {
+  assert.match(functionSource, /normalizedRole === 'student'/);
+  assert.match(functionSource, /normalizedUserType === 'student'/);
+  assert.match(functionSource, /return 'member'/);
+  assert.match(functionSource, /normalizedUserType === 'partner'/);
+  assert.match(functionSource, /return 'partner20'/);
+  assert.match(functionSource, /return 'partner50'/);
+  assert.match(functionSource, /normalizedQueuedRole !== storedRole/);
+});
+
+test('role notification profile lookup distinguishes query errors from missing rows', () => {
+  const notificationLookup = functionSource.indexOf('const { data: memberProfile, error: memberProfileError }');
+  const missingProfile = functionSource.indexOf("if (!memberProfile) return json({ error: 'Member profile not found' }, 404)", notificationLookup);
+  assert.ok(notificationLookup >= 0 && missingProfile > notificationLookup);
+  assert.ok(functionSource.indexOf('if (memberProfileError)', notificationLookup) < missingProfile);
 });
 

@@ -9,6 +9,28 @@ const corsHeaders = {
 
 const allowedRoles = ['member', 'partner0', 'partner20', 'partner50'];
 
+function normalizeNotifiableRole(role: unknown, userType: unknown, membership: unknown) {
+  const normalizedRole = String(role || '').trim().toLowerCase();
+  const normalizedUserType = String(userType || '').trim().toLowerCase();
+  const normalizedMembership = String(membership || '').trim().toLowerCase();
+
+  if (normalizedRole === 'admin') return 'admin';
+  if (allowedRoles.includes(normalizedRole)) return normalizedRole;
+  if (normalizedRole === 'partner' || normalizedUserType === 'partner') {
+    if (normalizedMembership === 'premium') return 'partner50';
+    if (normalizedMembership === 'basic') return 'partner20';
+    return 'partner0';
+  }
+  if (
+    normalizedRole === 'student'
+    || normalizedRole === 'general'
+    || normalizedUserType === 'student'
+    || normalizedUserType === 'general'
+  ) return 'member';
+
+  return normalizedRole;
+}
+
 Deno.serve(async (request) => {
   if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   if (request.method !== 'POST') return json({ error: 'Method not allowed' }, 405);
@@ -69,27 +91,22 @@ Deno.serve(async (request) => {
       // Re-read the profile fresh from the database -- this is the single
       // source of truth the roster gets synced from, not whatever values
       // the caller happened to pass in.
-      const { data: syncProfile } = await adminClient
+      const { data: syncProfile, error: syncProfileError } = await adminClient
         .from('member_profiles')
-        .select('display_name,member_type,role,premium_member,membership,account_status')
+        .select('display_name,member_type,user_type,role,membership,account_status')
         .eq('id', syncMemberId)
         .maybeSingle();
+      if (syncProfileError) {
+        console.error('Member profile lookup failed', syncProfileError);
+        return json({ error: 'Member profile lookup failed' }, 500);
+      }
       if (!syncProfile) return json({ error: 'Member profile not found' }, 404);
 
       const syncMetadata = syncTargetUser.user.user_metadata || {};
       const syncMemberName = syncProfile.display_name || syncMetadata.full_name || syncMetadata.name || syncMetadata.nickname || syncTargetUser.user.email.split('@')[0];
 
-      // membership (202609030001_separate_user_type_membership_access.sql)
-      // is the current source of truth for Premium status -- the
-      // sync_member_access_compatibility trigger keeps member_type/role in
-      // sync with it on every admin save, but does not touch the older
-      // premium_member flag at all, so premium_member alone would go
-      // stale the moment a member is edited through the new access model.
-      // Fall back to premium_member only for a profile the new migration
-      // hasn't touched yet (membership still null).
-      const syncIsPremium = syncProfile.membership != null
-        ? syncProfile.membership === 'premium'
-        : syncProfile.premium_member === true;
+      const syncIsPremium = syncProfile.membership === 'premium';
+      const syncPartnerTier = normalizeNotifiableRole(syncProfile.role, syncProfile.user_type, syncProfile.membership);
 
       const syncFormData = new FormData();
       syncFormData.set('action', 'profile_sync');
@@ -103,7 +120,7 @@ Deno.serve(async (request) => {
       // HTTP 409 even when the administrator only changed a name, membership,
       // or account status. The roster only needs the derived partner tier, so
       // send that under its own explicit field instead.
-      syncFormData.set('partner_tier', String(syncProfile.role || 'member'));
+      syncFormData.set('partner_tier', syncPartnerTier || 'member');
       syncFormData.set('membership', String(syncProfile.membership || 'free'));
       syncFormData.set('premium', syncIsPremium ? 'true' : 'false');
       syncFormData.set('account_status', String(syncProfile.account_status || 'active'));
@@ -164,21 +181,29 @@ Deno.serve(async (request) => {
     }
     if (!targetUser?.email) return json({ error: 'Member not found' }, 404);
     const resolvedMemberId = targetUser.id;
-    let storedRole = queuedRole;
-    let storedMemberType = 'general';
-    if (!storedRole) {
-      const { data: profile } = await adminClient.from('member_profiles').select('role,display_name,member_type').eq('id', resolvedMemberId).maybeSingle();
-      storedRole = profile?.role || '';
-      storedMemberType = profile?.member_type || 'general';
-    } else {
-      const { data: profile } = await adminClient.from('member_profiles').select('member_type').eq('id', resolvedMemberId).maybeSingle();
-      storedMemberType = profile?.member_type || 'general';
+    const { data: memberProfile, error: memberProfileError } = await adminClient
+      .from('member_profiles')
+      .select('role,display_name,member_type,user_type,membership')
+      .eq('id', resolvedMemberId)
+      .maybeSingle();
+    if (memberProfileError) {
+      console.error('Member profile lookup failed', memberProfileError);
+      return json({ error: 'Member profile lookup failed' }, 500);
+    }
+    if (!memberProfile) return json({ error: 'Member profile not found' }, 404);
+
+    const storedRole = normalizeNotifiableRole(memberProfile.role, memberProfile.user_type, memberProfile.membership);
+    const normalizedQueuedRole = queuedRole
+      ? normalizeNotifiableRole(queuedRole, memberProfile.user_type, memberProfile.membership)
+      : '';
+    if (normalizedQueuedRole && normalizedQueuedRole !== storedRole) {
+      return json({ error: 'Queued member role does not match the stored member role' }, 409);
     }
     if (!allowedRoles.includes(storedRole)) return json({ error: 'Stored member role cannot be notified' }, 409);
 
     const metadata = targetUser.user_metadata || {};
-    const { data: memberProfile } = await adminClient.from('member_profiles').select('display_name').eq('id', resolvedMemberId).maybeSingle();
     const memberName = memberProfile?.display_name || metadata.full_name || metadata.name || metadata.nickname || targetUser.email.split('@')[0];
+    const storedMemberType = memberProfile.member_type || memberProfile.user_type || 'general';
     const formData = new FormData();
     formData.set('action', isMemberTypeChange ? 'member_type_change' : 'role_change');
     formData.set('webhook_secret', webhookSecret);
@@ -188,7 +213,8 @@ Deno.serve(async (request) => {
     formData.set('member_joined_at', targetUser.created_at || '');
     formData.set('member_signup_method', String(targetUser.app_metadata?.provider || targetUser.app_metadata?.providers?.[0] || ''));
     formData.set('member_signup_path', 'Harmony Link 홈페이지');
-    formData.set('old_role', allowedRoles.includes(oldRole) ? oldRole : '');
+    const normalizedOldRole = normalizeNotifiableRole(oldRole, '', '');
+    formData.set('old_role', allowedRoles.includes(normalizedOldRole) ? normalizedOldRole : '');
     formData.set('new_role', storedRole);
     formData.set('member_type', storedMemberType);
     formData.set('partner_tier', storedRole);
