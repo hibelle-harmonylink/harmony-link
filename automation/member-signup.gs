@@ -140,7 +140,12 @@ function syncProfile_(values) {
     return json_({ ok: false, error: '회원 명단 시트에서 해당 회원 행을 찾지 못해 업데이트하지 못했습니다.' });
   }
   const memberType = normalizeType_(values.member_type);
-  const partnerTier = (ROLE_INFO[text_(values.role)] || {}).tier || '';
+  // Profile sync must not accept the protected database `role` as a mutable
+  // field. The Edge Function sends the already-derived roster tier under the
+  // explicit partner_tier key instead. Keep the role fallback temporarily so
+  // an older deployed function cannot break the roster during rollout.
+  const partnerTierKey = text_(values.partner_tier || values.role);
+  const partnerTier = (ROLE_INFO[partnerTierKey] || {}).tier || normalizeTier_(partnerTierKey);
   const premiumLabel = text_(values.premium) === 'true' ? 'Premium 승인' : 'Premium 미승인';
   const statusLabel = text_(values.account_status) === 'suspended' ? '중지' : '활성';
   sheet.getRange(row, 6, 1, 2).setValues([[memberType, partnerTier]]);
