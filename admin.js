@@ -36,20 +36,8 @@
 
   const TYPE_LABELS = { student: '수강생', partner: '파트너' };
   const MEMBERSHIP_LABELS = { free: 'FREE', basic: 'BASIC $20', premium: 'PREMIUM $50' };
-  const STATUS_LABELS = { active: '활성', expiring: '만료 예정', expired: '만료', suspended: '중지' };
+  const STATUS_LABELS = { active: '활성', expiring: '만료 예정', expired: '만료', suspended: '중지', withdrawn: '탈퇴' };
   const TYPE_BADGE_CLASS = { student: 'type-student', partner: 'type-partner' };
-  // These values mirror the active "회원가입 명단" Google Sheet.  They are
-  // intentionally a display-only lookup: unknown IDs render as — instead of
-  // inventing a new number, and the Supabase UUID itself is never shown.
-  const MEMBER_NUMBER_BY_ID = Object.freeze({
-    'f7a5d99b-5866-47f6-a067-09556c44b03b': 'HL-26-001',
-    '13cb343a-cdd4-4519-9a1d-2bfeb65faff1': 'HL-26-002',
-    'c51ace57-d4cd-4f89-97bc-cb3229641be5': 'HL-26-003',
-    '229e791e-df89-47f8-a2ec-362044ff6466': 'HL-26-004',
-    'd6b58c79-675a-4edf-8e50-079d4097af04': 'HL-26-005',
-    '609670ec-40ec-4157-8563-bf27606fcbb5': 'HL-26-006',
-    '8686931e-e2e8-498d-a153-4da762b841c3': 'HL-26-007'
-  });
   let currentUserId = '';
   let currentUserName = '';
   let allMembers = [];
@@ -132,6 +120,11 @@
     overlay.querySelector('.admin-confirm-ok').focus();
   });
   const formatDate = value => value ? new Intl.DateTimeFormat('ko-KR', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(value)) : '없음';
+  const formatPhone = value => {
+    const text = String(value || '').trim();
+    const digits = text.replace(/\D/g, '');
+    return digits.length === 10 ? `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}` : text;
+  };
   const deny = text => { loading.hidden = true; app.hidden = true; denied.hidden = false; deniedMessage.textContent = text; };
   const normalize = member => access.normalizeUser({ ...member, is_admin: member.is_admin || member.role === 'admin' });
   // The admin account's stored display_name is a leftover site-brand
@@ -162,9 +155,13 @@
   };
 
   const setCounts = members => {
-    const counts = { all: members.length, student: 0, partner: 0, admin: 0, premium: 0 };
+    const counts = { all: members.length, student: 0, partner: 0, admin: 0, premium: 0, withdrawn: 0 };
     members.forEach(raw => {
       const member = normalize(raw);
+      if (member.is_withdrawn || member.account_status === 'withdrawn') {
+        counts.withdrawn += 1;
+        return;
+      }
       if (member.is_admin) counts.admin += 1;
       else counts[member.user_type] += 1;
       // Admin is a separate access tier, not a paid membership -- its
@@ -183,7 +180,7 @@
       const member = normalize(raw);
       const row = document.createElement('tr');
       const name = resolveDisplayName(member);
-      const memberNumber = MEMBER_NUMBER_BY_ID[member.id] || '—';
+      const memberNumber = member.member_number || '—';
       const cells = [
         ['회원번호', `<span class="member-number">${escapeHtml(memberNumber)}</span>`],
         ['이름', escapeHtml(name) + (member.access_migration_review ? '<span class="member-review">검토 필요</span>' : '')],
@@ -311,21 +308,39 @@
 
   const openDetail = raw => {
     const member = normalize(raw);
+    const withdrawn = member.is_withdrawn || member.account_status === 'withdrawn';
     const protectedAccount = member.is_admin || member.id === currentUserId;
     const name = resolveDisplayName(member);
     detail.className = 'member-detail';
-    detail.innerHTML = `<div class="member-detail-summary"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(member.email || '')}</span>${typeBadge(member)}${member.is_admin ? '' : membershipBadge(member)}${badge(STATUS_LABELS[member.account_status], member.account_status)}</div>${protectedAccount ? '<div class="member-protected-copy">관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.</div>' : `<div class="member-edit-grid"><label class="member-name-field">회원 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label>회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label>멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label>계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label></div>`}<div id="detailFeatures">${featureHtml(member)}</div><dl class="member-dates"><div><dt>가입일</dt><dd>${formatDate(member.created_at)}</dd></div><div><dt>최근 로그인</dt><dd>${formatDate(member.last_sign_in_at)}</dd></div><div><dt>파트너 승인일</dt><dd>${formatDate(member.approved_at)}</dd></div><div><dt>마지막 변경일</dt><dd>${formatDate(member.updated_at)}</dd></div></dl>${protectedAccount ? '' : '<div class="member-detail-actions"><button type="button" class="btn member-resend">안내메일 다시 보내기</button><button type="button" class="btn btn-primary" id="detailSave">변경 저장</button></div>'}`;
+    const metadataFields = `<div class="member-edit-grid member-metadata-grid"><label>연락처<input id="detailPhone" type="tel" maxlength="30" autocomplete="tel"></label><label class="partner-metadata">전문분야<input id="detailSpecialty" type="text" maxlength="120"></label><label class="partner-metadata">강의과목<input id="detailTeachingSubjects" type="text" maxlength="240"></label><label class="student-metadata">수강과목<input id="detailEnrolledSubject" type="text" maxlength="120"></label><label class="student-metadata">담당강사<input id="detailAssignedInstructor" type="text" maxlength="120"></label></div>`;
+    const summary = `<dl class="member-dates member-core-fields"><div><dt>회원번호</dt><dd>${escapeHtml(member.member_number || '—')}</dd></div><div><dt>이름</dt><dd>${escapeHtml(name)}</dd></div><div><dt>이메일</dt><dd>${escapeHtml(member.email || '')}</dd></div><div><dt>회원유형</dt><dd>${escapeHtml(member.is_admin ? '관리자' : TYPE_LABELS[member.user_type])}</dd></div><div><dt>멤버십</dt><dd>${escapeHtml(member.is_admin ? '관리자' : MEMBERSHIP_LABELS[member.membership])}</dd></div><div><dt>계정상태</dt><dd>${escapeHtml(STATUS_LABELS[member.account_status] || member.account_status || '')}</dd></div><div><dt>가입일</dt><dd>${formatDate(member.created_at)}</dd></div></dl>`;
+    const accessFields = withdrawn || protectedAccount ? `<div class="member-protected-copy">${withdrawn ? '탈퇴 회원은 권한·멤버십·계정상태를 변경하거나 재활성화할 수 없습니다.' : '관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.'}</div>` : `<div class="member-edit-grid"><label class="member-name-field">회원 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label>회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label>멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label>계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label></div>`;
+    detail.innerHTML = `<div class="member-detail-summary"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(member.email || '')}</span>${typeBadge(member)}${member.is_admin ? '' : membershipBadge(member)}${badge(STATUS_LABELS[member.account_status], member.account_status)}</div>${summary}${accessFields}${metadataFields}<div id="detailFeatures">${withdrawn ? '' : featureHtml(member)}</div><div class="member-save-feedback" id="detailSaveFeedback" role="status" aria-live="polite"></div>${withdrawn || protectedAccount ? '' : '<div class="member-detail-actions"><button type="button" class="btn member-resend">안내메일 다시 보내기</button><button type="button" class="btn btn-primary" id="detailSave">변경 저장</button></div>'}${withdrawn && !protectedAccount ? '<div class="member-detail-actions"><button type="button" class="btn btn-primary" id="detailSave">변경 저장</button></div>' : ''}`;
     const nameInput = detail.querySelector('#detailName');
     const type = detail.querySelector('#detailType');
     const membership = detail.querySelector('#detailMembership');
     const status = detail.querySelector('#detailStatus');
+    const phone = detail.querySelector('#detailPhone');
+    const specialty = detail.querySelector('#detailSpecialty');
+    const teachingSubjects = detail.querySelector('#detailTeachingSubjects');
+    const enrolledSubject = detail.querySelector('#detailEnrolledSubject');
+    const assignedInstructor = detail.querySelector('#detailAssignedInstructor');
+    [phone, specialty, teachingSubjects, enrolledSubject, assignedInstructor].forEach((input, index) => { if (input) input.value = [formatPhone(member.phone), member.specialty, member.teaching_subjects, member.enrolled_subject, member.assigned_instructor][index] || ''; });
+    const showRoleMetadata = selectedType => {
+      detail.querySelectorAll('.partner-metadata').forEach(field => { field.hidden = selectedType !== 'partner'; });
+      detail.querySelectorAll('.student-metadata').forEach(field => { field.hidden = selectedType !== 'student'; });
+    };
+    showRoleMetadata(withdrawn ? 'student' : (member.is_admin ? 'admin' : member.user_type));
     if (type) {
       nameInput.value = name;
       type.value = member.user_type; membership.value = member.membership; status.value = member.account_status;
       const preview = () => { detail.querySelector('#detailFeatures').innerHTML = featureHtml({ ...member, user_type: type.value, membership: membership.value, account_status: status.value }); };
       [type, membership, status].forEach(select => select.addEventListener('change', preview));
-      detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, nameInput.value, type.value, membership.value, status.value));
+      type.addEventListener('change', () => showRoleMetadata(type.value));
+      detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, nameInput.value, type.value, membership.value, status.value, { phone: phone.value, specialty: specialty.value, teachingSubjects: teachingSubjects.value, enrolledSubject: enrolledSubject.value, assignedInstructor: assignedInstructor.value }));
       detail.querySelector('.member-resend').addEventListener('click', event => resendNotification(raw, event.currentTarget));
+    } else if (!protectedAccount) {
+      detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, name, member.user_type, member.membership, member.account_status, { phone: phone.value, specialty: specialty.value, teachingSubjects: teachingSubjects.value, enrolledSubject: enrolledSubject.value, assignedInstructor: assignedInstructor.value }));
     }
     dialog.showModal();
   };
@@ -345,12 +360,14 @@
     }
   };
 
-  const updateMember = async (raw, requestedName, nextUserType, nextMembership, nextStatus) => {
+  const updateMember = async (raw, requestedName, nextUserType, nextMembership, nextStatus, nextMetadata = {}) => {
     const member = normalize(raw);
     const nextName = requestedName.trim();
     const nameChanged = nextName !== (member.display_name || '');
     const accessChanged = nextUserType !== member.user_type || nextMembership !== member.membership || nextStatus !== member.account_status;
-    if (!nameChanged && !accessChanged) {
+    const metadata = { phone: formatPhone(nextMetadata.phone), specialty: String(nextMetadata.specialty || '').trim(), teachingSubjects: String(nextMetadata.teachingSubjects || '').trim(), enrolledSubject: String(nextMetadata.enrolledSubject || '').trim(), assignedInstructor: String(nextMetadata.assignedInstructor || '').trim() };
+    const metadataChanged = metadata.phone !== (member.phone || '') || metadata.specialty !== (member.specialty || '') || metadata.teachingSubjects !== (member.teaching_subjects || '') || metadata.enrolledSubject !== (member.enrolled_subject || '') || metadata.assignedInstructor !== (member.assigned_instructor || '');
+    if (!nameChanged && !accessChanged && !metadataChanged) {
       setMessage('변경된 내용이 없습니다.', true);
       return;
     }
@@ -362,7 +379,8 @@
       nameChanged ? `회원 이름 → ${nextName}` : '',
       nextUserType !== member.user_type ? `회원유형: ${TYPE_LABELS[member.user_type]} → ${TYPE_LABELS[nextUserType]}` : '',
       nextMembership !== member.membership ? `멤버십: ${MEMBERSHIP_LABELS[member.membership]} → ${MEMBERSHIP_LABELS[nextMembership]}` : '',
-      nextStatus !== member.account_status ? `계정 상태: ${STATUS_LABELS[member.account_status]} → ${STATUS_LABELS[nextStatus]}` : ''
+      nextStatus !== member.account_status ? `계정 상태: ${STATUS_LABELS[member.account_status]} → ${STATUS_LABELS[nextStatus]}` : '',
+      metadataChanged ? '관리 정보 변경' : ''
     ].filter(Boolean).join('\n');
     console.log('[admin] asking for confirmation', { memberId: member.id, detailLines });
     const confirmed = await askConfirm(`${member.email} 회원을 다음과 같이 변경할까요?\n\n${detailLines}`);
@@ -371,6 +389,11 @@
       setMessage('변경이 취소되었습니다.', true);
       return;
     }
+    const saveButton = detail.querySelector('#detailSave');
+    const feedback = detail.querySelector('#detailSaveFeedback');
+    if (saveButton?.disabled) return;
+    if (saveButton) { saveButton.disabled = true; saveButton.textContent = '저장 중…'; }
+    if (feedback) { feedback.textContent = ''; feedback.className = 'member-save-feedback'; }
     setMessage(`${member.email} 회원 정보를 변경하고 있습니다.`);
     console.log('[admin] updateMember start', { memberId: member.id, email: member.email, nameChanged, accessChanged, nextUserType, nextMembership, nextStatus });
 
@@ -408,6 +431,17 @@
         const { error } = await callRpc('admin_update_member_access', { p_member_id: member.id, p_user_type: nextUserType, p_membership: nextMembership, p_account_status: nextStatus });
         results.push({ field: 'access', label: '회원유형/멤버십/계정 상태', ok: !error, error });
       }
+      if (metadataChanged) {
+        const { error } = await callRpc('admin_update_member_metadata', {
+          p_member_id: member.id,
+          p_phone: metadata.phone,
+          p_specialty: metadata.specialty,
+          p_teaching_subjects: metadata.teachingSubjects,
+          p_enrolled_subject: metadata.enrolledSubject,
+          p_assigned_instructor: metadata.assignedInstructor
+        });
+        results.push({ field: 'metadata', label: '관리 정보', ok: !error, error });
+      }
 
       // Never trust an RPC's { error: null } alone as proof the value
       // actually changed -- re-read the member from the database (via the
@@ -441,6 +475,15 @@
             markUnverified('access', `계정 상태가 DB에 실제로 반영되지 않았습니다 (요청값: ${STATUS_LABELS[nextStatus]}, 실제값: ${STATUS_LABELS[freshMember.account_status]})`);
           }
         }
+        if (metadataChanged && (
+          (freshMember.phone || '') !== metadata.phone ||
+          (freshMember.specialty || '') !== metadata.specialty ||
+          (freshMember.teaching_subjects || '') !== metadata.teachingSubjects ||
+          (freshMember.enrolled_subject || '') !== metadata.enrolledSubject ||
+          (freshMember.assigned_instructor || '') !== metadata.assignedInstructor
+        )) {
+          markUnverified('metadata', '관리 정보가 DB에 실제로 반영되지 않았습니다.');
+        }
       }
 
       const failed = results.filter(result => !result.ok);
@@ -473,6 +516,11 @@
       let sheetSyncNote = '';
       const renderResult = () => setMessage(`${resultMessage}${emailNote}${sheetSyncNote}`, resultIsError);
       renderResult();
+      if (feedback) {
+        feedback.textContent = failed.length === 0 ? '변경사항이 저장되었습니다.' : resultMessage;
+        feedback.className = `member-save-feedback ${failed.length === 0 ? 'success' : 'error'}`;
+        if (failed.length === 0) window.setTimeout(() => { if (feedback) { feedback.textContent = ''; feedback.className = 'member-save-feedback'; } }, 3000);
+      }
 
       // A follow-up step can't be allowed to hang forever and keep the
       // notification from ever picking up its note -- bound it so a dead
@@ -541,10 +589,12 @@
       })() : Promise.resolve();
 
       await Promise.all([emailTask, sheetTask]);
-      if (failed.length === 0) dialog.close();
+      if (saveButton) { saveButton.disabled = false; saveButton.textContent = '변경 저장'; }
+      if (failed.length === 0 && !metadataChanged) dialog.close();
     } catch (unexpected) {
       console.error('[admin] updateMember failed unexpectedly', unexpected);
       setMessage(`예기치 않은 오류로 저장하지 못했습니다: ${describeError(unexpected)}`, true);
+      if (saveButton) { saveButton.disabled = false; saveButton.textContent = '변경 저장'; }
     }
   };
 

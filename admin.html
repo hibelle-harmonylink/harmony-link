@@ -57,6 +57,7 @@
           <article><span>프리미엄</span><strong data-count="premium">0</strong></article>
           <article><span>파트너</span><strong data-count="partner">0</strong></article>
           <article><span>수강생</span><strong data-count="student">0</strong></article>
+          <article><span>탈퇴</span><strong data-count="withdrawn">0</strong></article>
         </div>
         <button class="admin-refresh" id="adminRefresh" type="button">새로고침 ↻</button>
       </div>
@@ -65,7 +66,7 @@
         <label><span>이름 또는 이메일 검색</span><input id="memberSearch" type="search" autocomplete="off" placeholder="이름 또는 이메일 입력"></label>
         <label><span>회원유형</span><select id="typeFilter"><option value="">전체 유형</option><option value="student">수강생</option><option value="partner">파트너</option></select></label>
         <label><span>멤버십</span><select id="membershipFilter"><option value="">전체 멤버십</option><option value="free">FREE</option><option value="basic">BASIC $20</option><option value="premium">PREMIUM $50</option></select></label>
-        <label><span>계정 상태</span><select id="statusFilter"><option value="">전체 상태</option><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label>
+        <label><span>계정 상태</span><select id="statusFilter"><option value="">전체 상태</option><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option><option value="withdrawn">탈퇴</option></select></label>
         <button class="btn btn-primary" type="submit">검색</button>
       </form>
 
