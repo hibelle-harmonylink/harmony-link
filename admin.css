@@ -166,6 +166,46 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .member-badge.expired{background:#ffe1e1;color:#c81e1e}
 .member-badge.suspended{background:#1f2430;color:#fff}
 
+/* Member overview: reuse the role and membership palette already used by
+   the roster badges, without changing the summary's data or interactions. */
+.admin-summary article{
+  border-width:2px;
+  transition:transform .2s ease,box-shadow .2s ease;
+  will-change:transform;
+}
+.admin-summary article:hover{
+  transform:translateY(-4px);
+  box-shadow:0 13px 24px rgba(18,56,105,.13);
+}
+.admin-summary article:nth-child(1){background:#e2e8f0;border-color:#475569}
+.admin-summary article:nth-child(1) span{color:#334155}
+.admin-summary article:nth-child(1) strong{color:#1e293b}
+.admin-summary article:nth-child(2){background:#b9f3ce;border-color:#15803d}
+.admin-summary article:nth-child(2) span,.admin-summary article:nth-child(2) strong{color:#166534}
+.admin-summary article:nth-child(3){background:#ffd2a3;border-color:#c2410c}
+.admin-summary article:nth-child(3) span,.admin-summary article:nth-child(3) strong{color:#9a3412}
+.admin-summary article:nth-child(4){background:#b8d6ff;border-color:#1d4ed8}
+.admin-summary article:nth-child(4) span,.admin-summary article:nth-child(4) strong{color:#1e40af}
+.admin-summary article:nth-child(5){background:#ffc2c2;border-color:#dc2626}
+.admin-summary article:nth-child(5) span,.admin-summary article:nth-child(5) strong{color:#b91c1c}
+.admin-summary span{font-weight:800}
+.admin-summary strong{font-size:30px;font-weight:900;letter-spacing:-.03em}
+
+/* The result notice is intentionally distinct from status badges: it stays
+   yellow, but is now legible at a glance below the filters. */
+.admin-message:not(.error){
+  padding:15px 18px;
+  font-size:18px;
+  font-weight:700;
+  border-color:#c99700;
+}
+@media(max-width:680px){
+  .admin-summary article{min-height:72px;display:grid;place-content:center}
+  .admin-summary span{font-size:10px!important;font-weight:800!important}
+  .admin-summary strong{font-size:24px!important;font-weight:900!important}
+  .admin-message:not(.error){padding:14px 12px!important;font-size:18px!important;line-height:1.35}
+}
+
 /* 2026-09: member detail dialog -- wider two-column layout on desktop so
    the summary/edit fields/dates sit beside the feature-access panel
    instead of stacking five sections full-height, which is what pushed
