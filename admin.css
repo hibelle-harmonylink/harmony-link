@@ -225,12 +225,13 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 @media(min-width:681px){
   .member-table{min-width:0;table-layout:fixed;border-spacing:0}
   .member-table th:first-child,.member-table td:first-child{width:82px}
-  .member-table th:nth-child(2),.member-table td:nth-child(2){width:210px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .member-table th:nth-child(4),.member-table td:nth-child(4){width:82px;text-align:center}
-  .member-table th:nth-child(5),.member-table td:nth-child(5){width:108px;text-align:center}
-  .member-table th:nth-child(6),.member-table td:nth-child(6){width:60px;text-align:center}
-  .member-table th:nth-child(7),.member-table td:nth-child(7){width:100px;white-space:nowrap;text-align:center}
-  .member-table th:nth-child(8),.member-table td:nth-child(8){width:98px;white-space:nowrap;text-align:center}
+  .member-table th:nth-child(2),.member-table td:nth-child(2){width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-table th:nth-child(4),.member-table td:nth-child(4){width:116px;white-space:nowrap;text-align:center}
+  .member-table th:nth-child(5),.member-table td:nth-child(5){width:82px;text-align:center}
+  .member-table th:nth-child(6),.member-table td:nth-child(6){width:108px;text-align:center}
+  .member-table th:nth-child(7),.member-table td:nth-child(7){width:60px;text-align:center}
+  .member-table th:nth-child(8),.member-table td:nth-child(8){width:100px;white-space:nowrap;text-align:center}
+  .member-table th:nth-child(9),.member-table td:nth-child(9){width:98px;white-space:nowrap;text-align:center}
   .member-table td:nth-child(3){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 }
 .member-number{display:inline-block;color:var(--admin-navy);font-size:12px;font-weight:900;letter-spacing:.02em}
@@ -310,4 +311,41 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   .feature-box ul{display:grid;grid-template-columns:1fr 1fr;font-size:14px;font-weight:600;color:#233045;gap:7px 14px;line-height:1.4}
   .member-detail-actions{border-top:1px solid var(--admin-line);padding-top:10px}
   .member-detail-actions .btn{min-height:36px;padding:8px 16px;font-size:13px}
+}
+
+/* Final compact detail pass: a regular desktop viewport shows the complete
+   modal and its action row without creating a nested scroll surface. */
+.member-dialog{width:min(900px,calc(100% - 28px);max-height:calc(100vh - 28px);overflow-x:hidden}
+.member-detail{overflow-x:hidden}
+.member-save-disabled,.member-detail-actions .member-save-disabled:disabled{background:#e5e7eb!important;border:1px solid #cbd5e1!important;color:#64748b!important;cursor:not-allowed!important;opacity:1!important}
+@media(min-width:681px){
+  .member-dialog{max-height:none}
+  .member-dialog-head{padding:9px 18px}
+  .member-dialog-head h2{font-size:18px}
+  .member-dialog-head button{width:30px;height:30px;font-size:20px}
+  .member-detail{max-height:none;overflow:visible;padding:10px 18px;gap:7px}
+  .member-detail-summary{gap:9px}
+  .member-detail-summary strong{font-size:18px}
+  .member-detail-summary strong + span{font-size:13px}
+  .member-detail-summary .member-badge{font-size:10px;padding:5px 9px}
+  .member-edit-grid,.member-dates{padding:7px 12px;border-radius:10px;gap:5px 10px}
+  .member-edit-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .member-edit-grid label{gap:5px;font-size:10.5px}
+  .member-edit-grid select,.member-edit-grid input{min-height:30px;padding:4px 7px;font-size:11px}
+  .member-dates{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px 10px}
+  .member-dates dt{font-size:10px}
+  .member-dates dd{font-size:11px}
+  #detailFeatures{padding-top:7px}
+  .feature-columns{gap:8px}
+  .feature-box{padding:8px 11px;border-radius:10px}
+  .feature-box h3{margin-bottom:4px;font-size:12px}
+  .feature-box ul{font-size:10.5px;gap:3px 10px;line-height:1.25}
+  .member-protected-copy{padding:8px 11px;border-radius:10px;font-size:11px;line-height:1.35}
+  .member-detail-actions{padding-top:7px}
+  .member-detail-actions .btn{min-height:32px;padding:6px 13px;font-size:11px}
+}
+@media(max-width:680px){
+  .member-dialog{width:calc(100% - 18px);max-height:92vh;overflow-x:hidden}
+  .member-detail{overflow-x:hidden}
+  .member-detail input,.member-detail select{max-width:100%;box-sizing:border-box}
 }
