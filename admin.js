@@ -38,6 +38,18 @@
   const MEMBERSHIP_LABELS = { free: 'FREE', basic: 'BASIC $20', premium: 'PREMIUM $50' };
   const STATUS_LABELS = { active: '활성', expiring: '만료 예정', expired: '만료', suspended: '중지' };
   const TYPE_BADGE_CLASS = { student: 'type-student', partner: 'type-partner' };
+  // These values mirror the active "회원가입 명단" Google Sheet.  They are
+  // intentionally a display-only lookup: unknown IDs render as — instead of
+  // inventing a new number, and the Supabase UUID itself is never shown.
+  const MEMBER_NUMBER_BY_ID = Object.freeze({
+    'f7a5d99b-5866-47f6-a067-09556c44b03b': 'HL-26-001',
+    '13cb343a-cdd4-4519-9a1d-2bfeb65faff1': 'HL-26-002',
+    'c51ace57-d4cd-4f89-97bc-cb3229641be5': 'HL-26-003',
+    '229e791e-df89-47f8-a2ec-362044ff6466': 'HL-26-004',
+    'd6b58c79-675a-4edf-8e50-079d4097af04': 'HL-26-005',
+    '609670ec-40ec-4157-8563-bf27606fcbb5': 'HL-26-006',
+    '8686931e-e2e8-498d-a153-4da762b841c3': 'HL-26-007'
+  });
   let currentUserId = '';
   let currentUserName = '';
   let allMembers = [];
@@ -171,7 +183,9 @@
       const member = normalize(raw);
       const row = document.createElement('tr');
       const name = resolveDisplayName(member);
+      const memberNumber = MEMBER_NUMBER_BY_ID[member.id] || '—';
       const cells = [
+        ['회원번호', `<span class="member-number">${escapeHtml(memberNumber)}</span>`],
         ['이름', escapeHtml(name) + (member.access_migration_review ? '<span class="member-review">검토 필요</span>' : '')],
         ['이메일', escapeHtml(member.email || '이메일 없음')],
         ['회원유형', typeBadge(member)],
