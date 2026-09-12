@@ -181,16 +181,19 @@ Deno.serve(async (request) => {
     }
     if (!targetUser?.email) return json({ error: 'Member not found' }, 404);
     const resolvedMemberId = targetUser.id;
-    const { data: memberProfile, error: memberProfileError } = await adminClient
-      .from('member_profiles')
-      .select('role,display_name,member_type,user_type,membership')
-      .eq('id', resolvedMemberId)
-      .maybeSingle();
+    const { data: memberProfiles, error: memberProfileError } = await adminClient.rpc(
+      'internal_get_member_notification_profile',
+      { p_member_id: resolvedMemberId }
+    );
     if (memberProfileError) {
       console.error('Member profile lookup failed', memberProfileError);
       return json({ error: 'Member profile lookup failed' }, 500);
     }
+    const memberProfile = memberProfiles?.[0] || null;
     if (!memberProfile) return json({ error: 'Member profile not found' }, 404);
+    if (String(memberProfile.email || '').toLowerCase() !== targetUser.email.toLowerCase()) {
+      return json({ error: 'Member profile identity mismatch' }, 409);
+    }
 
     const storedRole = normalizeNotifiableRole(memberProfile.role, memberProfile.user_type, memberProfile.membership);
     const normalizedQueuedRole = queuedRole
@@ -203,7 +206,7 @@ Deno.serve(async (request) => {
 
     const metadata = targetUser.user_metadata || {};
     const memberName = memberProfile?.display_name || metadata.full_name || metadata.name || metadata.nickname || targetUser.email.split('@')[0];
-    const storedMemberType = memberProfile.member_type || memberProfile.user_type || 'general';
+    const storedMemberType = memberProfile.user_type || 'general';
     const formData = new FormData();
     formData.set('action', isMemberTypeChange ? 'member_type_change' : 'role_change');
     formData.set('webhook_secret', webhookSecret);
