@@ -191,19 +191,46 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .admin-summary span{font-weight:800}
 .admin-summary strong{font-size:30px;font-weight:900;letter-spacing:-.03em}
 
+/* Keep the five colored overview cards visually distinct on the blue admin
+   surface without changing their palette or hover interaction. */
+.admin-summary article{border:2px solid #fff!important}
+
 /* The result notice is intentionally distinct from status badges: it stays
    yellow, but is now legible at a glance below the filters. */
 .admin-message:not(.error){
-  padding:15px 18px;
-  font-size:18px;
-  font-weight:700;
+  padding:12px 18px;
+  font-size:20px;
+  font-weight:800;
+  line-height:1.3;
   border-color:#c99700;
 }
 @media(max-width:680px){
   .admin-summary article{min-height:72px;display:grid;place-content:center}
   .admin-summary span{font-size:10px!important;font-weight:800!important}
   .admin-summary strong{font-size:24px!important;font-weight:900!important}
-  .admin-message:not(.error){padding:14px 12px!important;font-size:18px!important;line-height:1.35}
+  .admin-message:not(.error){padding:12px!important;font-size:20px!important;line-height:1.3}
+}
+
+/* Table-only member number display.  This is deliberately compact so the
+   desktop roster remains within its content width; mobile uses the existing
+   label/value layout. */
+.member-table th:first-child,.member-table td:first-child{width:108px;text-align:center;white-space:nowrap}
+.member-table td:first-child{font-weight:inherit;color:inherit}
+.member-table th:nth-child(2),.member-table td:nth-child(2){width:118px}
+.member-table th:nth-child(4),.member-table td:nth-child(4){width:96px}
+.member-table th:nth-child(5),.member-table td:nth-child(5){width:112px}
+.member-table th:nth-child(6),.member-table td:nth-child(6){width:86px}
+.member-table th:nth-child(7),.member-table td:nth-child(7){width:112px;white-space:nowrap}
+.member-table th:nth-child(8),.member-table td:nth-child(8){width:94px;white-space:nowrap}
+.member-table td:nth-child(3){overflow-wrap:anywhere}
+.member-number{display:inline-block;color:var(--admin-navy);font-size:12px;font-weight:900;letter-spacing:.02em}
+@media(max-width:680px){
+  .member-table td{width:auto!important}
+  .member-table th:first-child,.member-table td:first-child{width:auto;text-align:right}
+  .member-table td:first-child{font-weight:inherit;color:inherit}
+  .member-number{font-size:11px}
+  .member-table td{align-items:center}
+  .member-table td::before{flex:0 0 76px;white-space:nowrap;word-break:keep-all}
 }
 
 /* 2026-09: member detail dialog -- wider two-column layout on desktop so
