@@ -214,15 +214,18 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 /* Table-only member number display.  This is deliberately compact so the
    desktop roster remains within its content width; mobile uses the existing
    label/value layout. */
-.member-table th:first-child,.member-table td:first-child{width:108px;text-align:center;white-space:nowrap}
+.member-table th:first-child,.member-table td:first-child{width:78px;text-align:center;white-space:nowrap}
 .member-table td:first-child{font-weight:inherit;color:inherit}
-.member-table th:nth-child(2),.member-table td:nth-child(2){width:118px}
-.member-table th:nth-child(4),.member-table td:nth-child(4){width:96px}
-.member-table th:nth-child(5),.member-table td:nth-child(5){width:112px}
-.member-table th:nth-child(6),.member-table td:nth-child(6){width:86px}
-.member-table th:nth-child(7),.member-table td:nth-child(7){width:112px;white-space:nowrap}
-.member-table th:nth-child(8),.member-table td:nth-child(8){width:94px;white-space:nowrap}
-.member-table td:nth-child(3){overflow-wrap:anywhere}
+@media(min-width:681px){
+  .member-table{min-width:0;table-layout:fixed}
+  .member-table th:nth-child(2),.member-table td:nth-child(2){width:190px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-table th:nth-child(4),.member-table td:nth-child(4){width:68px;text-align:center}
+  .member-table th:nth-child(5),.member-table td:nth-child(5){width:98px;text-align:center}
+  .member-table th:nth-child(6),.member-table td:nth-child(6){width:48px;text-align:center}
+  .member-table th:nth-child(7),.member-table td:nth-child(7){width:88px;white-space:nowrap;text-align:center}
+  .member-table th:nth-child(8),.member-table td:nth-child(8){width:73px;white-space:nowrap;text-align:center}
+  .member-table td:nth-child(3){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
 .member-number{display:inline-block;color:var(--admin-navy);font-size:12px;font-weight:900;letter-spacing:.02em}
 @media(max-width:680px){
   .member-table td{width:auto!important}
