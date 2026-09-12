@@ -9,6 +9,10 @@ const functionSource = fs.readFileSync(
   path.join(root, 'supabase', 'functions', 'notify-role-change', 'index.ts'),
   'utf8'
 );
+const notificationReaderMigration = fs.readFileSync(
+  path.join(root, 'supabase', 'migrations', '202609110001_role_notification_profile_reader.sql'),
+  'utf8'
+);
 
 test('name updates send only the member id and display name', () => {
   assert.match(adminSource, /admin_update_member_name', \{ p_member_id: member\.id, p_display_name: nextName \}/);
@@ -64,9 +68,25 @@ test('role notifications normalize user types without changing stored member dat
 });
 
 test('role notification profile lookup distinguishes query errors from missing rows', () => {
-  const notificationLookup = functionSource.indexOf('const { data: memberProfile, error: memberProfileError }');
+  const notificationLookup = functionSource.indexOf('const { data: memberProfiles, error: memberProfileError }');
   const missingProfile = functionSource.indexOf("if (!memberProfile) return json({ error: 'Member profile not found' }, 404)", notificationLookup);
   assert.ok(notificationLookup >= 0 && missingProfile > notificationLookup);
   assert.ok(functionSource.indexOf('if (memberProfileError)', notificationLookup) < missingProfile);
+});
+
+test('role notifications use a service-only security-definer profile reader', () => {
+  const notificationStart = functionSource.indexOf('const isMemberTypeChange');
+  const notificationPath = functionSource.slice(notificationStart);
+  assert.match(notificationPath, /adminClient\.rpc\(\s*'internal_get_member_notification_profile'/);
+  assert.doesNotMatch(notificationPath, /adminClient\s*\.from\('member_profiles'\)/);
+  assert.match(notificationPath, /Member profile identity mismatch/);
+
+  assert.match(notificationReaderMigration, /security definer/i);
+  assert.match(notificationReaderMigration, /set search_path = pg_catalog, public, auth/i);
+  assert.match(notificationReaderMigration, /where profile\.id = p_member_id/);
+  assert.match(notificationReaderMigration, /revoke all on function public\.internal_get_member_notification_profile\(uuid\) from public, anon, authenticated/i);
+  assert.match(notificationReaderMigration, /grant execute on function public\.internal_get_member_notification_profile\(uuid\) to service_role/i);
+  assert.doesNotMatch(notificationReaderMigration, /grant\s+select/i);
+  assert.doesNotMatch(notificationReaderMigration, /\b(update|delete)\s+public\.member_profiles/i);
 });
 
