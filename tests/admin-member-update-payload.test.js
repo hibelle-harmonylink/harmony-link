@@ -28,10 +28,18 @@ test('membership, status, and user-type updates use the dedicated access RPC wit
 });
 
 test('saving unchanged values performs no update request', () => {
-  const unchangedGuard = adminSource.indexOf('if (!nameChanged && !accessChanged)');
+  const unchangedGuard = adminSource.indexOf('if (!nameChanged && !accessChanged && !metadataChanged)');
   const firstRpc = adminSource.indexOf("callRpc('admin_update_member_name'", unchangedGuard);
   assert.ok(unchangedGuard >= 0 && firstRpc > unchangedGuard);
   assert.match(adminSource.slice(unchangedGuard, firstRpc), /return;/);
+});
+
+test('administrative metadata uses its own RPC and is not an email trigger', () => {
+  const metadataCall = adminSource.match(/admin_update_member_metadata', \{([\s\S]*?)\n        \}\);/)?.[1] || '';
+  assert.match(metadataCall, /p_phone: metadata\.phone/);
+  assert.match(metadataCall, /p_specialty: metadata\.specialty/);
+  assert.match(adminSource, /const emailTask = \(roleChanged && accessSaved\)/);
+  assert.doesNotMatch(metadataCall, /role|membership|account_status/);
 });
 
 test('profile sync never transmits protected role as a mutable field', () => {
@@ -89,4 +97,3 @@ test('role notifications use a service-only security-definer profile reader', ()
   assert.doesNotMatch(notificationReaderMigration, /grant\s+select/i);
   assert.doesNotMatch(notificationReaderMigration, /\b(update|delete)\s+public\.member_profiles/i);
 });
-
