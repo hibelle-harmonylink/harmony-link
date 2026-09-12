@@ -33,6 +33,25 @@ const COLUMNS = Object.freeze({
 const TYPE_LABELS = ['수강생', '입점 파트너', '관리자'];
 const MEMBERSHIP_LABELS = ['FREE', 'BASIC $20', 'PREMIUM $50', '관리자'];
 const STATUS_LABELS = ['활성', '중지', '탈퇴'];
+const DISPLAY_STYLES = Object.freeze({
+  type: {
+    '수강생': { background: '#fee2e2', foreground: '#b91c1c' },
+    '입점 파트너': { background: '#dbeafe', foreground: '#1d4ed8' },
+    '관리자': { background: '#dcfce7', foreground: '#15803d' }
+  },
+  membership: {
+    'FREE': { background: '#f3f4f6', foreground: '#4b5563' },
+    'BASIC $20': { background: '#ede9fe', foreground: '#6d28d9' },
+    'PREMIUM $50': { background: '#ffedd5', foreground: '#c2410c' },
+    '관리자': { background: '#dcfce7', foreground: '#15803d' }
+  },
+  status: {
+    '활성': { background: '#dcfce7', foreground: '#15803d' },
+    '중지': { background: '#1f2937', foreground: '#ffffff' },
+    '탈퇴': { background: '#e5e7eb', foreground: '#374151' }
+  },
+  fallback: { background: '#ffffff', foreground: '#1f2937' }
+});
 const ROLE_INFO = {
   member: { type: '일반회원', tier: '', label: '일반회원' },
   partner0: { type: '입점 파트너', tier: '무료 파트너', label: '무료 파트너' },
@@ -193,6 +212,7 @@ function syncProfile_(values) {
     text_(values.specialty), text_(values.teaching_subjects),
     text_(values.enrolled_subject), text_(values.assigned_instructor)
   ]]);
+  applyRosterDisplayStyles_(sheet, row, 1);
   SpreadsheetApp.flush();
   return json_({ ok: true });
 }
@@ -215,7 +235,25 @@ function updateMember_(values, memberType, partnerTier, withdrawal) {
     row = sheet.getLastRow();
   } else updateIdentityAndMembership_(sheet, row, record);
   sheet.getRange(row, COLUMNS.memberType, 1, 3).setValues([[displayType, membership, withdrawal ? '탈퇴' : '활성']]);
+  applyRosterDisplayStyles_(sheet, row, 1);
   SpreadsheetApp.flush();
+}
+
+// Reapply all three display styles from the values that are now in the row.
+// This deliberately replaces the previous fill/font color so an old
+// student/partner/membership/status color cannot linger after a change.
+function applyRosterDisplayStyles_(sheet, startRow, rowCount) {
+  if (!rowCount) return;
+  const values = sheet.getRange(startRow, COLUMNS.memberType, rowCount, 3).getDisplayValues();
+  ['type', 'membership', 'status'].forEach(function (category, index) {
+    const styles = values.map(function (row) {
+      return DISPLAY_STYLES[category][text_(row[index])] || DISPLAY_STYLES.fallback;
+    });
+    const target = sheet.getRange(startRow, COLUMNS.memberType + index, rowCount, 1);
+    target.setBackgrounds(styles.map(function (style) { return [style.background]; }));
+    target.setFontColors(styles.map(function (style) { return [style.foreground]; }));
+    target.setFontWeights(styles.map(function () { return ['bold']; }));
+  });
 }
 
 function getSheet_() {
@@ -240,6 +278,7 @@ function ensureSchema_(sheet) {
   sheet.getRange(2, COLUMNS.joinedAt, rows, 1).setNumberFormat('yyyy-mm-dd');
   sheet.getRange(2, COLUMNS.memberNumber, rows, 1).setHorizontalAlignment('center');
   sheet.getRange(2, COLUMNS.email, rows, 1).setHorizontalAlignment('left');
+  applyRosterDisplayStyles_(sheet, 2, Math.max(sheet.getLastRow() - 1, 0));
   sheet.hideColumns(COLUMNS.systemId);
   if (!sheet.getFilter()) sheet.getRange(1, 1, Math.max(sheet.getLastRow(), 1), HEADERS.length).createFilter();
 }
