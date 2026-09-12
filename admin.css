@@ -315,7 +315,7 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 
 /* Final compact detail pass: a regular desktop viewport shows the complete
    modal and its action row without creating a nested scroll surface. */
-.member-dialog{width:min(900px,calc(100% - 28px);max-height:calc(100vh - 28px);overflow-x:hidden}
+.member-dialog{width:min(900px,calc(100% - 28px));max-height:calc(100vh - 28px);overflow-x:hidden}
 .member-detail{overflow-x:hidden}
 .member-save-disabled,.member-detail-actions .member-save-disabled:disabled{background:#e5e7eb!important;border:1px solid #cbd5e1!important;color:#64748b!important;cursor:not-allowed!important;opacity:1!important}
 @media(min-width:681px){
