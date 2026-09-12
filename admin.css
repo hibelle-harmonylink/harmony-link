@@ -349,3 +349,21 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   .member-detail{overflow-x:hidden}
   .member-detail input,.member-detail select{max-width:100%;box-sizing:border-box}
 }
+
+/* The compact desktop pass originally retained four auto-sized core-field
+   tracks. A long email could therefore establish a track minimum larger than
+   the dialog, making #memberDetail scroll horizontally. Keep the dialog at
+   its intended width and make every grid/flex child shrink within it. */
+@media(min-width:681px){
+  .member-detail{grid-template-columns:minmax(0,1fr)}
+  .member-detail>* ,
+  .member-detail-summary>* ,
+  .member-edit-grid>* ,
+  .member-dates>* ,
+  .feature-columns>*{min-width:0;box-sizing:border-box}
+  .member-core-fields{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .member-core-fields>div:nth-child(3),
+  .member-core-fields>div:nth-child(4){grid-column:span 2}
+  .member-dates dt,.member-dates dd{min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .member-edit-grid label{min-width:0}
+}
