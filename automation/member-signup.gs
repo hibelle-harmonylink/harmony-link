@@ -2,20 +2,37 @@
 const MEMBER_SIGNUP = {
   sheetName: '회원가입 명단',
   propertySpreadsheetId: 'MEMBER_SPREADSHEET_ID',
+  // The Apps Script is the single issuer of HL-YY-NNN. This server endpoint
+  // only records that already-issued number against the same Supabase UUID.
+  metadataWebhookUrl: 'https://ricndeoiomzjacmrsjtg.supabase.co/functions/v1/notify-role-change',
   partnerCenterUrl: 'https://hibelleharmony.com/#partner-center',
   replyTo: 'hibelle@hibelleconsulting.com',
   roleEmailSecretProperty: 'ROLE_EMAIL_WEBHOOK_SECRET'
 };
 
-// Columns 9-10 (Premium 여부/활성 상태) are appended after the original
-// 8 columns rather than inserted in the middle, so every existing function
-// that reads/writes columns 1-8 by fixed position (registerMember_,
-// updateMember_, updateIdentityAndMembership_) needed no changes at all.
-const HEADERS = ['회원 ID', '가입시각', '이름', '이메일', '가입방식', '회원유형', '파트너등급', '가입경로', 'Premium 여부', '활성 상태'];
-const TYPE_LABELS = ['일반회원', '수강생', '입점 파트너', '탈퇴'];
-const TIER_LABELS = ['무료 파트너', '$20 베이직 파트너', '$50 프리미엄 파트너'];
-const PREMIUM_LABELS = ['Premium 승인', 'Premium 미승인'];
-const STATUS_LABELS = ['활성', '중지'];
+const HEADERS = ['회원번호', '가입일', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '시스템 ID'];
+const LEGACY_HEADERS = ['회원 ID', '가입시각', '이름', '이메일', '가입방식', '회원유형', '파트너등급', '가입경로'];
+const PRE_METADATA_HEADERS = ['회원번호', '가입일', '이름', '이메일', '가입방식', '회원유형', '멤버십', '계정상태', '가입경로', '시스템 ID'];
+const COLUMNS = Object.freeze({
+  memberNumber: 1,
+  joinedAt: 2,
+  name: 3,
+  email: 4,
+  phone: 5,
+  signupMethod: 6,
+  memberType: 7,
+  membership: 8,
+  accountStatus: 9,
+  specialty: 10,
+  teachingSubjects: 11,
+  enrolledSubject: 12,
+  assignedInstructor: 13,
+  signupPath: 14,
+  systemId: 15
+});
+const TYPE_LABELS = ['수강생', '입점 파트너', '관리자'];
+const MEMBERSHIP_LABELS = ['FREE', 'BASIC $20', 'PREMIUM $50', '관리자'];
+const STATUS_LABELS = ['활성', '중지', '탈퇴'];
 const ROLE_INFO = {
   member: { type: '일반회원', tier: '', label: '일반회원' },
   partner0: { type: '입점 파트너', tier: '무료 파트너', label: '무료 파트너' },
@@ -31,6 +48,9 @@ function doPost(e) {
     if (values.action === 'member_type_change') return changeMemberType_(values);
     if (values.action === 'member_withdrawal') return markMemberWithdrawn_(values);
     if (values.action === 'profile_sync') return syncProfile_(values);
+    if (text_(values.action)) return json_({ ok: false, error: 'Unknown action.' });
+    const invalidField = missingRegistrationField_(values);
+    if (invalidField) return json_({ ok: false, error: `Missing required registration field: ${invalidField}` });
     return registerMember_(values);
   } catch (error) {
     return json_({ ok: false, error: String(error && error.message ? error.message : error) });
@@ -46,23 +66,44 @@ function registerMember_(values) {
     const memberId = text_(values['회원 ID']);
     const email = text_(values['이메일'] || values.email);
     const memberType = normalizeType_(values['회원 유형'] || values['회원 구분']);
-    const partnerTier = normalizeTier_(values['파트너 등급']);
+    const membership = membershipLabel_(memberType, values['멤버십'] || values['파트너 등급']);
     const row = findMemberRow_(sheet, memberId, email);
+    const joinedAt = dateValue_(values['가입 시각'] || new Date().toISOString());
+    const memberNumber = row
+      ? text_(sheet.getRange(row, COLUMNS.memberNumber).getDisplayValue())
+      : nextMemberNumber_(sheet, joinedAt);
     const record = [
-      memberId,
-      values['가입 시각'] || new Date().toISOString(),
+      memberNumber,
+      joinedAt,
       text_(values['이름']),
       email,
+      text_(values.phone || values.phone_number || values.mobile || values.contact),
       text_(values['가입 방식']),
       memberType,
-      partnerTier,
-      text_(values['가입 경로'])
+      membership,
+      '활성',
+      '', '', '', '',
+      text_(values['가입 경로']),
+      memberId
     ];
+    const isNewRow = !row;
     if (row) updateIdentityAndMembership_(sheet, row, record);
     else sheet.appendRow(record);
     SpreadsheetApp.flush();
-    if (!row && email) sendSignupConfirmation_(record);
-    return json_({ ok: true, memberId: memberId, duplicate: Boolean(row) });
+    // The Sheet holds the sole issuance lock for member numbers.  Register
+    // that exact value in Supabase after it is durable here; retrying this
+    // request is safe because the server never replaces an existing number.
+    const metadataResult = registerMemberMetadata_(memberId, memberNumber, joinedAt);
+    if (!metadataResult.ok) {
+      // Preserve only traceable, non-secret identifiers.  The next request
+      // finds this same Sheet row and retries this registration with the
+      // existing member number instead of issuing another one.
+      console.error('Member metadata registration needs retry:', JSON.stringify({ memberId: memberId, memberNumber: memberNumber, status: metadataResult.status || 0 }));
+      throw new Error(metadataResult.error || '회원번호 메타데이터 등록에 실패했습니다.');
+    }
+    if (metadataResult.memberNumber !== memberNumber) throw new Error('회원번호 충돌이 감지되어 등록을 중단했습니다.');
+    if (isNewRow && email) sendSignupConfirmation_(record);
+    return json_({ ok: true, memberId: memberId, memberNumber: memberNumber, duplicate: Boolean(row) });
   } finally {
     lock.releaseLock();
   }
@@ -125,10 +166,10 @@ function markMemberWithdrawn_(values) {
   return json_({ ok: true });
 }
 
-// Admin-panel save sync: updates 회원유형/파트너등급/Premium 여부/활성 상태
+// Admin-panel save sync: updates only the mutable display fields.
 // on an EXISTING row only (found by 회원 ID or 이메일) -- never appends a
 // new row, since this only ever fires for a member who already exists.
-// Columns 1-5 and 8 (identity/가입경로) are left untouched.
+// 회원번호/가입일/가입경로/시스템 ID are immutable in this path.
 function syncProfile_(values) {
   requireWebhookSecret_(values);
   const sheet = getSheet_();
@@ -144,12 +185,14 @@ function syncProfile_(values) {
   // field. The Edge Function sends the already-derived roster tier under the
   // explicit partner_tier key instead. Keep the role fallback temporarily so
   // an older deployed function cannot break the roster during rollout.
-  const partnerTierKey = text_(values.partner_tier || values.role);
-  const partnerTier = (ROLE_INFO[partnerTierKey] || {}).tier || normalizeTier_(partnerTierKey);
-  const premiumLabel = text_(values.premium) === 'true' ? 'Premium 승인' : 'Premium 미승인';
-  const statusLabel = text_(values.account_status) === 'suspended' ? '중지' : '활성';
-  sheet.getRange(row, 6, 1, 2).setValues([[memberType, partnerTier]]);
-  sheet.getRange(row, 9, 1, 2).setValues([[premiumLabel, statusLabel]]);
+  const membership = membershipLabel_(memberType, values.membership || values.partner_tier || values.role);
+  const statusLabel = statusLabel_(values.account_status);
+  sheet.getRange(row, COLUMNS.memberType, 1, 3).setValues([[memberType, membership, statusLabel]]);
+  sheet.getRange(row, COLUMNS.phone, 1, 1).setValues([[text_(values.phone)]]);
+  sheet.getRange(row, COLUMNS.specialty, 1, 4).setValues([[
+    text_(values.specialty), text_(values.teaching_subjects),
+    text_(values.enrolled_subject), text_(values.assigned_instructor)
+  ]]);
   SpreadsheetApp.flush();
   return json_({ ok: true });
 }
@@ -160,12 +203,18 @@ function updateMember_(values, memberType, partnerTier, withdrawal) {
   const id = text_(values.member_id);
   const email = text_(values.member_email);
   let row = findMemberRow_(sheet, id, email);
-  const record = [id, values.member_joined_at || new Date().toISOString(), text_(values.member_name), email, text_(values.member_signup_method), memberType, partnerTier, text_(values.member_signup_path) || (withdrawal ? '회원탈퇴 시 자동 기록' : '회원정보 변경 시 자동 반영')];
+  const joinedAt = dateValue_(values.member_joined_at || new Date().toISOString());
+  const memberNumber = row
+    ? text_(sheet.getRange(row, COLUMNS.memberNumber).getDisplayValue())
+    : nextMemberNumber_(sheet, joinedAt);
+  const displayType = withdrawal ? normalizeType_(memberType) : normalizeType_(memberType);
+  const membership = membershipLabel_(displayType, partnerTier);
+  const record = [memberNumber, joinedAt, text_(values.member_name), email, text_(values.phone), text_(values.member_signup_method), displayType, membership, withdrawal ? '탈퇴' : '활성', text_(values.specialty), text_(values.teaching_subjects), text_(values.enrolled_subject), text_(values.assigned_instructor), text_(values.member_signup_path) || (withdrawal ? '회원탈퇴 시 자동 기록' : '회원정보 변경 시 자동 반영'), id];
   if (!row) {
     sheet.appendRow(record);
     row = sheet.getLastRow();
   } else updateIdentityAndMembership_(sheet, row, record);
-  sheet.getRange(row, 6, 1, 2).setValues([[memberType, partnerTier]]);
+  sheet.getRange(row, COLUMNS.memberType, 1, 3).setValues([[displayType, membership, withdrawal ? '탈퇴' : '활성']]);
   SpreadsheetApp.flush();
 }
 
@@ -178,34 +227,109 @@ function getSheet_() {
 
 function ensureSchema_(sheet) {
   if (sheet.getLastRow() === 0) sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
-  const current = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), 8)).getDisplayValues()[0];
-  if (current[5] === '회원구분' && current[6] === '가입경로') {
-    sheet.insertColumnAfter(6);
-    sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
-    const count = sheet.getLastRow() - 1;
-    if (count > 0) {
-      const legacy = sheet.getRange(2, 6, count, 1).getDisplayValues();
-      const converted = legacy.map(function (row) {
-        const info = legacyInfo_(row[0]);
-        return [info.type, info.tier];
-      });
-      sheet.getRange(2, 6, count, 2).setValues(converted);
-    }
-  } else sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+  const current = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), HEADERS.length)).getDisplayValues()[0];
+  if (current[0] === LEGACY_HEADERS[0]) migrateLegacySchema_(sheet);
+  else if (PRE_METADATA_HEADERS.every(function (header, index) { return current[index] === header; })) migratePreMetadataSchema_(sheet);
+  else sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
   sheet.setFrozenRows(1);
   sheet.getRange(1, 1, 1, HEADERS.length).setBackground('#0d51aa').setFontColor('#ffffff').setFontWeight('bold');
   const rows = Math.max(sheet.getMaxRows() - 1, 1);
-  sheet.getRange(2, 6, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(TYPE_LABELS, true).setAllowInvalid(false).build());
-  sheet.getRange(2, 7, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(TIER_LABELS, true).setAllowInvalid(false).build());
-  sheet.getRange(2, 9, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(PREMIUM_LABELS, true).setAllowInvalid(false).build());
-  sheet.getRange(2, 10, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUS_LABELS, true).setAllowInvalid(false).build());
-  const usedRows = Math.max(sheet.getLastRow() - 1, 0);
-  if (usedRows > 0) {
-    const membership = sheet.getRange(2, 6, usedRows, 2).getDisplayValues();
-    membership.forEach(function (row, index) {
-      if (row[0] === '관리자') sheet.getRange(index + 2, 6, 1, 2).clearDataValidations();
-    });
+  sheet.getRange(2, COLUMNS.memberType, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(TYPE_LABELS, true).setAllowInvalid(false).build());
+  sheet.getRange(2, COLUMNS.membership, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(MEMBERSHIP_LABELS, true).setAllowInvalid(false).build());
+  sheet.getRange(2, COLUMNS.accountStatus, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUS_LABELS, true).setAllowInvalid(false).build());
+  sheet.getRange(2, COLUMNS.joinedAt, rows, 1).setNumberFormat('yyyy-mm-dd');
+  sheet.getRange(2, COLUMNS.memberNumber, rows, 1).setHorizontalAlignment('center');
+  sheet.getRange(2, COLUMNS.email, rows, 1).setHorizontalAlignment('left');
+  sheet.hideColumns(COLUMNS.systemId);
+  if (!sheet.getFilter()) sheet.getRange(1, 1, Math.max(sheet.getLastRow(), 1), HEADERS.length).createFilter();
+}
+
+function migrateLegacySchema_(sheet) {
+  const count = Math.max(sheet.getLastRow() - 1, 0);
+  const legacyRows = count ? sheet.getRange(2, 1, count, Math.max(sheet.getLastColumn(), 10)).getDisplayValues() : [];
+  const migrated = buildMigratedRows_(legacyRows);
+  if (sheet.getFilter()) sheet.getFilter().remove();
+  if (count) sheet.getRange(2, 1, count, Math.max(sheet.getLastColumn(), HEADERS.length)).clearContent();
+  sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+  if (migrated.length) sheet.getRange(2, 1, migrated.length, HEADERS.length).setValues(migrated);
+  const removedRows = count - migrated.length;
+  if (removedRows > 0) sheet.deleteRows(2 + migrated.length, removedRows);
+}
+
+function registerMemberMetadata_(memberId, memberNumber, joinedAt) {
+  const secret = PropertiesService.getScriptProperties().getProperty(MEMBER_SIGNUP.roleEmailSecretProperty);
+  if (!secret) throw new Error('ROLE_EMAIL_WEBHOOK_SECRET이 설정되지 않았습니다.');
+  const response = UrlFetchApp.fetch(MEMBER_SIGNUP.metadataWebhookUrl, {
+    method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+    payload: JSON.stringify({
+      action: 'member_metadata_register', webhookSecret: secret,
+      memberId: memberId, memberNumber: memberNumber,
+      joinedAt: dateValue_(joinedAt).toISOString()
+    })
+  });
+  const status = response.getResponseCode();
+  let body = {};
+  try { body = JSON.parse(response.getContentText() || '{}'); } catch (_) { body = {}; }
+  if (status < 200 || status >= 300 || body.ok !== true) {
+    return { ok: false, status: status, error: body.error || `회원번호 메타데이터 등록 실패 (${status})` };
   }
+  return { ok: true, memberNumber: text_(body.memberNumber) };
+}
+
+// Adds management-only columns without altering the existing identity,
+// member-number, or join-date values.  This is run once when the 10-column
+// roster is first opened by the updated deployed script.
+function migratePreMetadataSchema_(sheet) {
+  const count = Math.max(sheet.getLastRow() - 1, 0);
+  const rows = count ? sheet.getRange(2, 1, count, PRE_METADATA_HEADERS.length).getValues() : [];
+  const expanded = rows.map(function (row) {
+    // Existing roster timestamps may be stored as display strings.  Convert
+    // only a parseable value back to a Date so the yyyy-mm-dd number format
+    // changes presentation without discarding the timestamp moment.
+    const joinedAt = text_(row[1]) ? dateValue_(row[1]) : row[1];
+    return [row[0], joinedAt, row[2], row[3], '', row[4], row[5], row[6], row[7], '', '', '', '', row[8], row[9]];
+  });
+  if (sheet.getFilter()) sheet.getFilter().remove();
+  if (count) sheet.getRange(2, 1, count, Math.max(sheet.getLastColumn(), HEADERS.length)).clearContent();
+  sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+  if (expanded.length) sheet.getRange(2, 1, expanded.length, HEADERS.length).setValues(expanded);
+}
+
+function buildMigratedRows_(legacyRows) {
+  const seenIdentities = {};
+  const actualRows = legacyRows.filter(function (row) {
+    return text_(row[0]) || text_(row[2]) || text_(row[3]);
+  }).filter(function (row) {
+    const identity = text_(row[0]) || text_(row[3]).toLowerCase();
+    if (!identity || seenIdentities[identity]) return false;
+    seenIdentities[identity] = true;
+    return true;
+  }).sort(function (left, right) {
+    return new Date(left[1]).getTime() - new Date(right[1]).getTime();
+  });
+  const sequenceByYear = {};
+  return actualRows.map(function (row) {
+    const joinedAt = dateValue_(row[1]);
+    const year = String(joinedAt.getFullYear()).slice(-2);
+    sequenceByYear[year] = (sequenceByYear[year] || 0) + 1;
+    const legacy = legacyInfo_(row[5] || row[6]);
+    const withdrawn = text_(row[5]) === '탈퇴';
+    const memberType = withdrawn ? '수강생' : normalizeType_(legacy.type);
+    return [
+      formatMemberNumber_(year, sequenceByYear[year]),
+      joinedAt,
+      text_(row[2]),
+      text_(row[3]),
+      '',
+      text_(row[4]),
+      memberType,
+      membershipLabel_(memberType, row[6]),
+      withdrawn ? '탈퇴' : statusLabel_(row[9]),
+      '', '', '', '',
+      text_(row[7]),
+      text_(row[0])
+    ];
+  });
 }
 
 function legacyInfo_(value) {
@@ -220,16 +344,19 @@ function legacyInfo_(value) {
 }
 
 function updateIdentityAndMembership_(sheet, row, record) {
-  const existing = sheet.getRange(row, 1, 1, 8).getValues()[0];
-  for (let column = 0; column < 8; column += 1) {
-    if (column === 5 || column === 6 || !existing[column]) sheet.getRange(row, column + 1).setValue(record[column]);
+  const existing = sheet.getRange(row, 1, 1, HEADERS.length).getValues()[0];
+  for (let column = 0; column < HEADERS.length; column += 1) {
+    const immutable = [COLUMNS.memberNumber - 1, COLUMNS.joinedAt - 1, COLUMNS.systemId - 1].includes(column);
+    if (!immutable && ([COLUMNS.memberType - 1, COLUMNS.membership - 1, COLUMNS.accountStatus - 1].includes(column) || !existing[column])) {
+      sheet.getRange(row, column + 1).setValue(record[column]);
+    }
   }
 }
 
 function findMemberRow_(sheet, id, email) {
   if (sheet.getLastRow() < 2) return 0;
-  const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, 4).getDisplayValues();
-  const index = rows.findIndex(function (row) { return (id && text_(row[0]) === id) || (email && text_(row[3]).toLowerCase() === email.toLowerCase()); });
+  const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, HEADERS.length).getDisplayValues();
+  const index = rows.findIndex(function (row) { return (id && text_(row[COLUMNS.systemId - 1]) === id) || (email && text_(row[COLUMNS.email - 1]).toLowerCase() === email.toLowerCase()); });
   return index < 0 ? 0 : index + 2;
 }
 
@@ -237,14 +364,55 @@ function normalizeType_(value) {
   const label = text_(value);
   if (label === 'student' || label === '수강생') return '수강생';
   if (label === 'partner' || label === '입점 파트너') return '입점 파트너';
-  return '일반회원';
+  if (label === 'admin' || label === '관리자') return '관리자';
+  return '수강생';
 }
 
-function normalizeTier_(value) {
+function membershipLabel_(memberType, value) {
+  if (memberType === '관리자') return '관리자';
+  if (memberType !== '입점 파트너') return 'FREE';
   const label = text_(value);
-  const aliases = { '무료': '무료 파트너', '$20 BASIC': '$20 베이직 파트너', '$50 PREMIUM': '$50 프리미엄 파트너' };
-  const normalized = aliases[label] || label;
-  return TIER_LABELS.includes(normalized) ? normalized : '';
+  if (['premium', 'partner50', '$50 프리미엄 파트너', '$50 PREMIUM 파트너', 'PREMIUM $50'].includes(label)) return 'PREMIUM $50';
+  if (['basic', 'partner20', '$20 베이직 파트너', '$20 BASIC 파트너', 'BASIC $20'].includes(label)) return 'BASIC $20';
+  return 'FREE';
+}
+
+function statusLabel_(value) {
+  const status = text_(value).toLowerCase();
+  if (status === 'withdrawn' || status === '탈퇴') return '탈퇴';
+  if (status === 'suspended' || status === '중지') return '중지';
+  return '활성';
+}
+
+function missingRegistrationField_(values) {
+  if (!text_(values['회원 ID'])) return '회원 ID';
+  if (!text_(values['이메일'] || values.email)) return '이메일';
+  if (!text_(values['이름'])) return '이름';
+  return '';
+}
+
+function nextMemberNumber_(sheet, joinedAt) {
+  const year = String(dateValue_(joinedAt).getFullYear()).slice(-2);
+  if (sheet.getLastRow() < 2) return formatMemberNumber_(year, 1);
+  const values = sheet.getRange(2, COLUMNS.memberNumber, sheet.getLastRow() - 1, 1).getDisplayValues();
+  const prefix = `HL-${year}-`;
+  const max = values.reduce(function (highest, row) {
+    const value = text_(row[0]);
+    if (value.indexOf(prefix) !== 0) return highest;
+    const sequence = Number(value.slice(prefix.length));
+    return Number.isFinite(sequence) ? Math.max(highest, sequence) : highest;
+  }, 0);
+  return formatMemberNumber_(year, max + 1);
+}
+
+function formatMemberNumber_(year, sequence) {
+  return `HL-${year}-${String(sequence).padStart(3, '0')}`;
+}
+
+function dateValue_(value) {
+  if (Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value.getTime())) return value;
+  const parsed = new Date(value || new Date().toISOString());
+  return isNaN(parsed.getTime()) ? new Date() : parsed;
 }
 
 function requireWebhookSecret_(values) {

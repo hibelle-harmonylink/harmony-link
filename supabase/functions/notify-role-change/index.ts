@@ -42,8 +42,28 @@ Deno.serve(async (request) => {
     const webhookUrl = Deno.env.get('ROLE_EMAIL_WEBHOOK_URL')!;
     const webhookSecret = Deno.env.get('ROLE_EMAIL_WEBHOOK_SECRET')!;
     const adminClient = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
-    if (!webhookUrl || !webhookSecret) return json({ error: 'Notification service is not configured' }, 503);
     const requestBody = await request.json();
+    if (requestBody.action === 'member_metadata_register') {
+      if (!webhookSecret) return json({ error: 'Metadata registration is not configured' }, 503);
+      if (String(requestBody.webhookSecret || '') !== webhookSecret) return json({ error: 'Authorized webhook required' }, 401);
+      const memberId = String(requestBody.memberId || '');
+      const memberNumber = String(requestBody.memberNumber || '').trim();
+      const joinedAt = String(requestBody.joinedAt || '');
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(memberId)) return json({ error: 'Invalid member id' }, 400);
+      if (!/^HL-\d{2}-\d{3}$/.test(memberNumber)) return json({ error: 'Invalid member number' }, 400);
+      if (Number.isNaN(Date.parse(joinedAt))) return json({ error: 'Invalid join date' }, 400);
+      const { data, error } = await adminClient.rpc('internal_register_member_admin_metadata', {
+        p_member_id: memberId, p_member_number: memberNumber, p_joined_at: joinedAt,
+      });
+      if (error) {
+        console.error('Member metadata registration failed', error);
+        return json({ error: 'Member metadata registration failed' }, 500);
+      }
+      const stored = data?.[0];
+      if (!stored || stored.member_number !== memberNumber) return json({ error: 'Stored member number conflict' }, 409);
+      return json({ ok: true, memberNumber: stored.member_number });
+    }
+    if (!webhookUrl || !webhookSecret) return json({ error: 'Notification service is not configured' }, 503);
     if (requestBody.action === 'member_withdrawal') {
       const authorization = request.headers.get('Authorization') || '';
       if (!authorization) return json({ error: 'Authentication required' }, 401);
@@ -85,14 +105,11 @@ Deno.serve(async (request) => {
       const syncMemberId = String(requestBody.memberId || '');
       if (!syncMemberId) return json({ error: 'Member id is required' }, 400);
 
-      const { data: syncTargetUser, error: syncTargetError } = await adminClient.auth.admin.getUserById(syncMemberId);
-      if (syncTargetError || !syncTargetUser?.user?.email) return json({ error: 'Member not found' }, 404);
-
       // member_profiles intentionally denies direct table SELECT to
       // service_role. Reuse the same narrow, security-definer admin RPC that
       // backs the member-management screen instead of widening table grants.
       const { data: syncProfiles, error: syncProfileError } = await userClient.rpc('admin_list_members', {
-        p_search: syncTargetUser.user.email,
+        p_search: null,
         p_role: null,
       });
       if (syncProfileError) {
@@ -102,8 +119,12 @@ Deno.serve(async (request) => {
       const syncProfile = (syncProfiles || []).find((profile: { id?: string }) => profile.id === syncMemberId) || null;
       if (!syncProfile) return json({ error: 'Member profile not found' }, 404);
 
-      const syncMetadata = syncTargetUser.user.user_metadata || {};
-      const syncMemberName = syncProfile.display_name || syncMetadata.full_name || syncMetadata.name || syncMetadata.nickname || syncTargetUser.user.email.split('@')[0];
+      // An archived (withdrawn) member deliberately has no auth.users row.
+      // The security-definer roster RPC retains only its archival identity,
+      // which is sufficient for a metadata-only Sheet sync.  Active accounts
+      // continue to use their current profile identity through this same path.
+      if (!syncProfile.email) return json({ error: 'Member email not found' }, 404);
+      const syncMemberName = syncProfile.display_name || String(syncProfile.email).split('@')[0];
 
       const syncIsPremium = syncProfile.membership === 'premium';
       const syncPartnerTier = normalizeNotifiableRole(syncProfile.role, syncProfile.user_type, syncProfile.membership);
@@ -112,8 +133,9 @@ Deno.serve(async (request) => {
       syncFormData.set('action', 'profile_sync');
       syncFormData.set('webhook_secret', webhookSecret);
       syncFormData.set('member_id', syncMemberId);
-      syncFormData.set('member_email', syncTargetUser.user.email);
+      syncFormData.set('member_email', String(syncProfile.email));
       syncFormData.set('member_name', syncMemberName);
+      syncFormData.set('member_joined_at', String(syncProfile.created_at || ''));
       syncFormData.set('member_type', String(syncProfile.member_type || 'general'));
       // `role` is a protected compatibility column. Never send it as a
       // mutable profile-sync field: older roster webhooks reject that with
@@ -124,6 +146,11 @@ Deno.serve(async (request) => {
       syncFormData.set('membership', String(syncProfile.membership || 'free'));
       syncFormData.set('premium', syncIsPremium ? 'true' : 'false');
       syncFormData.set('account_status', String(syncProfile.account_status || 'active'));
+      syncFormData.set('phone', String(syncProfile.phone || ''));
+      syncFormData.set('specialty', String(syncProfile.specialty || ''));
+      syncFormData.set('teaching_subjects', String(syncProfile.teaching_subjects || ''));
+      syncFormData.set('enrolled_subject', String(syncProfile.enrolled_subject || ''));
+      syncFormData.set('assigned_instructor', String(syncProfile.assigned_instructor || ''));
 
       const syncResponse = await fetch(webhookUrl, { method: 'POST', body: syncFormData, redirect: 'follow' });
       const syncResultText = await syncResponse.text();
