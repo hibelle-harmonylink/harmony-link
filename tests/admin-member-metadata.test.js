@@ -5,6 +5,7 @@ const test = require('node:test');
 
 const root = path.resolve(__dirname, '..');
 const migration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '202609120001_member_admin_metadata.sql'), 'utf8');
+const metadataRpcFix = fs.readFileSync(path.join(root, 'supabase', 'migrations', '202609130001_fix_member_admin_metadata_update.sql'), 'utf8');
 const adminSource = fs.readFileSync(path.join(root, 'admin.js'), 'utf8');
 const functionSource = fs.readFileSync(path.join(root, 'supabase', 'functions', 'notify-role-change', 'index.ts'), 'utf8');
 
@@ -32,6 +33,8 @@ test('metadata RPC cannot mutate access fields and profile sync carries metadata
   assert.match(rpc, /set search_path = pg_catalog, public, auth/i);
   assert.doesNotMatch(rpc, /set\s+(?:role|membership|account_status)\s*=/i);
   assert.match(functionSource, /syncFormData\.set\('phone'/);
+  assert.match(metadataRpcFix, /where mam\.member_id = p_member_id/);
+  assert.doesNotMatch(metadataRpcFix, /where\s+member_id\s*=/);
   assert.match(functionSource, /syncFormData\.set\('specialty'/);
   assert.match(functionSource, /syncFormData\.set\('assigned_instructor'/);
   assert.match(adminSource, /const emailTask = \(roleChanged && accessSaved\)/);
