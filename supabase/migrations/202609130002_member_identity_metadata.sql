@@ -121,9 +121,44 @@ begin
 end;
 $$;
 
+-- Keep the currently deployed six-argument UI call working until the
+-- identity-aware admin UI is deployed.  It delegates to the eight-argument
+-- function with the stored identity values, so it cannot blank nickname or
+-- full_name during the rollout window.
+create function public.admin_update_member_metadata(
+  p_member_id uuid, p_phone text, p_specialty text, p_teaching_subjects text,
+  p_enrolled_subject text, p_assigned_instructor text
+)
+returns table (
+  member_id uuid, phone text, specialty text, teaching_subjects text,
+  enrolled_subject text, assigned_instructor text
+)
+language plpgsql security definer set search_path = pg_catalog, public, auth
+as $$
+declare
+  stored_nickname text;
+  stored_full_name text;
+begin
+  select metadata.nickname, metadata.full_name
+  into stored_nickname, stored_full_name
+  from public.member_admin_metadata metadata
+  where metadata.member_id = p_member_id;
+
+  return query
+  select updated.member_id, updated.phone, updated.specialty,
+    updated.teaching_subjects, updated.enrolled_subject, updated.assigned_instructor
+  from public.admin_update_member_metadata(
+    p_member_id, stored_nickname, stored_full_name, p_phone, p_specialty,
+    p_teaching_subjects, p_enrolled_subject, p_assigned_instructor
+  ) updated;
+end;
+$$;
+
 revoke all on function public.admin_list_members(text, text) from public;
 grant execute on function public.admin_list_members(text, text) to authenticated;
 revoke all on function public.admin_update_member_metadata(uuid, text, text, text, text, text, text, text) from public;
 grant execute on function public.admin_update_member_metadata(uuid, text, text, text, text, text, text, text) to authenticated;
+revoke all on function public.admin_update_member_metadata(uuid, text, text, text, text, text) from public;
+grant execute on function public.admin_update_member_metadata(uuid, text, text, text, text, text) to authenticated;
 
 commit;
