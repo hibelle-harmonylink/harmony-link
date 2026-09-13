@@ -20,8 +20,7 @@ test('renders phone between email and member type in the roster and detail summa
 test('preserves Korean, US, and international phone strings without regional reformatting', () => {
   assert.match(adminJs, /const formatPhone = value => String\(value \|\| ''\)\.trim\(\);/);
   assert.doesNotMatch(adminJs, /digits\.length === 10/);
-  assert.match(adminCss, /nth-child\(4\).*?width:145px/);
-  assert.match(adminCss, /nth-child\(5\).*?padding-left:26px/);
+  assert.match(adminCss, /nth-child\(5\).*?width:135px/);
 });
 
 test('prefills the editable contact input from the same member phone used by the detail summary', () => {
@@ -34,13 +33,15 @@ test('prefills the editable contact input from the same member phone used by the
 test('withdrawn members are fully read-only and cannot submit a save action', () => {
   assert.match(adminJs, /탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다/);
   assert.match(adminJs, /member-save-disabled[^]*?disabled>변경 불가/);
-  assert.match(adminJs, /if \(withdrawn\) \[phone, specialty, teachingSubjects, enrolledSubject, assignedInstructor\][^]*?input\.disabled = true/);
+  assert.match(adminJs, /if \(withdrawn\) \[nicknameInput, fullNameInput, phone, specialty, teachingSubjects, enrolledSubject, assignedInstructor\][^]*?input\.disabled = true/);
   assert.match(adminJs, /else if \(!protectedAccount && !withdrawn\)/);
   assert.match(adminCss, /cursor:not-allowed/);
 });
 
 test('metadata edits remain outside the role-notification email trigger', () => {
-  assert.match(adminJs, /const metadataChanged = metadata\.phone/);
+  assert.match(adminJs, /const metadataChanged = metadata\.nickname[^]*?metadata\.fullName[^]*?metadata\.phone/);
+  assert.match(adminJs, /p_nickname: metadata\.nickname/);
+  assert.match(adminJs, /p_full_name: metadata\.fullName/);
   assert.match(adminJs, /if \(roleChanged && accessSaved\) void \(async \(\) =>/);
 });
 

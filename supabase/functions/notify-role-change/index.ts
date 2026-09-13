@@ -135,6 +135,8 @@ Deno.serve(async (request) => {
       syncFormData.set('member_id', syncMemberId);
       syncFormData.set('member_email', String(syncProfile.email));
       syncFormData.set('member_name', syncMemberName);
+      syncFormData.set('nickname', String(syncProfile.nickname || ''));
+      syncFormData.set('full_name', String(syncProfile.full_name || ''));
       syncFormData.set('member_joined_at', String(syncProfile.created_at || ''));
       syncFormData.set('member_type', String(syncProfile.member_type || 'general'));
       // `role` is a protected compatibility column. Never send it as a
