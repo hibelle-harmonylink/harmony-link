@@ -328,7 +328,14 @@
     const teachingSubjects = detail.querySelector('#detailTeachingSubjects');
     const enrolledSubject = detail.querySelector('#detailEnrolledSubject');
     const assignedInstructor = detail.querySelector('#detailAssignedInstructor');
-    [phone, specialty, teachingSubjects, enrolledSubject, assignedInstructor].forEach((input, index) => { if (input) input.value = [formatPhone(member.phone), member.specialty, member.teaching_subjects, member.enrolled_subject, member.assigned_instructor][index] || ''; });
+    // Keep the editable contact field bound to the same canonical value used
+    // in the summary. Assign it directly so opening another member cannot
+    // retain a previous input value or lose a populated phone number.
+    if (phone) phone.value = formatPhone(member.phone ?? '');
+    if (specialty) specialty.value = member.specialty || '';
+    if (teachingSubjects) teachingSubjects.value = member.teaching_subjects || '';
+    if (enrolledSubject) enrolledSubject.value = member.enrolled_subject || '';
+    if (assignedInstructor) assignedInstructor.value = member.assigned_instructor || '';
     if (withdrawn) [phone, specialty, teachingSubjects, enrolledSubject, assignedInstructor].forEach(input => { if (input) input.disabled = true; });
     const showRoleMetadata = selectedType => {
       detail.querySelectorAll('.partner-metadata').forEach(field => { field.hidden = selectedType !== 'partner'; });
