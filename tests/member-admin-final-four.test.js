@@ -39,7 +39,7 @@ test('reapplies Sheet G/H/I colors from the current display values', () => {
 });
 
 test('keeps the detail dialog compact and prevents horizontal overflow at desktop and mobile breakpoints', () => {
-  assert.match(adminCss, /\.member-dialog\{width:min\(900px,calc\(100% - 28px\);max-height:calc\(100vh - 28px\);overflow-x:hidden\}/);
+  assert.match(adminCss, /\.member-dialog\{width:min\(900px,calc\(100% - 28px\)\);max-height:calc\(100vh - 28px\);overflow-x:hidden\}/);
   assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail\{max-height:none;overflow:visible/);
   assert.match(adminCss, /@media\(max-width:680px\)\{[\s\S]*?overflow-x:hidden/);
 });
