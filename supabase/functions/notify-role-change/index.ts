@@ -63,6 +63,27 @@ Deno.serve(async (request) => {
       if (!stored || stored.member_number !== memberNumber) return json({ error: 'Stored member number conflict' }, 409);
       return json({ ok: true, memberNumber: stored.member_number });
     }
+    if (requestBody.action === 'member_application_sync') {
+      if (!webhookSecret) return json({ error: 'Application metadata sync is not configured' }, 503);
+      if (String(requestBody.webhookSecret || '') !== webhookSecret) return json({ error: 'Authorized webhook required' }, 401);
+      const memberId = String(requestBody.memberId || '');
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(memberId)) return json({ error: 'Invalid member id' }, 400);
+      const { data, error } = await adminClient.rpc('internal_sync_member_application_metadata', {
+        p_member_id: memberId,
+        p_nickname: String(requestBody.nickname || ''),
+        p_full_name: String(requestBody.fullName || ''),
+        p_phone: String(requestBody.phone || ''),
+        p_specialty: String(requestBody.specialty || ''),
+        p_teaching_subjects: String(requestBody.teachingSubjects || ''),
+        p_enrolled_subject: String(requestBody.enrolledSubject || ''),
+        p_assigned_instructor: String(requestBody.assignedInstructor || ''),
+      });
+      if (error || data?.[0]?.application_completed !== true) {
+        console.error('Member application metadata sync failed', error);
+        return json({ error: 'Member application metadata sync failed' }, 500);
+      }
+      return json({ ok: true });
+    }
     if (!webhookUrl || !webhookSecret) return json({ error: 'Notification service is not configured' }, 503);
     if (requestBody.action === 'member_withdrawal') {
       const authorization = request.headers.get('Authorization') || '';
