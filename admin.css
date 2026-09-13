@@ -421,8 +421,8 @@ body.admin-page{overflow-x:hidden}
 }
 
 /* Switch the fixed-width member table to its card representation before its
-   870px desktop minimum can exceed a narrow desktop content track. */
-@media(max-width:950px){
+   intrinsic columns can exceed a compact desktop content track. */
+@media(max-width:1150px){
   .member-table-wrap{overflow:visible}
   .member-table{min-width:0}
   .member-table thead{display:none}
