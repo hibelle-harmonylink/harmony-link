@@ -375,3 +375,75 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   .feature-columns{grid-template-columns:repeat(2,minmax(0,1fr));max-width:100%}
   .feature-box,.feature-box ul,.feature-box li{min-width:0;overflow-wrap:anywhere}
 }
+
+/* Member-admin overview: the title, totals, and refresh action used to share
+   a single flex row with fixed minimum card tracks.  Let the title banner own
+   the responsive grid instead, so the six cards can reflow before they ever
+   compete with the heading or extend beyond the page. */
+html{overflow-x:hidden}
+body.admin-page{overflow-x:hidden}
+.admin-page main,.admin-shell,.admin-title-row,.admin-summary,.admin-toolbar{box-sizing:border-box}
+.admin-title-row{
+  display:grid;
+  grid-template-columns:minmax(240px,.85fr) minmax(0,1.7fr) max-content;
+  align-items:center;
+  gap:clamp(10px,1.4vw,20px);
+  min-width:0;
+}
+.admin-title-row>div:first-child{min-width:0}
+.admin-title-row>div:first-child>p:last-child{overflow-wrap:anywhere}
+.admin-title-row .admin-summary{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:clamp(6px,1vw,12px);
+  min-width:0;
+  width:100%;
+  margin:0;
+  justify-content:stretch;
+}
+.admin-summary article{width:100%;min-width:0;padding:clamp(9px,1.1vw,14px);box-sizing:border-box}
+.admin-summary span{font-size:clamp(11px,.9vw,14px);overflow-wrap:anywhere}
+.admin-summary strong{font-size:clamp(22px,2.1vw,30px)}
+.admin-title-row .admin-refresh{min-width:0;margin:0;white-space:nowrap}
+
+/* Three cards per row on compact desktops and laptops. */
+@media(max-width:1399px){
+  .admin-title-row{grid-template-columns:minmax(0,1fr) max-content;align-items:start}
+  .admin-title-row .admin-summary{grid-column:1/-1;grid-row:2;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .admin-title-row .admin-refresh{grid-column:2;grid-row:1;align-self:center}
+}
+
+/* Two cards per row on tablets; title and refresh button remain independent. */
+@media(max-width:899px){
+  .admin-title-row .admin-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .admin-toolbar{grid-template-columns:repeat(2,minmax(0,1fr));margin-inline:0}
+  .admin-toolbar>label:first-child,.admin-toolbar .btn{grid-column:1/-1}
+}
+
+/* Switch the fixed-width member table to its card representation before its
+   870px desktop minimum can exceed a narrow desktop content track. */
+@media(max-width:950px){
+  .member-table-wrap{overflow:visible}
+  .member-table{min-width:0}
+  .member-table thead{display:none}
+  .member-table,.member-table tbody,.member-table tr,.member-table td{display:block}
+  .member-table tr{padding:14px;border-top:1px solid var(--admin-line)}
+  .member-table tr:first-child{border-top:0}
+  .member-table td{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border:0;text-align:right}
+  .member-table td::before{content:attr(data-label);font-weight:800;color:#73849a;text-align:left}
+  .member-table td:last-child{padding-top:10px}
+}
+
+/* Phone-sized layouts stack the title, refresh action, filters, and cards
+   without relying on fixed card widths. */
+@media(max-width:680px){
+  .admin-title-row{grid-template-columns:minmax(0,1fr);gap:14px}
+  .admin-title-row .admin-summary{grid-column:1;grid-row:auto;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px}
+  .admin-title-row .admin-refresh{grid-column:1;grid-row:auto;width:100%}
+  .admin-summary article{padding:11px 9px}
+  .admin-summary span{font-size:11px}
+  .admin-summary strong{font-size:22px}
+  .admin-toolbar{grid-template-columns:minmax(0,1fr)}
+  .admin-toolbar>label:first-child,.admin-toolbar .btn{grid-column:auto}
+  .admin-toolbar .btn{width:100%}
+}
