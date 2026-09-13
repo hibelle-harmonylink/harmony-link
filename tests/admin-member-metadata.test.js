@@ -37,7 +37,7 @@ test('metadata RPC cannot mutate access fields and profile sync carries metadata
   assert.doesNotMatch(metadataRpcFix, /where\s+member_id\s*=/);
   assert.match(functionSource, /syncFormData\.set\('specialty'/);
   assert.match(functionSource, /syncFormData\.set\('assigned_instructor'/);
-  assert.match(adminSource, /const emailTask = \(roleChanged && accessSaved\)/);
+  assert.match(adminSource, /if \(roleChanged && accessSaved\) void \(async \(\) =>/);
 });
 
 test('single Sheet-issued number is registered through a service-only idempotent RPC', () => {

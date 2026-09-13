@@ -41,7 +41,7 @@ test('withdrawn members are fully read-only and cannot submit a save action', ()
 
 test('metadata edits remain outside the role-notification email trigger', () => {
   assert.match(adminJs, /const metadataChanged = metadata\.phone/);
-  assert.match(adminJs, /const emailTask = \(roleChanged && accessSaved\)/);
+  assert.match(adminJs, /if \(roleChanged && accessSaved\) void \(async \(\) =>/);
 });
 
 test('reapplies Sheet G/H/I colors from the current display values', () => {

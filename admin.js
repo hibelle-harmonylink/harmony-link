@@ -497,37 +497,38 @@
       const succeeded = results.filter(result => result.ok);
       console.log('[admin] updateMember results (after DB verification)', results);
       let resultMessage;
-      let resultIsError;
       if (failed.length === 0) {
         resultMessage = '저장되었습니다. (DB 재조회로 확인함)';
-        resultIsError = false;
       } else {
         const failureText = failed.map(result => `${result.label}: ${describeError(result.error)}`).join(' / ');
-        resultIsError = true;
         resultMessage = succeeded.length === 0
           ? `저장에 실패했습니다. ${failureText}`
           : `일부 항목만 저장되었습니다 (${succeeded.map(result => result.label).join(', ')}). 실패: ${failureText}`;
       }
 
-      // Show the completion notification right now, based only on the DB
-      // verification above. The automatic-email confirmation (polls for up
-      // to 20s) and the Sheet sync webhook (no timeout of its own) are
-      // both best-effort follow-ups; gating the notification on either of
-      // them finishing means any hang or slow response -- e.g. a slow/cold
-      // Apps Script deployment -- silently swallows the "저장되었습니다"
-      // message entirely, even though the DB save itself had already
-      // succeeded and been verified. Each follow-up appends its own note
-      // to the same banner once (and only once) it resolves, instead of
-      // gating whether the banner appears at all.
-      let emailNote = '';
-      let sheetSyncNote = '';
-      const renderResult = () => setMessage(`${resultMessage}${emailNote}${sheetSyncNote}`, resultIsError);
-      renderResult();
-      if (feedback) {
-        feedback.textContent = failed.length === 0 ? '변경사항이 저장되었습니다.' : resultMessage;
-        feedback.className = `member-save-feedback ${failed.length === 0 ? 'success' : 'error'}`;
-        if (failed.length === 0) window.setTimeout(() => { if (feedback) { feedback.textContent = ''; feedback.className = 'member-save-feedback'; } }, 3000);
+      // The database verification above is the user-visible save boundary.
+      // Roster sync and role-email confirmation are follow-up work: never
+      // keep the dialog in "saving" while an Apps Script execution is cold
+      // or slow, and never reclassify a verified database save as failed.
+      if (failed.length > 0) {
+        setMessage(resultMessage, true);
+        if (feedback) {
+          feedback.textContent = resultMessage;
+          feedback.className = 'member-save-feedback error';
+        }
+        if (saveButton) { saveButton.disabled = false; saveButton.textContent = '변경 저장'; }
+        return;
       }
+
+      setMessage('변경사항이 저장되었습니다.');
+      if (feedback) {
+        feedback.textContent = '변경사항이 저장되었습니다.';
+        feedback.className = 'member-save-feedback success';
+      }
+      if (saveButton) { saveButton.disabled = false; saveButton.textContent = '변경 저장'; }
+      window.setTimeout(() => {
+        if (dialog.open) dialog.close();
+      }, 1000);
 
       // A follow-up step can't be allowed to hang forever and keep the
       // notification from ever picking up its note -- bound it so a dead
@@ -538,25 +539,22 @@
       ]);
 
       const accessSaved = results.some(result => result.field === 'access' && result.ok);
-      const emailTask = (roleChanged && accessSaved) ? (async () => {
+      if (roleChanged && accessSaved) void (async () => {
         console.log('[admin] waiting for the automatic role-change email', { memberId: member.id, accessChangedAt });
         try {
           await withTimeout(waitForAutomaticRoleEmail(member.id, accessChangedAt), 25000, '메일 발송 확인이 시간 초과되었습니다.');
           console.log('[admin] automatic role-change email confirmed sent', { memberId: member.id });
-          emailNote = ' 안내메일도 정상 발송되었습니다.';
         } catch (automaticError) {
           console.error('[admin] automatic role-change email was not confirmed; falling back to a direct send', { memberId: member.id, error: automaticError.message });
           try {
             await withTimeout(sendDirectRoleNotification({ ...member, role: deriveRole(nextUserType, nextMembership, member.is_admin) }, member.role), 10000, '안내메일 직접 발송이 시간 초과되었습니다.');
             console.log('[admin] direct role-change email sent', { memberId: member.id });
-            emailNote = ' 안내메일도 정상 발송되었습니다.';
           } catch (directError) {
             console.error('[admin] direct role-change email also failed', { memberId: member.id, error: directError.message });
-            emailNote = ` 다만 안내메일 발송에는 실패했습니다: ${directError.message}`;
+            setMessage(`변경사항은 저장되었습니다. 다만 안내메일 발송에는 실패했습니다: ${directError.message}`, true);
           }
         }
-        renderResult();
-      })() : Promise.resolve();
+      })();
 
       // Sync the (now-verified) member profile to the existing member
       // roster Google Sheet -- reusing the same notify-role-change Edge
@@ -566,7 +564,7 @@
       // runs after a save actually succeeded, and its own failure is
       // reported as a separate, additional note.
       const anyFieldSaved = results.some(result => result.ok);
-      const sheetTask = anyFieldSaved ? (async () => {
+      if (anyFieldSaved) void (async () => {
         console.log('[admin] syncing profile to member roster sheet', { memberId: member.id });
         try {
           const { error: syncError } = await withTimeout(
@@ -583,21 +581,15 @@
               status: syncError.context?.status,
               detail
             });
-            sheetSyncNote = ` 회원 정보는 저장되었지만 회원 명단 시트 업데이트에 실패했습니다: ${detail}`;
+            setMessage('변경사항은 저장되었습니다. 명단 시트 동기화는 계속 진행 중입니다.');
           } else {
             console.log('[admin] roster sheet sync succeeded', { memberId: member.id });
-            sheetSyncNote = ' 회원 명단 시트에도 반영되었습니다.';
           }
         } catch (syncTimeoutError) {
           console.error('[admin] roster sheet sync timed out or threw', { memberId: member.id, error: syncTimeoutError.message });
-          sheetSyncNote = ` 회원 정보는 저장되었지만 회원 명단 시트 업데이트에 실패했습니다: ${syncTimeoutError.message}`;
+          setMessage('변경사항은 저장되었습니다. 명단 시트 동기화는 계속 진행 중입니다.');
         }
-        renderResult();
-      })() : Promise.resolve();
-
-      await Promise.all([emailTask, sheetTask]);
-      if (saveButton) { saveButton.disabled = false; saveButton.textContent = '변경 저장'; }
-      if (failed.length === 0 && !metadataChanged) dialog.close();
+      })();
     } catch (unexpected) {
       console.error('[admin] updateMember failed unexpectedly', unexpected);
       setMessage(`예기치 않은 오류로 저장하지 못했습니다: ${describeError(unexpected)}`, true);
