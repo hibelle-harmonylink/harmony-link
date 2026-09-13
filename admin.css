@@ -234,7 +234,8 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   .member-table th:nth-child(9),.member-table td:nth-child(9){width:100px;white-space:nowrap;text-align:center}
   .member-table th:nth-child(10),.member-table td:nth-child(10){width:98px;white-space:nowrap;text-align:center}
 }
-.member-number{display:inline-block;color:var(--admin-navy);font-size:12px;font-weight:900;letter-spacing:.02em}
+.member-number{display:inline-block;color:#111827;font-size:12px;font-weight:900;letter-spacing:.02em}
+.member-number.member-number-pending{color:#dc2626}
 @media(max-width:680px){
   .member-table td{width:auto!important}
   .member-table th:first-child,.member-table td:first-child{width:auto;text-align:right}

@@ -135,6 +135,9 @@
   };
   const memberNickname = member => String(member.nickname || '').trim();
   const memberFullName = member => String(member.full_name || '').trim();
+  const memberNumberClass = member => member.member_number && member.application_completed === false
+    ? 'member-number member-number-pending'
+    : 'member-number';
   const escapeHtml = value => String(value || '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
   const badge = (label, className = '') => `<span class="member-badge ${className}">${label}</span>`;
   const typeBadge = member => badge(member.is_admin ? '관리자' : TYPE_LABELS[member.user_type], member.is_admin ? 'type-admin' : TYPE_BADGE_CLASS[member.user_type]);
@@ -182,7 +185,7 @@
       const name = resolveDisplayName(member);
       const memberNumber = member.member_number || '—';
       const cells = [
-        ['회원번호', `<span class="member-number">${escapeHtml(memberNumber)}</span>`],
+        ['회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(memberNumber)}</span>`],
         ['닉네임', escapeHtml(memberNickname(member))],
         ['이름', escapeHtml(memberFullName(member)) + (member.access_migration_review ? '<span class="member-review">검토 필요</span>' : '')],
         ['이메일', escapeHtml(member.email || '이메일 없음')],
@@ -315,7 +318,7 @@
     const name = resolveDisplayName(member);
     detail.className = 'member-detail';
     const metadataFields = `<div class="member-edit-grid member-metadata-grid"><label>닉네임<input id="detailNickname" type="text" maxlength="80" autocomplete="nickname"></label><label>이름<input id="detailFullName" type="text" maxlength="80" autocomplete="name"></label><label>연락처<input id="detailPhone" type="tel" maxlength="30" autocomplete="tel" value="${escapeHtml(formatPhone(member.phone ?? ''))}"></label><label class="partner-metadata">전문분야<input id="detailSpecialty" type="text" maxlength="120"></label><label class="partner-metadata">강의과목<input id="detailTeachingSubjects" type="text" maxlength="240"></label><label class="student-metadata">수강과목<input id="detailEnrolledSubject" type="text" maxlength="120"></label><label class="student-metadata">담당강사<input id="detailAssignedInstructor" type="text" maxlength="120"></label></div>`;
-    const summary = `<dl class="member-dates member-core-fields"><div><dt>회원번호</dt><dd>${escapeHtml(member.member_number || '—')}</dd></div><div><dt>닉네임</dt><dd>${escapeHtml(memberNickname(member))}</dd></div><div><dt>이름</dt><dd>${escapeHtml(memberFullName(member))}</dd></div><div><dt>이메일</dt><dd>${escapeHtml(member.email || '')}</dd></div><div><dt>연락처</dt><dd>${escapeHtml(formatPhone(member.phone))}</dd></div><div><dt>회원유형</dt><dd>${escapeHtml(member.is_admin ? '관리자' : TYPE_LABELS[member.user_type])}</dd></div><div><dt>멤버십</dt><dd>${escapeHtml(member.is_admin ? '관리자' : MEMBERSHIP_LABELS[member.membership])}</dd></div><div><dt>계정상태</dt><dd>${escapeHtml(STATUS_LABELS[member.account_status] || member.account_status || '')}</dd></div><div><dt>가입일</dt><dd>${formatDate(member.created_at)}</dd></div></dl>`;
+    const summary = `<dl class="member-dates member-core-fields"><div><dt>회원번호</dt><dd><span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span></dd></div><div><dt>닉네임</dt><dd>${escapeHtml(memberNickname(member))}</dd></div><div><dt>이름</dt><dd>${escapeHtml(memberFullName(member))}</dd></div><div><dt>이메일</dt><dd>${escapeHtml(member.email || '')}</dd></div><div><dt>연락처</dt><dd>${escapeHtml(formatPhone(member.phone))}</dd></div><div><dt>회원유형</dt><dd>${escapeHtml(member.is_admin ? '관리자' : TYPE_LABELS[member.user_type])}</dd></div><div><dt>멤버십</dt><dd>${escapeHtml(member.is_admin ? '관리자' : MEMBERSHIP_LABELS[member.membership])}</dd></div><div><dt>계정상태</dt><dd>${escapeHtml(STATUS_LABELS[member.account_status] || member.account_status || '')}</dd></div><div><dt>가입일</dt><dd>${formatDate(member.created_at)}</dd></div></dl>`;
     const accessFields = withdrawn || protectedAccount ? `<div class="member-protected-copy">${withdrawn ? '탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다.' : '관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.'}</div>` : `<div class="member-edit-grid"><label class="member-name-field">회원 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label>회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label>멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label>계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label></div>`;
     const actions = withdrawn
       ? '<div class="member-detail-actions"><button type="button" class="btn member-save-disabled" id="detailSave" disabled>변경 불가</button></div>'

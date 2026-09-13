@@ -494,6 +494,41 @@
     }
   };
 
+  // Member-number issuance stays inside Apps Script, which holds the Sheet
+  // lock and registers the exact issued value in Supabase.  Run this once per
+  // browser tab for every completed login, not only the first five minutes of
+  // an account: a transient failed signup POST therefore self-heals on the
+  // next login without the browser creating or guessing any number.
+  const ensureMemberRosterRegistration = async user => {
+    if (!user?.id || !user?.email || !signupAutomationUrl) return;
+    const requestKey = `harmony-member-number-requested:${user.id}`;
+    if (sessionStorage.getItem(requestKey)) return;
+    sessionStorage.setItem(requestKey, 'pending');
+    const profile = getProfile(user);
+    const providerMetadata = user.user_metadata || {};
+    const signupProvider = user.app_metadata?.provider || '';
+    const record = new FormData();
+    record.set('기록 유형', '회원가입');
+    record.set('회원 ID', user.id);
+    record.set('가입 시각', user.created_at || new Date().toISOString());
+    record.set('닉네임', providerMetadata.nickname || '');
+    record.set('이름', signupProvider === 'google' ? (providerMetadata.full_name || providerMetadata.name || '') : '');
+    record.set('표시 이름', profile.name);
+    record.set('이메일', profile.email);
+    record.set('가입 방식', signupProvider || 'social');
+    record.set('회원 유형', activeMemberType === 'partner' ? '파트너' : '수강생');
+    record.set('파트너 등급', '');
+    record.set('회원 구분', activeMemberType === 'partner' ? '파트너' : '수강생');
+    record.set('가입 경로', 'Harmony Link 홈페이지');
+    try {
+      await fetch(signupAutomationUrl, { method: 'POST', mode: 'no-cors', body: record });
+      sessionStorage.setItem(requestKey, 'sent');
+    } catch (error) {
+      sessionStorage.removeItem(requestKey);
+      console.error('Member-number registration could not be requested.', error);
+    }
+  };
+
   const updateLanguage = () => {
     authModal.querySelectorAll('[data-ko][data-en]').forEach(element => {
       element.textContent = element.dataset[language()];
@@ -645,6 +680,7 @@
     render(data.session);
     await applyPendingMemberType(data.session);
     await refreshMemberAccess(data.session);
+    await ensureMemberRosterRegistration(data.session?.user);
     if (data.session && localStorage.getItem('harmonyAuthReturn') === 'partner-center') {
       localStorage.removeItem('harmonyAuthReturn');
       window.setTimeout(() => partnerCenter.scrollIntoView({ behavior: 'smooth', block: 'start' }), 350);
@@ -664,6 +700,7 @@
     if (event === 'SIGNED_IN') setModalOpen(false);
     await applyPendingMemberType(session);
     await refreshMemberAccess(session);
+    await ensureMemberRosterRegistration(session?.user);
     if (event === 'SIGNED_IN') await notifyAdminOfNewSignup(session?.user);
   });
 

@@ -61,7 +61,12 @@ function doPost(e) {
     if (values.action === 'profile_sync') return syncProfile_(values);
     if (text_(values.action)) return json_({ ok: false, error: 'Unknown action.' });
     const invalidField = missingRegistrationField_(values);
-    if (invalidField) return json_({ ok: false, error: `Missing required registration field: ${invalidField}` });
+    // A later Google Form application may only have the member email.  It is
+    // allowed only when it carries application details; registerMember_ then
+    // requires an existing UUID-backed Sheet row before updating anything.
+    if (invalidField && !(invalidField === '회원 ID' && isSupplementalApplication_(values) && text_(values['이메일'] || values.email))) {
+      return json_({ ok: false, error: `Missing required registration field: ${invalidField}` });
+    }
     return registerMember_(values);
   } catch (error) {
     return json_({ ok: false, error: String(error && error.message ? error.message : error) });
@@ -74,11 +79,15 @@ function registerMember_(values) {
   try {
     const sheet = getSheet_();
     ensureSchema_(sheet);
-    const memberId = text_(values['회원 ID']);
+    let memberId = text_(values['회원 ID']);
     const email = text_(values['이메일'] || values.email);
     const memberType = normalizeType_(values['회원 유형'] || values['회원 구분']);
     const membership = membershipLabel_(memberType, values['멤버십'] || values['파트너 등급']);
-    const row = findMemberRow_(sheet, memberId, email);
+    let row = findMemberRow_(sheet, memberId, email);
+    const isSupplementalApplication = isSupplementalApplication_(values);
+    if (row && !memberId) memberId = text_(sheet.getRange(row, COLUMNS.systemId).getDisplayValue());
+    if (!memberId) throw new Error('회원 ID가 없는 신청서는 기존 이메일 회원과만 연결할 수 있습니다.');
+    if (!row && isSupplementalApplication) throw new Error('신청서 이메일과 일치하는 기존 회원을 찾지 못했습니다.');
     const joinedAt = dateValue_(values['가입 시각'] || new Date().toISOString());
     const memberNumber = row
       ? text_(sheet.getRange(row, COLUMNS.memberNumber).getDisplayValue())
@@ -86,21 +95,26 @@ function registerMember_(values) {
     const record = [
       memberNumber,
       joinedAt,
-      text_(values.nickname),
+      text_(values.nickname || values['닉네임']),
       text_(values.full_name || values['이름']),
       email,
-      text_(values.phone || values.phone_number || values.mobile || values.contact),
+      applicationValue_(values, 'phone', '연락처'),
       text_(values['가입 방식']),
       memberType,
       membership,
       '활성',
-      '', '', '', '',
+      applicationValue_(values, 'specialty', '전문분야'),
+      applicationValue_(values, 'teaching_subjects', '강의과목'),
+      applicationValue_(values, 'enrolled_subject', '수강과목'),
+      applicationValue_(values, 'assigned_instructor', '담당강사'),
       text_(values['가입 경로']),
       memberId
     ];
     const isNewRow = !row;
-    if (row) updateIdentityAndMembership_(sheet, row, record);
-    else sheet.appendRow(record);
+    if (row && isSupplementalApplication) updateExistingApplication_(sheet, row, record);
+    // A repeated site login is a registration retry only.  It must not reset
+    // type, membership, account status, or any archived member record.
+    else if (!row) sheet.appendRow(record);
     SpreadsheetApp.flush();
     // The Sheet holds the sole issuance lock for member numbers.  Register
     // that exact value in Supabase after it is durable here; retrying this
@@ -114,11 +128,39 @@ function registerMember_(values) {
       throw new Error(metadataResult.error || '회원번호 메타데이터 등록에 실패했습니다.');
     }
     if (metadataResult.memberNumber !== memberNumber) throw new Error('회원번호 충돌이 감지되어 등록을 중단했습니다.');
+    if (isSupplementalApplication) {
+      const applicationResult = syncApplicationMetadata_(memberId, record);
+      if (!applicationResult.ok) throw new Error(applicationResult.error || '신청서 메타데이터 동기화에 실패했습니다.');
+    }
     if (isNewRow && email) sendSignupConfirmation_(record);
     return json_({ ok: true, memberId: memberId, memberNumber: memberNumber, duplicate: Boolean(row) });
   } finally {
     lock.releaseLock();
   }
+}
+
+// An application is intentionally distinguished from the site signup by
+// fields that OAuth signup never supplies.  Identity-only provider data does
+// not turn the pending member number black.
+function isSupplementalApplication_(values) {
+  return ['phone', 'phone_number', 'mobile', 'contact', '연락처', 'specialty', '전문분야', 'teaching_subjects', '강의과목', 'enrolled_subject', '수강과목', 'assigned_instructor', '담당강사']
+    .some(function (field) { return Boolean(text_(values[field])); });
+}
+
+function applicationValue_(values, canonical, korean) {
+  const aliases = {
+    phone: ['phone', 'phone_number', 'mobile', 'contact'],
+    specialty: ['specialty'],
+    teaching_subjects: ['teaching_subjects'],
+    enrolled_subject: ['enrolled_subject'],
+    assigned_instructor: ['assigned_instructor']
+  };
+  const keys = (aliases[canonical] || [canonical]).concat(korean ? [korean] : []);
+  for (let index = 0; index < keys.length; index += 1) {
+    const value = text_(values[keys[index]]);
+    if (value) return value;
+  }
+  return '';
 }
 
 function sendSignupConfirmation_(record) {
@@ -316,6 +358,29 @@ function registerMemberMetadata_(memberId, memberNumber, joinedAt) {
   return { ok: true, memberNumber: text_(body.memberNumber) };
 }
 
+function syncApplicationMetadata_(memberId, record) {
+  const secret = PropertiesService.getScriptProperties().getProperty(MEMBER_SIGNUP.roleEmailSecretProperty);
+  if (!secret) throw new Error('ROLE_EMAIL_WEBHOOK_SECRET이 설정되지 않았습니다.');
+  const response = UrlFetchApp.fetch(MEMBER_SIGNUP.metadataWebhookUrl, {
+    method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+    payload: JSON.stringify({
+      action: 'member_application_sync', webhookSecret: secret, memberId: memberId,
+      nickname: record[COLUMNS.nickname - 1], fullName: record[COLUMNS.name - 1],
+      phone: record[COLUMNS.phone - 1], specialty: record[COLUMNS.specialty - 1],
+      teachingSubjects: record[COLUMNS.teachingSubjects - 1],
+      enrolledSubject: record[COLUMNS.enrolledSubject - 1],
+      assignedInstructor: record[COLUMNS.assignedInstructor - 1]
+    })
+  });
+  const status = response.getResponseCode();
+  let body = {};
+  try { body = JSON.parse(response.getContentText() || '{}'); } catch (_) { body = {}; }
+  if (status < 200 || status >= 300 || body.ok !== true) {
+    return { ok: false, status: status, error: body.error || `신청서 메타데이터 동기화 실패 (${status})` };
+  }
+  return { ok: true };
+}
+
 // Adds management-only columns without altering the existing identity,
 // member-number, or join-date values.  This is run once when the 10-column
 // roster is first opened by the updated deployed script.
@@ -415,6 +480,17 @@ function updateIdentityAndMembership_(sheet, row, record) {
       sheet.getRange(row, column + 1).setValue(record[column]);
     }
   }
+}
+
+function updateExistingApplication_(sheet, row, record) {
+  const mutableColumns = [
+    COLUMNS.nickname, COLUMNS.name, COLUMNS.phone, COLUMNS.specialty,
+    COLUMNS.teachingSubjects, COLUMNS.enrolledSubject, COLUMNS.assignedInstructor
+  ];
+  mutableColumns.forEach(function (column) {
+    const value = text_(record[column - 1]);
+    if (value) sheet.getRange(row, column).setValue(value);
+  });
 }
 
 function findMemberRow_(sheet, id, email) {
