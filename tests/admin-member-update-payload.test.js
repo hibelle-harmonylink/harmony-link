@@ -38,7 +38,7 @@ test('administrative metadata uses its own RPC and is not an email trigger', () 
   const metadataCall = adminSource.match(/admin_update_member_metadata', \{([\s\S]*?)\n        \}\);/)?.[1] || '';
   assert.match(metadataCall, /p_phone: metadata\.phone/);
   assert.match(metadataCall, /p_specialty: metadata\.specialty/);
-  assert.match(adminSource, /const emailTask = \(roleChanged && accessSaved\)/);
+  assert.match(adminSource, /if \(roleChanged && accessSaved\) void \(async \(\) =>/);
   assert.doesNotMatch(metadataCall, /role|membership|account_status/);
 });
 
