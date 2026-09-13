@@ -50,6 +50,14 @@ test('identity fields extend the narrow metadata RPC without changing access con
   assert.match(migration, /revoke all on function public\.admin_update_member_metadata/);
 });
 
+test('keeps the deployed six-argument metadata RPC compatible during the UI rollout', () => {
+  assert.match(migration, /create function public\.admin_update_member_metadata\(\s*p_member_id uuid, p_phone text, p_specialty text, p_teaching_subjects text,\s*p_enrolled_subject text, p_assigned_instructor text/s);
+  assert.match(migration, /select metadata\.nickname, metadata\.full_name\s+into stored_nickname, stored_full_name/s);
+  assert.match(migration, /p_member_id, stored_nickname, stored_full_name, p_phone, p_specialty,/);
+  assert.match(migration, /returns table \(\s*member_id uuid, phone text, specialty text, teaching_subjects text,\s*enrolled_subject text, assigned_instructor text/s);
+  assert.match(migration, /grant execute on function public\.admin_update_member_metadata\(uuid, text, text, text, text, text\) to authenticated/);
+});
+
 test('identity-aware profile sync always sends both identity keys, including empty values', () => {
   assert.match(edge, /syncFormData\.set\('nickname', String\(syncProfile\.nickname \|\| ''\)\)/);
   assert.match(edge, /syncFormData\.set\('full_name', String\(syncProfile\.full_name \|\| ''\)\)/);
