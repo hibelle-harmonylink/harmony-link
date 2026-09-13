@@ -22,5 +22,7 @@ test('reflows summary cards at laptop, tablet, and phone breakpoints', () => {
 test('keeps filters and the member list within responsive page tracks', () => {
   assert.match(responsive, /@media\(max-width:899px\)\{[\s\S]*\.admin-toolbar\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(responsive, /@media\(max-width:680px\)\{[\s\S]*\.admin-toolbar\{grid-template-columns:minmax\(0,1fr\)\}/);
-  assert.match(responsive, /@media\(max-width:1150\.99px\)\{[\s\S]*\.member-table\{min-width:0\}/);
+  assert.match(responsive, /@media\(min-width:681px\) and \(max-width:1150\.99px\)\{[\s\S]*\.member-table\{min-width:0;table-layout:auto\}/);
+  assert.match(responsive, /\.member-table tr\{[\s\S]*grid-template-columns:repeat\(12,minmax\(0,1fr\)\)/);
+  assert.match(responsive, /@media\(min-width:681px\) and \(max-width:850px\)\{[\s\S]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
 });
