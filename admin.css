@@ -225,15 +225,14 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 @media(min-width:681px){
   .member-table{min-width:0;table-layout:fixed;border-spacing:0}
   .member-table th:first-child,.member-table td:first-child{width:82px}
-  .member-table th:nth-child(2),.member-table td:nth-child(2){width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .member-table th:nth-child(3),.member-table td:nth-child(3){width:165px}
-  .member-table th:nth-child(4),.member-table td:nth-child(4){width:145px;white-space:nowrap;text-align:center;padding-right:22px}
-  .member-table th:nth-child(5),.member-table td:nth-child(5){width:94px;text-align:center;padding-left:26px}
-  .member-table th:nth-child(6),.member-table td:nth-child(6){width:108px;text-align:center}
-  .member-table th:nth-child(7),.member-table td:nth-child(7){width:60px;text-align:center}
-  .member-table th:nth-child(8),.member-table td:nth-child(8){width:100px;white-space:nowrap;text-align:center}
-  .member-table th:nth-child(9),.member-table td:nth-child(9){width:98px;white-space:nowrap;text-align:center}
-  .member-table td:nth-child(3){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-table th:nth-child(2),.member-table td:nth-child(2),.member-table th:nth-child(3),.member-table td:nth-child(3){width:100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-table th:nth-child(4),.member-table td:nth-child(4){width:155px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-table th:nth-child(5),.member-table td:nth-child(5){width:135px;white-space:nowrap;text-align:center}
+  .member-table th:nth-child(6),.member-table td:nth-child(6){width:82px;text-align:center}
+  .member-table th:nth-child(7),.member-table td:nth-child(7){width:108px;text-align:center}
+  .member-table th:nth-child(8),.member-table td:nth-child(8){width:60px;text-align:center}
+  .member-table th:nth-child(9),.member-table td:nth-child(9){width:100px;white-space:nowrap;text-align:center}
+  .member-table th:nth-child(10),.member-table td:nth-child(10){width:98px;white-space:nowrap;text-align:center}
 }
 .member-number{display:inline-block;color:var(--admin-navy);font-size:12px;font-weight:900;letter-spacing:.02em}
 @media(max-width:680px){
@@ -439,15 +438,13 @@ body.admin-page{overflow-x:hidden}
   .member-table tr>td{display:flex;width:auto!important;min-width:0;align-items:center;gap:5px;padding:0;border:0;text-align:left}
   .member-table td::before{content:attr(data-label);flex:0 0 auto;font-size:10px;font-weight:800;color:#73849a;white-space:nowrap}
   .member-table td:nth-child(1){grid-column:span 2}
-  .member-table td:nth-child(2){grid-column:span 2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .member-table td:nth-child(3){grid-column:span 4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .member-table td:nth-child(4){grid-column:span 4;white-space:nowrap}
-  .member-table td:nth-child(5){grid-column:span 2}
-  .member-table td:nth-child(6){grid-column:span 3}
-  .member-table td:nth-child(7){grid-column:span 2}
-  .member-table td:nth-child(8){grid-column:span 2;white-space:nowrap}
-  .member-table td:nth-child(9){grid-column:span 3;justify-content:flex-end}
-  .member-table td:nth-child(9)::before{display:none}
+  .member-table td:nth-child(2),.member-table td:nth-child(3){grid-column:span 2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-table td:nth-child(4),.member-table td:nth-child(5){grid-column:span 3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-table td:nth-child(6){grid-column:span 2}
+  .member-table td:nth-child(7){grid-column:span 3}
+  .member-table td:nth-child(8),.member-table td:nth-child(9){grid-column:span 2;white-space:nowrap}
+  .member-table td:nth-child(10){grid-column:span 3;justify-content:flex-end}
+  .member-table td:nth-child(10)::before{display:none}
 }
 
 /* Tablets keep the same compact fields but use two balanced columns so the
@@ -455,8 +452,8 @@ body.admin-page{overflow-x:hidden}
 @media(min-width:681px) and (max-width:850px){
   .member-table tr{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px;padding:11px 14px}
   .member-table td:nth-child(n){grid-column:auto;justify-content:flex-start;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .member-table td:nth-child(3){grid-column:1/-1}
-  .member-table td:nth-child(9){justify-content:flex-end;overflow:visible}
+  .member-table td:nth-child(4){grid-column:1/-1}
+  .member-table td:nth-child(10){justify-content:flex-end;overflow:visible}
 }
 
 /* Phone cards may stay vertically stacked, but labels and values remain close
@@ -467,8 +464,8 @@ body.admin-page{overflow-x:hidden}
   .member-table td::before{flex:0 0 70px!important;font-size:10px!important;white-space:nowrap!important}
   .member-table td>*{min-width:0}
   .member-table td:nth-child(2),.member-table td:nth-child(3),.member-table td:nth-child(4){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .member-table td:nth-child(5),.member-table td:nth-child(6),.member-table td:nth-child(7){overflow:visible}
-  .member-table td:nth-child(9){justify-content:flex-end!important;padding-top:6px!important}
+  .member-table td:nth-child(5),.member-table td:nth-child(6),.member-table td:nth-child(7),.member-table td:nth-child(8){overflow:visible}
+  .member-table td:nth-child(10){justify-content:flex-end!important;padding-top:6px!important}
 }
 
 /* Phone-sized layouts stack the title, refresh action, filters, and cards

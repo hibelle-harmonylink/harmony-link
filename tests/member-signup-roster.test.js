@@ -80,9 +80,13 @@ test('migrates seven real members, removes fourteen invalid rows, and preserves 
   assert.deepEqual(Array.from(migrated, row => row[0]), [
     'HL-26-001', 'HL-26-002', 'HL-26-003', 'HL-26-004', 'HL-26-005', 'HL-26-006', 'HL-26-007'
   ]);
-  assert.deepEqual(Array.from(migrated, row => row[14]), real.map(row => row[0]));
-  assert.equal(migrated[3][6], '수강생');
-  assert.equal(migrated[3][8], '탈퇴');
+  assert.deepEqual(Array.from(migrated, row => row[15]), real.map(row => row[0]));
+  assert.deepEqual(Array.from(migrated, row => row[2]), [
+    'Harmony Link', 'meeran melody', '하이벨_샐리', '혜경(KR)', 'Agnes Shin', 'Jane Yom', 'Dan Verrett'
+  ]);
+  assert.deepEqual(Array.from(migrated, row => row[3]), ['', '', '노혜경', '', '', '', '']);
+  assert.equal(migrated[3][7], '수강생');
+  assert.equal(migrated[3][9], '탈퇴');
 });
 
 test('profile sync preserves member number, join date, and system ID while syncing metadata', () => {
@@ -93,10 +97,23 @@ test('profile sync preserves member number, join date, and system ID while synci
   assert.doesNotMatch(body, /COLUMNS\.systemId/);
   assert.match(body, /COLUMNS\.phone/);
   assert.match(body, /COLUMNS\.specialty, 1, 4/);
+  assert.match(body, /text_\(values\.nickname\)/);
+  assert.match(body, /text_\(values\.full_name\)/);
+  assert.match(source, /COLUMNS\.memberType, 1, 3/);
 });
 
 test('pre-metadata roster expansion retains the join timestamp as a date-formattable value', () => {
   const body = source.slice(source.indexOf('function migratePreMetadataSchema_'), source.indexOf('function buildMigratedRows_'));
   assert.match(body, /const joinedAt = text_\(row\[1\]\) \? dateValue_\(row\[1\]\) : row\[1\]/);
   assert.match(source, /setNumberFormat\('yyyy-mm-dd'\)/);
+});
+
+test('uses the sixteen-column identity roster and colours H through J', () => {
+  assert.match(source, /const HEADERS = \['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '시스템 ID'\]/);
+  assert.match(source, /memberType: 8, membership: 9, accountStatus: 10/);
+  assert.match(source, /systemId: 16/);
+  const styles = source.slice(source.indexOf('function applyRosterDisplayStyles_'), source.indexOf('function normalizeType_'));
+  assert.match(styles, /COLUMNS\.memberType/);
+  assert.match(styles, /COLUMNS\.membership/);
+  assert.match(styles, /COLUMNS\.accountStatus/);
 });

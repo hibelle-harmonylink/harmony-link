@@ -10,25 +10,17 @@ const MEMBER_SIGNUP = {
   roleEmailSecretProperty: 'ROLE_EMAIL_WEBHOOK_SECRET'
 };
 
-const HEADERS = ['회원번호', '가입일', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '시스템 ID'];
+const HEADERS = ['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '시스템 ID'];
 const LEGACY_HEADERS = ['회원 ID', '가입시각', '이름', '이메일', '가입방식', '회원유형', '파트너등급', '가입경로'];
 const PRE_METADATA_HEADERS = ['회원번호', '가입일', '이름', '이메일', '가입방식', '회원유형', '멤버십', '계정상태', '가입경로', '시스템 ID'];
+const PRE_IDENTITY_HEADERS = ['회원번호', '가입일', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '시스템 ID'];
 const COLUMNS = Object.freeze({
   memberNumber: 1,
   joinedAt: 2,
-  name: 3,
-  email: 4,
-  phone: 5,
-  signupMethod: 6,
-  memberType: 7,
-  membership: 8,
-  accountStatus: 9,
-  specialty: 10,
-  teachingSubjects: 11,
-  enrolledSubject: 12,
-  assignedInstructor: 13,
-  signupPath: 14,
-  systemId: 15
+  nickname: 3, name: 4, email: 5, phone: 6, signupMethod: 7,
+  memberType: 8, membership: 9, accountStatus: 10, specialty: 11,
+  teachingSubjects: 12, enrolledSubject: 13, assignedInstructor: 14,
+  signupPath: 15, systemId: 16
 });
 const TYPE_LABELS = ['수강생', '입점 파트너', '관리자'];
 const MEMBERSHIP_LABELS = ['FREE', 'BASIC $20', 'PREMIUM $50', '관리자'];
@@ -94,7 +86,8 @@ function registerMember_(values) {
     const record = [
       memberNumber,
       joinedAt,
-      text_(values['이름']),
+      text_(values.nickname),
+      text_(values.full_name || values['이름']),
       email,
       text_(values.phone || values.phone_number || values.mobile || values.contact),
       text_(values['가입 방식']),
@@ -129,9 +122,9 @@ function registerMember_(values) {
 }
 
 function sendSignupConfirmation_(record) {
-  const name = record[2] || '회원';
-  const email = record[3];
-  const memberType = record[5];
+  const name = record[3] || record[2] || '회원';
+  const email = record[4];
+  const memberType = record[7];
   const guidance = memberType === '수강생'
     ? '수강생으로 등록되었습니다. 교육 프로그램을 살펴보고 원하는 수업을 신청하실 수 있습니다.'
     : '일반회원으로 등록되었습니다. Harmony Link의 프로그램과 새로운 소식을 확인하실 수 있습니다.';
@@ -206,6 +199,13 @@ function syncProfile_(values) {
   // an older deployed function cannot break the roster during rollout.
   const membership = membershipLabel_(memberType, values.membership || values.partner_tier || values.role);
   const statusLabel = statusLabel_(values.account_status);
+  // Older profile-sync callers do not yet send the identity fields. Preserve
+  // their existing roster values until the identity-aware caller is deployed.
+  if (Object.prototype.hasOwnProperty.call(values, 'nickname') || Object.prototype.hasOwnProperty.call(values, 'full_name')) {
+    sheet.getRange(row, COLUMNS.nickname, 1, 2).setValues([[
+      text_(values.nickname), text_(values.full_name)
+    ]]);
+  }
   sheet.getRange(row, COLUMNS.memberType, 1, 3).setValues([[memberType, membership, statusLabel]]);
   sheet.getRange(row, COLUMNS.phone, 1, 1).setValues([[text_(values.phone)]]);
   sheet.getRange(row, COLUMNS.specialty, 1, 4).setValues([[
@@ -229,7 +229,7 @@ function updateMember_(values, memberType, partnerTier, withdrawal) {
     : nextMemberNumber_(sheet, joinedAt);
   const displayType = withdrawal ? normalizeType_(memberType) : normalizeType_(memberType);
   const membership = membershipLabel_(displayType, partnerTier);
-  const record = [memberNumber, joinedAt, text_(values.member_name), email, text_(values.phone), text_(values.member_signup_method), displayType, membership, withdrawal ? '탈퇴' : '활성', text_(values.specialty), text_(values.teaching_subjects), text_(values.enrolled_subject), text_(values.assigned_instructor), text_(values.member_signup_path) || (withdrawal ? '회원탈퇴 시 자동 기록' : '회원정보 변경 시 자동 반영'), id];
+  const record = [memberNumber, joinedAt, text_(values.nickname), text_(values.full_name), email, text_(values.phone), text_(values.member_signup_method), displayType, membership, withdrawal ? '탈퇴' : '활성', text_(values.specialty), text_(values.teaching_subjects), text_(values.enrolled_subject), text_(values.assigned_instructor), text_(values.member_signup_path) || (withdrawal ? '회원탈퇴 시 자동 기록' : '회원정보 변경 시 자동 반영'), id];
   if (!row) {
     sheet.appendRow(record);
     row = sheet.getLastRow();
@@ -268,6 +268,7 @@ function ensureSchema_(sheet) {
   const current = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), HEADERS.length)).getDisplayValues()[0];
   if (current[0] === LEGACY_HEADERS[0]) migrateLegacySchema_(sheet);
   else if (PRE_METADATA_HEADERS.every(function (header, index) { return current[index] === header; })) migratePreMetadataSchema_(sheet);
+  else if (PRE_IDENTITY_HEADERS.every(function (header, index) { return current[index] === header; })) migratePreIdentitySchema_(sheet);
   else sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
   sheet.setFrozenRows(1);
   sheet.getRange(1, 1, 1, HEADERS.length).setBackground('#0d51aa').setFontColor('#ffffff').setFontWeight('bold');
@@ -326,7 +327,21 @@ function migratePreMetadataSchema_(sheet) {
     // only a parseable value back to a Date so the yyyy-mm-dd number format
     // changes presentation without discarding the timestamp moment.
     const joinedAt = text_(row[1]) ? dateValue_(row[1]) : row[1];
-    return [row[0], joinedAt, row[2], row[3], '', row[4], row[5], row[6], row[7], '', '', '', '', row[8], row[9]];
+    const identity = migratedIdentity_(row[0], row[2]);
+    return [row[0], joinedAt, identity.nickname, identity.fullName, row[3], '', row[4], row[5], row[6], row[7], '', '', '', '', row[8], row[9]];
+  });
+  if (sheet.getFilter()) sheet.getFilter().remove();
+  if (count) sheet.getRange(2, 1, count, Math.max(sheet.getLastColumn(), HEADERS.length)).clearContent();
+  sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+  if (expanded.length) sheet.getRange(2, 1, expanded.length, HEADERS.length).setValues(expanded);
+}
+
+function migratePreIdentitySchema_(sheet) {
+  const count = Math.max(sheet.getLastRow() - 1, 0);
+  const rows = count ? sheet.getRange(2, 1, count, PRE_IDENTITY_HEADERS.length).getValues() : [];
+  const expanded = rows.map(function (row) {
+    const identity = migratedIdentity_(row[0], row[2]);
+    return [row[0], row[1], identity.nickname, identity.fullName, row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14]];
   });
   if (sheet.getFilter()) sheet.getFilter().remove();
   if (count) sheet.getRange(2, 1, count, Math.max(sheet.getLastColumn(), HEADERS.length)).clearContent();
@@ -354,10 +369,13 @@ function buildMigratedRows_(legacyRows) {
     const legacy = legacyInfo_(row[5] || row[6]);
     const withdrawn = text_(row[5]) === '탈퇴';
     const memberType = withdrawn ? '수강생' : normalizeType_(legacy.type);
+    const memberNumber = formatMemberNumber_(year, sequenceByYear[year]);
+    const identity = migratedIdentity_(memberNumber, row[2]);
     return [
-      formatMemberNumber_(year, sequenceByYear[year]),
+      memberNumber,
       joinedAt,
-      text_(row[2]),
+      identity.nickname,
+      identity.fullName,
       text_(row[3]),
       '',
       text_(row[4]),
@@ -369,6 +387,13 @@ function buildMigratedRows_(legacyRows) {
       text_(row[0])
     ];
   });
+}
+
+function migratedIdentity_(memberNumber, legacyDisplayName) {
+  if (text_(memberNumber) === 'HL-26-003') {
+    return { nickname: '하이벨_샐리', fullName: '노혜경' };
+  }
+  return { nickname: text_(legacyDisplayName), fullName: '' };
 }
 
 function legacyInfo_(value) {
@@ -426,7 +451,7 @@ function statusLabel_(value) {
 function missingRegistrationField_(values) {
   if (!text_(values['회원 ID'])) return '회원 ID';
   if (!text_(values['이메일'] || values.email)) return '이메일';
-  if (!text_(values['이름'])) return '이름';
+  if (!text_(values['이름'] || values.full_name || values['표시 이름'] || values.nickname)) return '이름';
   return '';
 }
 
