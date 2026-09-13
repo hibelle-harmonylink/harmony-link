@@ -422,7 +422,9 @@ body.admin-page{overflow-x:hidden}
 
 /* Switch the fixed-width member table to its card representation before its
    intrinsic columns can exceed a compact desktop content track. */
-@media(max-width:1150px){
+/* Keep the visual 1150px boundary inclusive when browsers expose a
+   fractional CSS viewport width at an integer window size. */
+@media(max-width:1150.99px){
   .member-table-wrap{overflow:visible}
   .member-table{min-width:0}
   .member-table thead{display:none}
