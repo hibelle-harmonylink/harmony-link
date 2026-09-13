@@ -120,11 +120,9 @@
     overlay.querySelector('.admin-confirm-ok').focus();
   });
   const formatDate = value => value ? new Intl.DateTimeFormat('ko-KR', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(value)) : '없음';
-  const formatPhone = value => {
-    const text = String(value || '').trim();
-    const digits = text.replace(/\D/g, '');
-    return digits.length === 10 ? `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}` : text;
-  };
+  // Phone numbers may be Korean, US, or international. Preserve the
+  // administrator-entered string rather than imposing a regional format.
+  const formatPhone = value => String(value || '').trim();
   const deny = text => { loading.hidden = true; app.hidden = true; denied.hidden = false; deniedMessage.textContent = text; };
   const normalize = member => access.normalizeUser({ ...member, is_admin: member.is_admin || member.role === 'admin' });
   // The admin account's stored display_name is a leftover site-brand
