@@ -17,6 +17,13 @@ test('renders phone between email and member type in the roster and detail summa
   assert.ok(summary.indexOf('이메일') < summary.indexOf('연락처') && summary.indexOf('연락처') < summary.indexOf('회원유형'));
 });
 
+test('preserves Korean, US, and international phone strings without regional reformatting', () => {
+  assert.match(adminJs, /const formatPhone = value => String\(value \|\| ''\)\.trim\(\);/);
+  assert.doesNotMatch(adminJs, /digits\.length === 10/);
+  assert.match(adminCss, /nth-child\(4\).*?width:145px/);
+  assert.match(adminCss, /nth-child\(5\).*?padding-left:26px/);
+});
+
 test('withdrawn members are fully read-only and cannot submit a save action', () => {
   assert.match(adminJs, /탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다/);
   assert.match(adminJs, /member-save-disabled[^]*?disabled>변경 불가/);

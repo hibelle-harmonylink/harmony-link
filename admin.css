@@ -226,8 +226,9 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   .member-table{min-width:0;table-layout:fixed;border-spacing:0}
   .member-table th:first-child,.member-table td:first-child{width:82px}
   .member-table th:nth-child(2),.member-table td:nth-child(2){width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .member-table th:nth-child(4),.member-table td:nth-child(4){width:116px;white-space:nowrap;text-align:center}
-  .member-table th:nth-child(5),.member-table td:nth-child(5){width:82px;text-align:center}
+  .member-table th:nth-child(3),.member-table td:nth-child(3){width:165px}
+  .member-table th:nth-child(4),.member-table td:nth-child(4){width:145px;white-space:nowrap;text-align:center;padding-right:22px}
+  .member-table th:nth-child(5),.member-table td:nth-child(5){width:94px;text-align:center;padding-left:26px}
   .member-table th:nth-child(6),.member-table td:nth-child(6){width:108px;text-align:center}
   .member-table th:nth-child(7),.member-table td:nth-child(7){width:60px;text-align:center}
   .member-table th:nth-child(8),.member-table td:nth-child(8){width:100px;white-space:nowrap;text-align:center}
