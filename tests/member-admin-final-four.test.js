@@ -24,6 +24,13 @@ test('preserves Korean, US, and international phone strings without regional ref
   assert.match(adminCss, /nth-child\(5\).*?padding-left:26px/);
 });
 
+test('prefills the editable contact input from the same member phone used by the detail summary', () => {
+  const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
+  assert.match(detail, /const phone = detail\.querySelector\('#detailPhone'\);/);
+  assert.match(detail, /if \(phone\) phone\.value = formatPhone\(member\.phone \?\? ''\);/);
+  assert.doesNotMatch(detail, /\[phone, specialty, teachingSubjects, enrolledSubject, assignedInstructor\]\.forEach\(\(input, index\)/);
+});
+
 test('withdrawn members are fully read-only and cannot submit a save action', () => {
   assert.match(adminJs, /탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다/);
   assert.match(adminJs, /member-save-disabled[^]*?disabled>변경 불가/);
