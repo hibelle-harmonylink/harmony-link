@@ -26,9 +26,9 @@ test('preserves Korean, US, and international phone strings without regional ref
 
 test('prefills the editable contact input from the same member phone used by the detail summary', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
-  assert.match(detail, /const phone = detail\.querySelector\('#detailPhone'\);/);
-  assert.match(detail, /if \(phone\) phone\.value = formatPhone\(member\.phone \?\? ''\);/);
-  assert.doesNotMatch(detail, /\[phone, specialty, teachingSubjects, enrolledSubject, assignedInstructor\]\.forEach\(\(input, index\)/);
+  assert.match(detail, /id="detailPhone"[^>]*value="\$\{escapeHtml\(formatPhone\(member\.phone \?\? ''\)\)\}"/);
+  assert.match(detail, /const summary = [^;]*formatPhone\(member\.phone\)/);
+  assert.doesNotMatch(detail, /phone\.value\s*=/);
 });
 
 test('withdrawn members are fully read-only and cannot submit a save action', () => {
