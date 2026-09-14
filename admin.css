@@ -482,3 +482,70 @@ body.admin-page{overflow-x:hidden}
   .admin-toolbar>label:first-child,.admin-toolbar .btn{grid-column:auto}
   .admin-toolbar .btn{width:100%}
 }
+
+/* Keep the member totals compact and comparable at every viewport size.
+   These final rules intentionally supersede the older 3/2-card breakpoints:
+   six totals always share one shrinkable row, while the title and refresh
+   action may move independently without obscuring the summary. */
+.admin-title-row{
+  grid-template-columns:minmax(0,1fr) minmax(300px,620px) max-content;
+  gap:clamp(6px,1vw,12px);
+  padding:clamp(10px,1.2vw,15px) clamp(12px,1.5vw,20px);
+}
+.admin-title-row>div:first-child>p:last-child{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  overflow-wrap:normal;
+  font-size:clamp(9px,1vw,13px);
+}
+.admin-title-row .admin-summary{
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:clamp(2px,.55vw,6px);
+  min-height:clamp(58px,5vw,68px);
+}
+.admin-summary article{
+  min-height:clamp(58px,5vw,68px);
+  padding:clamp(4px,.55vw,8px);
+  display:grid;
+  place-content:center;
+}
+.admin-summary span{
+  font-size:clamp(7px,.76vw,12px)!important;
+  line-height:1.12;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  overflow-wrap:normal;
+}
+.admin-summary strong{
+  margin-top:2px;
+  font-size:clamp(20px,1.7vw,24px)!important;
+  line-height:1;
+}
+.admin-title-row .admin-refresh{
+  padding:clamp(7px,.7vw,10px) clamp(8px,.9vw,12px);
+  font-size:clamp(9px,.82vw,12px);
+}
+
+@media(max-width:720px){
+  .admin-title-row{
+    grid-template-columns:minmax(0,1fr) max-content;
+    gap:8px;
+    padding:10px;
+  }
+  .admin-title-row .admin-summary{
+    grid-column:1/-1;
+    grid-row:2;
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    min-height:clamp(58px,14vw,64px);
+  }
+  .admin-title-row .admin-refresh{
+    grid-column:2;
+    grid-row:1;
+    width:auto;
+  }
+  .admin-summary article{min-height:clamp(58px,14vw,64px);padding:3px 1px}
+  .admin-summary span{font-size:clamp(7px,2vw,10px)!important}
+  .admin-summary strong{font-size:clamp(18px,5.4vw,22px)!important}
+}

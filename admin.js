@@ -128,13 +128,17 @@
   // The admin account's stored display_name is a leftover site-brand
   // placeholder ("Harmony Link") from setup, not this admin's own name.
   // The database value is left untouched -- only what's rendered changes.
-  const resolveDisplayName = member => {
+  const fallbackMemberName = member => {
     const raw = (member.display_name || '').trim();
     if (member.is_admin && raw === 'Harmony Link') return '하이벨';
     return raw || (member.email || '').split('@')[0] || '이름 없음';
   };
-  const memberNickname = member => String(member.nickname || '').trim();
-  const memberFullName = member => String(member.full_name || '').trim();
+  // Identity metadata is optional for people who have finished site signup
+  // but have not submitted an application yet.  Never leave those rows
+  // anonymous in the admin UI: use the existing display name, then email.
+  const memberNickname = member => String(member.nickname || '').trim() || fallbackMemberName(member);
+  const memberFullName = member => String(member.full_name || '').trim() || fallbackMemberName(member);
+  const resolveDisplayName = member => memberFullName(member);
   const memberNumberClass = member => member.member_number && member.application_completed === false
     ? 'member-number member-number-pending'
     : 'member-number';
@@ -182,7 +186,6 @@
     list.replaceChildren(...members.map(raw => {
       const member = normalize(raw);
       const row = document.createElement('tr');
-      const name = resolveDisplayName(member);
       const memberNumber = member.member_number || '—';
       const cells = [
         ['회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(memberNumber)}</span>`],
