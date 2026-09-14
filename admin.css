@@ -266,6 +266,7 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .member-protected-copy{border-radius:12px;padding:14px 18px;font-size:13px;line-height:1.5}
 .member-resend{background:#fff;color:var(--admin-blue);border:1.5px solid var(--admin-blue)}
 .member-resend:disabled{cursor:wait;opacity:.6}
+.member-resend.is-sending{cursor:wait}
 @media(min-width:681px){
   .member-detail{padding:14px 28px}
   /* Visual order only (DOM order is unchanged): 날짜정보 sits right

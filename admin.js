@@ -366,17 +366,31 @@
   };
 
   const resendNotification = async (member, button) => {
+    if (button.disabled) return;
+    const feedback = detail.querySelector('#detailSaveFeedback');
     button.disabled = true;
     button.textContent = '메일 보내는 중…';
+    button.classList.add('is-sending');
+    if (feedback) { feedback.textContent = ''; feedback.className = 'member-save-feedback'; }
     setMessage(`${member.email} 회원에게 등급 안내메일을 보내고 있습니다.`);
     try {
       await sendRoleNotification(member);
       setMessage(`${member.email} 회원에게 안내메일을 보냈습니다.`);
+      if (feedback) {
+        feedback.textContent = `${member.email}으로 안내메일을 보냈습니다.`;
+        feedback.className = 'member-save-feedback success';
+      }
     } catch (error) {
-      setMessage(`안내메일 전송 실패: ${error.message}`, true);
+      const errorText = describeError(error);
+      setMessage(`안내메일 전송 실패: ${errorText}`, true);
+      if (feedback) {
+        feedback.textContent = `안내메일 전송 실패: ${errorText}`;
+        feedback.className = 'member-save-feedback error';
+      }
     } finally {
       button.disabled = false;
       button.textContent = '안내메일 다시 보내기';
+      button.classList.remove('is-sending');
     }
   };
 
