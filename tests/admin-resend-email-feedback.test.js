@@ -26,7 +26,8 @@ test('resend reports confirmed delivery inside the detail feedback region', () =
 });
 
 test('resend shows a detail error and always restores the button', () => {
-  assert.match(resend, /feedback\.textContent = `안내메일 전송 실패: \$\{errorText\}`;/);
+  assert.match(resend, /const errorText = '안내메일 발송에 실패했습니다\. 잠시 후 다시 시도해주세요\.';/);
+  assert.match(resend, /feedback\.textContent = errorText;/);
   assert.match(resend, /feedback\.className = 'member-save-feedback error';/);
   assert.match(resend, /button\.disabled = false;/);
   assert.match(resend, /button\.textContent = '안내메일 다시 보내기';/);
@@ -35,14 +36,23 @@ test('resend shows a detail error and always restores the button', () => {
 });
 
 test('admin asset versions advance together for the resend UX', () => {
-  assert.equal(version.version, '20260913-3');
-  assert.match(adminHtml, /const pageVersion = '20260913-3'/);
-  assert.match(adminHtml, /admin\.css\?v=20260913-3/);
-  assert.match(adminHtml, /admin\.js\?v=20260913-3/);
+  assert.equal(version.version, '20260913-4');
+  assert.match(adminHtml, /const pageVersion = '20260913-4'/);
+  assert.match(adminHtml, /admin\.css\?v=20260913-4/);
+  assert.match(adminHtml, /admin\.js\?v=20260913-4/);
 });
 
 test('detail feedback stays immediately above the action row on desktop and mobile', () => {
   assert.match(adminCss, /\.member-save-feedback\{order:5;min-width:0\}/);
   assert.match(adminCss, /\.member-detail-actions\{order:6\}/);
   assert.match(adminCss, /\.member-save-feedback\.success,.member-save-feedback\.error\{display:grid/);
+});
+
+test('retries only transient delivery-status reads without requeueing an email', () => {
+  const retryHelper = adminJs.slice(adminJs.indexOf('const isTransientFetchError'), adminJs.indexOf('const sendRoleNotification'));
+  const notification = adminJs.slice(adminJs.indexOf('const getRoleEmailStatusWithRetry'), adminJs.indexOf('const sendRoleNotification'));
+  assert.match(retryHelper, /const isTransientFetchError = error => \/failed to fetch\|networkerror\|network request failed\/i/);
+  assert.match(notification, /for \(let retry = 0; retry < 3; retry \+= 1\)/);
+  assert.match(notification, /client\.rpc\('admin_get_role_email_status'/);
+  assert.doesNotMatch(notification, /admin_queue_role_email/);
 });

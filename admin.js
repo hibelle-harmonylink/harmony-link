@@ -251,12 +251,33 @@
     }));
   };
 
+  const delay = milliseconds => new Promise(resolve => window.setTimeout(resolve, milliseconds));
+  const isTransientFetchError = error => /failed to fetch|networkerror|network request failed/i.test(String(error?.message || error || ''));
+  // The email must be queued only once.  A transient browser-to-PostgREST
+  // failure while polling its delivery status must therefore retry only the
+  // read, never admin_queue_role_email(), which would create a second email.
+  const getRoleEmailStatusWithRetry = async notificationId => {
+    let lastError;
+    for (let retry = 0; retry < 3; retry += 1) {
+      try {
+        const result = await client.rpc('admin_get_role_email_status', { p_notification_id: notificationId });
+        if (!result.error || !isTransientFetchError(result.error) || retry === 2) return result;
+        lastError = result.error;
+      } catch (error) {
+        if (!isTransientFetchError(error) || retry === 2) throw error;
+        lastError = error;
+      }
+      await delay(400 * (retry + 1));
+    }
+    throw lastError || new Error('메일 발송 상태를 확인하지 못했습니다.');
+  };
+
   const sendRoleNotification = async member => {
     const { data: notificationId, error } = await client.rpc('admin_queue_role_email', { p_member_id: member.id });
     if (error) throw new Error(error.message || '메일 발송 대기열 등록에 실패했습니다.');
     for (let attempt = 0; attempt < 15; attempt += 1) {
-      await new Promise(resolve => window.setTimeout(resolve, 1000));
-      const { data: rows, error: statusError } = await client.rpc('admin_get_role_email_status', { p_notification_id: notificationId });
+      await delay(1000);
+      const { data: rows, error: statusError } = await getRoleEmailStatusWithRetry(notificationId);
       if (statusError) throw new Error(statusError.message || '메일 발송 상태를 확인하지 못했습니다.');
       const delivery = rows?.[0];
       if (delivery?.processed_at) return;
@@ -382,10 +403,11 @@
         feedback.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       }
     } catch (error) {
-      const errorText = describeError(error);
-      setMessage(`안내메일 전송 실패: ${errorText}`, true);
+      const errorText = '안내메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.';
+      console.error('[admin] resend notification failed', { memberId: member.id, error: describeError(error) });
+      setMessage(errorText, true);
       if (feedback) {
-        feedback.textContent = `안내메일 전송 실패: ${errorText}`;
+        feedback.textContent = errorText;
         feedback.className = 'member-save-feedback error';
         feedback.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       }
