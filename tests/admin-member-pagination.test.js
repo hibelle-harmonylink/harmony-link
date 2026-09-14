@@ -33,8 +33,12 @@ test('renders accessible previous/current/next pagination controls', () => {
 test('compacts desktop rows while preserving mobile readability and updates asset versions', () => {
   assert.match(css, /\.member-table td\{padding:12px 12px;font-size:13px\}/);
   assert.match(css, /\.member-badge\{font-size:10px;padding:4px 8px\}/);
-  assert.match(css, /@media\(max-width:680px\)\{\s*\.member-pagination/);
-  assert.equal(version.version, '20260913-5');
-  assert.match(html, /admin\.css\?v=20260913-5/);
-  assert.match(html, /admin\.js\?v=20260913-5/);
+  assert.match(css, /\.member-pagination\{[\s\S]*background:linear-gradient\(135deg,#0f5cae,#1768d5\)/);
+  assert.match(css, /\.member-pagination-summary\{[\s\S]*font-size:clamp\(13px,1\.2vw,14px\)[\s\S]*font-weight:750/);
+  assert.match(css, /\.member-page-button\{[\s\S]*min-width:clamp\(42px,4\.5vw,54px\)[\s\S]*height:clamp\(34px,3\.2vw,38px\)/);
+  assert.match(css, /\.member-page-button:disabled\{opacity:1[\s\S]*background:#d9dee5[\s\S]*color:#4b5563/);
+  assert.match(css, /@media\(max-width:440px\)\{[\s\S]*\.member-pagination\{align-items:flex-start;flex-direction:column[\s\S]*\.member-pagination-controls\{width:100%;flex-wrap:wrap;justify-content:flex-end;align-items:center;row-gap:6px;column-gap:6px/);
+  assert.equal(version.version, '20260913-6');
+  assert.match(html, /admin\.css\?v=20260913-6/);
+  assert.match(html, /admin\.js\?v=20260913-6/);
 });
