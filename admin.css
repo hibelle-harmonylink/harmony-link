@@ -158,13 +158,14 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .member-table td{padding:12px 12px;font-size:13px}
 .member-badge{font-size:10px;padding:4px 8px}
 .member-manage{padding:6px 9px;font-size:11px;line-height:1.2}
-.member-pagination{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:12px 2px 0;color:#526981;font-size:12px}
-.member-pagination-summary{margin:0;font-weight:750;white-space:nowrap}
-.member-pagination-controls{display:flex;align-items:center;justify-content:flex-end;gap:4px;min-width:0}
-.member-page-button{min-width:31px;height:30px;padding:0 8px;border:1px solid #c8d8ea;border-radius:8px;background:#fff;color:#17416f;font-size:11px;font-weight:800;cursor:pointer}
-.member-page-button:hover:not(:disabled),.member-page-button.is-current{border-color:#1768d5;background:#1768d5;color:#fff}
-.member-page-button:disabled{opacity:.45;cursor:not-allowed}
-.member-page-ellipsis{padding:0 3px;color:#718198;font-weight:800}
+.member-pagination{display:flex;align-items:center;justify-content:space-between;gap:clamp(10px,1.5vw,18px);margin:14px 0 0;padding:clamp(11px,1.5vw,15px) clamp(12px,1.8vw,20px);border:1px solid #1768d5;border-radius:12px;background:linear-gradient(135deg,#0f5cae,#1768d5);box-shadow:0 7px 18px rgba(18,85,168,.17);color:#fff}
+.member-pagination-summary{margin:0;font-size:clamp(13px,1.2vw,14px);font-weight:750;letter-spacing:-.01em;white-space:nowrap}
+.member-pagination-controls{display:flex;align-items:center;justify-content:flex-end;gap:clamp(6px,.8vw,8px);min-width:0}
+.member-page-button{min-width:clamp(42px,4.5vw,54px);height:clamp(34px,3.2vw,38px);padding:0 clamp(9px,1.2vw,13px);border:1px solid #d7e6f8;border-radius:8px;background:#fff;color:#0d4f96;font-size:clamp(11px,1vw,12px);font-weight:800;cursor:pointer;box-shadow:0 1px 2px rgba(10,48,95,.12)}
+.member-page-button:hover:not(:disabled){border-color:#fff;background:#eaf4ff;color:#073f7d}
+.member-page-button.is-current{border-color:#084b9c;background:#084b9c;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+.member-page-button:disabled{opacity:1;border-color:#b7c0cc;background:#d9dee5;color:#4b5563;cursor:not-allowed;box-shadow:none}
+.member-page-ellipsis{padding:0 2px;color:#fff;font-size:13px;font-weight:800}
 
 /* 2026-09: badge colors carry meaning per column -- 회원유형 (role),
    멤버십 (paid tier), 상태 (account status) each get their own vivid,
@@ -219,14 +220,18 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   border-color:#c99700;
 }
 @media(max-width:680px){
-  .member-pagination{align-items:flex-start;flex-direction:column;gap:8px;margin-top:10px}
-  .member-pagination-summary{font-size:11px}
-  .member-pagination-controls{width:100%;justify-content:space-between;gap:3px}
-  .member-page-button{min-width:28px;height:29px;padding:0 6px;font-size:10px}
+  .member-pagination{gap:8px;margin-top:10px;padding:10px 11px}
+  .member-pagination-summary{font-size:clamp(12px,3.1vw,13px)}
+  .member-pagination-controls{gap:5px}
+  .member-page-button{min-width:clamp(38px,10vw,42px);height:34px;padding:0 7px;font-size:11px}
   .admin-summary article{min-height:72px;display:grid;place-content:center}
   .admin-summary span{font-size:10px!important;font-weight:800!important}
   .admin-summary strong{font-size:24px!important;font-weight:900!important}
   .admin-message:not(.error){padding:12px!important;font-size:20px!important;line-height:1.3}
+}
+@media(max-width:440px){
+  .member-pagination{align-items:flex-start;flex-direction:column}
+  .member-pagination-controls{width:100%;justify-content:space-between}
 }
 
 /* Table-only member number display.  This is deliberately compact so the
