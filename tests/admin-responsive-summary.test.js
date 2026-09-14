@@ -13,10 +13,10 @@ test('uses shrinkable grid tracks for the title, six summary cards, and refresh 
   assert.match(responsive, /body\.admin-page\{overflow-x:hidden\}/);
 });
 
-test('reflows summary cards at laptop, tablet, and phone breakpoints', () => {
-  assert.match(responsive, /@media\(max-width:1399px\)\{[\s\S]*grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
-  assert.match(responsive, /@media\(max-width:899px\)\{[\s\S]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
-  assert.match(responsive, /@media\(max-width:680px\)\{[\s\S]*\.admin-title-row\{grid-template-columns:minmax\(0,1fr\)/);
+test('keeps all six compact summary cards on one responsive row', () => {
+  assert.match(responsive, /\.admin-title-row \.admin-summary\{[\s\S]*grid-template-columns:repeat\(6,minmax\(0,1fr\)\)[\s\S]*min-height:clamp\(58px,5vw,68px\)/);
+  assert.match(responsive, /@media\(max-width:720px\)\{[\s\S]*\.admin-title-row \.admin-summary\{[\s\S]*grid-template-columns:repeat\(6,minmax\(0,1fr\)\)!important/);
+  assert.match(responsive, /\/\* Keep the member totals compact and comparable at every viewport size\./);
 });
 
 test('keeps filters and the member list within responsive page tracks', () => {

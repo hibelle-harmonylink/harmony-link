@@ -18,7 +18,7 @@
        version.json polling pattern so a stale copy force-reloads itself. -->
   <script>
     (() => {
-      const pageVersion = '20260905-7';
+      const pageVersion = '20260913-1';
       fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
         .then(response => response.ok ? response.json() : null)
         .then(release => {
@@ -31,8 +31,8 @@
         .catch(() => {});
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=20260905-7">
-  <link rel="stylesheet" href="admin.css?v=20260912-7">
+  <link rel="stylesheet" href="styles.css?v=20260913-1">
+  <link rel="stylesheet" href="admin.css?v=20260913-1">
 </head>
 <body class="admin-page">
   <header class="admin-header">
@@ -50,7 +50,7 @@
 
     <section class="admin-shell" id="adminApp" hidden>
       <div class="admin-title-row">
-        <div><p class="eyebrow">ADMIN MEMBER CENTER</p><h1>회원 관리</h1><p>회원유형, 멤버십, 계정 상태와 기능 권한을 각각 관리합니다.</p></div>
+        <div><p class="eyebrow">ADMIN MEMBER CENTER</p><h1>회원 관리</h1><p>회원유형 · 멤버십 · 계정 상태 · 기능 권한을 각각 관리합니다.</p></div>
         <div class="admin-summary" aria-label="회원 현황">
           <article><span>전체 회원</span><strong data-count="all">0</strong></article>
           <article><span>관리자</span><strong data-count="admin">0</strong></article>
@@ -80,6 +80,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="access-control.js?v=20260904-1"></script>
-  <script src="admin.js?v=20260912-9"></script>
+  <script src="admin.js?v=20260913-1"></script>
 </body>
 </html>
