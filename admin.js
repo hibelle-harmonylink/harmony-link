@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const BUILD = '20260904-1';
+  const BUILD = '20260913-5';
   console.log(`[admin] admin.js loaded — build ${BUILD}`);
   // Visible without opening devtools -- if this text is missing, blank, or
   // shows an older build number than the one just shipped, the browser (or
@@ -33,6 +33,9 @@
   const signOutButton = document.getElementById('adminSignOut');
   const dialog = document.getElementById('memberDialog');
   const detail = document.getElementById('memberDetail');
+  const pagination = document.getElementById('memberPagination');
+  const paginationSummary = document.getElementById('memberPaginationSummary');
+  const paginationControls = document.getElementById('memberPaginationControls');
 
   const TYPE_LABELS = { student: '수강생', partner: '파트너' };
   const MEMBERSHIP_LABELS = { free: 'FREE', basic: 'BASIC $20', premium: 'PREMIUM $50' };
@@ -41,6 +44,8 @@
   let currentUserId = '';
   let currentUserName = '';
   let allMembers = [];
+  let currentPage = 1;
+  const MEMBERS_PER_PAGE = 20;
 
   // Postgrest/Supabase errors carry more than .message -- .code, .details
   // and .hint often say exactly what's wrong (missing function, RLS
@@ -182,8 +187,54 @@
     });
   };
 
+  // Keep the client-side page math separate from filtering/rendering so the
+  // source can later switch to a server-page request without changing the
+  // member-row renderer or filter UI.
+  const getPage = (members, page) => {
+    const totalPages = Math.max(1, Math.ceil(members.length / MEMBERS_PER_PAGE));
+    const safePage = Math.min(Math.max(page, 1), totalPages);
+    const start = (safePage - 1) * MEMBERS_PER_PAGE;
+    return { page: safePage, totalPages, start, members: members.slice(start, start + MEMBERS_PER_PAGE) };
+  };
+
+  const pageNumbers = (page, totalPages) => {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, index) => index + 1);
+    const pages = [1];
+    if (page > 4) pages.push('…');
+    for (let value = Math.max(2, page - 1); value <= Math.min(totalPages - 1, page + 1); value += 1) pages.push(value);
+    if (page < totalPages - 3) pages.push('…');
+    pages.push(totalPages);
+    return pages;
+  };
+
+  const renderPagination = (members, pageData) => {
+    const { page, totalPages, start } = pageData;
+    pagination.hidden = members.length === 0;
+    if (members.length === 0) return;
+    const end = Math.min(start + MEMBERS_PER_PAGE, members.length);
+    paginationSummary.textContent = `전체 ${members.length}명 · 현재 ${start + 1}–${end}`;
+    paginationControls.replaceChildren();
+    const appendButton = (label, targetPage, disabled = false, current = false) => {
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'member-page-button'; button.textContent = label;
+      button.disabled = disabled; button.dataset.page = String(targetPage);
+      if (current) { button.classList.add('is-current'); button.setAttribute('aria-current', 'page'); }
+      paginationControls.appendChild(button);
+    };
+    appendButton('이전', page - 1, page === 1);
+    pageNumbers(page, totalPages).forEach(value => {
+      if (value === '…') {
+        const ellipsis = document.createElement('span'); ellipsis.className = 'member-page-ellipsis'; ellipsis.textContent = value;
+        paginationControls.appendChild(ellipsis);
+      } else appendButton(String(value), value, false, value === page);
+    });
+    appendButton('다음', page + 1, page === totalPages);
+  };
+
   const renderMembers = members => {
-    list.replaceChildren(...members.map(raw => {
+    const pageData = getPage(members, currentPage);
+    currentPage = pageData.page;
+    list.replaceChildren(...pageData.members.map(raw => {
       const member = normalize(raw);
       const row = document.createElement('tr');
       const memberNumber = member.member_number || '—';
@@ -212,7 +263,8 @@
       return row;
     }));
     empty.hidden = members.length > 0;
-    console.log('[admin] rendered rows', { count: members.length });
+    renderPagination(members, pageData);
+    console.log('[admin] rendered rows', { count: pageData.members.length, total: members.length, page: currentPage });
   };
 
   const loadMembers = async () => {
@@ -235,7 +287,8 @@
     setMessage(`최근 가입 순서로 ${allMembers.length}명의 회원을 표시합니다.`);
   };
 
-  const applyFilters = () => {
+  const applyFilters = ({ resetPage = true } = {}) => {
+    if (resetPage) currentPage = 1;
     const term = search.value.trim().toLowerCase();
     renderMembers(allMembers.filter(raw => {
       const member = normalize(raw);
@@ -250,6 +303,13 @@
         && (!statusFilter.value || member.account_status === statusFilter.value);
     }));
   };
+
+  paginationControls.addEventListener('click', event => {
+    const button = event.target.closest('[data-page]');
+    if (!button || button.disabled) return;
+    currentPage = Number(button.dataset.page);
+    applyFilters({ resetPage: false });
+  });
 
   const delay = milliseconds => new Promise(resolve => window.setTimeout(resolve, milliseconds));
   const isTransientFetchError = error => /failed to fetch|networkerror|network request failed/i.test(String(error?.message || error || ''));

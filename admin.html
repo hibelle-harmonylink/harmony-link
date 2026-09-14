@@ -18,7 +18,7 @@
        version.json polling pattern so a stale copy force-reloads itself. -->
   <script>
     (() => {
-      const pageVersion = '20260913-4';
+      const pageVersion = '20260913-5';
       fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
         .then(response => response.ok ? response.json() : null)
         .then(release => {
@@ -31,8 +31,8 @@
         .catch(() => {});
     })();
   </script>
-  <link rel="stylesheet" href="styles.css?v=20260913-4">
-  <link rel="stylesheet" href="admin.css?v=20260913-4">
+  <link rel="stylesheet" href="styles.css?v=20260913-5">
+  <link rel="stylesheet" href="admin.css?v=20260913-5">
 </head>
 <body class="admin-page">
   <header class="admin-header">
@@ -73,6 +73,10 @@
       <div class="admin-message" id="adminMessage" role="status" aria-live="polite"></div>
       <div class="member-table-wrap"><table class="member-table"><thead><tr><th>회원번호</th><th>닉네임</th><th>이름</th><th>이메일</th><th>연락처</th><th>회원유형</th><th>멤버십</th><th>상태</th><th>가입일</th><th>관리</th></tr></thead><tbody id="memberList"></tbody></table></div>
       <div class="member-empty" id="memberEmpty" hidden>조건에 맞는 회원이 없습니다.</div>
+      <div class="member-pagination" id="memberPagination" hidden>
+        <p class="member-pagination-summary" id="memberPaginationSummary" aria-live="polite"></p>
+        <nav class="member-pagination-controls" id="memberPaginationControls" aria-label="회원 목록 페이지"></nav>
+      </div>
     </section>
   </main>
 
@@ -80,6 +84,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="access-control.js?v=20260904-1"></script>
-  <script src="admin.js?v=20260913-4"></script>
+  <script src="admin.js?v=20260913-5"></script>
 </body>
 </html>

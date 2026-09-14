@@ -154,9 +154,17 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
    span it correctly via their own rules above. */
 @media(min-width:1001px){.admin-toolbar .btn{grid-column:1/-1;width:100%;margin-top:2px}}
 .admin-message:not(.error){margin:8px 8px 16px}
-.member-table th{padding:15px 16px;font-size:12.5px}
-.member-table td{padding:17px 16px;font-size:14px}
-.member-badge{font-size:11px;padding:6px 11px}
+.member-table th{padding:10px 12px;font-size:12px}
+.member-table td{padding:12px 12px;font-size:13px}
+.member-badge{font-size:10px;padding:4px 8px}
+.member-manage{padding:6px 9px;font-size:11px;line-height:1.2}
+.member-pagination{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:12px 2px 0;color:#526981;font-size:12px}
+.member-pagination-summary{margin:0;font-weight:750;white-space:nowrap}
+.member-pagination-controls{display:flex;align-items:center;justify-content:flex-end;gap:4px;min-width:0}
+.member-page-button{min-width:31px;height:30px;padding:0 8px;border:1px solid #c8d8ea;border-radius:8px;background:#fff;color:#17416f;font-size:11px;font-weight:800;cursor:pointer}
+.member-page-button:hover:not(:disabled),.member-page-button.is-current{border-color:#1768d5;background:#1768d5;color:#fff}
+.member-page-button:disabled{opacity:.45;cursor:not-allowed}
+.member-page-ellipsis{padding:0 3px;color:#718198;font-weight:800}
 
 /* 2026-09: badge colors carry meaning per column -- 회원유형 (role),
    멤버십 (paid tier), 상태 (account status) each get their own vivid,
@@ -211,6 +219,10 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   border-color:#c99700;
 }
 @media(max-width:680px){
+  .member-pagination{align-items:flex-start;flex-direction:column;gap:8px;margin-top:10px}
+  .member-pagination-summary{font-size:11px}
+  .member-pagination-controls{width:100%;justify-content:space-between;gap:3px}
+  .member-page-button{min-width:28px;height:29px;padding:0 6px;font-size:10px}
   .admin-summary article{min-height:72px;display:grid;place-content:center}
   .admin-summary span{font-size:10px!important;font-weight:800!important}
   .admin-summary strong{font-size:24px!important;font-weight:900!important}
