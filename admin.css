@@ -231,7 +231,7 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 }
 @media(max-width:440px){
   .member-pagination{align-items:flex-start;flex-direction:column}
-  .member-pagination-controls{width:100%;justify-content:space-between}
+  .member-pagination-controls{width:100%;flex-wrap:wrap;justify-content:flex-end;align-items:center;row-gap:6px;column-gap:6px}
 }
 
 /* Table-only member number display.  This is deliberately compact so the
