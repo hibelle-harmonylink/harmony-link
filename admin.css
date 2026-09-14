@@ -267,6 +267,14 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .member-resend{background:#fff;color:var(--admin-blue);border:1.5px solid var(--admin-blue)}
 .member-resend:disabled{cursor:wait;opacity:.6}
 .member-resend.is-sending{cursor:wait}
+/* The feedback node is in the DOM immediately before the action row.  Give
+   both explicit grid orders because desktop detail sections also set order,
+   otherwise a default order (0) can place feedback above the modal content. */
+.member-save-feedback{order:5;min-width:0}
+.member-detail-actions{order:6}
+.member-save-feedback.success,.member-save-feedback.error{display:grid;gap:3px;justify-items:center;margin:0;text-align:center}
+.member-save-feedback.success strong{font-size:13px;line-height:1.25}
+.member-save-feedback.success span{font-size:11px;font-weight:700;overflow-wrap:anywhere}
 @media(min-width:681px){
   .member-detail{padding:14px 28px}
   /* Visual order only (DOM order is unchanged): 날짜정보 sits right
@@ -276,7 +284,7 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   .member-edit-grid,.member-protected-copy{order:2}
   .member-dates{order:3}
   #detailFeatures{order:4}
-  .member-detail-actions{order:5}
+  .member-detail-actions{order:6}
   /* Identity line: name (left, own natural width) -- email (center,
      grows to fill the middle since it's the only flexible item, so
      text-align:center lands it in the middle of that space) -- role/

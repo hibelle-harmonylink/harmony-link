@@ -20,8 +20,9 @@ test('resend immediately disables its button and prevents a duplicate click', ()
 test('resend reports confirmed delivery inside the detail feedback region', () => {
   assert.match(resend, /const feedback = detail\.querySelector\('#detailSaveFeedback'\);/);
   assert.match(resend, /await sendRoleNotification\(member\);/);
-  assert.match(resend, /feedback\.textContent = `\$\{member\.email\}으로 안내메일을 보냈습니다\.`;/);
+  assert.match(resend, /feedback\.innerHTML = `<strong>안내메일을 성공적으로 보냈습니다\.<\/strong><span>\$\{escapeHtml\(member\.email\)\}<\/span>`;/);
   assert.match(resend, /feedback\.className = 'member-save-feedback success';/);
+  assert.match(resend, /feedback\.scrollIntoView\(\{ block: 'nearest', behavior: 'smooth' \}\);/);
 });
 
 test('resend shows a detail error and always restores the button', () => {
@@ -34,8 +35,14 @@ test('resend shows a detail error and always restores the button', () => {
 });
 
 test('admin asset versions advance together for the resend UX', () => {
-  assert.equal(version.version, '20260913-2');
-  assert.match(adminHtml, /const pageVersion = '20260913-2'/);
-  assert.match(adminHtml, /admin\.css\?v=20260913-2/);
-  assert.match(adminHtml, /admin\.js\?v=20260913-2/);
+  assert.equal(version.version, '20260913-3');
+  assert.match(adminHtml, /const pageVersion = '20260913-3'/);
+  assert.match(adminHtml, /admin\.css\?v=20260913-3/);
+  assert.match(adminHtml, /admin\.js\?v=20260913-3/);
+});
+
+test('detail feedback stays immediately above the action row on desktop and mobile', () => {
+  assert.match(adminCss, /\.member-save-feedback\{order:5;min-width:0\}/);
+  assert.match(adminCss, /\.member-detail-actions\{order:6\}/);
+  assert.match(adminCss, /\.member-save-feedback\.success,.member-save-feedback\.error\{display:grid/);
 });
