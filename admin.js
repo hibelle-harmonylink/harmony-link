@@ -377,8 +377,9 @@
       await sendRoleNotification(member);
       setMessage(`${member.email} 회원에게 안내메일을 보냈습니다.`);
       if (feedback) {
-        feedback.textContent = `${member.email}으로 안내메일을 보냈습니다.`;
+        feedback.innerHTML = `<strong>안내메일을 성공적으로 보냈습니다.</strong><span>${escapeHtml(member.email)}</span>`;
         feedback.className = 'member-save-feedback success';
+        feedback.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       }
     } catch (error) {
       const errorText = describeError(error);
@@ -386,6 +387,7 @@
       if (feedback) {
         feedback.textContent = `안내메일 전송 실패: ${errorText}`;
         feedback.className = 'member-save-feedback error';
+        feedback.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       }
     } finally {
       button.disabled = false;
