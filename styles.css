@@ -1453,23 +1453,32 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
 #partner-center .partner-downloads{grid-column:auto!important;max-height:none!important;overflow:visible!important;padding:0!important}
 #partner-center .partner-library-head{margin:20px 0 22px!important}
 #partner-center .partner-library-status p{font-size:15px!important;line-height:1.55}
-#partner-center .partner-tier-guide{gap:12px!important;margin-top:16px!important}
-#partner-center .partner-tier-guide button{min-height:76px!important;flex-direction:column!important;gap:2px!important;border-radius:14px!important;font-size:16px!important}
-#partner-center .partner-tier-guide button strong{font-size:27px!important;line-height:1!important;letter-spacing:-.5px}
-#partner-center .partner-tier-guide button b{font-size:15px!important;letter-spacing:.5px}
+#partner-center .partner-tier-guide{gap:8px!important;margin-top:12px!important}
+#partner-center .partner-tier-guide button{min-height:64px!important;flex-direction:column!important;gap:1px!important;border-radius:12px!important;font-size:14px!important}
+#partner-center .partner-tier-guide button strong{font-size:24px!important;line-height:1!important;letter-spacing:-.5px}
+#partner-center .partner-tier-guide button b{font-size:13px!important;letter-spacing:.4px}
 #partner-center .partner-tier-guide button:nth-child(1){background:#eef9f3!important;border-color:#72bc91!important;color:#176944!important}
 #partner-center .partner-tier-guide button:nth-child(2){background:#edf5ff!important;border-color:#72a9e9!important;color:#0a55a7!important}
 #partner-center .partner-tier-guide button:nth-child(3){background:#fff8e5!important;border-color:#d8ad45!important;color:#765209!important}
 #partner-center .partner-tier-guide button.active{background:#0b5fc2!important;border-color:#0b5fc2!important;color:#fff!important;box-shadow:0 9px 22px rgba(11,95,194,.25)!important}
 #partner-center .partner-tier-benefit{font-size:15px!important;min-height:0!important;margin:12px 0 0!important;padding:10px 14px!important}
 #partner-center .partner-tier-benefit[hidden]{display:none!important}
-#partner-center .partner-resource-library{gap:clamp(7px,.75vw,10px)!important}
-#partner-center .partner-resource-toggle{min-height:clamp(72px,6vw,82px)!important;padding:clamp(8px,.7vw,10px)!important;gap:clamp(7px,.7vw,9px)!important;grid-template-columns:34px minmax(0,1fr) auto!important}
-#partner-center .partner-resource-toggle>b{width:34px!important;height:34px!important;font-size:17px!important;border-radius:10px!important}
-#partner-center .partner-resource-toggle h3{font-size:15px!important;line-height:1.2!important}
-#partner-center .partner-resource-toggle h3 em{font-size:11px!important;padding:3px 6px!important;vertical-align:1px!important}
-#partner-center .partner-resource-toggle p{margin-top:2px!important;font-size:12px!important;line-height:1.3!important}
-#partner-center .partner-resource-toggle>i{font-size:18px!important}
+#partner-center .partner-resource-library{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:7px!important;max-width:none!important;margin:0!important}
+#partner-center .partner-resource-group{border:1px solid #d8e4f0!important;border-radius:8px!important;background:#fff!important;box-shadow:none!important}
+#partner-center .partner-resource-group.premium-resource{border-color:#d8e4f0!important;background:#fff!important}
+#partner-center .partner-resource-toggle{min-height:56px!important;padding:8px 10px!important;gap:10px!important;grid-template-columns:28px minmax(0,1fr) auto!important;border:0!important;border-radius:8px!important;background:#fff!important;box-shadow:none!important}
+#partner-center .partner-resource-toggle:hover,#partner-center .partner-resource-toggle:focus-visible{background:#f7fbff!important;outline:2px solid #75aee4!important;outline-offset:-2px!important}
+#partner-center .resource-number{align-self:center!important;color:#8ba0b7!important;font-size:11px!important;font-weight:700!important}
+#partner-center .partner-resource-summary{display:flex!important;align-items:baseline!important;gap:12px!important;min-width:0!important}
+#partner-center .partner-resource-toggle h3{flex:0 0 auto!important;margin:0!important;color:#123a63!important;font-size:16px!important;line-height:1.2!important;font-weight:700!important;white-space:nowrap!important}
+#partner-center .partner-resource-toggle h3 em{display:none!important}
+#partner-center .partner-resource-toggle p{min-width:0!important;margin:0!important;color:#62778e!important;font-size:13px!important;line-height:1.35!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+#partner-center .partner-resource-action{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:64px!important;height:32px!important;padding:0 10px!important;border-radius:6px!important;background:#0b65c8!important;color:#fff!important;font-size:12px!important;font-weight:700!important;white-space:nowrap!important}
+#partner-center .partner-resource-items{padding:12px 14px!important;border-top:1px solid #e1ebf5!important;background:#f5f9fe!important}
+#partner-center .partner-resource-detail-copy{margin:0 0 8px!important;color:#39536d!important;font-size:13px!important;line-height:1.55!important}
+#partner-center .partner-resource-item{grid-template-columns:64px minmax(0,1fr) auto!important;gap:10px!important;min-height:44px!important;padding:9px 0!important}
+#partner-center .partner-resource-item>span{font-size:11px!important}
+#partner-center .partner-resource-item>strong,#partner-center .partner-resource-item>a,#partner-center .partner-resource-item>small{font-size:13px!important}
 #partner-center .partner-resource-item{grid-template-columns:70px 1fr auto!important;gap:12px!important;padding:13px 0!important}
 #partner-center .partner-resource-item>span{font-size:14px!important}
 #partner-center .partner-resource-item>strong{font-size:15px!important}
@@ -1493,16 +1502,20 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
   #partner-center .container{width:min(100% - 24px,1320px)}
   #partner-center .partner-center-card{padding:24px 16px!important}
   #partner-center .partner-tier-guide{gap:6px!important}
-  #partner-center .partner-tier-guide button{min-height:70px!important;font-size:14px!important}
-  #partner-center .partner-tier-guide button strong{font-size:23px!important}
-  #partner-center .partner-tier-guide button b{font-size:14px!important}
-  #partner-center .partner-resource-library{gap:7px!important}
-  #partner-center .partner-resource-toggle{min-height:72px!important;padding:8px!important;gap:7px!important;grid-template-columns:32px minmax(0,1fr) auto!important}
-  #partner-center .partner-resource-toggle>b{width:32px!important;height:32px!important;font-size:16px!important}
-  #partner-center .partner-resource-toggle h3{font-size:14px!important;line-height:1.2!important}
-  #partner-center .partner-resource-toggle h3 em{font-size:11px!important;padding:3px 6px!important;vertical-align:1px!important}
-  #partner-center .partner-resource-toggle p{margin-top:2px!important;font-size:11px!important;line-height:1.28!important}
-  #partner-center .partner-resource-toggle>i{font-size:17px!important}
+  #partner-center .partner-tier-guide button{min-height:58px!important;font-size:13px!important}
+  #partner-center .partner-tier-guide button strong{font-size:21px!important}
+  #partner-center .partner-tier-guide button b{font-size:12px!important}
+  #partner-center .partner-resource-library{gap:6px!important}
+  #partner-center .partner-resource-toggle{min-height:54px!important;padding:8px!important;gap:8px!important;grid-template-columns:24px minmax(0,1fr) auto!important}
+  #partner-center .resource-number{font-size:10px!important}
+  #partner-center .partner-resource-summary{gap:8px!important}
+  #partner-center .partner-resource-toggle h3{font-size:14px!important}
+  #partner-center .partner-resource-toggle p{font-size:11px!important;line-height:1.3!important}
+  #partner-center .partner-resource-action{min-width:54px!important;height:30px!important;padding:0 8px!important;font-size:11px!important}
+  #partner-center .partner-resource-items{padding:10px!important}
+  #partner-center .partner-resource-detail-copy{font-size:13px!important}
+  #partner-center .partner-resource-item{grid-template-columns:54px minmax(0,1fr)!important;gap:8px!important}
+  #partner-center .partner-resource-item>a,#partner-center .partner-resource-item>small{grid-column:2!important}
   #partner-center .partner-resource-item{grid-template-columns:62px minmax(0,1fr)!important}
   #partner-center .partner-resource-item>a,#partner-center .partner-resource-item>small{grid-column:2}
   #community{padding:48px 0!important}
@@ -1513,19 +1526,12 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
 
 /* Partner resource library: grade-differentiated grid + larger type.
    FREE/BASIC/PREMIUM now show exactly 2/6/12 cards (script.js), so the
-   column count is picked per count so every tier fills complete rows with
-   no single trailing orphan card: FREE centers as 2x1, BASIC lays out as
-   3x2, PREMIUM as 3x4. script.js sets data-count on .partner-resource-library
-   on every tier switch so this stays in sync automatically. */
+   every permitted tier uses the same one-column accordion list. script.js
+   sets data-count on .partner-resource-library on every tier switch. */
 @media(min-width:761px){
   #partner-center .container{width:min(1360px,calc(100% - 32px))}
   #partner-center .partner-center-card{padding:30px 26px!important}
-  #partner-center .partner-resource-library[data-count="2"]{grid-template-columns:repeat(2,minmax(0,1fr))!important;max-width:660px!important;margin:0 auto!important}
-  #partner-center .partner-resource-library[data-count="6"]{grid-template-columns:repeat(3,minmax(0,1fr))!important}
-  #partner-center .partner-resource-library[data-count="12"]{grid-template-columns:repeat(3,minmax(0,1fr))!important}
-  #partner-center .partner-resource-toggle{padding:clamp(8px,.7vw,10px)!important}
-  #partner-center .partner-resource-toggle h3{font-size:15px!important;line-height:1.2!important}
-  #partner-center .partner-resource-toggle h3 em{font-size:11px!important;padding:3px 6px!important;vertical-align:1px!important}
+  #partner-center .partner-resource-library[data-count="2"],#partner-center .partner-resource-library[data-count="6"],#partner-center .partner-resource-library[data-count="12"]{grid-template-columns:minmax(0,1fr)!important;max-width:none!important;margin:0!important}
   #partner-center .resource-number{font-size:11px!important;color:#0b5fc2!important;font-weight:800!important}
   #partner-center .partner-tier-guide button:nth-child(3){box-shadow:0 8px 20px rgba(216,173,69,.28)!important}
   #partner-center .partner-tier-guide button.active:nth-child(3){box-shadow:0 9px 22px rgba(11,95,194,.25)!important}
