@@ -13,7 +13,11 @@ test('partner resource cards use a one-column accordion without the legacy card 
   assert.match(css, /#partner-center \.partner-resource-action\{display:inline-flex!important[\s\S]*?min-width:64px!important;height:32px!important/);
   assert.match(css, /#partner-center \.partner-resource-items\{display:grid!important;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)!important;align-items:stretch!important;column-gap:18px!important;row-gap:11px!important;width:100%!important/);
   assert.match(css, /#partner-center \.partner-resource-detail-copy\{grid-column:1\/-1!important[\s\S]*?text-align:left!important/);
-  assert.match(css, /#partner-center \.partner-resource-item\{display:grid!important;grid-template-columns:auto minmax\(0,1fr\) auto!important;align-items:center!important/);
+  assert.match(css, /#partner-center \.partner-resource-item\{display:grid!important;grid-template-columns:56px minmax\(0,1fr\) 88px!important;align-items:center!important;gap:8px!important;width:100%!important[\s\S]*?min-height:76px!important/);
+  assert.match(css, /#partner-center \.partner-resource-item>span\{display:inline-flex!important[\s\S]*?width:56px!important/);
+  assert.match(css, /#partner-center \.partner-resource-item>a,#partner-center \.partner-resource-item>small\{display:inline-flex!important[\s\S]*?width:88px!important[\s\S]*?height:34px!important/);
+  assert.match(css, /#partner-center \.partner-resource-item>a\[download\]\{background:#20834b!important;color:#fff!important\}/);
+  assert.match(css, /#partner-center \.partner-resource-item>small\{background:#e2e6eb!important;color:#4b5563!important;cursor:default!important\}/);
   assert.match(css, /@media\(max-width:1000px\) and \(min-width:761px\)\{[\s\S]*?#partner-center \.partner-resource-items\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)!important/);
   assert.match(css, /@media\(max-width:760px\)\{[\s\S]*?#partner-center \.partner-resource-toggle\{min-height:54px!important;padding:8px!important;gap:8px!important/);
   assert.match(css, /partner-resource-library\[data-count="12"\]\{grid-template-columns:minmax\(0,1fr\)!important/);
