@@ -8,7 +8,7 @@
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; background: linear-gradient(180deg, #f4f8fd 0, #fff 48%); color: var(--hanja-text); font-family: "Noto Sans KR", system-ui, sans-serif; }
+body { margin: 0; background: linear-gradient(180deg, #f4f8fd 0, #fff 48%); color: var(--hanja-text); }
 /* Tool pages deliberately reuse the homepage's .logo and .header-login blocks. */
 .tool-site-header .nav-wrap { justify-content: space-between !important; }
 .tool-site-header .header-login { margin-left: auto; width: auto !important; min-width: 82px !important; flex: 0 0 auto !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; }
