@@ -7,29 +7,33 @@ const root = path.resolve(__dirname, '..');
 const script = fs.readFileSync(path.join(root, 'script.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
 
-test('all partner tiers retain their policies in concise titled benefit cards', () => {
-  assert.match(script, /id="freeBenefits"[\s\S]*?<strong>시작하기<\/strong><span>기본 프로필을 등록해 파트너 활동을 시작합니다\.<\/span>[\s\S]*?<strong>매칭<\/strong><span>가능한 기관·수강 의뢰 매칭을 안내합니다\.<\/span>/);
+test('all partner tiers retain their existing policy copy inside staged detail panels', () => {
+  assert.match(script, /id="freeBenefits"[\s\S]*?<strong>시작하기<\/strong><span>기본 프로필을 등록해 파트너 활동을 시작합니다\.<\/span>[\s\S]*?<strong>공지사항<\/strong><span>플랫폼 공지와 뉴스레터를 받아봅니다\.<\/span>/);
   assert.match(script, /id="basicBenefits"[\s\S]*?<strong>FREE 혜택<\/strong><span>FREE 파트너의 모든 혜택을 이용합니다\.<\/span>[\s\S]*?<strong>홍보·노출<\/strong><span>소형 배너와 검색 우선 노출을 제공합니다\.<\/span>/);
   assert.match(script, /id="premiumBenefits"[\s\S]*?<strong>디자인 지원<\/strong><span>홍보 전단과 배너 디자인을 지원합니다\.<\/span>[\s\S]*?<strong>스토어 혜택<\/strong><span>디지털 스토어 판매 수수료를 할인합니다\.<\/span>/);
 });
 
-test('partner membership plans are mutually exclusive tabs with FREE selected first', () => {
-  assert.match(script, /const selectPartnerPlan = button =>/);
-  assert.match(script, /partnerPlans\.querySelectorAll\('\.partner-plan-benefits'\)\.forEach\(item => \{ item\.hidden = true; \}\)/);
+test('membership starts with FREE only and clears every prior tier stage on a tier change', () => {
+  assert.match(script, /const resetTierPanels = scope =>/);
+  assert.match(script, /partnerPlans\.querySelectorAll\('\.partner-plan-benefits'\)\.forEach\(item => \{[\s\S]*?item\.hidden = true;[\s\S]*?resetTierPanels\(item\);/);
   assert.match(script, /item\.classList\.toggle\('active', item === button\)/);
   assert.match(script, /selectPartnerPlan\(partnerPlans\.querySelector\('\.partner-plan-toggle\.free'\)\)/);
   assert.match(css, /\.partner-plan-toggle\.active\{border-color:#0b5fc2!important;background:#0b5fc2!important;color:#fff!important/);
-  assert.match(css, /\.partner-plan-toggle\.premium:not\(\.active\)\{background:linear-gradient\(145deg,#fff,#fff8e5\)!important/);
 });
 
-test('membership benefits use compact desktop cards and mobile-safe stacking', () => {
-  assert.match(css, /\.partner-plan-benefits,\.partner-modal-plans>#basicBenefits,\.partner-modal-plans>#premiumBenefits,\.partner-modal-plans>#freeBenefits\{padding:10px!important/);
-  assert.match(css, /\.partner-plan-benefits h3\{display:inline!important/);
-  assert.match(css, /\.partner-plan-benefits \.plan-benefit-lead\{display:inline!important/);
-  assert.match(css, /\.partner-plan-benefits ul\{display:grid!important;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)!important;gap:5px!important;margin:6px 0 0!important;padding-left:0!important/);
-  assert.match(css, /\.partner-plan-benefits li\{min-height:0!important;padding:4px 6px!important;border:1px solid #d9e6f3/);
-  assert.match(css, /\.partner-plan-benefits li strong\{display:block;color:var\(--deep\);font-size:12px/);
-  assert.match(css, /\.partner-plan-benefits li span\{display:block;margin-top:1px;color:#52657c;font-size:clamp\(9.5px,.72vw,10.5px\);line-height:1.2;white-space:nowrap/);
-  assert.match(css, /@media\(max-width:900px\) and \(min-width:761px\)\{\.partner-plan-benefits ul\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)!important\}\}/);
-  assert.match(css, /@media\(max-width:760px\)\{[\s\S]*?\.partner-plan-benefits ul\{grid-template-columns:1fr!important[\s\S]*?\.partner-plan-benefits li span\{font-size:clamp\(9.5px,2.7vw,10.5px\);white-space:normal/);
+test('only one large tier panel opens, and its small benefit boxes remain hidden until confirm', () => {
+  assert.match(script, /class="partner-tier-panel"/);
+  assert.match(script, /class="partner-tier-panel-toggle" type="button" aria-expanded="false"/);
+  assert.match(script, /class="partner-tier-panel-body"[^>]* hidden/);
+  assert.match(script, /class="partner-tier-detail-toggle" type="button" aria-expanded="false"/);
+  assert.match(script, /class="partner-tier-detail"[^>]* hidden/);
+  assert.match(script, /const shouldOpen = !panel\.classList\.contains\('is-open'\);[\s\S]*?resetTierPanels\(benefitPanel\);/);
+  assert.match(script, /const shouldShow = detail\.hidden;[\s\S]*?detail\.hidden = !shouldShow;/);
+  assert.match(css, /\.partner-tier-detail\[hidden\],\.partner-tier-panel-body\[hidden\]\{display:none!important\}/);
+});
+
+test('staged tier panels keep mobile-safe, one-column detail layout', () => {
+  assert.match(css, /\.partner-tier-detail\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(css, /@media\(max-width:900px\) and \(min-width:761px\)\{\.partner-tier-detail\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}\}/);
+  assert.match(css, /@media\(max-width:760px\)\{[\s\S]*?\.partner-tier-detail\{grid-template-columns:1fr;gap:6px/);
 });
