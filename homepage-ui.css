@@ -1404,3 +1404,18 @@ html[lang="en"] .messiah-detail-meta dt,html[lang="en"] .messiah-detail-meta dd{
     white-space:nowrap!important;
   }
 }
+
+/* Homepage hero: preserve the supplied photo's left breathing room while
+   keeping the learning group anchored on the right edge of the frame. */
+.hero .hero-learning-image img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:85% center!important;
+  transform:none!important;
+}
+@media(max-width:900px){
+  .hero .hero-learning-image img{
+    object-position:72% center!important;
+  }
+}
