@@ -409,7 +409,8 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
   cursor:pointer;
   transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease;
 }
-.program-category-card.is-linked:focus-visible{border-color:rgba(26,52,172,.55);transform:translateY(-3px);box-shadow:0 12px 28px rgba(24,43,91,.1);outline:none}
+.program-category-card.is-coming-soon{appearance:none;font:inherit}
+.program-category-card.is-linked:focus-visible,.program-category-card.is-coming-soon:focus-visible{border-color:rgba(26,52,172,.55);transform:translateY(-3px);box-shadow:0 12px 28px rgba(24,43,91,.1);outline:none}
 .program-category-icon{display:grid;place-items:center;width:64px;height:64px;border:1px solid rgba(111,159,212,.22);border-radius:17px;background:#d4efff;font-size:31px;line-height:1}
 .program-category-card strong{color:#101b35;font-size:18px;font-weight:900;letter-spacing:-.02em}
 
@@ -427,6 +428,17 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
   .program-category-card{min-height:128px;padding:18px 10px}
   .program-category-icon{width:54px;height:54px;border-radius:14px;font-size:27px}
 }
+
+.program-coming-soon-modal[hidden]{display:none}
+.program-coming-soon-modal{position:fixed;inset:0;z-index:2300;display:grid;place-items:center;padding:20px}
+.program-coming-soon-backdrop{position:absolute;inset:0;background:rgba(3,18,43,.6);backdrop-filter:blur(4px)}
+.program-coming-soon-panel{position:relative;width:min(390px,calc(100vw - 40px));padding:34px 30px 28px;border-radius:20px;background:#fff;text-align:center;box-shadow:0 24px 70px rgba(3,18,43,.28)}
+.program-coming-soon-close{position:absolute;top:12px;right:12px;width:34px;height:34px;border:0;border-radius:50%;background:#edf4fc;color:#173462;font-size:24px;line-height:1;cursor:pointer}
+.program-coming-soon-panel h2{margin:0;color:#101b35;font-size:25px;letter-spacing:-.035em}
+.program-coming-soon-panel p{margin:12px 0 23px;color:#52657d;font-size:15px;line-height:1.65}
+.program-coming-soon-confirm{min-width:108px;border:0;border-radius:10px;padding:12px 20px;background:#1a5fc4;color:#fff;font:inherit;font-size:14px;font-weight:800;cursor:pointer}
+.program-coming-soon-close:focus-visible,.program-coming-soon-confirm:focus-visible{outline:3px solid rgba(26,95,196,.35);outline-offset:3px}
+@media(max-width:480px){.program-coming-soon-modal{padding:14px}.program-coming-soon-panel{width:min(390px,calc(100vw - 28px));padding:30px 22px 23px}.program-coming-soon-panel h2{font-size:23px}.program-coming-soon-panel p{font-size:14px}}
 
 
 /* About final: two actions with independent expandable content. */

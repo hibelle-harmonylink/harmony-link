@@ -54,6 +54,30 @@ if (heroTopics) {
 const heroCenterNote=document.querySelector('.center-note');
 if(heroCenterNote)heroCenterNote.innerHTML=`<div class="connection-visual" aria-hidden="true"><span>🎓</span><i>↔</i><span>👥</span></div><strong data-ko="교육과 사람을 잇다" data-en="Connecting Learning & People">교육과 사람을 잇다</strong><small>HARMONY LINK</small>`;
 
+const programComingSoonModal = document.createElement('div');
+programComingSoonModal.className = 'program-coming-soon-modal';
+programComingSoonModal.hidden = true;
+programComingSoonModal.innerHTML = `<div class="program-coming-soon-backdrop" data-program-coming-soon-close></div><section class="program-coming-soon-panel" role="dialog" aria-modal="true" aria-labelledby="programComingSoonTitle"><button class="program-coming-soon-close" type="button" data-program-coming-soon-close aria-label="닫기">×</button><h2 id="programComingSoonTitle" data-ko="준비중입니다" data-en="Coming soon">준비중입니다</h2><p data-ko="더 좋은 프로그램으로 곧 찾아뵙겠습니다." data-en="We will be back soon with an even better program.">더 좋은 프로그램으로 곧 찾아뵙겠습니다.</p><button class="program-coming-soon-confirm" type="button" data-program-coming-soon-close data-ko="확인" data-en="OK">확인</button></section>`;
+document.body.appendChild(programComingSoonModal);
+let programComingSoonReturnFocus = null;
+const closeProgramComingSoonModal = () => {
+  programComingSoonModal.hidden = true;
+  document.body.classList.remove('modal-open');
+  programComingSoonReturnFocus?.focus();
+};
+const openProgramComingSoonModal = trigger => {
+  programComingSoonReturnFocus = trigger;
+  programComingSoonModal.hidden = false;
+  document.body.classList.add('modal-open');
+  setLanguage(currentLanguage);
+  programComingSoonModal.querySelector('.program-coming-soon-close')?.focus();
+};
+document.querySelectorAll('[data-program-coming-soon]').forEach(card => card.addEventListener('click', () => openProgramComingSoonModal(card)));
+programComingSoonModal.querySelectorAll('[data-program-coming-soon-close]').forEach(control => control.addEventListener('click', closeProgramComingSoonModal));
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !programComingSoonModal.hidden) closeProgramComingSoonModal();
+});
+
 document.body.insertAdjacentHTML('beforeend', `
   <div class="digital-gallery-modal" id="digitalGallery" hidden role="dialog" aria-modal="true" aria-labelledby="digitalGalleryTitle">
     <div class="digital-gallery-backdrop" data-gallery-close></div>
