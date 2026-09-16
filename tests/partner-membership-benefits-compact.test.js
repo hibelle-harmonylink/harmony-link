@@ -13,6 +13,15 @@ test('all partner tiers retain their policies in concise titled benefit cards', 
   assert.match(script, /id="premiumBenefits"[\s\S]*?<strong>디자인 지원<\/strong><span>홍보 전단과 배너 디자인을 지원합니다\.<\/span>[\s\S]*?<strong>스토어 혜택<\/strong><span>디지털 스토어 판매 수수료를 할인합니다\.<\/span>/);
 });
 
+test('partner membership plans are mutually exclusive tabs with FREE selected first', () => {
+  assert.match(script, /const selectPartnerPlan = button =>/);
+  assert.match(script, /partnerPlans\.querySelectorAll\('\.partner-plan-benefits'\)\.forEach\(item => \{ item\.hidden = true; \}\)/);
+  assert.match(script, /item\.classList\.toggle\('active', item === button\)/);
+  assert.match(script, /selectPartnerPlan\(partnerPlans\.querySelector\('\.partner-plan-toggle\.free'\)\)/);
+  assert.match(css, /\.partner-plan-toggle\.active\{border-color:#0b5fc2!important;background:#0b5fc2!important;color:#fff!important/);
+  assert.match(css, /\.partner-plan-toggle\.premium:not\(\.active\)\{background:linear-gradient\(145deg,#fff,#fff8e5\)!important/);
+});
+
 test('membership benefits use compact desktop cards and mobile-safe stacking', () => {
   assert.match(css, /\.partner-plan-benefits,\.partner-modal-plans>#basicBenefits,\.partner-modal-plans>#premiumBenefits,\.partner-modal-plans>#freeBenefits\{padding:10px!important/);
   assert.match(css, /\.partner-plan-benefits h3\{display:inline!important/);
