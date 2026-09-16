@@ -41,16 +41,17 @@
 
   const requestedEasyHanjaReturn = () => {
     const fromUrl = new URLSearchParams(location.search).get('return');
-    if (fromUrl === 'easy-hanja.html') return fromUrl;
+    if (['easy-hanja.html', 'senior-learning.html'].includes(fromUrl)) return fromUrl;
     const fromStorage = localStorage.getItem('harmonyAuthReturn');
-    return fromStorage === 'easy-hanja.html' ? fromStorage : '';
+    return ['easy-hanja.html', 'senior-learning.html'].includes(fromStorage) ? fromStorage : '';
   };
 
   const returnToEasyHanjaIfRequested = session => {
-    if (!session || easyHanjaRedirectStarted || requestedEasyHanjaReturn() !== 'easy-hanja.html') return false;
+    const returnTarget = requestedEasyHanjaReturn();
+    if (!session || easyHanjaRedirectStarted || !returnTarget) return false;
     easyHanjaRedirectStarted = true;
     localStorage.removeItem('harmonyAuthReturn');
-    window.location.replace('easy-hanja.html');
+    window.location.replace(returnTarget);
     return true;
   };
 

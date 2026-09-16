@@ -13,7 +13,7 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <script>
     (() => {
-      const pageVersion = '20260916-19';
+      const pageVersion = '20260916-20';
       fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
         .then(response => response.ok ? response.json() : null)
         .then(release => {
@@ -49,7 +49,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260916-19">
+  <link rel="stylesheet" href="styles.css?v=20260916-20">
   <link rel="stylesheet" href="homepage-ui.css?v=20260916-16">
 </head>
 <body>
@@ -63,6 +63,7 @@
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
       <nav class="primary-nav" id="primary-nav" aria-label="주 메뉴">
         <a href="#digital-why" data-ko="프로그램" data-en="Programs">프로그램</a>
+        <a href="senior-learning.html" data-ko="시니어 배움터" data-en="Senior Learning">시니어 배움터</a>
         <a href="#events" data-ko="강좌·행사" data-en="Classes & Events">강좌·행사</a>
         <a class="header-partner-link" href="#partner-center" data-ko="파트너" data-en="Partners">파트너</a>
         <a class="nav-community" href="community.html" data-ko="커뮤니티" data-en="Community">커뮤니티</a>
