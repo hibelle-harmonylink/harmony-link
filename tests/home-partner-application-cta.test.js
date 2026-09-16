@@ -30,8 +30,8 @@ test('hero partner CTA expands, scrolls to, and briefly identifies the applicati
 });
 
 test('homepage cache version advances with the CTA behavior', () => {
-  assert.equal(version.version, '20260916-3');
-  assert.match(homepage, /const pageVersion = '20260916-3'/);
-  assert.match(homepage, /script\.js\?v=20260916-3/);
-  assert.match(homepage, /homepage-ui\.css\?v=20260916-3/);
+  assert.equal(version.version, '20260916-4');
+  assert.match(homepage, /const pageVersion = '20260916-4'/);
+  assert.match(homepage, /script\.js\?v=20260916-4/);
+  assert.match(homepage, /homepage-ui\.css\?v=20260916-4/);
 });
