@@ -9,8 +9,9 @@
 
 * { box-sizing: border-box; }
 body { margin: 0; background: linear-gradient(180deg, #f4f8fd 0, #fff 48%); color: var(--hanja-text); font-family: "Noto Sans KR", system-ui, sans-serif; }
-.hanja-site-header .nav-wrap { justify-content: space-between !important; }
-.hanja-site-header .header-login { margin-left: auto; width: auto !important; min-width: 82px !important; flex: 0 0 auto !important; }
+/* Tool pages deliberately reuse the homepage's .logo and .header-login blocks. */
+.tool-site-header .nav-wrap { justify-content: space-between !important; }
+.tool-site-header .header-login { margin-left: auto; width: auto !important; min-width: 82px !important; flex: 0 0 auto !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; }
 .skip-link { position: absolute; left: -9999px; }
 .skip-link:focus { left: 16px; top: 16px; z-index: 10; padding: 10px; background: #fff; color: var(--hanja-deep); }
 .hanja-container { width: min(100% - 32px, 940px); margin: 0 auto; }
@@ -55,8 +56,8 @@ body { margin: 0; background: linear-gradient(180deg, #f4f8fd 0, #fff 48%); colo
 .hanja-footer { padding: 24px 16px; background: #072d62; color: #c8ddf5; text-align: center; font-size: 13px; }
 
 @media (max-width: 620px) {
-  .hanja-site-header .nav-wrap { justify-content: space-between !important; }
-  .hanja-site-header .header-login { min-height: 40px; min-width: 74px !important; padding-inline: 10px !important; font-size: 14px !important; }
+  .tool-site-header .nav-wrap { justify-content: space-between !important; }
+  .tool-site-header .header-login { min-height: 40px; min-width: 74px !important; padding-inline: 10px !important; font-size: 14px !important; }
   .hanja-container { width: min(100% - 24px, 940px); }
   .hanja-main { padding: 110px 0 36px; }
   .hanja-gate, .hanja-search-card { padding: 24px 18px; border-radius: 16px; }

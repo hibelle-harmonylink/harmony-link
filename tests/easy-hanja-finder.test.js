@@ -70,6 +70,9 @@ test('mini apps page provides the easy hanja finder as its first app', () => {
   assert.match(miniApps, /class="logo-mark brand-image"/);
   assert.match(miniApps, /assets\/harmony-logo\.png/);
   assert.match(miniApps, /class="header-login"/);
+  assert.match(miniApps, /class="site-header tool-site-header"/);
+  assert.match(miniApps, /class="logo-mark brand-image"/);
+  assert.match(miniApps, /이음문화센터/);
   assert.match(css, /\.mini-app-card/);
 });
 
@@ -105,10 +108,10 @@ test('easy hanja header reuses the homepage logo markup and header login style',
   assert.match(page, /assets\/harmony-logo\.png/);
   assert.match(page, /이음문화센터/);
   assert.match(page, /class="header-login"/);
-  assert.match(page, /class="site-header hanja-site-header"/);
-  assert.match(css, /\.hanja-site-header \.nav-wrap \{ justify-content: space-between !important; \}/);
-  assert.match(css, /\.hanja-site-header \.header-login \{ margin-left: auto;/);
-  assert.match(page, /styles\.css\?v=20260916-12/);
+  assert.match(page, /class="site-header tool-site-header"/);
+  assert.match(css, /\.tool-site-header \.nav-wrap \{ justify-content: space-between !important; \}/);
+  assert.match(css, /\.tool-site-header \.header-login \{ margin-left: auto;[\s\S]*?align-items: center !important;[\s\S]*?justify-content: center !important;/);
+  assert.match(page, /styles\.css\?v=20260916-18/);
   assert.match(page, /homepage-ui\.css\?v=20260916-16/);
   assert.doesNotMatch(page, /hanja-logo-mark|hanja-home-link/);
 });

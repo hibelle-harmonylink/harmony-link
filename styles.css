@@ -218,15 +218,15 @@ html[lang="en"] .messiah-detail-meta dt,html[lang="en"] .messiah-detail-meta dd{
 @media(max-width:760px){.partner-modal-plans{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.partner-modal-plans>#basicBenefits,.partner-modal-plans>#premiumBenefits{grid-column:1/3}}
 @media(max-width:620px){.partner-modal-scroll{min-height:52vh}.partner-modal-plans{padding:7px 12px}.partner-plan-toggle{padding:9px 8px}.partner-plan-toggle strong{font-size:18px}.partner-plan-benefits ul{grid-template-columns:1fr}.audience-card .matching-disclaimer{min-height:0}}
 
-/* Three clearly differentiated partner membership levels. */
+/* Partner membership uses a simple three-step path: tier, section, details. */
 .partner-modal-plans{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:18px 22px;background:linear-gradient(145deg,#e5f1ff,#f7fbff);max-height:52vh;overflow:auto;flex:0 1 auto}
 .partner-plan-intro{grid-column:1/-1!important;padding:0 2px 8px!important;border:0!important;background:transparent!important}
 .partner-plan-intro>span{font-size:9px;letter-spacing:1.4px;color:var(--blue);font-weight:800}
 .partner-plan-intro>strong{display:block;font-size:20px;color:var(--deep);margin:3px 0}
 .partner-plan-intro>p{font-size:11px!important;color:var(--muted);margin:0!important}
-.partner-plan-toggle{position:relative;display:flex;flex-direction:column;align-items:flex-start;min-height:190px;padding:22px 19px;border-width:2px;border-radius:18px;box-shadow:0 12px 28px rgba(8,55,120,.11)}
+.partner-plan-toggle{position:relative;display:flex;flex-direction:column;align-items:flex-start;min-height:132px;padding:16px 17px;border-width:2px;border-radius:16px;box-shadow:0 8px 18px rgba(8,55,120,.09)}
 .partner-plan-toggle>i{position:absolute;right:12px;top:12px;padding:5px 8px;border-radius:30px;background:#edf3fa;color:#4e6683;font-style:normal;font-size:8px;font-weight:800}
-.partner-plan-toggle>span{margin-top:25px;font-size:10px}.partner-plan-toggle>strong{font-size:34px;line-height:1.1;margin-top:5px}.partner-plan-toggle>p{font-size:10px!important;color:var(--muted);margin:8px 0 0!important}.partner-plan-toggle>em{margin-top:auto;padding-top:15px;font-size:11px}
+.partner-plan-toggle>span{margin-top:18px;font-size:10px}.partner-plan-toggle>strong{font-size:29px;line-height:1.1;margin-top:4px}.partner-plan-toggle>p{font-size:10px!important;color:var(--muted);margin:5px 0 0!important}.partner-plan-toggle>em{margin-top:auto;padding-top:8px;font-size:11px}
 .partner-plan-toggle.free{grid-column:1!important;grid-row:2!important;border-color:#5bbd8a;background:linear-gradient(145deg,#fff,#ebfbf3)}
 .partner-plan-toggle.free>i{background:#d9f6e7;color:#14704e}.partner-plan-toggle.free>span,.partner-plan-toggle.free>em{color:#14704e}
 .partner-plan-toggle.basic{grid-column:2!important;grid-row:2!important;border-color:#3889e4;background:linear-gradient(145deg,#fff,#eaf4ff)}
@@ -234,31 +234,16 @@ html[lang="en"] .messiah-detail-meta dt,html[lang="en"] .messiah-detail-meta dd{
 .partner-plan-toggle.premium{grid-column:3!important;grid-row:2!important;border-color:#e1a82c;background:linear-gradient(145deg,#082c62,#0a5eb6);color:#fff;box-shadow:0 18px 38px rgba(5,54,119,.25)}
 .partner-plan-toggle.premium>i{background:#ffd96d;color:#533600}.partner-plan-toggle.premium>span,.partner-plan-toggle.premium>em{color:#ffd96d}.partner-plan-toggle.premium>p{color:#d6e8ff!important}
 .partner-plan-toggle:not(.active){box-shadow:0 8px 18px rgba(8,55,120,.08)!important}.partner-plan-toggle.premium:not(.active){background:linear-gradient(145deg,#fff,#fff8e5)!important;color:var(--deep)!important}.partner-plan-toggle.premium:not(.active)>span,.partner-plan-toggle.premium:not(.active)>em{color:#765209!important}.partner-plan-toggle.premium:not(.active)>p{color:var(--muted)!important}.partner-plan-toggle.active{border-color:#0b5fc2!important;background:#0b5fc2!important;color:#fff!important;box-shadow:0 12px 26px rgba(8,75,158,.22)!important}.partner-plan-toggle.active>span,.partner-plan-toggle.active>em{color:#dcecff!important}.partner-plan-toggle.active>p{color:#e5f1ff!important}.partner-plan-toggle.active>i{background:#fff!important;color:#0b5fc2!important}
-.partner-plan-benefits,.partner-modal-plans>#basicBenefits,.partner-modal-plans>#premiumBenefits,.partner-modal-plans>#freeBenefits{grid-column:1/-1!important;grid-row:3!important;padding:22px 24px;border-radius:16px}
+.partner-plan-benefits,.partner-modal-plans>#basicBenefits,.partner-modal-plans>#premiumBenefits,.partner-modal-plans>#freeBenefits{grid-column:1/-1!important;grid-row:3!important;padding:16px 18px;border-radius:16px}
 .plan-benefit-lead{font-size:12px!important;color:#536a85!important;margin:0 0 13px!important;font-weight:600}
 .free-benefits{border-color:#8fd3af;background:#f2fcf7}.premium-benefits{border:2px solid #e1a82c;background:#fffaf0}
-@media(max-width:760px){.partner-modal-scroll{min-height:30vh}.partner-modal-plans{grid-template-columns:1fr;max-height:58vh}.partner-plan-intro,.partner-plan-toggle.free,.partner-plan-toggle.basic,.partner-plan-toggle.premium,.partner-plan-benefits,.partner-modal-plans>#basicBenefits,.partner-modal-plans>#premiumBenefits,.partner-modal-plans>#freeBenefits{grid-column:1!important;grid-row:auto!important}.partner-plan-toggle{min-height:152px}.partner-plan-benefits ul{grid-template-columns:1fr}}
+@media(max-width:760px){.partner-modal-scroll{min-height:30vh}.partner-modal-plans{grid-template-columns:1fr;max-height:58vh}.partner-plan-intro,.partner-plan-toggle.free,.partner-plan-toggle.basic,.partner-plan-toggle.premium,.partner-plan-benefits,.partner-modal-plans>#basicBenefits,.partner-modal-plans>#premiumBenefits,.partner-modal-plans>#freeBenefits{grid-column:1!important;grid-row:auto!important}.partner-plan-toggle{min-height:116px}}
 
-/* Compact benefit cards keep every tier's existing policy while reducing modal height. */
-.partner-plan-benefits,.partner-modal-plans>#basicBenefits,.partner-modal-plans>#premiumBenefits,.partner-modal-plans>#freeBenefits{padding:10px!important;border-radius:12px!important}
-.partner-plan-benefits h3{display:inline!important;margin:0!important;font-size:15px!important;line-height:1.3!important}
-.partner-plan-benefits .plan-benefit-lead{display:inline!important;margin:0!important;font-size:12px!important;line-height:1.35!important}
-.partner-plan-benefits .plan-benefit-lead::before{content:' · ';font-weight:700}
-.partner-plan-benefits ul{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important;margin:6px 0 0!important;padding-left:0!important}
-.partner-plan-benefits li{min-height:0!important;padding:4px 6px!important;border:1px solid #d9e6f3;border-radius:7px;background:rgba(255,255,255,.78);color:#52657c!important;font-size:11px!important;line-height:1.15!important;list-style:none}
-.partner-plan-benefits li::marker{content:''}
-.partner-plan-benefits li strong{display:block;color:var(--deep);font-size:12px;line-height:1.15;font-weight:800}
-.partner-plan-benefits li span{display:block;margin-top:1px;color:#52657c;font-size:clamp(9.5px,.72vw,10.5px);line-height:1.2;white-space:nowrap}
-@media(max-width:900px) and (min-width:761px){.partner-plan-benefits ul{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
-@media(max-width:760px){
-  .partner-plan-benefits,.partner-modal-plans>#basicBenefits,.partner-modal-plans>#premiumBenefits,.partner-modal-plans>#freeBenefits{padding:9px!important}
-  .partner-plan-benefits ul{grid-template-columns:1fr!important;gap:4px!important}
-  .partner-plan-benefits h3,.partner-plan-benefits .plan-benefit-lead{display:block!important}
-  .partner-plan-benefits .plan-benefit-lead{margin-top:2px!important}
-  .partner-plan-benefits .plan-benefit-lead::before{content:none}
-  .partner-plan-benefits li{min-height:0!important;padding:4px 6px!important}
-  .partner-plan-benefits li span{font-size:clamp(9.5px,2.7vw,10.5px);white-space:normal}
-}
+.partner-plan-benefits h3{margin:0!important;font-size:16px!important;line-height:1.3!important}
+.partner-plan-benefits .plan-benefit-lead{margin:3px 0 12px!important;font-size:12px!important;line-height:1.45!important;color:#536a85!important;font-weight:600}
+.partner-tier-panel{border:1px solid #d5e2f0;border-radius:12px;background:#fff;overflow:hidden}.partner-tier-panel+.partner-tier-panel{margin-top:9px}.partner-tier-panel-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:14px;border:0;background:#fff;color:var(--deep);padding:13px 14px;text-align:left;cursor:pointer}.partner-tier-panel-toggle span{min-width:0}.partner-tier-panel-toggle strong,.partner-tier-panel-toggle small{display:block}.partner-tier-panel-toggle strong{font-size:14px;line-height:1.25}.partner-tier-panel-toggle small{margin-top:2px;color:#647892;font-size:11px;line-height:1.35}.partner-tier-panel-toggle b{flex:0 0 auto;min-width:48px;padding:6px 9px;border-radius:7px;background:#eaf3ff;color:#0b5fc2;font-size:11px;text-align:center}.partner-tier-panel.is-open{border-color:#80b7eb}.partner-tier-panel.is-open .partner-tier-panel-toggle{background:#f7fbff}.partner-tier-panel-body{padding:0 14px 14px;background:#f7fbff}.partner-tier-panel-body>p{margin:0;padding:10px 0 8px;color:#526a85;font-size:12px;line-height:1.45}.partner-tier-detail-toggle{min-height:32px;padding:0 14px;border:0;border-radius:7px;background:#0b5fc2;color:#fff;font:800 12px/1 inherit;cursor:pointer}.partner-tier-detail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:10px 0 0;padding:0;list-style:none}.partner-tier-detail li{min-width:0;padding:7px 8px;border:1px solid #d9e6f3;border-radius:8px;background:#fff;color:#52657c;font-size:11px;line-height:1.35}.partner-tier-detail li strong,.partner-tier-detail li span{display:block}.partner-tier-detail li strong{color:var(--deep);font-size:12px;line-height:1.25;font-weight:800}.partner-tier-detail li span{margin-top:2px}.partner-tier-detail[hidden],.partner-tier-panel-body[hidden]{display:none!important}
+@media(max-width:900px) and (min-width:761px){.partner-tier-detail{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.partner-plan-benefits,.partner-modal-plans>#basicBenefits,.partner-modal-plans>#premiumBenefits,.partner-modal-plans>#freeBenefits{padding:12px!important}.partner-tier-panel-toggle{padding:12px}.partner-tier-panel-toggle small{font-size:10px}.partner-tier-panel-body{padding:0 12px 12px}.partner-tier-detail{grid-template-columns:1fr;gap:6px}.partner-tier-detail li{padding:7px 8px}}
 
 /* Compact application flyer previews keep membership benefits visible immediately. */
 .partner-modal-scroll.partner-flyer-scroll{flex:0 0 auto;min-height:0;height:150px;overflow:hidden;padding:8px;background:#e8f1fb;transition:height .3s ease}

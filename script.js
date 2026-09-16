@@ -1443,14 +1443,14 @@ if (partnerPlans) {
     <div class="partner-plan-benefits free-benefits" id="freeBenefits" hidden>
       <h3>FREE 파트너 혜택</h3>
       <p class="plan-benefit-lead">비용 없이 기본 등록과 플랫폼 이용을 시작합니다.</p>
-      <ul>
-        <li><strong>시작하기</strong><span>기본 프로필을 등록해 파트너 활동을 시작합니다.</span></li>
-        <li><strong>카테고리 노출</strong><span>교육 카테고리 1개에 기본으로 노출됩니다.</span></li>
-        <li><strong>프로그램 등록</strong><span>기본 프로그램 1개를 등록할 수 있습니다.</span></li>
-        <li><strong>정보 수정</strong><span>프로그램 정보는 분기별 1회 수정합니다.</span></li>
-        <li><strong>매칭</strong><span>가능한 기관·수강 의뢰 매칭을 안내합니다.</span></li>
-        <li><strong>공지사항</strong><span>플랫폼 공지와 뉴스레터를 받아봅니다.</span></li>
-      </ul>
+      <article class="partner-tier-panel">
+        <button class="partner-tier-panel-toggle" type="button" aria-expanded="false" aria-controls="freeGettingStarted"><span><strong>시작하기</strong><small>기본 등록과 프로그램 운영을 준비합니다.</small></span><b>열기</b></button>
+        <div class="partner-tier-panel-body" id="freeGettingStarted" hidden><p>기본 등록에 필요한 혜택을 확인하세요.</p><button class="partner-tier-detail-toggle" type="button" aria-expanded="false" aria-controls="freeGettingStartedDetails">확인</button><ul class="partner-tier-detail" id="freeGettingStartedDetails" hidden><li><strong>시작하기</strong><span>기본 프로필을 등록해 파트너 활동을 시작합니다.</span></li><li><strong>카테고리 노출</strong><span>교육 카테고리 1개에 기본으로 노출됩니다.</span></li><li><strong>프로그램 등록</strong><span>기본 프로그램 1개를 등록할 수 있습니다.</span></li></ul></div>
+      </article>
+      <article class="partner-tier-panel">
+        <button class="partner-tier-panel-toggle" type="button" aria-expanded="false" aria-controls="freeOperations"><span><strong>운영 안내</strong><small>수정, 매칭, 공지 혜택을 확인합니다.</small></span><b>열기</b></button>
+        <div class="partner-tier-panel-body" id="freeOperations" hidden><p>운영 중 필요한 지원 내용을 확인하세요.</p><button class="partner-tier-detail-toggle" type="button" aria-expanded="false" aria-controls="freeOperationsDetails">확인</button><ul class="partner-tier-detail" id="freeOperationsDetails" hidden><li><strong>정보 수정</strong><span>프로그램 정보는 분기별 1회 수정합니다.</span></li><li><strong>매칭</strong><span>가능한 기관·수강 의뢰 매칭을 안내합니다.</span></li><li><strong>공지사항</strong><span>플랫폼 공지와 뉴스레터를 받아봅니다.</span></li></ul></div>
+      </article>
     </div>
     <button type="button" class="partner-plan-toggle basic" aria-expanded="false" aria-controls="basicBenefits">
       <i>홍보·매칭 강화</i><span>BASIC PARTNER</span><strong>$20<small> / 월</small></strong><p>꾸준한 노출과 매칭 안내</p><em>혜택 보기 ＋</em>
@@ -1458,16 +1458,14 @@ if (partnerPlans) {
     <div class="partner-plan-benefits" id="basicBenefits" hidden>
       <h3>BASIC 회원 혜택</h3>
       <p class="plan-benefit-lead">정기 노출과 매칭 안내를 강화합니다.</p>
-      <ul>
-        <li><strong>FREE 혜택</strong><span>FREE 파트너의 모든 혜택을 이용합니다.</span></li>
-        <li><strong>프로필 강화</strong><span>업체·강사 프로필을 더 풍부하게 소개합니다.</span></li>
-        <li><strong>카테고리 노출</strong><span>교육 카테고리 최대 3개에 노출됩니다.</span></li>
-        <li><strong>프로그램 등록</strong><span>프로그램을 최대 3개까지 등록합니다.</span></li>
-        <li><strong>정보 수정</strong><span>프로그램 정보는 월 1회 수정합니다.</span></li>
-        <li><strong>매칭</strong><span>기관·수강 의뢰 매칭을 정기 안내합니다.</span></li>
-        <li><strong>홍보·노출</strong><span>소형 배너와 검색 우선 노출을 제공합니다.</span></li>
-        <li><strong>운영 상담</strong><span>이메일로 기본 운영 상담을 제공합니다.</span></li>
-      </ul>
+      <article class="partner-tier-panel">
+        <button class="partner-tier-panel-toggle" type="button" aria-expanded="false" aria-controls="basicGettingStarted"><span><strong>시작하기</strong><small>프로필과 프로그램 노출을 강화합니다.</small></span><b>열기</b></button>
+        <div class="partner-tier-panel-body" id="basicGettingStarted" hidden><p>기본 등록과 강화된 노출 혜택을 확인하세요.</p><button class="partner-tier-detail-toggle" type="button" aria-expanded="false" aria-controls="basicGettingStartedDetails">확인</button><ul class="partner-tier-detail" id="basicGettingStartedDetails" hidden><li><strong>FREE 혜택</strong><span>FREE 파트너의 모든 혜택을 이용합니다.</span></li><li><strong>프로필 강화</strong><span>업체·강사 프로필을 더 풍부하게 소개합니다.</span></li><li><strong>카테고리 노출</strong><span>교육 카테고리 최대 3개에 노출됩니다.</span></li><li><strong>프로그램 등록</strong><span>프로그램을 최대 3개까지 등록합니다.</span></li></ul></div>
+      </article>
+      <article class="partner-tier-panel">
+        <button class="partner-tier-panel-toggle" type="button" aria-expanded="false" aria-controls="basicOperations"><span><strong>운영·성장 지원</strong><small>정기 안내와 홍보 지원을 확인합니다.</small></span><b>열기</b></button>
+        <div class="partner-tier-panel-body" id="basicOperations" hidden><p>운영과 성장을 위한 혜택을 확인하세요.</p><button class="partner-tier-detail-toggle" type="button" aria-expanded="false" aria-controls="basicOperationsDetails">확인</button><ul class="partner-tier-detail" id="basicOperationsDetails" hidden><li><strong>정보 수정</strong><span>프로그램 정보는 월 1회 수정합니다.</span></li><li><strong>매칭</strong><span>기관·수강 의뢰 매칭을 정기 안내합니다.</span></li><li><strong>홍보·노출</strong><span>소형 배너와 검색 우선 노출을 제공합니다.</span></li><li><strong>운영 상담</strong><span>이메일로 기본 운영 상담을 제공합니다.</span></li></ul></div>
+      </article>
     </div>
     <button type="button" class="partner-plan-toggle premium" aria-expanded="false" aria-controls="premiumBenefits">
       <i>가장 강력한 성장 지원</i><span>PREMIUM PARTNER</span><strong>$50<small> / 월</small></strong><p>전문 디자인·최우선 홍보·매칭</p><em>혜택 보기 ＋</em>
@@ -1475,23 +1473,38 @@ if (partnerPlans) {
     <div class="partner-plan-benefits premium-benefits" id="premiumBenefits" hidden>
       <h3>PREMIUM 회원 혜택</h3>
       <p class="plan-benefit-lead">디자인·노출·매칭을 최우선으로 지원합니다.</p>
-      <ul>
-        <li><strong>BASIC 혜택</strong><span>BASIC 파트너의 모든 혜택을 이용합니다.</span></li>
-        <li><strong>디자인 지원</strong><span>홍보 전단과 배너 디자인을 지원합니다.</span></li>
-        <li><strong>카테고리 노출</strong><span>전체 교육 카테고리와 추천 영역에 노출됩니다.</span></li>
-        <li><strong>프로그램 등록</strong><span>프로그램 등록과 수정 횟수에 제한이 없습니다.</span></li>
-        <li><strong>홍보·노출</strong><span>전문교육 섹션 프리미엄 배너에 노출됩니다.</span></li>
-        <li><strong>우선 노출</strong><span>메인 페이지와 추천 강사 영역에 우선 노출됩니다.</span></li>
-        <li><strong>매칭</strong><span>신규 기관 의뢰를 최우선으로 연결합니다.</span></li>
-        <li><strong>우선 심사</strong><span>입점과 프로그램 심사를 우선 처리합니다.</span></li>
-        <li><strong>스토어 혜택</strong><span>디지털 스토어 판매 수수료를 할인합니다.</span></li>
-        <li><strong>운영 지원</strong><span>우선 상담과 특별 프로모션에 초대합니다.</span></li>
-      </ul>
+      <article class="partner-tier-panel">
+        <button class="partner-tier-panel-toggle" type="button" aria-expanded="false" aria-controls="premiumGettingStarted"><span><strong>시작하기</strong><small>전체 노출과 디자인 지원을 준비합니다.</small></span><b>열기</b></button>
+        <div class="partner-tier-panel-body" id="premiumGettingStarted" hidden><p>최우선 노출과 등록 혜택을 확인하세요.</p><button class="partner-tier-detail-toggle" type="button" aria-expanded="false" aria-controls="premiumGettingStartedDetails">확인</button><ul class="partner-tier-detail" id="premiumGettingStartedDetails" hidden><li><strong>BASIC 혜택</strong><span>BASIC 파트너의 모든 혜택을 이용합니다.</span></li><li><strong>디자인 지원</strong><span>홍보 전단과 배너 디자인을 지원합니다.</span></li><li><strong>카테고리 노출</strong><span>전체 교육 카테고리와 추천 영역에 노출됩니다.</span></li><li><strong>프로그램 등록</strong><span>프로그램 등록과 수정 횟수에 제한이 없습니다.</span></li></ul></div>
+      </article>
+      <article class="partner-tier-panel">
+        <button class="partner-tier-panel-toggle" type="button" aria-expanded="false" aria-controls="premiumGrowth"><span><strong>홍보·성장 지원</strong><small>우선 노출과 전담 지원을 확인합니다.</small></span><b>열기</b></button>
+        <div class="partner-tier-panel-body" id="premiumGrowth" hidden><p>성장을 위한 우선 지원 내용을 확인하세요.</p><button class="partner-tier-detail-toggle" type="button" aria-expanded="false" aria-controls="premiumGrowthDetails">확인</button><ul class="partner-tier-detail" id="premiumGrowthDetails" hidden><li><strong>홍보·노출</strong><span>전문교육 섹션 프리미엄 배너에 노출됩니다.</span></li><li><strong>우선 노출</strong><span>메인 페이지와 추천 강사 영역에 우선 노출됩니다.</span></li><li><strong>매칭</strong><span>신규 기관 의뢰를 최우선으로 연결합니다.</span></li><li><strong>우선 심사</strong><span>입점과 프로그램 심사를 우선 처리합니다.</span></li><li><strong>스토어 혜택</strong><span>디지털 스토어 판매 수수료를 할인합니다.</span></li><li><strong>운영 지원</strong><span>우선 상담과 특별 프로모션에 초대합니다.</span></li></ul></div>
+      </article>
     </div>`;
+  const resetTierPanels = scope => {
+    scope.querySelectorAll('.partner-tier-panel').forEach(panel => {
+      panel.classList.remove('is-open');
+      const panelToggle = panel.querySelector('.partner-tier-panel-toggle');
+      panelToggle?.setAttribute('aria-expanded', 'false');
+      const panelToggleLabel = panelToggle?.querySelector('b');
+      if (panelToggleLabel) panelToggleLabel.textContent = '열기';
+      const panelBody = panel.querySelector('.partner-tier-panel-body');
+      if (panelBody) panelBody.hidden = true;
+      const detailButton = panel.querySelector('.partner-tier-detail-toggle');
+      detailButton?.setAttribute('aria-expanded', 'false');
+      if (detailButton) detailButton.textContent = '확인';
+      const detail = panel.querySelector('.partner-tier-detail');
+      if (detail) detail.hidden = true;
+    });
+  };
   const selectPartnerPlan = button => {
     const panel = partnerPlans.querySelector(`#${button.getAttribute('aria-controls')}`);
     if (!panel) return;
-    partnerPlans.querySelectorAll('.partner-plan-benefits').forEach(item => { item.hidden = true; });
+    partnerPlans.querySelectorAll('.partner-plan-benefits').forEach(item => {
+      item.hidden = true;
+      resetTierPanels(item);
+    });
     partnerPlans.querySelectorAll('.partner-plan-toggle').forEach(item => {
       item.classList.toggle('active', item === button);
       item.setAttribute('aria-expanded', String(item === button));
@@ -1500,6 +1513,31 @@ if (partnerPlans) {
     panel.hidden = false;
   };
   partnerPlans.querySelectorAll('.partner-plan-toggle').forEach(button => button.addEventListener('click', () => selectPartnerPlan(button)));
+  partnerPlans.addEventListener('click', event => {
+    const panelToggle = event.target.closest('.partner-tier-panel-toggle');
+    if (panelToggle) {
+      const panel = panelToggle.closest('.partner-tier-panel');
+      const benefitPanel = panel.closest('.partner-plan-benefits');
+      const shouldOpen = !panel.classList.contains('is-open');
+      resetTierPanels(benefitPanel);
+      if (shouldOpen) {
+        panel.classList.add('is-open');
+        panelToggle.setAttribute('aria-expanded', 'true');
+        panel.querySelector('.partner-tier-panel-body').hidden = false;
+        panelToggle.querySelector('b').textContent = '닫기';
+      }
+      return;
+    }
+    const detailToggle = event.target.closest('.partner-tier-detail-toggle');
+    if (detailToggle) {
+      const detail = partnerPlans.querySelector(`#${detailToggle.getAttribute('aria-controls')}`);
+      if (!detail) return;
+      const shouldShow = detail.hidden;
+      detail.hidden = !shouldShow;
+      detailToggle.setAttribute('aria-expanded', String(shouldShow));
+      detailToggle.textContent = shouldShow ? '닫기' : '확인';
+    }
+  });
   selectPartnerPlan(partnerPlans.querySelector('.partner-plan-toggle.free'));
 }
 
