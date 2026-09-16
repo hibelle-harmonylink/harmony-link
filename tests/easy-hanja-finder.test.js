@@ -8,6 +8,7 @@ const page = fs.readFileSync(path.join(root, 'easy-hanja.html'), 'utf8');
 const script = fs.readFileSync(path.join(root, 'easy-hanja.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'easy-hanja.css'), 'utf8');
 const auth = fs.readFileSync(path.join(root, 'auth.js'), 'utf8');
+const miniApps = fs.readFileSync(path.join(root, 'mini-apps.html'), 'utf8');
 
 test('easy hanja finder has the requested member gate and accessible search controls', () => {
   assert.match(page, /쉬운 한자 찾기/);
@@ -47,11 +48,21 @@ test('easy hanja finder searches Hangul and Hanja locally, then supports large d
   assert.match(script, /data-hanja-copy/);
 });
 
-test('homepage provides an easy hanja finder entry point', () => {
+test('homepage provides a mini apps category entry point instead of a standalone easy hanja card', () => {
   const homepage = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-  assert.match(homepage, /href="easy-hanja\.html"/);
-  assert.match(homepage, /쉬운 한자 찾기/);
-  assert.match(homepage, /한글이나 한자를 입력하면 뜻과 읽는 법을 쉽게 찾아드려요\./);
+  assert.match(homepage, /href="mini-apps\.html"/);
+  assert.match(homepage, /data-ko="미니 앱"/);
+  assert.match(homepage, /배움에 도움이 되는 간단한 도구를 사용해보세요/);
+  assert.doesNotMatch(homepage, /easy-hanja-entry/);
+});
+
+test('mini apps page provides the easy hanja finder as its first app', () => {
+  assert.match(miniApps, /<h1 id="miniAppsTitle">미니 앱<\/h1>/);
+  assert.match(miniApps, /href="easy-hanja\.html"/);
+  assert.match(miniApps, /쉬운 한자 찾기/);
+  assert.match(miniApps, /한글이나 한자를 입력하면 뜻과 읽는 법을 쉽게 찾아드려요\./);
+  assert.match(miniApps, /hanja-logo-mark/);
+  assert.match(css, /\.mini-app-card/);
 });
 
 test('all active member types can use the tool through the existing sign-in flow', () => {
@@ -62,7 +73,15 @@ test('all active member types can use the tool through the existing sign-in flow
 });
 
 test('easy hanja finder keeps large touch controls and a single-column mobile result layout', () => {
-  assert.match(css, /\.hanja-button\{min-height:52px/);
-  assert.match(css, /\.hanja-search-row input\{min-width:0;flex:1;height:56px/);
-  assert.match(css, /@media\(max-width:620px\).*?\.hanja-results\{grid-template-columns:1fr/s);
+  assert.match(css, /\.hanja-button\s*\{\s*min-height:\s*52px/);
+  assert.match(css, /\.hanja-search-row input\s*\{\s*min-width:\s*0;\s*flex:\s*1;\s*height:\s*56px/);
+  assert.match(css, /@media\s*\(max-width:\s*620px\).*?\.hanja-results\s*\{\s*grid-template-columns:\s*1fr/s);
+});
+
+test('easy hanja header reuses Harmony Link brand and homepage button styling', () => {
+  assert.match(page, /hanja-logo-mark/);
+  assert.match(page, /hanja-logo-name/);
+  assert.match(page, /이음문화센터/);
+  assert.match(css, /\.hanja-home-link\s*\{[^}]*border: 1px solid #b9d1ee/s);
+  assert.match(css, /\.hanja-logo-mark\s*\{/);
 });
