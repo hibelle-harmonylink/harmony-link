@@ -1443,7 +1443,14 @@ if (partnerPlans) {
     <div class="partner-plan-benefits free-benefits" id="freeBenefits" hidden>
       <h3>FREE 파트너 혜택</h3>
       <p class="plan-benefit-lead">비용 없이 기본 등록과 플랫폼 이용을 시작합니다.</p>
-      <ul><li>업체·강사 기본 프로필 등록</li><li>교육 카테고리 1개 기본 노출</li><li>기본 프로그램 1개 등록</li><li>프로그램 정보 분기별 1회 수정</li><li>기관·수강 의뢰 매칭 가능 시 안내</li><li>플랫폼 공지와 뉴스레터 제공</li></ul>
+      <ul>
+        <li><strong>시작하기</strong><span>기본 프로필을 등록해 파트너 활동을 시작합니다.</span></li>
+        <li><strong>카테고리 노출</strong><span>교육 카테고리 1개에 기본으로 노출됩니다.</span></li>
+        <li><strong>프로그램 등록</strong><span>기본 프로그램 1개를 등록할 수 있습니다.</span></li>
+        <li><strong>정보 수정</strong><span>프로그램 정보는 분기별 1회 수정합니다.</span></li>
+        <li><strong>매칭</strong><span>가능한 기관·수강 의뢰 매칭을 안내합니다.</span></li>
+        <li><strong>공지사항</strong><span>플랫폼 공지와 뉴스레터를 받아봅니다.</span></li>
+      </ul>
     </div>
     <button type="button" class="partner-plan-toggle basic" aria-expanded="false" aria-controls="basicBenefits">
       <i>홍보·매칭 강화</i><span>BASIC PARTNER</span><strong>$20<small> / 월</small></strong><p>꾸준한 노출과 매칭 안내</p><em>혜택 보기 ＋</em>
@@ -1451,7 +1458,16 @@ if (partnerPlans) {
     <div class="partner-plan-benefits" id="basicBenefits" hidden>
       <h3>BASIC 회원 혜택</h3>
       <p class="plan-benefit-lead">정기 노출과 매칭 안내를 강화합니다.</p>
-      <ul><li>FREE 파트너의 모든 혜택</li><li>강화된 업체·강사 프로필</li><li>교육 카테고리 최대 3개 노출</li><li>프로그램 최대 3개 등록</li><li>프로그램 정보 월 1회 수정</li><li>기관·수강 의뢰 정기 매칭 안내</li><li>소형 배너 및 검색 우선 노출</li><li>이메일 기본 운영 상담</li></ul>
+      <ul>
+        <li><strong>FREE 혜택</strong><span>FREE 파트너의 모든 혜택을 이용합니다.</span></li>
+        <li><strong>프로필 강화</strong><span>업체·강사 프로필을 더 풍부하게 소개합니다.</span></li>
+        <li><strong>카테고리 노출</strong><span>교육 카테고리 최대 3개에 노출됩니다.</span></li>
+        <li><strong>프로그램 등록</strong><span>프로그램을 최대 3개까지 등록합니다.</span></li>
+        <li><strong>정보 수정</strong><span>프로그램 정보는 월 1회 수정합니다.</span></li>
+        <li><strong>매칭</strong><span>기관·수강 의뢰 매칭을 정기 안내합니다.</span></li>
+        <li><strong>홍보·노출</strong><span>소형 배너와 검색 우선 노출을 제공합니다.</span></li>
+        <li><strong>운영 상담</strong><span>이메일로 기본 운영 상담을 제공합니다.</span></li>
+      </ul>
     </div>
     <button type="button" class="partner-plan-toggle premium" aria-expanded="false" aria-controls="premiumBenefits">
       <i>가장 강력한 성장 지원</i><span>PREMIUM PARTNER</span><strong>$50<small> / 월</small></strong><p>전문 디자인·최우선 홍보·매칭</p><em>혜택 보기 ＋</em>
@@ -1459,7 +1475,18 @@ if (partnerPlans) {
     <div class="partner-plan-benefits premium-benefits" id="premiumBenefits" hidden>
       <h3>PREMIUM 회원 혜택</h3>
       <p class="plan-benefit-lead">디자인·노출·매칭을 최우선으로 지원합니다.</p>
-      <ul><li>BASIC 파트너의 모든 혜택</li><li>홍보 전단·배너 디자인 지원</li><li>전체 교육 카테고리와 추천 영역 노출</li><li>프로그램 등록 및 수정 제한 없음</li><li>전문교육 섹션 프리미엄 배너 노출</li><li>메인 페이지·추천 강사 우선 노출</li><li>신규 기관 의뢰 최우선 매칭</li><li>입점·프로그램 심사 우선 처리</li><li>디지털 스토어 판매 수수료 할인</li><li>우선 운영 상담·특별 프로모션 초청</li></ul>
+      <ul>
+        <li><strong>BASIC 혜택</strong><span>BASIC 파트너의 모든 혜택을 이용합니다.</span></li>
+        <li><strong>디자인 지원</strong><span>홍보 전단과 배너 디자인을 지원합니다.</span></li>
+        <li><strong>카테고리 노출</strong><span>전체 교육 카테고리와 추천 영역에 노출됩니다.</span></li>
+        <li><strong>프로그램 등록</strong><span>프로그램 등록과 수정 횟수에 제한이 없습니다.</span></li>
+        <li><strong>홍보·노출</strong><span>전문교육 섹션 프리미엄 배너에 노출됩니다.</span></li>
+        <li><strong>우선 노출</strong><span>메인 페이지와 추천 강사 영역에 우선 노출됩니다.</span></li>
+        <li><strong>매칭</strong><span>신규 기관 의뢰를 최우선으로 연결합니다.</span></li>
+        <li><strong>우선 심사</strong><span>입점과 프로그램 심사를 우선 처리합니다.</span></li>
+        <li><strong>스토어 혜택</strong><span>디지털 스토어 판매 수수료를 할인합니다.</span></li>
+        <li><strong>운영 지원</strong><span>우선 상담과 특별 프로모션에 초대합니다.</span></li>
+      </ul>
     </div>`;
   partnerPlans.querySelectorAll('.partner-plan-toggle').forEach(button => button.addEventListener('click', () => {
     const panel = document.getElementById(button.getAttribute('aria-controls'));
