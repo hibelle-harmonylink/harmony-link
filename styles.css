@@ -238,6 +238,23 @@ html[lang="en"] .messiah-detail-meta dt,html[lang="en"] .messiah-detail-meta dd{
 .free-benefits{border-color:#8fd3af;background:#f2fcf7}.premium-benefits{border:2px solid #e1a82c;background:#fffaf0}
 @media(max-width:760px){.partner-modal-scroll{min-height:30vh}.partner-modal-plans{grid-template-columns:1fr;max-height:58vh}.partner-plan-intro,.partner-plan-toggle.free,.partner-plan-toggle.basic,.partner-plan-toggle.premium,.partner-plan-benefits,.partner-modal-plans>#basicBenefits,.partner-modal-plans>#premiumBenefits,.partner-modal-plans>#freeBenefits{grid-column:1!important;grid-row:auto!important}.partner-plan-toggle{min-height:152px}.partner-plan-benefits ul{grid-template-columns:1fr}}
 
+/* Compact benefit cards keep every tier's existing policy while reducing modal height. */
+.partner-plan-benefits,.partner-modal-plans>#basicBenefits,.partner-modal-plans>#premiumBenefits,.partner-modal-plans>#freeBenefits{padding:10px!important;border-radius:12px!important}
+.partner-plan-benefits h3{display:inline!important;margin:0!important;font-size:15px!important;line-height:1.3!important}
+.partner-plan-benefits .plan-benefit-lead{display:inline!important;margin:0!important;font-size:12px!important;line-height:1.35!important}
+.partner-plan-benefits .plan-benefit-lead::before{content:' · ';font-weight:700}
+.partner-plan-benefits ul{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:4px 12px!important;margin:8px 0 0!important;padding-left:16px!important}
+.partner-plan-benefits li{min-height:0!important;padding:0!important;color:#52657c!important;font-size:12px!important;line-height:1.35!important}
+@media(max-width:900px) and (min-width:761px){.partner-plan-benefits ul{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:760px){
+  .partner-plan-benefits,.partner-modal-plans>#basicBenefits,.partner-modal-plans>#premiumBenefits,.partner-modal-plans>#freeBenefits{padding:9px!important}
+  .partner-plan-benefits ul{grid-template-columns:1fr!important;gap:5px!important}
+  .partner-plan-benefits h3,.partner-plan-benefits .plan-benefit-lead{display:block!important}
+  .partner-plan-benefits .plan-benefit-lead{margin-top:2px!important}
+  .partner-plan-benefits .plan-benefit-lead::before{content:none}
+  .partner-plan-benefits li{min-height:0!important;padding:0!important}
+}
+
 /* Compact application flyer previews keep membership benefits visible immediately. */
 .partner-modal-scroll.partner-flyer-scroll{flex:0 0 auto;min-height:0;height:150px;overflow:hidden;padding:8px;background:#e8f1fb;transition:height .3s ease}
 .partner-flyer-toggle{position:relative;width:100%;height:100%;padding:0;border:0;border-radius:13px;overflow:hidden;background:#fff;cursor:zoom-in;display:grid;place-items:center}
