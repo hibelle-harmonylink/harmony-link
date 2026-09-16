@@ -28,9 +28,9 @@ test('HL-26-009 full name backfill changes only the intended metadata field', ()
 });
 
 test('admin asset query keys and page version advance together', () => {
-  assert.equal(version.version, '20260916-2');
-  assert.match(adminHtml, /const pageVersion = '20260916-2'/);
-  assert.match(adminHtml, /admin\.css\?v=20260916-2/);
-  assert.match(adminHtml, /admin\.js\?v=20260916-2/);
+  assert.equal(version.version, '20260916-3');
+  assert.match(adminHtml, /const pageVersion = '20260916-3'/);
+  assert.match(adminHtml, /admin\.css\?v=20260916-3/);
+  assert.match(adminHtml, /admin\.js\?v=20260916-3/);
   assert.match(adminHtml, /회원유형 · 멤버십 · 계정 상태 · 기능 권한을 각각 관리합니다\./);
 });

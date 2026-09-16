@@ -1049,6 +1049,21 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
   .hero .hero-platform-card-teacher{left:12px!important;top:calc(50% - 145px)!important}
   .hero .hero-platform-card-visit{right:12px!important;bottom:calc(50% - 145px)!important}
 }
+
+/* Briefly identify the existing partner application CTA after hero navigation. */
+.partner-guide-actions .partner-application-highlight{
+  animation:partner-application-highlight 1.6s ease-out;
+}
+#partner-center .partner-center-card:has(.partner-auth-gate:not([hidden])) .partner-upgrade-guide.partner-application-focus{
+  display:block!important;
+}
+@keyframes partner-application-highlight{
+  0%,55%{box-shadow:0 0 0 5px rgba(11,84,194,.2),0 8px 18px rgba(11,84,194,.2)}
+  100%{box-shadow:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .partner-guide-actions .partner-application-highlight{animation:none;}
+}
 @media(max-width:1100px) and (min-width:901px){
   .hero .hero-platform-card-teacher{top:calc(50% - 125px)!important}
   .hero .hero-platform-card-visit{bottom:calc(50% - 125px)!important}
