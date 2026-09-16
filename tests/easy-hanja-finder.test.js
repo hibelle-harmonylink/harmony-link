@@ -23,11 +23,35 @@ test('easy hanja finder has the requested member gate and accessible search cont
 
 test('easy hanja finder searches Hangul and Hanja locally, then supports large display and copying', () => {
   assert.match(script, /const words = \[/);
-  assert.match(script, /\['학교','學校','배울 학 · 학교 교'\]/);
+  assert.match(script, /\['사랑','愛','애','사랑 애'\]/);
+  assert.match(script, /\['학교','學校','학교','배울 학 · 학교 교'\]/);
+  assert.match(script, /\['한국','韓國','한국','한국 한 · 나라 국'\]/);
+  assert.match(script, /\['英','영','꽃부리 영'\]/);
+  assert.match(script, /\['永','영','길 영'\]/);
+  assert.match(script, /\['榮','영','영화 영'\]/);
+  assert.match(script, /\['泳','영','헤엄칠 영'\]/);
+  assert.match(script, /\['民','민','백성 민'\]/);
+  assert.match(script, /\['敏','민','민첩할 민'\]/);
+  assert.match(script, /\['珉','민','옥돌 민'\]/);
+  assert.match(script, /\['旻','민','하늘 민'\]/);
+  const countCandidates = reading => (script.match(new RegExp(`\\['[^']+','${reading}','[^']+'\\]`, 'g')) || []).length;
+  assert.ok(countCandidates('영') >= 4);
+  assert.ok(countCandidates('민') >= 4);
+  assert.match(script, /\['愛','애','사랑 애'\]/);
+  assert.match(script, /\['學','학','배울 학'\]/);
+  assert.match(script, /\['國','국','나라 국'\]/);
+  assert.match(script, /\.map\(\(\[, hanja, reading, meaning\]\) => \(\{ character:hanja, reading, meaning \}\)\)/);
   assert.match(script, /const isHanja/);
   assert.match(script, /navigator\.clipboard\.writeText/);
   assert.match(script, /class="hanja-character"/);
   assert.match(script, /data-hanja-copy/);
+});
+
+test('homepage provides an easy hanja finder entry point', () => {
+  const homepage = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  assert.match(homepage, /href="easy-hanja\.html"/);
+  assert.match(homepage, /쉬운 한자 찾기/);
+  assert.match(homepage, /한글이나 한자를 입력하면 뜻과 읽는 법을 쉽게 찾아드려요\./);
 });
 
 test('all active member types can use the tool through the existing sign-in flow', () => {
