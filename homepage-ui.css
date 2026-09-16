@@ -1431,3 +1431,34 @@ html[lang="en"] .messiah-detail-meta dt,html[lang="en"] .messiah-detail-meta dd{
     object-position:72% center!important;
   }
 }
+
+/* Keep the hero copy and image in separate layout tracks on laptops. */
+@media(max-width:1200px) and (min-width:901px){
+  .hero .hero-grid{
+    grid-template-columns:minmax(0,1fr) minmax(0,.95fr)!important;
+    align-items:center!important;
+    gap:clamp(22px,2.5vw,34px)!important;
+  }
+  .hero .hero-copy,
+  .hero .hero-visual{min-width:0!important;}
+  .hero h1{
+    font-size:clamp(43px,4.3vw,52px)!important;
+    line-height:1.14!important;
+    white-space:normal!important;
+  }
+  .hero .hero-visual{height:clamp(360px,40vw,440px)!important;}
+  .hero .hero-learning-image{
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    aspect-ratio:auto!important;
+    transform:none!important;
+  }
+  .hero .hero-learning-image img{
+    width:100%!important;
+    height:100%!important;
+    object-fit:cover!important;
+    object-position:85% center!important;
+    transform:none!important;
+  }
+}
