@@ -36,10 +36,10 @@ test('resend shows a detail error and always restores the button', () => {
 });
 
 test('admin asset versions advance together for the resend UX', () => {
-  assert.equal(version.version, '20260916-9');
-  assert.match(adminHtml, /const pageVersion = '20260916-9'/);
-  assert.match(adminHtml, /admin\.css\?v=20260916-9/);
-  assert.match(adminHtml, /admin\.js\?v=20260916-9/);
+  assert.equal(version.version, '20260916-10');
+  assert.match(adminHtml, /const pageVersion = '20260916-10'/);
+  assert.match(adminHtml, /admin\.css\?v=20260916-10/);
+  assert.match(adminHtml, /admin\.js\?v=20260916-10/);
 });
 
 test('detail feedback stays immediately above the action row on desktop and mobile', () => {

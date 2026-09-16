@@ -1549,12 +1549,19 @@ const partnerResourceSections = [
 ];
 if (downloads) {
   const resourceMarkup = partnerResourceSections.map((section,index) => `<article class="partner-resource-group${section.premium?' premium-resource':''}" data-resource-tier="${section.tier}">
-    <button type="button" class="partner-resource-toggle" aria-expanded="false" aria-controls="partnerResource${index}"><span class="resource-number"></span><b>${section.icon}</b><div><h3>${section.title}<em class="resource-tier-label">$${section.tier}</em></h3><p>${section.copy}</p></div><i>＋</i></button>
-    <div class="partner-resource-items" id="partnerResource${index}" hidden>${section.items.map(item=>`<div class="partner-resource-item"><span>${item[2]||'준비 중'}</span><strong>${item[0]}</strong>${item[1]?(item[3]==='view'?`<a href="${item[1]}">자료 보기 →</a>`:`<a href="${item[1]}" download>다운로드 ↓</a>`):'<small>자료 준비 중</small>'}</div>`).join('')}</div>
+    <button type="button" class="partner-resource-toggle" aria-expanded="false" aria-controls="partnerResource${index}"><span class="resource-number"></span><div class="partner-resource-summary"><h3>${section.title}<em class="resource-tier-label">$${section.tier}</em></h3><p>${section.copy}</p></div><span class="partner-resource-action" aria-hidden="true">확인</span></button>
+    <div class="partner-resource-items" id="partnerResource${index}" hidden><p class="partner-resource-detail-copy">${section.copy}</p>${section.items.map(item=>`<div class="partner-resource-item"><span>${item[2]||'준비 중'}</span><strong>${item[0]}</strong>${item[1]?(item[3]==='view'?`<a href="${item[1]}">자료 보기 →</a>`:`<a href="${item[1]}" download>다운로드 ↓</a>`):'<small>자료 준비 중</small>'}</div>`).join('')}</div>
   </article>`).join('');
   downloads.innerHTML = `<div class="partner-library-head"><div class="partner-library-status"><span class="unlocked-badge">접근 승인됨</span><p>필요한 영역을 선택하면 다운로드 가능한 파일과 준비 중인 자료를 확인할 수 있습니다.</p></div><div class="partner-tier-guide" aria-label="파트너 등급"><button type="button" data-tier="0"><strong>$0</strong><b>FREE</b></button><button type="button" data-tier="20"><strong>$20</strong><b>BASIC</b></button><button type="button" data-tier="50"><strong>$50</strong><b>PREMIUM</b></button></div><p class="partner-tier-benefit" aria-live="polite"></p></div><div class="partner-resource-library">${resourceMarkup}</div><p class="partner-download-warning">이 자료는 승인된 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다.</p>`;
   const benefitText={0:'FREE · 2개 시작 자료를 이용할 수 있습니다.',20:'BASIC · FREE 포함 총 6개 자료를 이용할 수 있습니다.',50:'PREMIUM · 전체 12개 자료를 모두 이용할 수 있습니다.'};
   const library = downloads.querySelector('.partner-resource-library');
+  const closeResource = button => {
+    const panel = downloads.querySelector(`#${button.getAttribute('aria-controls')}`);
+    if (!panel) return;
+    panel.hidden = true;
+    button.setAttribute('aria-expanded', 'false');
+    button.querySelector('.partner-resource-action').textContent = '확인';
+  };
   const setAccessTier=(maxTier=0,selectedTier=maxTier)=>{
     const allowed=[0,20,50].filter(tier=>tier<=maxTier);
     const selected=allowed.includes(Number(selectedTier))?Number(selectedTier):Math.max(...allowed);
@@ -1568,13 +1575,15 @@ if (downloads) {
       if(visible){visibleCount+=1;section.querySelector('.resource-number').textContent=String(visibleCount).padStart(2,'0');}
     });
     if(library) library.dataset.count=String(visibleCount);
+    downloads.querySelectorAll('.partner-resource-toggle').forEach(closeResource);
   };
   downloads.querySelectorAll('.partner-tier-guide button').forEach(button=>button.addEventListener('click',()=>setAccessTier(Number(downloads.dataset.maxTier||0),Number(button.dataset.tier))));
   window.HarmonyPartnerResources={setAccessTier:(maxTier,selectedTier=maxTier)=>{downloads.dataset.maxTier=String(maxTier);setAccessTier(maxTier,selectedTier);}};
   setAccessTier(0,0);
   downloads.querySelectorAll('.partner-resource-toggle').forEach(button=>button.addEventListener('click',()=>{
     const panel=downloads.querySelector(`#${button.getAttribute('aria-controls')}`);const open=panel.hidden;
-    panel.hidden=!open;button.setAttribute('aria-expanded',String(open));button.querySelector('i').textContent=open?'−':'＋';
+    downloads.querySelectorAll('.partner-resource-toggle').forEach(other=>{if(other!==button)closeResource(other);});
+    panel.hidden=!open;button.setAttribute('aria-expanded',String(open));button.querySelector('.partner-resource-action').textContent=open?'닫기':'확인';
   }));
 }
 document.querySelectorAll('#events .event-card:not(.event-coming)').forEach(card=>{
