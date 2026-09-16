@@ -1534,18 +1534,18 @@ document.querySelectorAll('.contact-form-open').forEach(button => button.addEven
 // tiers always restarts the count instead of keeping each card's fixed
 // position in this full list.
 const partnerResourceSections = [
-  {tier:0,icon:'🚀',title:'시작하기',copy:'입점 후 가장 먼저 확인하는 필수 안내 자료',items:[['입점 파트너 시작 안내서','downloads/HarmonyLink_Partner_Getting_Started.pdf','PDF'],['플랫폼 이용 및 운영 정책','downloads/HarmonyLink_Partner_Policy_v1.0.pdf','PDF'],['입점 파트너 계약서','downloads/HarmonyLink_Partner_Agreement_v2.0.pdf','PDF'],['강사 활동 가이드','downloads/HarmonyLink_Instructor_Activity_Guide_v1.0.pdf','PDF'],['자주 묻는 질문 (FAQ)','downloads/HarmonyLink_Partner_FAQ_v1.0.pdf','PDF']]},
-  {tier:0,icon:'📌',title:'공지사항',copy:'Harmony Link 운영 공지 및 주요 업데이트',items:[['최신 공지사항 보기','https://hibelleharmony.com/community.html?refresh=20260815-301&category=notice','바로가기','view'],['파트너 공지사항 안내','downloads/HarmonyLink_Partner_Notice_Guide_v1.0.pdf','PDF'],['교육·행사 일정'],['자료실 업데이트']]},
-  {tier:20,icon:'📘',title:'운영 매뉴얼',copy:'기관 출강과 실제 수업 운영을 위한 기본 가이드',items:[['기관 수업 진행 방법'],['출강 체크리스트'],['첫 수업 준비 방법'],['수업 종료 후 해야 할 일'],['강사 매너·복장 가이드'],['안전 수칙']]},
+  {tier:0,icon:'🚀',title:'시작하기',copy:'입점 후 가장 먼저 확인하는 필수 안내 자료',items:[['시작 안내서','downloads/HarmonyLink_Partner_Getting_Started.pdf','PDF'],['플랫폼 운영 정책','downloads/HarmonyLink_Partner_Policy_v1.0.pdf','PDF'],['파트너 계약서','downloads/HarmonyLink_Partner_Agreement_v2.0.pdf','PDF'],['강사 활동 안내','downloads/HarmonyLink_Instructor_Activity_Guide_v1.0.pdf','PDF'],['FAQ','downloads/HarmonyLink_Partner_FAQ_v1.0.pdf','PDF']]},
+  {tier:0,icon:'📌',title:'공지사항',copy:'Harmony Link 운영 공지 및 주요 업데이트',items:[['최신 공지','https://hibelleharmony.com/community.html?refresh=20260815-301&category=notice','바로가기','view'],['파트너 공지','downloads/HarmonyLink_Partner_Notice_Guide_v1.0.pdf','PDF'],['행사 일정'],['자료실 업데이트']]},
+  {tier:20,icon:'📘',title:'운영 매뉴얼',copy:'기관 출강과 실제 수업 운영을 위한 기본 가이드',items:[['기관 수업 진행'],['출강 체크'],['첫 수업 준비'],['수업 마무리'],['강사 매너·복장'],['안전 수칙']]},
   {tier:20,icon:'🗂️',title:'수업 자료',copy:'수업 준비와 진행에 활용할 수 있는 교육 자료',items:[['수업계획서 양식'],['출석부'],['만족도 조사'],['수료증 양식'],['강의 노트 양식'],['PPT 템플릿'],['스마트폰 교안'],['컴퓨터 교안'],['영상편집 교안'],['합창곡'],['반주 자료'],['발성 자료'],['음악 활동지'],['악보']]},
-  {tier:20,icon:'📣',title:'홍보 자료',copy:'Harmony Link 브랜드 홍보 및 프로그램 안내 자료',items:[['Harmony Link 로고','assets/harmony-logo.png','PNG'],['전단지 예시','assets/partners/partner-recruitment.png','PNG'],['브랜드 컬러 가이드'],['SNS 카드뉴스'],['배너'],['명함 디자인'],['프로필 이미지 템플릿']]},
-  {tier:20,icon:'🗒️',title:'서식 · 템플릿',copy:'강사 운영에 필요한 기본 문서와 실무 양식',items:[['강사 프로필 양식'],['강의계획서'],['일정표'],['기관 소개서'],['PowerPoint 템플릿'],['PDF 템플릿']]},
+  {tier:20,icon:'📣',title:'홍보 자료',copy:'Harmony Link 브랜드 홍보 및 프로그램 안내 자료',items:[['브랜드 로고','assets/harmony-logo.png','PNG'],['전단지 예시','assets/partners/partner-recruitment.png','PNG'],['컬러 가이드'],['SNS 카드뉴스'],['배너'],['명함 디자인'],['프로필 템플릿']]},
+  {tier:20,icon:'🗒️',title:'서식 · 템플릿',copy:'강사 운영에 필요한 기본 문서와 실무 양식',items:[['강사 프로필 양식'],['강의계획서'],['일정표'],['기관 소개서'],['PPT 템플릿'],['PDF 템플릿']]},
   {tier:50,premium:true,icon:'🎨',title:'Canva 디자인 자료',copy:'전단지·배너·SNS 제작에 활용하는 디자인 자료',items:[['Canva 템플릿'],['Canva 디자인 자료'],['Canva 사용법']]},
   {tier:50,premium:true,icon:'🏢',title:'기관 제안 · 영업 자료',copy:'기관 제안과 프로그램 영업에 활용하는 실전 자료',items:[['프로그램 제안서'],['견적서'],['기관 계약 방법'],['마케팅 방법']]},
   {tier:50,premium:true,icon:'🤖',title:'AI 수업 활용 자료',copy:'AI·ChatGPT 등을 교육에 활용하기 위한 강의 자료',items:[['ChatGPT 자료'],['AI 활용 자료'],['ChatGPT 활용법']]},
-  {tier:50,premium:true,icon:'📱',title:'SNS · 콘텐츠 자료',copy:'SNS 홍보와 콘텐츠 제작에 활용하는 운영 자료',items:[['하이벨 디지털 이미지','assets/brands/hibelle-digital.jpg','JPG'],['하이벨 화상영어 이미지','assets/brands/hibelle-online-english.jpg','JPG'],['Meeran Melody 이미지','assets/brands/meeran-melody.jpg','JPG'],['입점 파트너 모집 포스터','assets/partners/partner-recruitment.png','PNG']]},
+  {tier:50,premium:true,icon:'📱',title:'SNS · 콘텐츠 자료',copy:'SNS 홍보와 콘텐츠 제작에 활용하는 운영 자료',items:[['디지털 이미지','assets/brands/hibelle-digital.jpg','JPG'],['화상영어 이미지','assets/brands/hibelle-online-english.jpg','JPG'],['멜로디 이미지','assets/brands/meeran-melody.jpg','JPG'],['모집 포스터','assets/partners/partner-recruitment.png','PNG']]},
   {tier:50,premium:true,icon:'🧭',title:'프로그램 기획 자료',copy:'새로운 강좌와 프로그램을 설계하기 위한 기획 자료',items:[['프로그램 예시'],['강의 잘하는 방법'],['시니어 수업 노하우']]},
-  {tier:50,premium:true,icon:'📈',title:'파트너 성장 자료',copy:'수업 확대·기관 확보·브랜드 성장에 활용하는 자료',items:[['홍보 디자인 신청'],['홈페이지 추천 노출 신청'],['프로그램 등록 신청'],['배너 제작 신청']]}
+  {tier:50,premium:true,icon:'📈',title:'파트너 성장 자료',copy:'수업 확대·기관 확보·브랜드 성장에 활용하는 자료',items:[['홍보 디자인'],['추천 노출 신청'],['프로그램 등록'],['배너 제작']]}
 ];
 if (downloads) {
   const resourceMarkup = partnerResourceSections.map((section,index) => `<article class="partner-resource-group${section.premium?' premium-resource':''}" data-resource-tier="${section.tier}">
