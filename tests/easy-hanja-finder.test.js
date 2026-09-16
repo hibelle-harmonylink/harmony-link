@@ -50,10 +50,14 @@ test('easy hanja finder searches Hangul and Hanja locally, then supports large d
 
 test('homepage provides a mini apps category entry point instead of a standalone easy hanja card', () => {
   const homepage = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-  assert.match(homepage, /href="mini-apps\.html"/);
-  assert.match(homepage, /data-ko="미니 앱"/);
-  assert.match(homepage, /배움에 도움이 되는 간단한 도구를 사용해보세요/);
+  const categoryStart = homepage.indexOf('id="program-categories"');
+  const categoryMarkup = homepage.slice(categoryStart, homepage.indexOf('</section>', categoryStart));
+  assert.match(categoryMarkup, /취미<\/strong><\/button>\s*<a class="program-category-card is-linked reveal" href="mini-apps\.html"/s);
+  assert.match(categoryMarkup, /data-ko="미니 앱"/);
+  assert.doesNotMatch(categoryMarkup, /배움에 도움이 되는 간단한 도구를 사용해보세요/);
+  assert.doesNotMatch(categoryMarkup, /mini-apps-category-card/);
   assert.doesNotMatch(homepage, /easy-hanja-entry/);
+  assert.match(homepage, /auth\.js\?v=20260916-14/);
 });
 
 test('mini apps page provides the easy hanja finder as its first app', () => {
@@ -61,15 +65,20 @@ test('mini apps page provides the easy hanja finder as its first app', () => {
   assert.match(miniApps, /href="easy-hanja\.html"/);
   assert.match(miniApps, /쉬운 한자 찾기/);
   assert.match(miniApps, /한글이나 한자를 입력하면 뜻과 읽는 법을 쉽게 찾아드려요\./);
-  assert.match(miniApps, /hanja-logo-mark/);
+  assert.match(miniApps, /class="logo"/);
+  assert.match(miniApps, /class="logo-mark brand-image"/);
+  assert.match(miniApps, /assets\/harmony-logo\.png/);
+  assert.match(miniApps, /class="header-login"/);
   assert.match(css, /\.mini-app-card/);
 });
 
 test('all active member types can use the tool through the existing sign-in flow', () => {
   assert.match(script, /\['active','expiring'\]\.includes/);
   assert.doesNotMatch(script, /membership === 'premium'|membership === 'basic'/);
-  assert.match(auth, /requestedReturn === 'easy-hanja\.html'/);
-  assert.match(auth, /returnTarget === 'easy-hanja\.html'/);
+  assert.match(auth, /requestedEasyHanjaReturn/);
+  assert.match(auth, /returnToEasyHanjaIfRequested/);
+  assert.match(auth, /\?return=\$\{encodeURIComponent\(requestedReturn\)\}/);
+  assert.match(auth, /if \(event === 'SIGNED_IN'\) returnToEasyHanjaIfRequested\(session\)/);
 });
 
 test('easy hanja finder keeps large touch controls and a single-column mobile result layout', () => {
@@ -78,10 +87,14 @@ test('easy hanja finder keeps large touch controls and a single-column mobile re
   assert.match(css, /@media\s*\(max-width:\s*620px\).*?\.hanja-results\s*\{\s*grid-template-columns:\s*1fr/s);
 });
 
-test('easy hanja header reuses Harmony Link brand and homepage button styling', () => {
-  assert.match(page, /hanja-logo-mark/);
-  assert.match(page, /hanja-logo-name/);
+test('easy hanja header reuses the homepage logo markup and header login style', () => {
+  assert.match(page, /class="site-header"/);
+  assert.match(page, /class="logo"/);
+  assert.match(page, /class="logo-mark brand-image"/);
+  assert.match(page, /assets\/harmony-logo\.png/);
   assert.match(page, /이음문화센터/);
-  assert.match(css, /\.hanja-home-link\s*\{[^}]*border: 1px solid #b9d1ee/s);
-  assert.match(css, /\.hanja-logo-mark\s*\{/);
+  assert.match(page, /class="header-login"/);
+  assert.match(page, /styles\.css\?v=20260916-12/);
+  assert.match(page, /homepage-ui\.css\?v=20260916-16/);
+  assert.doesNotMatch(page, /hanja-logo-mark|hanja-home-link/);
 });
