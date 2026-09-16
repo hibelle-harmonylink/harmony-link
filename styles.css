@@ -751,6 +751,23 @@ body>footer .footer-top .logo-name,body>footer .footer-top p,body>footer .footer
 @media(max-width:1000px){#community .audience-card{grid-template-columns:190px minmax(0,1fr) 190px!important;column-gap:14px!important}#community .audience-card>p{white-space:normal!important}#community .audience-card>ul{flex-wrap:wrap!important;gap:5px 10px!important}}
 @media(max-width:760px){#community .audience-card{display:grid!important;grid-template-columns:1fr!important;grid-template-areas:"label" "title" "description" "checklist" "button"!important;gap:8px!important;min-height:0!important;padding:20px!important}#community .audience-card>p{white-space:normal!important;overflow:visible!important}#community .audience-card>ul{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:4px!important;overflow:visible!important}#community .audience-card li{white-space:normal!important}#community .audience-card li+li{padding-left:0!important;border-left:0!important}#partner-center .partner-tier-guide button{height:78px!important;min-height:78px!important;padding:9px 5px!important}#partner-center .partner-tier-guide button strong{font-size:24px!important}body>footer .footer-top{padding:20px 18px!important}}
 
+/* Compact only tier-selected partner resource cards; membership controls and guide cards remain unchanged. */
+#partner-center .partner-resource-library{gap:clamp(7px,.75vw,10px)!important}
+#partner-center .partner-resource-toggle{min-height:clamp(72px,6vw,82px)!important;padding:clamp(8px,.7vw,10px)!important;gap:clamp(7px,.7vw,9px)!important;grid-template-columns:34px minmax(0,1fr) auto!important}
+#partner-center .partner-resource-toggle>b{width:34px!important;height:34px!important;font-size:17px!important;border-radius:10px!important}
+#partner-center .partner-resource-toggle h3{font-size:15px!important;line-height:1.2!important}
+#partner-center .partner-resource-toggle h3 em{font-size:11px!important;padding:3px 6px!important;vertical-align:1px!important}
+#partner-center .partner-resource-toggle p{margin-top:2px!important;font-size:12px!important;line-height:1.3!important}
+#partner-center .partner-resource-toggle>i{font-size:18px!important}
+@media(max-width:760px){
+  #partner-center .partner-resource-library{gap:7px!important}
+  #partner-center .partner-resource-toggle{min-height:72px!important;padding:8px!important;gap:7px!important;grid-template-columns:32px minmax(0,1fr) auto!important}
+  #partner-center .partner-resource-toggle>b{width:32px!important;height:32px!important;font-size:16px!important}
+  #partner-center .partner-resource-toggle h3{font-size:14px!important}
+  #partner-center .partner-resource-toggle p{font-size:11px!important;line-height:1.28!important}
+  #partner-center .partner-resource-toggle>i{font-size:17px!important}
+}
+
 /* 2026-09-08 homepage visual recovery. Scope is presentation only. */
 :root{--ui-deep-navy:#123a63;--ui-soft-blue:#eaf3f8;--ui-off-white:#fafbfc;--ui-gold:#b08d57;--ui-green:#e7f2ea;--ui-text:#1f2f46;--ui-radius:20px;--ui-shadow:0 12px 32px rgba(31,47,70,.09)}
 #about{background:var(--ui-soft-blue)!important}
