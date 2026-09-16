@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Harmony Link 회원을 위한 시니어 배움터">
+  <meta name="theme-color" content="#0b5fc2">
+  <title>시니어 배움터 | Harmony Link</title>
+  <link rel="icon" type="image/png" href="app/icon-512.png?v=2">
+  <link rel="stylesheet" href="styles.css?v=20260916-20">
+  <link rel="stylesheet" href="homepage-ui.css?v=20260916-16">
+  <link rel="stylesheet" href="senior-learning.css?v=20260916-20">
+</head>
+<body>
+  <a class="skip-link" href="#seniorLearningMain">본문으로 바로가기</a>
+  <header class="site-header tool-site-header" id="top">
+    <div class="container nav-wrap">
+      <a class="logo" href="./" aria-label="Harmony Link home">
+        <span class="logo-mark brand-image" aria-hidden="true"><img src="assets/harmony-logo.png" alt=""></span>
+        <span class="logo-name">Harmony <b>Link</b><small>이음문화센터</small></span>
+      </a>
+      <a class="header-login" href="./">홈페이지</a>
+    </div>
+  </header>
+
+  <main id="seniorLearningMain" class="senior-learning-main" data-member-tool="senior-learning">
+    <div class="senior-learning-container">
+      <section class="senior-learning-hero" aria-labelledby="seniorLearningTitle">
+        <p>HARMONY LINK LEARNING</p>
+        <h1 id="seniorLearningTitle">시니어 배움터</h1>
+        <span>수업에서 배운 내용을 집에서도 천천히 다시 배워보세요.</span>
+      </section>
+
+      <section class="senior-learning-loading" id="seniorLearningLoading" aria-live="polite">회원 정보를 확인하고 있어요...</section>
+      <section class="senior-learning-gate" id="seniorLearningGate" hidden aria-labelledby="seniorGateTitle">
+        <span aria-hidden="true">🔐</span>
+        <h2 id="seniorGateTitle">하모니링크 회원을 위한 배움터예요</h2>
+        <p>회원가입 또는 로그인 후 수업 내용을 편하게 다시 볼 수 있습니다.</p>
+        <div><a class="senior-primary-button" href="index.html?auth=signup&amp;return=senior-learning.html">무료 회원가입</a><a class="senior-secondary-button" href="index.html?auth=login&amp;return=senior-learning.html">로그인</a></div>
+      </section>
+
+      <section class="senior-learning-app" id="seniorLearningApp" hidden>
+        <nav class="senior-breadcrumb" id="seniorBreadcrumb" aria-label="현재 위치"></nav>
+        <div id="seniorLearningContent"></div>
+      </section>
+    </div>
+  </main>
+  <footer class="senior-learning-footer">© 2026 Hibelle Consulting · Harmony Link</footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="senior-learning.js?v=20260916-20"></script>
+</body>
+</html>
