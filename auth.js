@@ -563,7 +563,8 @@
       return;
     }
     status.textContent = t('로그인 화면으로 이동합니다…', 'Opening secure sign-in…');
-    localStorage.setItem('harmonyAuthReturn', 'partner-center');
+    const requestedReturn = new URLSearchParams(location.search).get('return');
+    localStorage.setItem('harmonyAuthReturn', requestedReturn === 'easy-hanja.html' ? requestedReturn : 'partner-center');
     // New social signups always start as students. Partner status remains an
     // administrator-managed user_type change after registration.
     if (activeAuthMode === 'signup') localStorage.setItem('harmonyPendingMemberType', 'student');
@@ -681,7 +682,11 @@
     await applyPendingMemberType(data.session);
     await refreshMemberAccess(data.session);
     await ensureMemberRosterRegistration(data.session?.user);
-    if (data.session && localStorage.getItem('harmonyAuthReturn') === 'partner-center') {
+    const returnTarget = localStorage.getItem('harmonyAuthReturn');
+    if (data.session && returnTarget === 'easy-hanja.html') {
+      localStorage.removeItem('harmonyAuthReturn');
+      window.location.replace('easy-hanja.html');
+    } else if (data.session && returnTarget === 'partner-center') {
       localStorage.removeItem('harmonyAuthReturn');
       window.setTimeout(() => partnerCenter.scrollIntoView({ behavior: 'smooth', block: 'start' }), 350);
     }
