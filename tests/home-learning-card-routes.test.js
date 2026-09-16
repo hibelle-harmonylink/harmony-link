@@ -9,10 +9,13 @@ const script = fs.readFileSync(path.join(root, 'script.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'homepage-ui.css'), 'utf8');
 
 test('homepage category cards route only to prepared detail pages', () => {
+  const categoryStart = html.indexOf('id="program-categories"');
+  const categoryMarkup = html.slice(categoryStart, html.indexOf('</section>', categoryStart));
   assert.match(html, /href="digital-classes\/index\.html"/);
-  assert.match(html, /href="special-event-music-class\.html"/);
+  assert.match(html, /href="meeran-melody\/index\.html"/);
+  assert.doesNotMatch(categoryMarkup, /special-event-music-class\.html/);
   assert.match(html, /href="online-english\/index\.html"/);
-  assert.doesNotMatch(html.slice(html.indexOf('id="program-categories"'), html.indexOf('id="specialty-banners"')), /href="#specialty-banners"/);
+  assert.doesNotMatch(categoryMarkup, /href="#specialty-banners"/);
 });
 
 test('unprepared category cards open an accessible coming-soon modal without navigation', () => {
