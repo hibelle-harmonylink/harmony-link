@@ -1097,12 +1097,37 @@ partnerCenter.innerHTML = `<div class="container"><div class="partner-center-car
 partnerCenter.querySelector('.partner-center-card').insertAdjacentHTML('beforeend', `<div class="partner-upgrade-guide"><button class="partner-guide-toggle" type="button" aria-expanded="false" aria-controls="partnerGuideDetails"><span><small>PARTNER START GUIDE</small><strong data-ko="로그인부터 파트너 등급 이용까지" data-en="From sign-in to partner access">로그인부터 파트너 등급 이용까지</strong></span><b aria-hidden="true">＋</b></button><div class="partner-guide-details" id="partnerGuideDetails" hidden><p data-ko="아래 순서대로 진행하면 신청과 승인 상태를 쉽게 확인할 수 있습니다." data-en="Follow these steps to apply, receive approval, and access your partner resources.">아래 순서대로 진행하면 신청과 승인 상태를 쉽게 확인할 수 있습니다.</p><ol><li><b>01</b><span data-ko="가입·로그인" data-en="Join or sign in">가입·로그인</span><small data-ko="Google 또는 카카오 계정으로 가입하고 로그인합니다." data-en="Join and sign in with Google or Kakao.">Google 또는 카카오 계정으로 가입하고 로그인합니다.</small></li><li><b>02</b><span data-ko="입점 파트너 신청" data-en="Partner application">입점 파트너 신청</span><small data-ko="업체 또는 개인 강사 신청서를 작성합니다." data-en="Complete the company or instructor application.">업체 또는 개인 강사 신청서를 작성합니다.</small></li><li><b>03</b><span data-ko="관리자 검토·승인" data-en="Review and approval">관리자 검토·승인</span><small data-ko="승인되면 무료 파트너 등급과 안내메일을 받습니다." data-en="Once approved, you receive Free Partner status and an email.">승인되면 무료 파트너 등급과 안내메일을 받습니다.</small></li><li><b>04</b><span data-ko="등급 선택·변경" data-en="Choose or upgrade tier">등급 선택·변경</span><small data-ko="$20 BASIC 또는 $50 PREMIUM을 문의하고 관리자가 등급을 변경합니다." data-en="Request $20 BASIC or $50 PREMIUM and the administrator updates your tier.">$20 BASIC 또는 $50 PREMIUM을 문의하고 관리자가 등급을 변경합니다.</small></li><li><b>05</b><span data-ko="다시 로그인·자료 이용" data-en="Sign in again and access">다시 로그인·자료 이용</span><small data-ko="로그아웃 후 다시 로그인하면 변경된 등급의 자료와 혜택이 표시됩니다." data-en="Sign out and back in to see resources and benefits for the new tier.">로그아웃 후 다시 로그인하면 변경된 등급의 자료와 혜택이 표시됩니다.</small></li></ol><div class="partner-guide-actions"><a class="btn btn-primary" href="https://forms.gle/pF4xy5Jz4ycVouKo9" target="_blank" rel="noopener noreferrer"><span data-ko="파트너 신청서 작성" data-en="Apply as a Partner">파트너 신청서 작성</span><b>✓</b></a></div></div></div>`);
 const partnerGuideToggle=partnerCenter.querySelector('.partner-guide-toggle');
 const partnerGuideDetails=partnerCenter.querySelector('#partnerGuideDetails');
+const partnerGuide=partnerCenter.querySelector('.partner-upgrade-guide');
+const partnerApplicationButton=partnerCenter.querySelector('.partner-guide-actions a');
+if(partnerApplicationButton)partnerApplicationButton.id='partner-application';
+const setPartnerGuideExpanded=expanded=>{
+  partnerGuideToggle?.setAttribute('aria-expanded',String(expanded));
+  if(partnerGuideDetails)partnerGuideDetails.hidden=!expanded;
+  const guideSymbol=partnerGuideToggle?.querySelector('b');
+  if(guideSymbol)guideSymbol.textContent=expanded?'−':'＋';
+};
 partnerGuideToggle?.addEventListener('click',()=>{
-  const expanded=partnerGuideToggle.getAttribute('aria-expanded')==='true';
-  partnerGuideToggle.setAttribute('aria-expanded',String(!expanded));
-  partnerGuideDetails.hidden=expanded;
-  partnerGuideToggle.querySelector('b').textContent=expanded?'＋':'−';
+  setPartnerGuideExpanded(partnerGuideToggle.getAttribute('aria-expanded')!=='true');
 });
+const showPartnerApplication=({behavior='smooth',updateHash=false}={})=>{
+  if(!partnerApplicationButton)return;
+  partnerGuide?.classList.add('partner-application-focus');
+  setPartnerGuideExpanded(true);
+  window.requestAnimationFrame(()=>window.requestAnimationFrame(()=>{
+    partnerApplicationButton.scrollIntoView({behavior,block:'center'});
+    partnerApplicationButton.classList.add('partner-application-highlight');
+    window.setTimeout(()=>partnerApplicationButton.classList.remove('partner-application-highlight'),1600);
+  }));
+  if(updateHash&&window.location.hash!=='#partner-application')window.history.pushState(null,'','#partner-application');
+};
+document.querySelector('.hero-partner-cta')?.addEventListener('click',event=>{
+  event.preventDefault();
+  showPartnerApplication({updateHash:true});
+});
+window.addEventListener('hashchange',()=>{
+  if(window.location.hash==='#partner-application')showPartnerApplication({behavior:'auto'});
+});
+if(window.location.hash==='#partner-application')window.setTimeout(()=>showPartnerApplication({behavior:'auto'}),0);
 const partnerCenterHeading=partnerCenter.querySelector('.partner-center-copy h2');
 partnerCenterHeading.dataset.ko='입점 파트너 전용 자료실';partnerCenterHeading.dataset.en='Partner Resource Center';partnerCenterHeading.textContent=partnerCenterHeading.dataset[currentLanguage];
 const partnerCenterDescription=partnerCenter.querySelector('.partner-center-copy>p:not(.eyebrow)');
