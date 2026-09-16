@@ -111,7 +111,9 @@ test('easy hanja header reuses the homepage logo markup and header login style',
   assert.match(page, /class="site-header tool-site-header"/);
   assert.match(css, /\.tool-site-header \.nav-wrap \{ justify-content: space-between !important; \}/);
   assert.match(css, /\.tool-site-header \.header-login \{ margin-left: auto;[\s\S]*?align-items: center !important;[\s\S]*?justify-content: center !important;/);
-  assert.match(page, /styles\.css\?v=20260916-18/);
+  assert.doesNotMatch(css, /body \{[^}]*font-family:/);
+  assert.match(page, /styles\.css\?v=20260916-19/);
+  assert.match(page, /easy-hanja\.css\?v=20260916-19/);
   assert.match(page, /homepage-ui\.css\?v=20260916-16/);
   assert.doesNotMatch(page, /hanja-logo-mark|hanja-home-link/);
 });

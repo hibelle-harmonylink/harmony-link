@@ -1,12 +1,12 @@
-const CACHE_NAME = 'harmony-link-pwa-v6';
+const CACHE_NAME = 'harmony-link-pwa-v7';
 const ADMIN_ASSET_PATHS = new Set(['/admin.html', '/admin.css', '/admin.js']);
 const APP_SHELL = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
-  '/styles.css?v=20260908-12',
-  '/homepage-ui.css?v=20260908-17',
-  '/script.js?v=20260908-13',
+  '/styles.css?v=20260916-19',
+  '/homepage-ui.css?v=20260916-16',
+  '/script.js?v=20260916-19',
   '/assets/harmony-logo.png'
 ];
 
