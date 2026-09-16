@@ -7,7 +7,7 @@ const root = path.resolve(__dirname, '..');
 const script = fs.readFileSync(path.join(root, 'script.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'homepage-ui.css'), 'utf8');
 
-test('partner start guide uses concise one-line desktop descriptions', () => {
+test('partner start guide retains its original layout while keeping concise copy', () => {
   assert.match(script, /data-ko="Google 또는 카카오 계정으로 시작합니다\."/);
   assert.match(script, /data-ko="업체 또는 개인 강사 신청서를 제출합니다\."/);
   assert.match(script, /data-ko="승인 후 FREE 등급과 안내메일을 받습니다\."/);
@@ -17,8 +17,7 @@ test('partner start guide uses concise one-line desktop descriptions', () => {
   assert.doesNotMatch(script, /\$20 BASIC 또는 \$50 PREMIUM을 문의하고 관리자가 등급을 변경합니다\./);
 });
 
-test('partner guide cards use compact desktop spacing and mobile wrapping', () => {
-  assert.match(css, /#partner-center \.partner-upgrade-guide li\{min-height:88px!important;padding:10px 11px!important/);
-  assert.match(css, /#partner-center \.partner-upgrade-guide li>small\{font-size:12px!important;line-height:1\.35!important;white-space:nowrap!important\}/);
-  assert.match(css, /@media\(max-width:760px\)\{[\s\S]*?#partner-center \.partner-upgrade-guide li>small\{font-size:12px!important;line-height:1\.4!important;white-space:normal!important\}/);
+test('partner start guide has no compact override from PR 237', () => {
+  assert.doesNotMatch(css, /#partner-center \.partner-upgrade-guide li\{min-height:88px!important;padding:10px 11px!important/);
+  assert.doesNotMatch(css, /#partner-center \.partner-guide-details\{padding:0 16px 16px!important/);
 });
