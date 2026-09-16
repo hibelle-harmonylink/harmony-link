@@ -1474,15 +1474,12 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
 #partner-center .partner-resource-toggle h3 em{display:none!important}
 #partner-center .partner-resource-toggle p{min-width:0!important;margin:0!important;color:#62778e!important;font-size:13px!important;line-height:1.35!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 #partner-center .partner-resource-action{display:inline-flex!important;align-items:center!important;justify-content:center!important;min-width:64px!important;height:32px!important;padding:0 10px!important;border-radius:6px!important;background:#0b65c8!important;color:#fff!important;font-size:12px!important;font-weight:700!important;white-space:nowrap!important}
-#partner-center .partner-resource-items{padding:12px 14px!important;border-top:1px solid #e1ebf5!important;background:#f5f9fe!important}
-#partner-center .partner-resource-detail-copy{margin:0 0 8px!important;color:#39536d!important;font-size:13px!important;line-height:1.55!important}
-#partner-center .partner-resource-item{grid-template-columns:64px minmax(0,1fr) auto!important;gap:10px!important;min-height:44px!important;padding:9px 0!important}
-#partner-center .partner-resource-item>span{font-size:11px!important}
-#partner-center .partner-resource-item>strong,#partner-center .partner-resource-item>a,#partner-center .partner-resource-item>small{font-size:13px!important}
-#partner-center .partner-resource-item{grid-template-columns:70px 1fr auto!important;gap:12px!important;padding:13px 0!important}
-#partner-center .partner-resource-item>span{font-size:14px!important}
-#partner-center .partner-resource-item>strong{font-size:15px!important}
-#partner-center .partner-resource-item>a,#partner-center .partner-resource-item>small{font-size:14px!important}
+#partner-center .partner-resource-items{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;align-items:stretch!important;column-gap:18px!important;row-gap:11px!important;width:100%!important;box-sizing:border-box!important;padding:14px 20px!important;border-top:1px solid #e1ebf5!important;background:#f5f9fe!important;text-align:left!important}
+#partner-center .partner-resource-detail-copy{grid-column:1/-1!important;margin:0 0 2px!important;color:#39536d!important;font-size:13px!important;line-height:1.55!important;text-align:left!important}
+#partner-center .partner-resource-item{display:grid!important;grid-template-columns:auto minmax(0,1fr) auto!important;align-items:center!important;gap:8px!important;min-width:0!important;min-height:48px!important;padding:7px 8px!important;box-sizing:border-box!important;border:1px solid #dce8f3!important;border-radius:7px!important;background:#fff!important}
+#partner-center .partner-resource-item>span{font-size:10px!important;white-space:nowrap!important}
+#partner-center .partner-resource-item>strong{min-width:0!important;font-size:13px!important;line-height:1.35!important}
+#partner-center .partner-resource-item>a,#partner-center .partner-resource-item>small{justify-self:end!important;font-size:11px!important}
 #partner-center .partner-upgrade-guide small,#partner-center .partner-upgrade-guide p{font-size:14px!important}
 
 #community{padding:58px 0!important}
@@ -1512,16 +1509,18 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
   #partner-center .partner-resource-toggle h3{font-size:14px!important}
   #partner-center .partner-resource-toggle p{font-size:11px!important;line-height:1.3!important}
   #partner-center .partner-resource-action{min-width:54px!important;height:30px!important;padding:0 8px!important;font-size:11px!important}
-  #partner-center .partner-resource-items{padding:10px!important}
+  #partner-center .partner-resource-items{grid-template-columns:minmax(0,1fr)!important;gap:8px!important;padding:10px!important}
   #partner-center .partner-resource-detail-copy{font-size:13px!important}
-  #partner-center .partner-resource-item{grid-template-columns:54px minmax(0,1fr)!important;gap:8px!important}
-  #partner-center .partner-resource-item>a,#partner-center .partner-resource-item>small{grid-column:2!important}
-  #partner-center .partner-resource-item{grid-template-columns:62px minmax(0,1fr)!important}
-  #partner-center .partner-resource-item>a,#partner-center .partner-resource-item>small{grid-column:2}
+  #partner-center .partner-resource-item{grid-template-columns:auto minmax(0,1fr) auto!important;gap:7px!important;min-height:46px!important;padding:7px!important}
+  #partner-center .partner-resource-item>a,#partner-center .partner-resource-item>small{grid-column:auto!important}
   #community{padding:48px 0!important}
   #community .audience-grid{grid-template-columns:1fr!important;max-width:100%!important}
   #community .audience-card{min-height:0!important;padding:23px 20px!important}
   #community .audience-card>h3{font-size:21px!important}
+}
+
+@media(max-width:1000px) and (min-width:761px){
+  #partner-center .partner-resource-items{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
 
 /* Partner resource library: grade-differentiated grid + larger type.
