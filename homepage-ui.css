@@ -1061,6 +1061,22 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
   0%,55%{box-shadow:0 0 0 5px rgba(11,84,194,.2),0 8px 18px rgba(11,84,194,.2)}
   100%{box-shadow:none}
 }
+
+/* Keep the partner start guide concise without changing its application flow. */
+#partner-center .partner-guide-details{padding:0 16px 16px!important}
+#partner-center .partner-guide-details>p{margin:12px 0 0!important;font-size:13px!important}
+#partner-center .partner-upgrade-guide ol{gap:8px!important;margin:12px 0!important}
+#partner-center .partner-upgrade-guide li{min-height:88px!important;padding:10px 11px!important;border-radius:12px!important}
+#partner-center .partner-upgrade-guide li>b{font-size:10px!important}
+#partner-center .partner-upgrade-guide li>span{margin:4px 0 3px!important;font-size:13px!important;line-height:1.25!important}
+#partner-center .partner-upgrade-guide li>small{font-size:12px!important;line-height:1.35!important;white-space:nowrap!important}
+#partner-center .partner-guide-actions .btn{min-height:40px!important;padding:8px 14px!important}
+@media(max-width:760px){
+  #partner-center .partner-guide-details{padding:0 14px 14px!important}
+  #partner-center .partner-upgrade-guide ol{gap:7px!important;margin:10px 0!important}
+  #partner-center .partner-upgrade-guide li{min-height:0!important;padding:10px!important}
+  #partner-center .partner-upgrade-guide li>small{font-size:12px!important;line-height:1.4!important;white-space:normal!important}
+}
 @media(prefers-reduced-motion:reduce){
   .partner-guide-actions .partner-application-highlight{animation:none;}
 }
