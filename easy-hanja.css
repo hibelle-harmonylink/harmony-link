@@ -12,17 +12,7 @@ body { margin: 0; background: linear-gradient(180deg, #f4f8fd 0, #fff 48%); colo
 .skip-link { position: absolute; left: -9999px; }
 .skip-link:focus { left: 16px; top: 16px; z-index: 10; padding: 10px; background: #fff; color: var(--hanja-deep); }
 .hanja-container { width: min(100% - 32px, 940px); margin: 0 auto; }
-.hanja-header { background: #fff; border-bottom: 1px solid var(--hanja-line); }
-.hanja-header-inner { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.hanja-brand { display: inline-flex; align-items: center; gap: 9px; color: var(--hanja-deep); font-size: 20px; font-weight: 700; letter-spacing: -.03em; text-decoration: none; }
-.hanja-logo-mark { display: grid; place-items: center; width: 38px; height: 38px; padding: 4px; overflow: hidden; border-radius: 12px; background: linear-gradient(135deg, #d7ebff, #fff); box-shadow: 0 4px 12px rgba(16, 68, 137, .12); }
-.hanja-logo-mark img { width: 100%; height: 100%; object-fit: contain; }
-.hanja-logo-name { display: block; line-height: 1; }
-.hanja-brand b { color: var(--hanja-blue); }
-.hanja-logo-name small { display: block; margin-top: 4px; color: #5f7185; font-size: 8px; font-weight: 700; letter-spacing: .06em; }
-.hanja-home-link { min-height: 40px; display: inline-flex; align-items: center; justify-content: center; padding: 0 14px; border: 1px solid #b9d1ee; border-radius: 10px; background: #f3f8ff; color: #0a4f9e; font-size: 13px; font-weight: 800; text-decoration: none; transition: border-color .2s ease, background-color .2s ease, transform .2s ease; }
-.hanja-home-link:hover { border-color: #0b5fc2; background: #e8f2ff; transform: translateY(-1px); }
-.hanja-main { min-height: calc(100vh - 128px); padding: 56px 0; }
+.hanja-main { min-height: calc(100vh - 128px); padding: 138px 0 56px; }
 .hanja-hero { margin: 0 auto 28px; text-align: center; }
 .hanja-eyebrow { margin: 0 0 8px; color: var(--hanja-blue); font-size: 12px; font-weight: 800; letter-spacing: 1.2px; }
 .hanja-hero h1 { margin: 0; font-size: clamp(32px, 6vw, 48px); letter-spacing: -2px; }
@@ -37,7 +27,7 @@ body { margin: 0; background: linear-gradient(180deg, #f4f8fd 0, #fff 48%); colo
 .hanja-button { min-height: 52px; display: inline-flex; align-items: center; justify-content: center; padding: 0 22px; border: 1px solid transparent; border-radius: 12px; font: inherit; font-size: 17px; font-weight: 800; cursor: pointer; text-decoration: none; }
 .hanja-button.primary { background: var(--hanja-blue); color: #fff; }
 .hanja-button.secondary { border-color: #afc9e6; background: #fff; color: var(--hanja-blue); }
-.hanja-button:focus-visible, .hanja-home-link:focus-visible, .hanja-signout:focus-visible, .mini-app-card:focus-visible { outline: 3px solid #8bc1f3; outline-offset: 3px; }
+.hanja-button:focus-visible, .hanja-signout:focus-visible, .mini-app-card:focus-visible { outline: 3px solid #8bc1f3; outline-offset: 3px; }
 .hanja-search-card { padding: 28px; }
 .hanja-search-card label { display: block; margin-bottom: 12px; font-size: 20px; font-weight: 800; }
 .hanja-search-row input { min-width: 0; flex: 1; height: 56px; padding: 0 17px; border: 2px solid #b7cde6; border-radius: 12px; background: #fff; font: inherit; font-size: 20px; color: var(--hanja-text); }
@@ -64,11 +54,7 @@ body { margin: 0; background: linear-gradient(180deg, #f4f8fd 0, #fff 48%); colo
 
 @media (max-width: 620px) {
   .hanja-container { width: min(100% - 24px, 940px); }
-  .hanja-header-inner { min-height: 62px; }
-  .hanja-brand { gap: 7px; font-size: 18px; }
-  .hanja-logo-mark { width: 34px; height: 34px; border-radius: 10px; }
-  .hanja-home-link { min-height: 38px; padding: 0 11px; font-size: 12px; }
-  .hanja-main { padding: 36px 0; }
+  .hanja-main { padding: 110px 0 36px; }
   .hanja-gate, .hanja-search-card { padding: 24px 18px; border-radius: 16px; }
   .hanja-gate h2 { font-size: 23px; }
   .hanja-gate p { font-size: 16px; }

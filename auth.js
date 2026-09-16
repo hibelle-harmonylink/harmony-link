@@ -37,6 +37,22 @@
   let activeMemberName = '';
   let activeMemberType = 'student';
   let activeMembership = 'free';
+  let easyHanjaRedirectStarted = false;
+
+  const requestedEasyHanjaReturn = () => {
+    const fromUrl = new URLSearchParams(location.search).get('return');
+    if (fromUrl === 'easy-hanja.html') return fromUrl;
+    const fromStorage = localStorage.getItem('harmonyAuthReturn');
+    return fromStorage === 'easy-hanja.html' ? fromStorage : '';
+  };
+
+  const returnToEasyHanjaIfRequested = session => {
+    if (!session || easyHanjaRedirectStarted || requestedEasyHanjaReturn() !== 'easy-hanja.html') return false;
+    easyHanjaRedirectStarted = true;
+    localStorage.removeItem('harmonyAuthReturn');
+    window.location.replace('easy-hanja.html');
+    return true;
+  };
 
   const authSlot = document.createElement('div');
   authSlot.className = 'auth-nav-slot';
@@ -563,12 +579,12 @@
       return;
     }
     status.textContent = t('로그인 화면으로 이동합니다…', 'Opening secure sign-in…');
-    const requestedReturn = new URLSearchParams(location.search).get('return');
-    localStorage.setItem('harmonyAuthReturn', requestedReturn === 'easy-hanja.html' ? requestedReturn : 'partner-center');
+    const requestedReturn = requestedEasyHanjaReturn();
+    localStorage.setItem('harmonyAuthReturn', requestedReturn || 'partner-center');
     // New social signups always start as students. Partner status remains an
     // administrator-managed user_type change after registration.
     if (activeAuthMode === 'signup') localStorage.setItem('harmonyPendingMemberType', 'student');
-    const redirectTo = `${window.location.origin}${window.location.pathname}`;
+    const redirectTo = `${window.location.origin}${window.location.pathname}${requestedReturn ? `?return=${encodeURIComponent(requestedReturn)}` : ''}`;
     const oauthOptions = { redirectTo };
     if (provider === 'kakao') {
       oauthOptions.scopes = 'profile_nickname profile_image';
@@ -682,11 +698,9 @@
     await applyPendingMemberType(data.session);
     await refreshMemberAccess(data.session);
     await ensureMemberRosterRegistration(data.session?.user);
+    if (returnToEasyHanjaIfRequested(data.session)) return;
     const returnTarget = localStorage.getItem('harmonyAuthReturn');
-    if (data.session && returnTarget === 'easy-hanja.html') {
-      localStorage.removeItem('harmonyAuthReturn');
-      window.location.replace('easy-hanja.html');
-    } else if (data.session && returnTarget === 'partner-center') {
+    if (data.session && returnTarget === 'partner-center') {
       localStorage.removeItem('harmonyAuthReturn');
       window.setTimeout(() => partnerCenter.scrollIntoView({ behavior: 'smooth', block: 'start' }), 350);
     }
@@ -707,6 +721,7 @@
     await refreshMemberAccess(session);
     await ensureMemberRosterRegistration(session?.user);
     if (event === 'SIGNED_IN') await notifyAdminOfNewSignup(session?.user);
+    if (event === 'SIGNED_IN') returnToEasyHanjaIfRequested(session);
   });
 
   let accessRefreshRunning = false;

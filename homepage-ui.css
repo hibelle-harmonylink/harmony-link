@@ -412,8 +412,6 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
 .program-category-card.is-linked:focus-visible,.program-category-card.is-coming-soon:focus-visible{border-color:rgba(26,52,172,.55);transform:translateY(-3px);box-shadow:0 12px 28px rgba(24,43,91,.1);outline:none}
 .program-category-icon{display:grid;place-items:center;width:64px;height:64px;border:1px solid rgba(111,159,212,.22);border-radius:17px;background:#d4efff;font-size:31px;line-height:1}
 .program-category-card strong{color:#101b35;font-size:18px;font-weight:900;letter-spacing:-.02em}
-.program-category-card.mini-apps-category-card{gap:8px}
-.program-category-card.mini-apps-category-card small{display:block;max-width:156px;color:#52677f;font-size:12px;font-weight:600;line-height:1.45}
 
 @media(min-width:761px){
   .program-category-card:hover{border-color:rgba(26,52,172,.7);transform:translateY(-3px);box-shadow:0 11px 24px rgba(24,43,91,.13)}
@@ -428,8 +426,6 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
   .program-category-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   .program-category-card{min-height:128px;padding:18px 10px}
   .program-category-icon{width:54px;height:54px;border-radius:14px;font-size:27px}
-  .program-category-card.mini-apps-category-card{gap:6px}
-  .program-category-card.mini-apps-category-card small{max-width:140px;font-size:11px;line-height:1.4}
 }
 
 .program-coming-soon-modal[hidden]{display:none}
