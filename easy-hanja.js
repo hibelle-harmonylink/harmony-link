@@ -22,11 +22,19 @@
   const signout = document.getElementById('hanjaSignout');
   const client = window.supabase?.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true } });
 
+  const gateMessage = '회원가입 또는 로그인 후 바로 이용하실 수 있습니다.';
+  let memberCheckId = 0;
+
+  const showLoading = () => {
+    loading.hidden = false;
+    gate.hidden = true;
+    app.hidden = true;
+  };
   const showGate = message => {
     loading.hidden = true;
     app.hidden = true;
     gate.hidden = false;
-    if (message) gate.querySelector('p').textContent = message;
+    gate.querySelector('p').textContent = message || gateMessage;
   };
   const showApp = () => {
     loading.hidden = true;
@@ -85,14 +93,39 @@
     showGate();
   });
 
-  const checkMember = async () => {
-    if (!client) { showGate('로그인 서비스를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.'); return; }
-    const { data, error } = await client.auth.getSession();
-    if (error || !data.session?.user) { showGate(); return; }
-    const { data: profile, error: profileError } = await client.rpc('get_own_member_profile');
-    const active = ['active','expiring'].includes(profile?.account_status || '');
-    if (profileError || !active) { showGate('회원 정보를 확인할 수 없어요. 로그인 상태를 다시 확인해 주세요.'); return; }
-    showApp();
+  const pause = milliseconds => new Promise(resolve => window.setTimeout(resolve, milliseconds));
+  const getMemberProfile = async session => {
+    const { data: rpcData, error: rpcError } = await client.rpc('get_own_member_profile');
+    const profile = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+    if (profile && !rpcError) return profile;
+    const { data, error } = await client
+      .from('member_profiles')
+      .select('account_status')
+      .eq('id', session.user.id)
+      .maybeSingle();
+    if (error) return null;
+    return data || null;
   };
-  checkMember();
+  const checkMember = async suppliedSession => {
+    const checkId = ++memberCheckId;
+    showLoading();
+    if (!client) { if (checkId === memberCheckId) showGate(); return; }
+    let session = suppliedSession;
+    if (!session?.user) {
+      const { data, error } = await client.auth.getSession();
+      if (error || !data.session?.user) { if (checkId === memberCheckId) showGate(); return; }
+      session = data.session;
+    }
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const profile = await getMemberProfile(session);
+      if (checkId !== memberCheckId) return;
+      if (['active','expiring'].includes(profile?.account_status || '')) { showApp(); return; }
+      if (attempt < 2) await pause(350);
+    }
+    if (checkId === memberCheckId) showGate();
+  };
+  client?.auth.onAuthStateChange((event, session) => {
+    if (event !== 'INITIAL_SESSION') void checkMember(session);
+  });
+  void checkMember();
 })();

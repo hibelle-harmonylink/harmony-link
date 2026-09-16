@@ -15,7 +15,8 @@ test('easy hanja finder has the requested member gate and accessible search cont
   assert.match(page, /한글이나 한자를 입력하면 쉽게 찾아드려요\./);
   assert.match(page, /찾고 싶은 한글이나 한자를 입력하세요/);
   assert.match(page, /한자 찾기/);
-  assert.match(page, /이 기능은 하모니링크 회원이면 무료로 사용할 수 있어요\./);
+  assert.match(page, /하모니링크 회원이면 무료로 사용할 수 있어요/);
+  assert.match(page, /회원가입 또는 로그인 후 바로 이용하실 수 있습니다\./);
   assert.match(page, /무료 회원가입/);
   assert.match(page, /로그인/);
   assert.match(page, /index\.html\?auth=signup&amp;return=easy-hanja\.html/);
@@ -81,6 +82,16 @@ test('all active member types can use the tool through the existing sign-in flow
   assert.match(auth, /if \(event === 'SIGNED_IN'\) returnToEasyHanjaIfRequested\(session\)/);
 });
 
+test('easy hanja keeps a loading state until OAuth-returned session and member profile are confirmed', () => {
+  assert.match(page, /id="hanjaLoading"[\s\S]*?회원 정보를 확인하고 있어요\.\.\./);
+  assert.match(script, /const showLoading = \(\) =>/);
+  assert.match(script, /Array\.isArray\(rpcData\) \? rpcData\[0\] : rpcData/);
+  assert.match(script, /for \(let attempt = 0; attempt < 3; attempt \+= 1\)/);
+  assert.match(script, /client\?\.auth\.onAuthStateChange\(\(event, session\) =>/);
+  assert.match(script, /if \(event !== 'INITIAL_SESSION'\) void checkMember\(session\)/);
+  assert.match(script, /\['active','expiring'\]\.includes\(profile\?\.account_status/);
+});
+
 test('easy hanja finder keeps large touch controls and a single-column mobile result layout', () => {
   assert.match(css, /\.hanja-button\s*\{\s*min-height:\s*52px/);
   assert.match(css, /\.hanja-search-row input\s*\{\s*min-width:\s*0;\s*flex:\s*1;\s*height:\s*56px/);
@@ -88,12 +99,15 @@ test('easy hanja finder keeps large touch controls and a single-column mobile re
 });
 
 test('easy hanja header reuses the homepage logo markup and header login style', () => {
-  assert.match(page, /class="site-header"/);
+  assert.match(page, /class="site-header(?:\s+[^"]+)?"/);
   assert.match(page, /class="logo"/);
   assert.match(page, /class="logo-mark brand-image"/);
   assert.match(page, /assets\/harmony-logo\.png/);
   assert.match(page, /이음문화센터/);
   assert.match(page, /class="header-login"/);
+  assert.match(page, /class="site-header hanja-site-header"/);
+  assert.match(css, /\.hanja-site-header \.nav-wrap \{ justify-content: space-between !important; \}/);
+  assert.match(css, /\.hanja-site-header \.header-login \{ margin-left: auto;/);
   assert.match(page, /styles\.css\?v=20260916-12/);
   assert.match(page, /homepage-ui\.css\?v=20260916-16/);
   assert.doesNotMatch(page, /hanja-logo-mark|hanja-home-link/);

@@ -1488,15 +1488,19 @@ if (partnerPlans) {
         <li><strong>운영 지원</strong><span>우선 상담과 특별 프로모션에 초대합니다.</span></li>
       </ul>
     </div>`;
-  partnerPlans.querySelectorAll('.partner-plan-toggle').forEach(button => button.addEventListener('click', () => {
-    const panel = document.getElementById(button.getAttribute('aria-controls'));
-    const willOpen = panel.hidden;
+  const selectPartnerPlan = button => {
+    const panel = partnerPlans.querySelector(`#${button.getAttribute('aria-controls')}`);
+    if (!panel) return;
     partnerPlans.querySelectorAll('.partner-plan-benefits').forEach(item => { item.hidden = true; });
-    partnerPlans.querySelectorAll('.partner-plan-toggle').forEach(item => { item.setAttribute('aria-expanded', 'false'); item.querySelector('em').textContent = '혜택 보기 ＋'; });
-    panel.hidden = !willOpen;
-    button.setAttribute('aria-expanded', String(willOpen));
-    button.querySelector('em').textContent = willOpen ? '혜택 닫기 −' : '혜택 보기 ＋';
-  }));
+    partnerPlans.querySelectorAll('.partner-plan-toggle').forEach(item => {
+      item.classList.toggle('active', item === button);
+      item.setAttribute('aria-expanded', String(item === button));
+      item.querySelector('em').textContent = item === button ? '선택됨' : '혜택 보기';
+    });
+    panel.hidden = false;
+  };
+  partnerPlans.querySelectorAll('.partner-plan-toggle').forEach(button => button.addEventListener('click', () => selectPartnerPlan(button)));
+  selectPartnerPlan(partnerPlans.querySelector('.partner-plan-toggle.free'));
 }
 
 // Reusable volunteer program area; new opportunities can be appended as cards later.
