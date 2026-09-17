@@ -83,9 +83,7 @@
   const renderCategories = () => {
     content.innerHTML = `<section class="senior-category-view"><div class="senior-category-grid">${learningData.map(category => `<button class="senior-category-card" type="button" data-senior-category="${category.id}"><span aria-hidden="true">${category.icon}</span><strong>${category.title}</strong><small>${category.description}</small></button>`).join('')}</div></section>`;
   };
-  const renderMiniApps = () => {
-    content.innerHTML = `<section class="senior-mini-apps"><div class="senior-mini-app-grid">${miniApps.map(app => `<article class="senior-mini-app-card"><span class="senior-mini-app-icon" aria-hidden="true">${app.icon}</span><div><h3>${app.title}</h3><p>${app.description}</p></div><a class="senior-primary-button" href="${app.href}">사용하기</a></article>`).join('')}</div></section>`;
-  };
+  const renderMiniApps = () => `<section class="senior-mini-apps"><div class="senior-mini-app-grid">${miniApps.map(app => `<article class="senior-mini-app-card"><span class="senior-mini-app-icon" aria-hidden="true">${app.icon}</span><div><h3>${app.title}</h3><p>${app.description}</p></div><a class="senior-primary-button" href="${app.href}">사용하기</a></article>`).join('')}</div></section>`;
   const renderLessons = category => {
     content.innerHTML = `<section class="senior-lesson-view"><div class="senior-view-heading"><span aria-hidden="true">${category.icon}</span><div><h2>${category.title}</h2><p>${category.description}</p></div></div><div class="senior-lesson-list">${category.lessons.map(lesson => `<article class="senior-lesson-card ${lesson.status === 'ready' ? 'is-ready' : 'is-preparing'}"><div><h3>${lesson.title}</h3><p>${lesson.description}</p></div>${lesson.status === 'ready' ? `<button class="senior-primary-button" type="button" data-senior-lesson="${lesson.id}">교재 보기</button>` : '<span class="senior-preparing">자료 준비 중</span>'}</article>`).join('')}</div></section>`;
   };

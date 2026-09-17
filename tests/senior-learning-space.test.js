@@ -74,6 +74,7 @@ test('senior learning materials and mini apps share protected rendering without 
   assert.match(script, /const pageMode = document\.body\.dataset\.seniorPage \|\| 'home'/);
   assert.match(script, /if \(pageMode === 'home'\) \{ content\.innerHTML = renderHomeChoices\(\); return; \}/);
   assert.match(script, /if \(pageMode === 'mini-apps'\) \{ content\.innerHTML = renderMiniApps\(\); return; \}/);
+  assert.match(script, /const renderMiniApps = \(\) => `<section class="senior-mini-apps">/);
   assert.doesNotMatch(materialsPage, /senior-section-choice/);
   assert.doesNotMatch(miniAppsPage, /senior-section-choice/);
   assert.match(script, /const renderCategories =/);
