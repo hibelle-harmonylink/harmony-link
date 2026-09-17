@@ -86,6 +86,9 @@ test('senior learning materials and mini apps share protected rendering without 
   assert.doesNotMatch(miniAppsPage, /senior-section-choice/);
   assert.match(script, /const renderCategories =/);
   assert.match(script, /const renderMiniApps =/);
+  assert.match(script, /data-mini-app-card/);
+  assert.match(script, /event\.key === ' '/);
+  assert.match(script, /<a class="senior-mini-app-card"/);
   for (const asset of ['material-smartphone.svg', 'material-computer.svg', 'material-ai.svg', 'mini-hanja.svg']) {
     assert.equal(fs.existsSync(path.join(root, 'assets', 'senior-learning', asset)), true, `${asset} exists`);
   }
