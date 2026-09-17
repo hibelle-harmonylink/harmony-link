@@ -15,6 +15,9 @@ body { margin:0; color:var(--senior-text); background:#f6faff; }
 .senior-learning-hero p { margin:0 0 10px; color:var(--senior-blue); font-size:14px; font-weight:800; letter-spacing:1.5px; }
 .senior-learning-hero h1 { margin:0; color:var(--senior-deep); font-size:clamp(36px, 5vw, 52px); letter-spacing:-2px; }
 .senior-learning-hero span { display:block; margin-top:12px; color:var(--senior-muted); font-size:clamp(18px, 2.3vw, 22px); }
+.senior-learning-subhero { text-align:left; }
+.senior-page-back { display:inline-flex; align-items:center; min-height:40px; margin:0 0 16px; color:var(--senior-blue); font-size:17px; font-weight:800; text-decoration:none; }
+.senior-page-back:hover,.senior-page-back:focus-visible { text-decoration:underline; }
 .senior-learning-loading,.senior-learning-gate { max-width:660px; margin:0 auto; padding:34px 28px; border:1px solid var(--senior-line); border-radius:20px; background:#fff; box-shadow:0 14px 38px rgba(17,74,135,.08); text-align:center; font-size:19px; font-weight:700; }
 .senior-learning-gate>span { display:grid; place-items:center; width:66px; height:66px; margin:0 auto 14px; border-radius:18px; background:var(--senior-pale); font-size:30px; }
 .senior-learning-gate h2 { margin:0; font-size:28px; }
@@ -37,6 +40,7 @@ body { margin:0; color:var(--senior-text); background:#f6faff; }
 .senior-category-card small { margin-top:8px; color:var(--senior-muted); font-size:16px; line-height:1.55; }
 .senior-content-tabs { width:min(940px,100%); display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; margin:0 auto 34px; }
 .senior-section-choice { min-height:360px; padding:24px; border:2px solid #cfdeea; border-radius:18px; background:#fff; color:var(--senior-deep); display:grid; grid-template-rows:minmax(136px,1fr) auto auto auto; align-items:start; gap:12px; text-align:left; font:inherit; cursor:pointer; box-shadow:none; transition:border-color .18s ease,background .18s ease; }
+.senior-section-choice { text-decoration:none; }
 .senior-section-choice:hover,.senior-section-choice:focus-visible { border-color:#6eae83; outline:none; }
 .senior-section-choice.is-active { border-color:#6eae83; background:#f0faf3; box-shadow:inset 0 0 0 1px #b5d8bf; }
 .senior-section-choice img { width:100%; max-width:280px; height:150px; justify-self:center; object-fit:contain; }
