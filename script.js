@@ -1356,12 +1356,18 @@ const businessRegions = [
   {id:'ny',labelKo:'NEW YORK',labelEn:'NEW YORK'},
   {id:'tx',labelKo:'TEXAS',labelEn:'TEXAS'}
 ];
+const dmsCareBusiness = {
+  name:'DMS Care Training Center',displayNameKo:'DMS Care Training Center',displayNameEn:'DMS Care Training Center',
+  summaryKo:'Care Training Center',summaryEn:'Care Training Center',contactKo:'전화 469-605-6035',contactEn:'Phone 469-605-6035',
+  phoneHref:'tel:+14696056035',image:'assets/images/dms-care-logo.jpg',brokerUrl:'https://dmscare.org/ko',instagramUrl:'https://www.instagram.com/dmscarekorea'
+};
 const businessSpotlights = [
   {region:'ny',item:adRooms.premium.items[0],categoryKo:'부동산',categoryEn:'Real Estate',locationKo:'New York',locationEn:'New York'},
   {region:'ny',item:adRooms.premium.items[1],categoryKo:'유기농 식품',categoryEn:'Organic Foods',locationKo:'Flushing, New York',locationEn:'Flushing, New York'},
   {region:'ny',item:adRooms.premium.items[2],categoryKo:'골프·레저',categoryEn:'Golf & Leisure',locationKo:'Flushing, New York',locationEn:'Flushing, New York'},
   {region:'ny',item:adRooms.community.items[0],categoryKo:'커뮤니티 서비스',categoryEn:'Community Service',locationKo:'New York',locationEn:'New York'},
-  {region:'ny',item:adRooms.community.items[1],categoryKo:'시니어 케어',categoryEn:'Senior Care',locationKo:'New York',locationEn:'New York'}
+  {region:'ny',item:adRooms.community.items[1],categoryKo:'시니어 케어',categoryEn:'Senior Care',locationKo:'New York',locationEn:'New York'},
+  {region:'tx',item:dmsCareBusiness,categoryKo:'Care Training Center',categoryEn:'Care Training Center',locationKo:'Texas',locationEn:'Texas'}
 ];
 const renderBusinessSpotlights = (selectedRegion='all') => {
   const filters=advertisingArea?.querySelector('.business-region-filters');
@@ -1378,7 +1384,10 @@ const renderBusinessSpotlights = (selectedRegion='all') => {
       const summary=currentLanguage==='en'?(item.summaryEn||item.copyEn):(item.summaryKo||item.copy);
       const contact=currentLanguage==='en'?item.contactEn:item.contactKo;
       const target=item.brokerUrl||item.url||item.chatUrl||'#contact';
-      return `<article class="business-spotlight-card"><span class="business-state-badge">${region.toUpperCase()==='NY'?'NEW YORK':region.toUpperCase()}</span><div class="business-spotlight-logo"><img src="${item.image}" alt="${name} logo"></div><div class="business-spotlight-copy"><p class="business-category" data-ko="${categoryKo}" data-en="${categoryEn}">${currentLanguage==='en'?categoryEn:categoryKo}</p><h3>${name}</h3><p class="business-location"><span aria-hidden="true">⌖</span> <span data-ko="${locationKo}" data-en="${locationEn}">${currentLanguage==='en'?locationEn:locationKo}</span></p><p class="business-summary">${summary}</p><p class="business-contact">${contact||''}</p><a class="business-detail-link" href="${target}" ${target.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}><span data-ko="자세히 보기" data-en="View details">${currentLanguage==='en'?'View details':'자세히 보기'}</span> <b aria-hidden="true">→</b></a></div></article>`;
+      const regionLabel=businessRegions.find(candidate=>candidate.id===region)?.labelKo||region.toUpperCase();
+      const contactMarkup=item.phoneHref?`<a class="business-contact business-phone-link" href="${item.phoneHref}">${contact||''}</a>`:`<p class="business-contact">${contact||''}</p>`;
+      const instagramMarkup=item.instagramUrl?`<a class="business-detail-link business-instagram-link" href="${item.instagramUrl}" target="_blank" rel="noopener noreferrer">Instagram <b aria-hidden="true">→</b></a>`:'';
+      return `<article class="business-spotlight-card"><span class="business-state-badge">${regionLabel}</span><div class="business-spotlight-logo"><img src="${item.image}" alt="${name} logo"></div><div class="business-spotlight-copy"><p class="business-category" data-ko="${categoryKo}" data-en="${categoryEn}">${currentLanguage==='en'?categoryEn:categoryKo}</p><h3>${name}</h3><p class="business-location"><span aria-hidden="true">⌖</span> <span data-ko="${locationKo}" data-en="${locationEn}">${currentLanguage==='en'?locationEn:locationKo}</span></p><p class="business-summary">${summary}</p>${contactMarkup}<div class="business-detail-actions"><a class="business-detail-link" href="${target}" ${target.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}><span data-ko="자세히 보기" data-en="View details">${currentLanguage==='en'?'View details':'자세히 보기'}</span> <b aria-hidden="true">→</b></a>${instagramMarkup}</div></div></article>`;
     }).join('');
   }
   filters.querySelectorAll('[data-business-region]').forEach(button=>button.addEventListener('click',()=>renderBusinessSpotlights(button.dataset.businessRegion)));
