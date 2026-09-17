@@ -40,12 +40,16 @@ test('hover feedback is limited to content cards, desktop pointers, and reduced-
   assert.match(styles, /@media \(prefers-reduced-motion:reduce\)[\s\S]*?transform:none!important/);
 });
 
-test('smartphone material is temporarily unavailable without deleting source lessons or assets', () => {
+test('smartphone category stays available while every individual material is preparing', () => {
   assert.match(senior, /id:'smartphone'[\s\S]*?status:'ready'/);
   assert.match(senior, /assets\/digital-program\/slide-\$\{index \+ 1\}\.png/);
-  assert.match(senior, /senior-category-card is-preparing/);
-  assert.match(senior, /자료 준비중/);
-  assert.match(senior, /if \(category\?\.id === 'smartphone'\) renderSmartphonePreparation\(\)/);
-  assert.match(seniorCss, /\.senior-category-card\.is-preparing/);
+  assert.match(senior, /const smartphoneLessons = \[/);
+  assert.match(senior, /\.map\(lesson => \(\{ \.\.\.lesson, status:'preparing' \}\)\)/);
+  assert.match(senior, /id:'smartphone',[\s\S]*?lessons:smartphoneLessons/);
+  assert.match(senior, /const isLessonAvailable = lesson => \['ready', 'available'\]\.includes/);
+  assert.match(senior, /data-senior-category="\$\{category\.id\}"/);
+  assert.match(senior, /aria-disabled="true"/);
+  assert.match(senior, />자료 준비중</);
+  assert.doesNotMatch(senior, /renderSmartphonePreparation/);
   assert.ok(fs.existsSync(path.join(root, 'assets', 'digital-program', 'slide-1.png')));
 });
