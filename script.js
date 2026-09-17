@@ -1750,6 +1750,13 @@ document.addEventListener('click',event=>{
   eventFlyerModal.querySelector('.event-flyer-close')?.focus();
 });
 eventFlyerModal.querySelectorAll('[data-event-flyer-close]').forEach(button=>button.addEventListener('click',closeEventFlyer));
+// The backdrop is an absolutely positioned sibling of the flyer panel. Close
+// only when a click lands outside that panel, whether the browser reports the
+// empty modal root or the backdrop as the target.
+const eventFlyerPanel=eventFlyerModal.querySelector('.event-flyer-panel');
+eventFlyerModal.addEventListener('click',event=>{
+  if(!eventFlyerPanel.contains(event.target))closeEventFlyer();
+});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!eventFlyerModal.hidden)closeEventFlyer();});
 setLanguage(currentLanguage);
 document.querySelectorAll('.volunteer-contact-link').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();openInquiryModal(link.dataset.contactType);}));

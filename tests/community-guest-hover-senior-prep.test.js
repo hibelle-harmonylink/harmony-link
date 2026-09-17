@@ -59,6 +59,15 @@ test('past event cards reuse only their existing poster assets in the flyer moda
   assert.match(homepage, /assets\/events\/finance-ai-seminar\.jpg/);
 });
 
+test('event flyer overlay closes only outside the modal panel', () => {
+  assert.match(homepageScript, /eventFlyerModal\.querySelectorAll\('\[data-event-flyer-close\]'\)\.forEach\(button=>button\.addEventListener\('click',closeEventFlyer\)\)/);
+  assert.match(homepageScript, /const eventFlyerPanel=eventFlyerModal\.querySelector\('\.event-flyer-panel'\)/);
+  assert.match(homepageScript, /eventFlyerModal\.addEventListener\('click',event=>\{\s*if\(!eventFlyerPanel\.contains\(event\.target\)\)closeEventFlyer\(\);\s*\}\)/);
+  assert.match(homepageScript, /<section class="event-flyer-panel" role="dialog"/);
+  assert.match(homepageScript, /<div class="event-flyer-scroll"><img src="" alt=""><\/div>/);
+  assert.match(homepageScript, /event\.key==='Escape'&&!eventFlyerModal\.hidden\)closeEventFlyer\(\)/);
+});
+
 test('DMS keeps its existing business data while using the requested Korean summary', () => {
   assert.match(homepageScript, /summaryKo:'미국 의료 직업 학교'/);
   assert.match(homepageScript, /categoryKo:'케어 전문 교육센터'/);
