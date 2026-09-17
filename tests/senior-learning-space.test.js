@@ -33,30 +33,33 @@ test('senior learning keeps the original cognition card and provides an extensib
   assert.match(home, /<strong data-ko="인지" data-en="Cognitive">인지<\/strong>/);
   assert.doesNotMatch(home.match(/<nav class="primary-nav"[\s\S]*?<\/nav>/)?.[0] || '', />미니\s*앱</);
   assert.match(script, /const miniApps = \[/);
-  assert.match(script, /title:'쉬운 한자 찾기'/);
+  assert.match(script, /title:'한자 변환기'/);
   assert.match(script, /href:'easy-hanja\.html'/);
-  assert.match(script, /id="seniorMiniAppsTitle">미니앱</);
-  assert.match(script, /배운 내용을 바로 활용할 수 있는 쉬운 디지털 도구/);
+  assert.match(script, /한글 또는 한자를 입력해 필요한 한자 정보를 쉽게 확인할 수 있어요/);
   assert.match(script, />사용하기</);
   assert.match(css, /\.senior-mini-app-grid \{ display:grid; grid-template-columns:repeat\(2,minmax\(0,1fr\)\); gap:18px; \}/);
   assert.match(css, /@media \(max-width:620px\)[\s\S]*?\.senior-mini-app-grid \{ grid-template-columns:1fr;/);
-  assert.match(page, /senior-learning\.css\?v=20260916-22/);
-  assert.match(page, /senior-learning\.js\?v=20260916-22/);
+  assert.match(page, /senior-learning\.css\?v=20260916-23/);
+  assert.match(page, /senior-learning\.js\?v=20260916-23/);
 });
 
-test('senior learning defaults to textbooks and isolates mini apps behind its own tab', () => {
+test('senior learning starts with no section content and reveals one selected section at a time', () => {
   assert.match(page, /senior-account-actions/);
   assert.match(page, /id="seniorSignout"/);
-  assert.match(script, /tab:'textbooks'/);
-  assert.match(script, /data-senior-tab="textbooks">교재/);
-  assert.match(script, /data-senior-tab="mini-apps">미니앱/);
-  assert.match(script, /textbooks\.hidden = state\.tab === 'mini-apps'/);
+  assert.match(page, /필요한 디지털 정보와 생활에 도움이 되는 도구를 쉽고 편하게 이용해보세요/);
+  assert.match(script, /tab:null/);
+  assert.match(script, /assets\/senior-learning\/textbook-card\.svg/);
+  assert.match(script, /assets\/senior-learning\/mini-app-card\.svg/);
+  assert.match(script, /data-senior-tab="textbooks">/);
+  assert.match(script, /data-senior-tab="mini-apps">/);
+  assert.match(script, /textbooks\.hidden = state\.tab !== 'textbooks'/);
   assert.match(script, /apps\.hidden = state\.tab !== 'mini-apps'/);
   assert.match(script, /const setTab = tab =>/);
   assert.match(script, /client\?\.auth\.signOut\(\)/);
   assert.match(css, /\.tool-site-header \{ min-height:68px; background:#eef8f1!important;/);
-  assert.match(css, /\.senior-content-tabs \{ display:grid; grid-template-columns:repeat\(2,minmax\(0,1fr\)\);/);
-  assert.match(css, /@media \(max-width:620px\).*?\.senior-content-tab \{ min-height:64px/s);
+  assert.match(css, /\.senior-content-tabs \{[^}]*display:grid; grid-template-columns:repeat\(2,minmax\(0,1fr\)\);/);
+  assert.match(css, /\.senior-section-choice \{ min-height:360px;/);
+  assert.match(css, /@media \(max-width:620px\).*?\.senior-content-tabs \{ grid-template-columns:1fr;/s);
 });
 
 test('senior learning viewer supports navigation, fullscreen, progress, and keyboard controls', () => {
