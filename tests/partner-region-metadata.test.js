@@ -83,8 +83,16 @@ test('current admin metadata RPC remains untouched while business spotlight stay
     '1933 E Frankford Rd. Suite 165, Carrollton, TX 75007'
   ]) assert.match(homepageScript, new RegExp(`address:'${address.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}'`));
   assert.doesNotMatch(homepageScript, /address:'154-05 Northern Blvd, 2F, Flushing, NY 11354'/);
-  assert.match(homepageScript, /mapQuery:'ORGANIC ONE NY, 154-08 Northern Blvd #1F-4, Flushing, NY 11354'/);
-  assert.match(homepageScript, /https:\/\/www\.google\.com\/maps\/search\/\?api=1&query=\$\{encodeURIComponent\(mapQuery\|\|address\)\}/);
+  assert.doesNotMatch(homepageScript, /mapQuery:'ORGANIC ONE NY/);
+  for (const mapUrl of [
+    'https://www.google.com/maps/place/ORGANIC+ONE+NY/@40.7644339,-73.8132378,17z/data=!3m1!4b1!4m6!3m5!1s0x89c2611a9ca04bf5:0x3ea0dbfdbd78ccd!8m2!3d40.7644299!4d-73.8106629!16s%2Fg%2F11zbys_9x7?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D',
+    'https://www.google.com/maps/place/HOLE19+Golf+Lounge/@40.7648888,-73.813133,17z/data=!3m1!4b1!4m6!3m5!1s0x89c26107f62c5d31:0xd3703cd9ef99a5e0!8m2!3d40.7648848!4d-73.8105581!16s%2Fg%2F11z9394sl7?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D',
+    'https://www.google.com/maps/place/%EC%9E%A5%EC%88%98%EB%8D%B0%EC%9D%B4%EC%BC%80%EC%96%B4+JANGSU+Adult+Day+Care/@40.7692212,-73.8210753,17z/data=!3m1!4b1!4m6!3m5!1s0x89c261d50904e783:0x524c9bbcbcc5da1e!8m2!3d40.7692172!4d-73.8185004!16s%2Fg%2F11lll_thly?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D',
+    'https://www.google.com/maps/place/DMS+Care+Training+Center/@33.0008059,-96.8869749,17z/data=!3m1!4b1!4m6!3m5!1s0x864c25005c81bf67:0x1ff6428391587d36!8m2!3d33.0008014!4d-96.8844!16s%2Fg%2F11lddvd23w?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D'
+  ]) assert.ok(homepageScript.includes(`mapUrl:'${mapUrl}'`));
+  assert.match(homepageScript, /const \{region,item,categoryKo,categoryEn,locationKo,locationEn,address,mapUrl\}=business/);
+  assert.match(homepageScript, /address\?\(mapUrl\?`<a class="business-address" href="\$\{mapUrl\}" target="_blank" rel="noopener noreferrer">\$\{address\}<\/a>`/);
+  assert.doesNotMatch(homepageScript, /encodeURIComponent\(mapQuery\|\|address\)/);
   assert.match(homepageScript, /class="business-address"[\s\S]*?target="_blank" rel="noopener noreferrer"/);
   assert.match(homepageScript, /const displayLocation=currentLanguage==='en'\?locationEn:locationKo/);
   assert.match(homepageScript, /:`<p class="business-address" data-ko="\$\{locationKo\}" data-en="\$\{locationEn\}">\$\{displayLocation\}<\/p>`/);
