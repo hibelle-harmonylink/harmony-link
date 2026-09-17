@@ -1597,9 +1597,10 @@ if (downloads) {
     button.setAttribute('aria-expanded', 'false');
     button.querySelector('.partner-resource-action').textContent = '열기';
   };
-  const setAccessTier=(maxTier=0,selectedTier=maxTier)=>{
+  const setAccessTier=(maxTier=0,selectedTier=null)=>{
     const allowed=[0,20,50].filter(tier=>tier<=maxTier);
-    const selected=allowed.includes(Number(selectedTier))?Number(selectedTier):Math.max(...allowed);
+    const requestedTier=Number(selectedTier);
+    const selected=selectedTier!==null&&allowed.includes(requestedTier)?requestedTier:null;
     downloads.querySelectorAll('.partner-resource-toggle').forEach(closeResource);
     downloads.querySelectorAll('.partner-tier-guide button').forEach(button=>{
       const tier=Number(button.dataset.tier);
@@ -1607,19 +1608,22 @@ if (downloads) {
       button.classList.toggle('active',tier===selected);
       button.setAttribute('aria-pressed',String(tier===selected));
     });
-    const benefit=downloads.querySelector('.partner-tier-benefit');benefit.textContent=benefitText[selected];benefit.hidden=!benefitText[selected];
+    const benefit=downloads.querySelector('.partner-tier-benefit');benefit.textContent=selected===null?'':benefitText[selected];benefit.hidden=selected===null||!benefitText[selected];
     const sections=[...downloads.querySelectorAll('[data-resource-tier]')];
     let visibleCount=0;
     sections.forEach(section=>{
-      const visible=Number(section.dataset.resourceTier)<=selected;
+      const visible=selected!==null&&Number(section.dataset.resourceTier)<=selected;
       section.hidden=!visible;
       if(visible){visibleCount+=1;section.querySelector('.resource-number').textContent=String(visibleCount).padStart(2,'0');}
     });
     if(library) library.dataset.count=String(visibleCount);
   };
   downloads.querySelectorAll('.partner-tier-guide button').forEach(button=>button.addEventListener('click',()=>setAccessTier(Number(downloads.dataset.maxTier||0),Number(button.dataset.tier))));
-  window.HarmonyPartnerResources={setAccessTier:(maxTier,selectedTier=maxTier)=>{downloads.dataset.maxTier=String(maxTier);setAccessTier(maxTier,selectedTier);}};
-  setAccessTier(0,0);
+  window.HarmonyPartnerResources={setAccessTier:(maxTier,selectedTier=null)=>{downloads.dataset.maxTier=String(maxTier);setAccessTier(maxTier,selectedTier);}};
+  setAccessTier(0);
+  document.querySelector('#primary-nav a[href="#partner-center"]')?.addEventListener('click',()=>{
+    setAccessTier(Number(downloads.dataset.maxTier||0));
+  });
   downloads.querySelectorAll('.partner-resource-toggle').forEach(button=>button.addEventListener('click',()=>{
     const panel=downloads.querySelector(`#${button.getAttribute('aria-controls')}`);const open=panel.hidden;
     downloads.querySelectorAll('.partner-resource-toggle').forEach(other=>{if(other!==button)closeResource(other);});
