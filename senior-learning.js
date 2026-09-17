@@ -4,7 +4,7 @@
   const SUPABASE_URL = 'https://ricndeoiomzjacmrsjtg.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_cGiclRJGjTqHBPVZqgTiQA_tvGKSQ60';
   const slides = Array.from({ length: 10 }, (_, index) => `assets/digital-program/slide-${index + 1}.png`);
-  const learningData = [
+  const sourceLearningData = [
     { id:'smartphone', icon:'📱', title:'스마트폰', description:'아이폰 · 갤럭시 · 전화 · 문자 · 카카오톡 · 사진', accessLevel:'free', lessons:[
       { id:'smartphone-basics', title:'스마트폰 앱 기초', description:'앱을 찾고 사용하는 기본 방법을 그림으로 다시 봅니다.', status:'ready', accessLevel:'free', slides },
       { id:'app-install', title:'앱 설치하기', description:'필요한 앱을 안전하게 설치하는 방법입니다.', status:'preparing', accessLevel:'free' },
@@ -36,10 +36,41 @@
       { id:'privacy', title:'개인정보 지키기', description:'비밀번호와 개인정보를 안전하게 관리합니다.', status:'preparing', accessLevel:'free' }
     ]}
   ];
+  const learningData = [
+    {
+      id:'smartphone',
+      icon:'📱',
+      image:'assets/senior-learning/material-smartphone.svg',
+      title:'스마트폰',
+      description:'스마트폰 기본 사용법을 쉽게 배워보세요.',
+      lessons:[
+        ...sourceLearningData.find(category => category.id === 'smartphone').lessons,
+        ...sourceLearningData.find(category => category.id === 'settings').lessons,
+        ...sourceLearningData.find(category => category.id === 'daily-digital').lessons,
+        ...sourceLearningData.find(category => category.id === 'safety').lessons
+      ]
+    },
+    {
+      id:'computer',
+      icon:'💻',
+      image:'assets/senior-learning/material-computer.svg',
+      title:'컴퓨터',
+      description:'컴퓨터 기본 사용법을 쉽게 배워보세요.',
+      lessons:[...sourceLearningData.find(category => category.id === 'digital-hobby').lessons]
+    },
+    {
+      id:'ai-tools',
+      icon:'✨',
+      image:'assets/senior-learning/material-ai.svg',
+      title:'AI 도구',
+      description:'생활에 유용한 AI 도구를 쉽게 배워보세요.',
+      lessons:[...sourceLearningData.find(category => category.id === 'ai').lessons]
+    }
+  ];
   // Keep mini apps data-driven so new member tools can be added without
   // changing the learning-home structure.
   const miniApps = [
-    { id:'easy-hanja', icon:'漢', title:'한자 변환기', description:'한글 또는 한자를 입력해 필요한 한자 정보를 쉽게 확인할 수 있어요.', href:'easy-hanja.html' }
+    { id:'easy-hanja', image:'assets/senior-learning/mini-hanja.svg', title:'한자 변환기', description:'한자 정보를 쉽게 확인해보세요.', href:'easy-hanja.html' }
   ];
 
   const app = document.getElementById('seniorLearningApp');
@@ -81,9 +112,9 @@
     '<a class="senior-section-choice" href="senior-learning-materials.html"><img src="assets/senior-learning/textbook-card.svg" alt=""><strong>교재</strong><span>스마트폰과 디지털 사용법을 다시 확인해보세요.</span><b>교재 보기</b></a>' +
     '<a class="senior-section-choice" href="senior-mini-apps.html"><img src="assets/senior-learning/mini-app-card.svg" alt=""><strong>미니앱</strong><span>생활에 도움이 되는 간편한 디지털 도구</span><b>미니앱 보기</b></a></section>';
   const renderCategories = () => {
-    content.innerHTML = `<section class="senior-category-view"><div class="senior-category-grid">${learningData.map(category => `<button class="senior-category-card" type="button" data-senior-category="${category.id}"><span aria-hidden="true">${category.icon}</span><strong>${category.title}</strong><small>${category.description}</small></button>`).join('')}</div></section>`;
+    content.innerHTML = `<section class="senior-category-view"><div class="senior-category-grid">${learningData.map(category => `<button class="senior-category-card" type="button" data-senior-category="${category.id}"><img src="${category.image}" alt=""><strong>${category.title}</strong><small>${category.description}</small><b>교재 보기</b></button>`).join('')}</div></section>`;
   };
-  const renderMiniApps = () => `<section class="senior-mini-apps"><div class="senior-mini-app-grid">${miniApps.map(app => `<article class="senior-mini-app-card"><span class="senior-mini-app-icon" aria-hidden="true">${app.icon}</span><div><h3>${app.title}</h3><p>${app.description}</p></div><a class="senior-primary-button" href="${app.href}">사용하기</a></article>`).join('')}</div></section>`;
+  const renderMiniApps = () => `<section class="senior-mini-apps"><div class="senior-mini-app-grid">${miniApps.map(app => `<article class="senior-mini-app-card"><img src="${app.image}" alt=""><div><h3>${app.title}</h3><p>${app.description}</p></div><a class="senior-primary-button" href="${app.href}">사용하기</a></article>`).join('')}</div></section>`;
   const renderLessons = category => {
     content.innerHTML = `<section class="senior-lesson-view"><div class="senior-view-heading"><span aria-hidden="true">${category.icon}</span><div><h2>${category.title}</h2><p>${category.description}</p></div></div><div class="senior-lesson-list">${category.lessons.map(lesson => `<article class="senior-lesson-card ${lesson.status === 'ready' ? 'is-ready' : 'is-preparing'}"><div><h3>${lesson.title}</h3><p>${lesson.description}</p></div>${lesson.status === 'ready' ? `<button class="senior-primary-button" type="button" data-senior-lesson="${lesson.id}">교재 보기</button>` : '<span class="senior-preparing">자료 준비 중</span>'}</article>`).join('')}</div></section>`;
   };
