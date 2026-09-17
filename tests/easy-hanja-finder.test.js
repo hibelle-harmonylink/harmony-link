@@ -2,19 +2,26 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
+const vm = require('node:vm');
 
 const root = path.join(__dirname, '..');
 const page = fs.readFileSync(path.join(root, 'easy-hanja.html'), 'utf8');
 const script = fs.readFileSync(path.join(root, 'easy-hanja.js'), 'utf8');
+const dictionary = fs.readFileSync(path.join(root, 'hanja-dictionary.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'easy-hanja.css'), 'utf8');
 const auth = fs.readFileSync(path.join(root, 'auth.js'), 'utf8');
 const miniApps = fs.readFileSync(path.join(root, 'mini-apps.html'), 'utf8');
+const dictionaryContext = { window: {} };
+vm.runInNewContext(dictionary, dictionaryContext);
+const localDictionary = dictionaryContext.window.HARMONY_HANJA_DICTIONARY;
 
-test('easy hanja finder has the requested member gate and accessible search controls', () => {
-  assert.match(page, /쉬운 한자 찾기/);
-  assert.match(page, /한글이나 한자를 입력하면 쉽게 찾아드려요\./);
-  assert.match(page, /찾고 싶은 한글이나 한자를 입력하세요/);
-  assert.match(page, /한자 찾기/);
+test('hanja converter has the requested member gate and accessible conversion controls', () => {
+  assert.match(page, /<h1 id="hanjaTitle">한자 변환기<\/h1>/);
+  assert.doesNotMatch(page, /쉬운 한자 찾기/);
+  assert.match(page, /한글을 입력하면 관련 한자를 쉽게 확인할 수 있어요\./);
+  assert.match(page, /<label for="hanjaQuery"[^>]*>한글을 입력하세요<\/label>/);
+  assert.match(page, /placeholder="한글을 입력하세요"/);
+  assert.match(page, />변환하기<\/button>/);
   assert.match(page, /하모니링크 회원이면 무료로 사용할 수 있어요/);
   assert.match(page, /회원가입 또는 로그인 후 바로 이용하실 수 있습니다\./);
   assert.match(page, /무료 회원가입/);
@@ -23,26 +30,19 @@ test('easy hanja finder has the requested member gate and accessible search cont
   assert.match(page, /index\.html\?auth=login&amp;return=easy-hanja\.html/);
 });
 
-test('easy hanja finder searches Hangul and Hanja locally, then supports large display and copying', () => {
-  assert.match(script, /const words = \[/);
-  assert.match(script, /\['사랑','愛','애','사랑 애'\]/);
-  assert.match(script, /\['학교','學校','학교','배울 학 · 학교 교'\]/);
-  assert.match(script, /\['한국','韓國','한국','한국 한 · 나라 국'\]/);
-  assert.match(script, /\['英','영','꽃부리 영'\]/);
-  assert.match(script, /\['永','영','길 영'\]/);
-  assert.match(script, /\['榮','영','영화 영'\]/);
-  assert.match(script, /\['泳','영','헤엄칠 영'\]/);
-  assert.match(script, /\['民','민','백성 민'\]/);
-  assert.match(script, /\['敏','민','민첩할 민'\]/);
-  assert.match(script, /\['珉','민','옥돌 민'\]/);
-  assert.match(script, /\['旻','민','하늘 민'\]/);
-  const countCandidates = reading => (script.match(new RegExp(`\\['[^']+','${reading}','[^']+'\\]`, 'g')) || []).length;
-  assert.ok(countCandidates('영') >= 4);
-  assert.ok(countCandidates('민') >= 4);
-  assert.match(script, /\['愛','애','사랑 애'\]/);
-  assert.match(script, /\['學','학','배울 학'\]/);
-  assert.match(script, /\['國','국','나라 국'\]/);
-  assert.match(script, /\.map\(\(\[, hanja, reading, meaning\]\) => \(\{ character:hanja, reading, meaning \}\)\)/);
+test('hanja converter uses an extensible local word lexicon and only returns verified results', () => {
+  for (const pair of ["['학교','學校'", "['교육','敎育'", "['문화','文化'", "['건강','健康'", "['음악','音樂'", "['사랑','愛'"]) assert.match(dictionary, new RegExp(pair.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(dictionary, /window\.HARMONY_HANJA_DICTIONARY/);
+  assert.match(dictionary, /\['英','영','꽃부리 영'\]/);
+  assert.match(dictionary, /\['永','영','길 영'\]/);
+  assert.match(dictionary, /\['民','민','백성 민'\]/);
+  assert.match(script, /word\.hangul === value \|\| word\.hanja === value/);
+  assert.match(script, /적절한 한자 변환 결과를 찾지 못했습니다\./);
+  assert.match(script, /value\.length === 1/);
+  assert.ok(localDictionary.words.length >= 70);
+  for (const [hangul, hanja] of [['학교', '學校'], ['교육', '敎育'], ['문화', '文化'], ['건강', '健康'], ['음악', '音樂']]) {
+    assert.equal(localDictionary.words.find(word => word.hangul === hangul)?.hanja, hanja);
+  }
   assert.match(script, /const isHanja/);
   assert.match(script, /navigator\.clipboard\.writeText/);
   assert.match(script, /class="hanja-character"/);
@@ -108,13 +108,18 @@ test('easy hanja header reuses the homepage logo markup and header login style',
   assert.match(page, /class="logo-mark brand-image"/);
   assert.match(page, /assets\/harmony-logo\.png/);
   assert.match(page, /이음문화센터/);
-  assert.match(page, /class="header-login"/);
+  assert.match(page, /class="hanja-account-actions"/);
+  assert.match(page, /id="hanjaSignout"/);
+  assert.match(page, /href="senior-mini-apps\.html">← 미니앱/);
   assert.match(page, /class="site-header tool-site-header"/);
   assert.match(css, /\.tool-site-header \.nav-wrap \{ justify-content: space-between !important; \}/);
-  assert.match(css, /\.tool-site-header \.header-login \{ margin-left: auto;[\s\S]*?align-items: center !important;[\s\S]*?justify-content: center !important;/);
+  assert.match(css, /\.hanja-account-actions \{ display:flex; align-items:center;/);
+  assert.match(css, /\.tool-site-header \.hanja-account-actions \.header-login/);
   assert.doesNotMatch(css, /body \{[^}]*font-family:/);
   assert.match(page, /styles\.css\?v=20260916-19/);
-  assert.match(page, /easy-hanja\.css\?v=20260916-19/);
+  assert.match(page, /easy-hanja\.css\?v=20260916-30/);
+  assert.match(page, /hanja-dictionary\.js\?v=20260916-30/);
+  assert.match(page, /easy-hanja\.js\?v=20260916-30/);
   assert.match(page, /homepage-ui\.css\?v=20260916-16/);
   assert.doesNotMatch(page, /hanja-logo-mark|hanja-home-link/);
 });

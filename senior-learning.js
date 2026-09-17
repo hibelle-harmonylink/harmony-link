@@ -114,7 +114,7 @@
   const renderCategories = () => {
     content.innerHTML = `<section class="senior-category-view"><div class="senior-category-grid">${learningData.map(category => `<button class="senior-category-card" type="button" data-senior-category="${category.id}"><img src="${category.image}" alt=""><strong>${category.title}</strong><small>${category.description}</small><b>교재 보기</b></button>`).join('')}</div></section>`;
   };
-  const renderMiniApps = () => `<section class="senior-mini-apps"><div class="senior-mini-app-grid">${miniApps.map(app => `<article class="senior-mini-app-card"><img src="${app.image}" alt=""><div><h3>${app.title}</h3><p>${app.description}</p></div><a class="senior-primary-button" href="${app.href}">사용하기</a></article>`).join('')}</div></section>`;
+  const renderMiniApps = () => `<section class="senior-mini-apps"><div class="senior-mini-app-grid">${miniApps.map(app => `<a class="senior-mini-app-card" data-mini-app-card href="${app.href}" aria-label="${app.title} 사용하기"><img src="${app.image}" alt=""><div><h3>${app.title}</h3><p>${app.description}</p></div><span class="senior-primary-button" aria-hidden="true">사용하기</span></a>`).join('')}</div></section>`;
   const renderLessons = category => {
     content.innerHTML = `<section class="senior-lesson-view"><div class="senior-view-heading"><span aria-hidden="true">${category.icon}</span><div><h2>${category.title}</h2><p>${category.description}</p></div></div><div class="senior-lesson-list">${category.lessons.map(lesson => `<article class="senior-lesson-card ${lesson.status === 'ready' ? 'is-ready' : 'is-preparing'}"><div><h3>${lesson.title}</h3><p>${lesson.description}</p></div>${lesson.status === 'ready' ? `<button class="senior-primary-button" type="button" data-senior-lesson="${lesson.id}">교재 보기</button>` : '<span class="senior-preparing">자료 준비 중</span>'}</article>`).join('')}</div></section>`;
   };
@@ -175,6 +175,8 @@
     if (categoryButton) setState({ categoryId:categoryButton.dataset.seniorCategory, lessonId:null, slideIndex:0 });
   });
   document.addEventListener('keydown', event => {
+    const miniAppCard = event.target.closest?.('[data-mini-app-card]');
+    if (miniAppCard && event.key === ' ') { event.preventDefault(); miniAppCard.click(); return; }
     if (!state.lessonId || event.target.matches('input, textarea')) return;
     const lesson = findLesson(state.categoryId, state.lessonId);
     if (event.key === 'ArrowLeft' && state.slideIndex > 0) setState({ slideIndex:state.slideIndex - 1 });
