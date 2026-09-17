@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const BUILD = '20260917-1';
+  const BUILD = '20260917-2';
   console.log(`[admin] admin.js loaded — build ${BUILD}`);
   // Visible without opening devtools -- if this text is missing, blank, or
   // shows an older build number than the one just shipped, the browser (or
@@ -449,7 +449,7 @@
     const name = resolveDisplayName(member);
     detail.className = 'member-detail';
     const metadataFields = `<div class="member-edit-grid member-metadata-grid"><label>닉네임<input id="detailNickname" type="text" maxlength="80" autocomplete="nickname"></label><label>이름<input id="detailFullName" type="text" maxlength="80" autocomplete="name"></label><label>연락처<input id="detailPhone" type="tel" maxlength="30" autocomplete="tel" value="${escapeHtml(formatPhone(member.phone ?? ''))}"></label><label class="partner-metadata">전문분야<input id="detailSpecialty" type="text" maxlength="120"></label><label class="partner-metadata">강의과목<input id="detailTeachingSubjects" type="text" maxlength="240"></label><label class="student-metadata">수강과목<input id="detailEnrolledSubject" type="text" maxlength="120"></label><label class="student-metadata">담당강사<input id="detailAssignedInstructor" type="text" maxlength="120"></label></div>`;
-    const partnerRegionFields = `<section class="partner-region partner-metadata" hidden aria-labelledby="detailPartnerRegionTitle"><div class="partner-region-heading"><div><h3 id="detailPartnerRegionTitle">활동 지역</h3><p id="detailPartnerRegionSummary">지역 정보를 불러오는 중…</p></div><span class="partner-region-note">파트너 전용</span></div><div class="partner-region-grid"><label>국가<select id="detailCountryCode"><option value="">선택하세요</option>${COUNTRY_OPTIONS.map(country => `<option value="${country.code}">${country.name}</option>`).join('')}</select></label><label>주(State)<select id="detailStateCode"><option value="">선택하세요</option></select></label><label>도시<input id="detailCity" type="text" maxlength="120" autocomplete="address-level2" placeholder="예: Dallas"></label></div><div class="partner-service-area"><div><h4>서비스 지역</h4><p>여러 지역을 추가할 수 있습니다.</p></div><div class="partner-service-area-controls"><input id="detailServiceAreaInput" type="text" maxlength="120" placeholder="예: Dallas–Fort Worth"><button id="detailAddServiceArea" type="button" class="member-region-add">+ 지역 추가</button></div><div id="detailServiceAreaChips" class="partner-service-area-chips" aria-live="polite"></div></div><div class="partner-region-options"><label class="partner-region-switch"><input id="detailOnlineAvailable" type="checkbox"><span>온라인 수업 가능</span></label><label class="partner-region-switch"><input id="detailNationwideAvailable" type="checkbox"><span>미국 전역 가능</span></label></div></section>`;
+    const partnerRegionFields = `<section class="partner-region partner-metadata" hidden aria-labelledby="detailPartnerRegionTitle"><div class="partner-region-heading"><div><h3 id="detailPartnerRegionTitle">활동 지역</h3><p id="detailPartnerRegionSummary">지역 정보를 불러오는 중…</p></div><span class="partner-region-note">파트너 전용</span></div><div class="partner-region-grid"><label>국가<select id="detailCountryCode"><option value="">선택하세요</option>${COUNTRY_OPTIONS.map(country => `<option value="${country.code}">${country.name}</option>`).join('')}</select></label><label>주(State)<select id="detailStateCode"><option value="">선택하세요</option></select></label><label>도시<input id="detailCity" type="text" maxlength="120" autocomplete="address-level2" placeholder="예: Dallas"></label></div><div class="partner-service-area"><div><h4>서비스 지역</h4><p>여러 지역을 추가할 수 있습니다.</p></div><div class="partner-service-area-controls"><input id="detailServiceAreaInput" type="text" maxlength="120" placeholder="예: Dallas–Fort Worth"><button id="detailAddServiceArea" type="button" class="member-region-add">+ 지역 추가</button></div><div id="detailServiceAreaChips" class="partner-service-area-chips" aria-live="polite"></div></div><div class="partner-region-options"><label class="partner-region-switch"><input id="detailOnlineAvailable" type="checkbox"><span>온라인 수업 가능</span></label><label class="partner-region-switch"><input id="detailNationwideAvailable" type="checkbox"><span>미국 전역 가능</span></label></div><div class="partner-region-save"><p id="detailRegionSaveFeedback" role="status" aria-live="polite"></p><button id="detailRegionSave" type="button" class="btn btn-primary" disabled>지역정보 저장</button></div></section>`;
     const summary = `<dl class="member-dates member-core-fields"><div><dt>회원번호</dt><dd><span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span></dd></div><div><dt>닉네임</dt><dd>${escapeHtml(memberNickname(member))}</dd></div><div><dt>이름</dt><dd>${escapeHtml(memberFullName(member))}</dd></div><div><dt>이메일</dt><dd>${escapeHtml(member.email || '')}</dd></div><div><dt>연락처</dt><dd>${escapeHtml(formatPhone(member.phone))}</dd></div><div><dt>회원유형</dt><dd>${escapeHtml(member.is_admin ? '관리자' : TYPE_LABELS[member.user_type])}</dd></div><div><dt>멤버십</dt><dd>${escapeHtml(member.is_admin ? '관리자' : MEMBERSHIP_LABELS[member.membership])}</dd></div><div><dt>계정상태</dt><dd>${escapeHtml(STATUS_LABELS[member.account_status] || member.account_status || '')}</dd></div><div><dt>가입일</dt><dd>${formatDate(member.created_at)}</dd></div></dl>`;
     const accessFields = withdrawn || protectedAccount ? `<div class="member-protected-copy">${withdrawn ? '탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다.' : '관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.'}</div>` : `<div class="member-edit-grid"><label class="member-name-field">회원 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label>회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label>멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label>계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label></div>`;
     const actions = withdrawn
@@ -477,6 +477,8 @@
     const onlineAvailable = detail.querySelector('#detailOnlineAvailable');
     const nationwideAvailable = detail.querySelector('#detailNationwideAvailable');
     const regionSummary = detail.querySelector('#detailPartnerRegionSummary');
+    const regionSaveButton = detail.querySelector('#detailRegionSave');
+    const regionSaveFeedback = detail.querySelector('#detailRegionSaveFeedback');
     let partnerRegion = normalizePartnerRegion();
     let serviceAreas = [];
     const setStateOptions = selectedCountry => {
@@ -493,7 +495,7 @@
         chip.textContent = area;
         const remove = document.createElement('button');
         remove.type = 'button'; remove.setAttribute('aria-label', `${area} 제거`); remove.textContent = '×';
-        remove.addEventListener('click', () => { serviceAreas = serviceAreas.filter(value => value !== area); renderServiceAreas(); });
+        remove.addEventListener('click', () => { serviceAreas = serviceAreas.filter(value => value !== area); renderServiceAreas(); updateRegionSaveButton(); });
         chip.appendChild(remove);
         return chip;
       }));
@@ -503,6 +505,7 @@
       if (next.length !== serviceAreas.length) serviceAreas = next;
       serviceAreaInput.value = '';
       renderServiceAreas();
+      updateRegionSaveButton();
     };
     const regionFromControls = () => {
       const country = COUNTRY_OPTIONS.find(option => option.code === countryCode.value);
@@ -520,10 +523,60 @@
       nationwideAvailable.checked = partnerRegion.nationwide_available;
       renderServiceAreas();
       regionSummary.textContent = partnerRegionSummary(partnerRegion);
+      updateRegionSaveButton();
     };
-    countryCode.addEventListener('change', () => setStateOptions(countryCode.value));
+    const updateRegionSaveButton = () => {
+      if (!regionSaveButton) return;
+      const editablePartner = !withdrawn && !protectedAccount && member.user_type === 'partner' && (!type || type.value === 'partner');
+      regionSaveButton.disabled = !editablePartner || samePartnerRegion(regionFromControls(), partnerRegion);
+    };
+    const setRegionFeedback = (text = '', isError = false) => {
+      regionSaveFeedback.textContent = text;
+      regionSaveFeedback.className = isError ? 'error' : (text ? 'success' : '');
+    };
+    const readPartnerRegion = async () => {
+      const { data, error } = await client.rpc('admin_get_partner_region', { p_member_id: member.id });
+      if (error) throw error;
+      return Array.isArray(data) ? data[0] : data;
+    };
+    const savePartnerRegion = async () => {
+      if (regionSaveButton.disabled) return;
+      const requested = regionFromControls();
+      regionSaveButton.disabled = true;
+      regionSaveButton.textContent = '저장 중…';
+      setRegionFeedback();
+      try {
+        const { error } = await client.rpc('admin_update_partner_region', {
+          p_member_id: member.id,
+          p_country_code: requested.country_code,
+          p_country_name: requested.country_name,
+          p_state_code: requested.state_code,
+          p_state_name: requested.state_name,
+          p_city: requested.city,
+          p_service_area: requested.service_area,
+          p_online_available: requested.online_available,
+          p_nationwide_available: requested.nationwide_available
+        });
+        if (error) throw error;
+        const saved = await readPartnerRegion();
+        if (!samePartnerRegion(saved, requested)) throw new Error('저장 후 지역 정보를 다시 확인하지 못했습니다.');
+        renderPartnerRegion(saved);
+        setRegionFeedback('지역정보가 저장되었습니다.');
+      } catch (error) {
+        setRegionFeedback(`지역정보 저장에 실패했습니다: ${describeError(error)}`, true);
+      } finally {
+        regionSaveButton.textContent = '지역정보 저장';
+        updateRegionSaveButton();
+      }
+    };
+    countryCode.addEventListener('change', () => { setStateOptions(countryCode.value); updateRegionSaveButton(); });
+    stateCode.addEventListener('change', updateRegionSaveButton);
+    city.addEventListener('input', updateRegionSaveButton);
     addServiceArea.addEventListener('click', addServiceAreaValue);
     serviceAreaInput.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); addServiceAreaValue(); } });
+    onlineAvailable.addEventListener('change', updateRegionSaveButton);
+    nationwideAvailable.addEventListener('change', updateRegionSaveButton);
+    regionSaveButton.addEventListener('click', savePartnerRegion);
     if (nicknameInput) nicknameInput.value = memberNickname(member);
     if (fullNameInput) fullNameInput.value = memberFullName(member);
     if (specialty) specialty.value = member.specialty || '';
@@ -531,7 +584,7 @@
     if (enrolledSubject) enrolledSubject.value = member.enrolled_subject || '';
     if (assignedInstructor) assignedInstructor.value = member.assigned_instructor || '';
     if (withdrawn) [nicknameInput, fullNameInput, phone, specialty, teachingSubjects, enrolledSubject, assignedInstructor].forEach(input => { if (input) input.disabled = true; });
-    if (withdrawn) [countryCode, stateCode, city, serviceAreaInput, addServiceArea, onlineAvailable, nationwideAvailable].forEach(input => { if (input) input.disabled = true; });
+    if (withdrawn) [countryCode, stateCode, city, serviceAreaInput, addServiceArea, onlineAvailable, nationwideAvailable, regionSaveButton].forEach(input => { if (input) input.disabled = true; });
     const showRoleMetadata = selectedType => {
       detail.querySelectorAll('.partner-metadata').forEach(field => { field.hidden = selectedType !== 'partner'; });
       detail.querySelectorAll('.student-metadata').forEach(field => { field.hidden = selectedType !== 'student'; });
@@ -549,10 +602,7 @@
       detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, name, member.user_type, member.membership, member.account_status, { nickname: nicknameInput.value, fullName: fullNameInput.value, phone: phone.value, specialty: specialty.value, teachingSubjects: teachingSubjects.value, enrolledSubject: enrolledSubject.value, assignedInstructor: assignedInstructor.value }, regionFromControls(), partnerRegion));
     }
     if (!withdrawn && member.user_type === 'partner') {
-      client.rpc('admin_get_partner_region', { p_member_id: member.id }).then(({ data, error }) => {
-        if (error) { regionSummary.textContent = '지역 정보를 불러오지 못했습니다.'; return; }
-        renderPartnerRegion(Array.isArray(data) ? data[0] : data);
-      }).catch(() => { regionSummary.textContent = '지역 정보를 불러오지 못했습니다.'; });
+      readPartnerRegion().then(renderPartnerRegion).catch(() => { regionSummary.textContent = '지역 정보를 불러오지 못했습니다.'; });
     } else {
       renderPartnerRegion();
     }

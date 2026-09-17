@@ -57,7 +57,8 @@ test('only the existing region update RPC writes region values, after an access 
 
 test('admin detail re-reads a saved partner region on every partner reopen', () => {
   assert.match(admin, /client\.rpc\('admin_get_partner_region', \{ p_member_id: member\.id \}\)/);
-  assert.match(admin, /renderPartnerRegion\(Array\.isArray\(data\) \? data\[0\] : data\)/);
+  assert.match(admin, /return Array\.isArray\(data\) \? data\[0\] : data/);
+  assert.match(admin, /readPartnerRegion\(\)\.then\(renderPartnerRegion\)/);
 });
 
 test('reader migration is active-admin-only security definer and leaves the existing list RPC untouched', () => {
@@ -76,4 +77,39 @@ test('partner region controls have responsive, non-overflowing mobile layout', (
   assert.match(css, /\.partner-service-area-controls\{display:grid;grid-template-columns:minmax\(0,1fr\) auto/);
   assert.match(css, /\.partner-region-grid\{grid-template-columns:1fr\}/);
   assert.match(css, /\.partner-service-area-controls\{grid-template-columns:1fr\}/);
+});
+
+test('only partners receive a clear, dedicated region save action', () => {
+  assert.match(admin, /class="partner-region partner-metadata" hidden/);
+  assert.match(admin, /id="detailRegionSave" type="button" class="btn btn-primary" disabled>지역정보 저장/);
+  assert.match(admin, /regionSaveButton\.disabled = !editablePartner/);
+  assert.match(css, /\.partner-region-save\{display:flex;align-items:center;justify-content:flex-end/);
+});
+
+test('dedicated region save calls only the existing region RPC and never member metadata or access RPCs', () => {
+  const start = admin.indexOf('const savePartnerRegion = async () =>');
+  const end = admin.indexOf("countryCode.addEventListener", start);
+  const saveAction = admin.slice(start, end);
+  assert.match(saveAction, /admin_update_partner_region/);
+  assert.match(saveAction, /p_country_code: requested\.country_code/);
+  assert.match(saveAction, /p_service_area: requested\.service_area/);
+  assert.doesNotMatch(saveAction, /admin_update_member_(?:metadata|access|name)/);
+});
+
+test('dedicated region save prevents duplicate clicks, verifies persistence, and reports success or failure', () => {
+  const start = admin.indexOf('const savePartnerRegion = async () =>');
+  const end = admin.indexOf("countryCode.addEventListener", start);
+  const saveAction = admin.slice(start, end);
+  assert.match(saveAction, /if \(regionSaveButton\.disabled\) return/);
+  assert.match(saveAction, /regionSaveButton\.textContent = '저장 중…'/);
+  assert.match(saveAction, /const saved = await readPartnerRegion\(\)/);
+  assert.match(saveAction, /samePartnerRegion\(saved, requested\)/);
+  assert.match(saveAction, /지역정보가 저장되었습니다\./);
+  assert.match(saveAction, /지역정보 저장에 실패했습니다:/);
+  assert.match(saveAction, /regionSaveButton\.textContent = '지역정보 저장'/);
+});
+
+test('region save remains prominent and full-width on a 390px mobile detail dialog', () => {
+  assert.match(css, /\.partner-region-save\{display:grid;grid-template-columns:1fr\}/);
+  assert.match(css, /\.partner-region-save button\{width:100%;min-height:46px\}/);
 });
