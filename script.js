@@ -944,9 +944,21 @@ if (currentEventGrid) {
     .filter(card => card.dataset.eventEnd < todayKey)
     .sort((a, b) => b.dataset.eventEnd.localeCompare(a.dataset.eventEnd))
     .forEach(card => pastGrid.appendChild(card));
-  // Past events intentionally have no 자세히 보기 button -- only the
-  // Google Maps link (added above) and the poster/lightbox stay, so this
-  // only runs on the still-upcoming cards in currentEventGrid.
+  // Past events expose their existing poster assets through the same flyer
+  // modal. No event data or storage is needed for this static archive.
+  [...pastGrid.querySelectorAll('.event-card')].forEach(card => {
+    const info = card.querySelector('.event-info');
+    const poster = card.querySelector('.event-poster');
+    const title = card.querySelector('h3')?.textContent.trim();
+    if (!info || !poster || !title || info.querySelector('.event-flyer-button')) return;
+    const button = document.createElement('a');
+    button.className = 'btn event-flyer-button';
+    button.href = poster.href;
+    button.setAttribute('aria-label', `${title} 전단지 보기`);
+    button.innerHTML = '<span data-ko="전단지 보기" data-en="View Flyer">전단지 보기</span><b>↗</b>';
+    info.appendChild(button);
+  });
+  // Keep the existing details action for current events.
   [...currentEventGrid.querySelectorAll('.event-card:not(.event-coming):not(.special-event-card)')].forEach(card => {
     const info = card.querySelector('.event-info');
     const poster = card.querySelector('.event-poster');
@@ -1358,7 +1370,7 @@ const businessRegions = [
 ];
 const dmsCareBusiness = {
   name:'DMS Care Training Center',displayNameKo:'DMS Care Training Center',displayNameEn:'DMS Care Training Center',
-  summaryKo:'전문 케어 인력 교육',summaryEn:'Professional care workforce education',contactKo:'전화 469-605-6035',contactEn:'Phone 469-605-6035',
+  summaryKo:'미국 의료 직업 학교',summaryEn:'Professional care workforce education',contactKo:'전화 469-605-6035',contactEn:'Phone 469-605-6035',
   phoneHref:'tel:+14696056035',image:'assets/images/dms-care-logo.webp',brokerUrl:'https://dmscare.org/ko'
 };
 const renderBusinessPhone = contact => String(contact || '').replace(/(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g, number => `<a class="business-phone-link" href="tel:${number.replace(/[^\d+]/g, '')}">${number}</a>`);

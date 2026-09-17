@@ -58,7 +58,7 @@ test('current admin metadata RPC remains untouched while business spotlight stay
   assert.doesNotMatch(homepageScript, /instagramUrl:'https:\/\/www\.instagram\.com\/dmscarekorea'/);
   assert.match(homepageScript, /phoneHref:'tel:\+14696056035'/);
   assert.match(homepageScript, /\{region:'tx',item:dmsCareBusiness/);
-  assert.match(homepageScript, /summaryKo:'전문 케어 인력 교육'/);
+  assert.match(homepageScript, /summaryKo:'미국 의료 직업 학교'/);
   assert.match(homepageScript, /categoryKo:'케어 전문 교육센터'/);
   assert.match(homepageScript, /assets\/images\/dms-care-flyer-en\.png/);
   assert.doesNotMatch(homepageScript, /flyers:\['assets\/images\/dms-care-flyer-ko\.png'/);
