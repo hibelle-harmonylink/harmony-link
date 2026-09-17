@@ -294,11 +294,9 @@
       accessBadge.classList.toggle('basic-tier-badge', isBasicPartner);
     }
     const resourceTier = isAdmin || isPremiumPartner ? 50 : isBasicPartner ? 20 : 0;
-    // Membership establishes the highest tier a partner may open. The
-    // resource-center UI itself deliberately starts at FREE, so an account
-    // type never forces a BASIC/PREMIUM tab or carries an old open panel
-    // into a fresh page view.
-    if (approvedPartner) window.HarmonyPartnerResources?.setAccessTier(resourceTier, 0);
+    // Membership establishes the highest tier a partner may open and shows
+    // the established cumulative material set for that membership.
+    if (approvedPartner) window.HarmonyPartnerResources?.setAccessTier(resourceTier, resourceTier);
     if (lock) {
       lock.textContent = approvedPartner ? '✓' : signedIn ? '⏳' : '🔒';
       lock.classList.toggle('partner-lock-action', approvedPartner);
