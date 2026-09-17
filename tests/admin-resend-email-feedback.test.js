@@ -36,7 +36,7 @@ test('resend shows a detail error and always restores the button', () => {
 });
 
 test('admin asset versions advance together for the resend UX', () => {
-  assert.equal(version.version, '20260916-21');
+  assert.equal(version.version, '20260916-22');
   assert.match(adminHtml, /const pageVersion = '20260916-19'/);
   assert.match(adminHtml, /admin\.css\?v=20260916-19/);
   assert.match(adminHtml, /admin\.js\?v=20260916-19/);

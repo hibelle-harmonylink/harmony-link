@@ -8,13 +8,18 @@ const css = fs.readFileSync(path.join(root, 'homepage-ui.css'), 'utf8');
 const script = fs.readFileSync(path.join(root, 'script.js'), 'utf8');
 const page = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 
-test('desktop header reserves one grid slot for every menu item and the account group', () => {
-  assert.match(css, /grid-template-columns:64px minmax\(96px,112px\) 64px 72px 62px 48px 48px 76px max-content/);
-  assert.match(css, /justify-content:start!important/);
-  assert.match(css, /margin-left:0!important/);
+test('desktop header balances the complete menu group against the hero container', () => {
+  assert.match(css, /grid-template-columns:64px minmax\(96px,112px\) 64px 72px 62px 48px 48px 90px max-content/);
+  assert.match(css, /justify-content:end!important/);
+  assert.match(css, /margin-left:auto!important/);
   assert.match(css, /auth-nav-slot[^}]*flex-wrap:nowrap!important/);
   assert.match(css, /auth-user[^}]*white-space:nowrap!important/);
   assert.match(css, /height:72px!important/);
+});
+
+test('KO and EN use equal centered button cells', () => {
+  assert.match(css, /lang-toggle\{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:90px!important;height:36px!important/);
+  assert.match(css, /lang-toggle span\{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:42px!important;height:32px!important/);
 });
 
 test('homepage menu keeps the senior learning link and uses the requested education-program title', () => {

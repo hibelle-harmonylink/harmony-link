@@ -1356,15 +1356,17 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
   .site-header .nav-wrap{width:min(1360px,calc(100% - 24px))!important;justify-content:flex-start!important;gap:clamp(8px,1vw,16px)!important}
   .site-header .primary-nav{
     display:grid!important;
-    grid-template-columns:64px minmax(96px,112px) 64px 72px 62px 48px 48px 76px max-content;
-    justify-content:start!important;
-    margin-left:0!important;
+    grid-template-columns:64px minmax(96px,112px) 64px 72px 62px 48px 48px 90px max-content;
+    justify-content:end!important;
+    margin-left:auto!important;
     gap:clamp(4px,.6vw,9px)!important;
     min-width:0!important;
     flex:1 1 auto!important;
     white-space:nowrap!important;
   }
-  .site-header .primary-nav>a:not(.header-education-cta){display:flex!important;justify-content:center!important}
+  .site-header .primary-nav>a:not(.header-education-cta){display:flex!important;align-items:center!important;justify-content:center!important}
+  .site-header .lang-toggle{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:90px!important;height:36px!important;min-height:36px!important;padding:2px!important;gap:0!important;border-radius:9px!important}
+  .site-header .lang-toggle span{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:42px!important;height:32px!important;min-width:42px!important;padding:0!important;line-height:1!important;border-radius:7px!important;text-align:center!important}
   html[lang="en"] .site-header .primary-nav{font-size:13px!important;letter-spacing:-.01em!important}
   .site-header .header-login{width:82px!important;min-width:82px!important;padding-inline:10px!important}
   .site-header .auth-nav-slot{width:max-content!important;min-width:0!important;gap:5px!important;flex-wrap:nowrap!important;white-space:nowrap!important}
@@ -1379,8 +1381,8 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
   .site-header .auth-signout{padding-inline:2px!important;font-size:11px!important}
 }
 @media(min-width:761px) and (max-width:1200px){
-  .site-header .nav-wrap{width:min(100% - 20px,1360px)!important;gap:7px!important}
-  .site-header .primary-nav{grid-template-columns:60px 94px 60px 68px 56px 44px 44px 72px max-content;gap:3px!important;font-size:clamp(11px,1.05vw,13px)!important}
+  .site-header .nav-wrap{width:min(1360px,calc(100% - 48px))!important;gap:7px!important}
+  .site-header .primary-nav{grid-template-columns:60px 94px 60px 68px 56px 44px 44px 90px max-content;gap:3px!important;font-size:clamp(11px,1.05vw,13px)!important}
   html[lang="en"] .site-header .primary-nav{font-size:11px!important}
   .site-header .admin-member-link{padding-inline:6px!important;font-size:9px!important}
   .site-header .auth-user{grid-template-columns:30px minmax(0,82px) auto!important;gap:4px!important;white-space:nowrap!important}
