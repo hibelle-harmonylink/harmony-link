@@ -42,9 +42,14 @@ test('future region updates preserve active-admin, self-update, withdrawn, and p
   assert.doesNotMatch(migration, /grant .* on table public\.member_admin_metadata to authenticated/i);
 });
 
-test('current admin metadata RPC and homepage partner carousel remain untouched', () => {
+test('current admin metadata RPC remains untouched while business spotlight stays separate from partner access', () => {
   assert.doesNotMatch(migration, /create or replace function public\.admin_update_member_metadata/i);
   const homepageScript = fs.readFileSync(path.join(root, 'script.js'), 'utf8');
-  assert.match(homepageScript, /함께하는 지역 파트너/);
+  assert.match(homepageScript, /BUSINESS SPOTLIGHT/);
+  assert.match(homepageScript, /비즈니스 스포트라이트/);
+  assert.match(homepageScript, /const businessRegions/);
+  assert.match(homepageScript, /const businessSpotlights/);
+  assert.match(homepageScript, /\{id:'tx',labelKo:'TEXAS'/);
+  assert.match(homepageScript, /Business listings for/);
   assert.match(homepageScript, /const adRooms=/);
 });
