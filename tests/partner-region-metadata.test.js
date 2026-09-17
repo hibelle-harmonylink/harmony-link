@@ -51,5 +51,12 @@ test('current admin metadata RPC remains untouched while business spotlight stay
   assert.match(homepageScript, /const businessSpotlights/);
   assert.match(homepageScript, /\{id:'tx',labelKo:'TEXAS'/);
   assert.match(homepageScript, /Business listings for/);
+  assert.match(homepageScript, /const dmsCareBusiness/);
+  assert.match(homepageScript, /name:'DMS Care Training Center'/);
+  assert.match(homepageScript, /image:'assets\/images\/dms-care-logo\.jpg'/);
+  assert.match(homepageScript, /brokerUrl:'https:\/\/dmscare\.org\/ko'/);
+  assert.match(homepageScript, /instagramUrl:'https:\/\/www\.instagram\.com\/dmscarekorea'/);
+  assert.match(homepageScript, /phoneHref:'tel:\+14696056035'/);
+  assert.match(homepageScript, /\{region:'tx',item:dmsCareBusiness/);
   assert.match(homepageScript, /const adRooms=/);
 });
