@@ -11,6 +11,8 @@ const auth = read('auth.js');
 const styles = read('styles.css');
 const senior = read('senior-learning.js');
 const seniorCss = read('senior-learning.css');
+const homepage = read('index.html');
+const homepageScript = read('script.js');
 
 test('guest community writers get the existing homepage login route while active members keep compose access', () => {
   assert.match(communityPage, /id="communityLoginPrompt"/);
@@ -34,10 +36,21 @@ test('business promotion is a normal board category directly after jobs without 
 
 test('hover feedback is limited to content cards, desktop pointers, and reduced-motion safe behavior', () => {
   assert.match(styles, /@media \(hover:hover\) and \(pointer:fine\)/);
-  assert.match(styles, /\.business-spotlight-card\):hover\{transform:translateY\(-4px\);box-shadow:/);
+  assert.match(styles, /\.business-spotlight-card,#partner-center \.partner-tier-guide button\):hover\{transform:translateY\(-4px\);box-shadow:/);
   assert.match(styles, /transition:transform \.22s ease,box-shadow \.22s ease/);
   assert.doesNotMatch(styles.match(/\/\* Shared hover feedback[\s\S]*/)?.[0] || '', /\.auth-modal|\.floating-message-panel|textarea|input|footer/);
   assert.match(styles, /@media \(prefers-reduced-motion:reduce\)[\s\S]*?transform:none!important/);
+});
+
+test('the learning and services heading is updated while business phone display stays intact and calls do not open flyers', () => {
+  assert.match(homepage, /data-ko="배움과 서비스를 만나보세요" data-en="Discover Learning & Services">배움과 서비스를 만나보세요<\/h2>/);
+  assert.match(homepageScript, /const renderBusinessPhone = contact => String\(contact \|\| ''\)\.replace/);
+  assert.match(homepageScript, /href="tel:\$\{number\.replace\(\/\[\^\\d\+\]\/g, ''\)\}"/);
+  assert.match(homepageScript, /const contactMarkup=`<p class="business-contact">\$\{renderBusinessPhone\(contact\)\}<\/p>`/);
+  assert.match(homepageScript, /event\.target\.closest\('a,button'\)/);
+  for (const phone of ['516-390-1383', '201-585-0958', '929-845-0958', '929-766-0088', '646-996-8093', '718-799-0133', '718-864-6430', '469-605-6035']) {
+    assert.match(homepageScript, new RegExp(phone.replace(/-/g, '\\-')));
+  }
 });
 
 test('smartphone category stays available while every individual material is preparing', () => {
