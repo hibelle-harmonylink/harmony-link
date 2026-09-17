@@ -11,7 +11,7 @@ test('partner start guide uses the requested two-line Korean descriptions', () =
   assert.match(script, /data-ko="Google · Kakao 계정으로&lt;br&gt;간편하게 로그인합니다\."/);
   assert.match(script, /data-ko="신청서를 작성하고&lt;br&gt;정보를 제출합니다\."/);
   assert.match(script, /data-ko="승인 후 안내 메일로&lt;br&gt;이용 방법을 확인합니다\."/);
-  assert.match(script, /data-ko="FREE · BASIC · PREMIUM&lt;br&gt;등급을 선택합니다\."/);
+  assert.match(script, /data-ko="FREE·BASIC·PREMIUM&lt;br&gt;등급을 선택합니다\."/);
   assert.match(script, /data-ko="승인된 파트너는&lt;br&gt;등급별 자료를 이용합니다\."/);
   assert.doesNotMatch(script, /안내메일/);
 });
