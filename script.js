@@ -964,7 +964,7 @@ if (currentEventGrid) {
 
 const contactSectionForAds = document.getElementById('specialty-banners');
 if (contactSectionForAds) {
-  contactSectionForAds.insertAdjacentHTML('beforebegin', `<section class="advertising section" id="advertising"><div class="container"><div class="section-heading centered reveal visible"><p class="eyebrow">HARMONY LINK PARTNERS</p><h2 data-ko="함께하는 지역 파트너" data-en="Community Partners">함께하는 지역 파트너</h2><p data-ko="Harmony Link와 함께 지역사회를 연결하는 파트너를 만나보세요." data-en="Meet local partners connecting and supporting our community with Harmony Link.">Harmony Link와 함께 지역사회를 연결하는 파트너를 만나보세요.</p></div><div class="ad-inline-carousel" aria-live="polite"><button type="button" class="ad-carousel-prev" aria-label="이전 업체">‹</button><div class="ad-carousel-track"></div><button type="button" class="ad-carousel-next" aria-label="다음 업체">›</button></div><div class="ad-carousel-dots"></div></div></section>`);
+  contactSectionForAds.insertAdjacentHTML('beforebegin', `<section class="advertising section" id="advertising"><div class="container"><div class="section-heading centered reveal visible"><p class="eyebrow">BUSINESS SPOTLIGHT</p><h2 data-ko="비즈니스 스포트라이트" data-en="Business Spotlight">비즈니스 스포트라이트</h2><p data-ko="지역의 다양한 비즈니스와 서비스를 만나보세요." data-en="Discover local businesses and services.">지역의 다양한 비즈니스와 서비스를 만나보세요.</p></div><div class="business-region-filters" role="group" aria-label="지역 필터"></div><div class="business-spotlight-grid" aria-live="polite"></div></div></section>`);
 }
 setLanguage(currentLanguage);
 
@@ -1317,7 +1317,7 @@ document.querySelectorAll('.contact-form-open').forEach(button => button.addEven
 const advertisingArea = document.getElementById('advertising');
 if (advertisingArea) {
   const adHeading=advertisingArea.querySelector('.section-heading h2');
-  if(adHeading){adHeading.dataset.ko='함께하는 지역 파트너';adHeading.dataset.en='Community Partners';adHeading.textContent=currentLanguage==='en'?adHeading.dataset.en:adHeading.dataset.ko;}
+  if(adHeading){adHeading.dataset.ko='비즈니스 스포트라이트';adHeading.dataset.en='Business Spotlight';adHeading.textContent=currentLanguage==='en'?adHeading.dataset.en:adHeading.dataset.ko;}
   const adGrid=advertisingArea.querySelector('.ad-grid');
   if(adGrid){
     adGrid.innerHTML=`<button type="button" data-ad-room="premium"><span>AD 01</span><b data-ko="프리미엄 광고" data-en="Premium Advertising">프리미엄 광고</b><small data-ko="업체 둘러보기 →" data-en="View businesses →">업체 둘러보기 →</small></button><button type="button" data-ad-room="community"><span>PARTNERS</span><b data-ko="협력 업체" data-en="Community Partners">협력 업체</b><small data-ko="협력 업체 둘러보기 →" data-en="View partners →">협력 업체 둘러보기 →</small></button><button type="button" data-ad-room="culture"><span>AD 03</span><b data-ko="문화·교육 제휴" data-en="Culture & Education">문화·교육 제휴</b><small data-ko="제휴 업체 둘러보기 →" data-en="View partners →">제휴 업체 둘러보기 →</small></button>`;
@@ -1351,49 +1351,40 @@ const adRooms={
   ]},
   culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',label:'CULTURE & EDUCATION PARTNER',slots:4,items:[]}
 };
-const advertisingCarouselItems=Object.values(adRooms).flatMap(room=>room.items.map(item=>({...item,roomLabelKo:room.labelKo,roomLabelEn:room.labelEn})));
-advertisingCarouselItems.forEach(item=>{if(item.image){const image=new Image();image.src=item.image;}});
-let advertisingCarouselIndex=0;
-let advertisingCarouselTimer;
-let advertisingCarouselTransition;
-function renderAdvertisingCarousel(){
-  const track=document.querySelector('.ad-carousel-track');
-  const dots=document.querySelector('.ad-carousel-dots');
-  if(!track||!dots||!advertisingCarouselItems.length)return;
-  const item=advertisingCarouselItems[advertisingCarouselIndex];
-  const english=currentLanguage==='en';
-  const name=english?(item.displayNameEn||item.name):(item.displayNameKo||item.name);
-  const summary=english?(item.summaryEn||item.copyEn||item.copy):(item.summaryKo||item.copy);
-  const contact=english?(item.contactEn||''):(item.contactKo||'');
-  const target=item.brokerUrl||item.url||item.chatUrl||'#contact';
-  const logo=item.logoVariant==='highline'?`<div class="ad-highline-logo"><img src="${item.image}" alt="HL"><small>HIGH LINE RESIDENTIAL</small></div>`:`<img src="${item.image}" alt="${name} logo">`;
-  const roomLabel=english?item.roomLabelEn:item.roomLabelKo;
-  const cardMarkup=`<article class="ad-carousel-card"><div class="ad-carousel-logo">${logo}</div><div class="ad-carousel-copy"><span>${roomLabel}</span><h3>${name}</h3><p class="ad-carousel-summary">${summary}</p><p class="ad-carousel-contact">${contact}</p><a href="${target}" ${target.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}>${english?'View details':'자세히 보기'} →</a></div></article>`;
-  const currentCard=track.querySelector('.ad-carousel-card:last-child');
-  if(!currentCard){
-    track.innerHTML=cardMarkup;
+const businessRegions = [
+  {id:'all',labelKo:'전체',labelEn:'All'},
+  {id:'ny',labelKo:'NEW YORK',labelEn:'NEW YORK'},
+  {id:'tx',labelKo:'TEXAS',labelEn:'TEXAS'}
+];
+const businessSpotlights = [
+  {region:'ny',item:adRooms.premium.items[0],categoryKo:'부동산',categoryEn:'Real Estate',locationKo:'New York',locationEn:'New York'},
+  {region:'ny',item:adRooms.premium.items[1],categoryKo:'유기농 식품',categoryEn:'Organic Foods',locationKo:'Flushing, New York',locationEn:'Flushing, New York'},
+  {region:'ny',item:adRooms.premium.items[2],categoryKo:'골프·레저',categoryEn:'Golf & Leisure',locationKo:'Flushing, New York',locationEn:'Flushing, New York'},
+  {region:'ny',item:adRooms.community.items[0],categoryKo:'커뮤니티 서비스',categoryEn:'Community Service',locationKo:'New York',locationEn:'New York'},
+  {region:'ny',item:adRooms.community.items[1],categoryKo:'시니어 케어',categoryEn:'Senior Care',locationKo:'New York',locationEn:'New York'}
+];
+const renderBusinessSpotlights = (selectedRegion='all') => {
+  const filters=advertisingArea?.querySelector('.business-region-filters');
+  const grid=advertisingArea?.querySelector('.business-spotlight-grid');
+  if(!filters||!grid)return;
+  filters.innerHTML=businessRegions.map(region=>`<button type="button" class="${region.id===selectedRegion?'is-active':''}" data-business-region="${region.id}" aria-pressed="${region.id===selectedRegion}"><span data-ko="${region.labelKo}" data-en="${region.labelEn}">${currentLanguage==='en'?region.labelEn:region.labelKo}</span></button>`).join('');
+  const businesses=selectedRegion==='all'?businessSpotlights:businessSpotlights.filter(business=>business.region===selectedRegion);
+  if(!businesses.length){
+    const region=businessRegions.find(candidate=>candidate.id===selectedRegion);
+    grid.innerHTML=`<p class="business-spotlight-empty" data-ko="${region?.labelKo||''} 지역의 비즈니스 정보는 준비 중입니다." data-en="Business listings for ${region?.labelEn||''} are coming soon.">${currentLanguage==='en'?`Business listings for ${region?.labelEn||''} are coming soon.`:`${region?.labelKo||''} 지역의 비즈니스 정보는 준비 중입니다.`}</p>`;
   }else{
-    const holder=document.createElement('div');
-    holder.innerHTML=cardMarkup;
-    const nextCard=holder.firstElementChild;
-    nextCard.classList.add('ad-carousel-enter');
-    track.appendChild(nextCard);
-    window.clearTimeout(advertisingCarouselTransition);
-    window.requestAnimationFrame(()=>window.requestAnimationFrame(()=>{
-      currentCard.classList.add('ad-carousel-leave');
-      nextCard.classList.remove('ad-carousel-enter');
-    }));
-    advertisingCarouselTransition=window.setTimeout(()=>{
-      track.querySelectorAll('.ad-carousel-card').forEach(card=>{if(card!==nextCard)card.remove();});
-    },540);
+    grid.innerHTML=businesses.map(({region,item,categoryKo,categoryEn,locationKo,locationEn})=>{
+      const name=currentLanguage==='en'?(item.displayNameEn||item.name):(item.displayNameKo||item.name);
+      const summary=currentLanguage==='en'?(item.summaryEn||item.copyEn):(item.summaryKo||item.copy);
+      const contact=currentLanguage==='en'?item.contactEn:item.contactKo;
+      const target=item.brokerUrl||item.url||item.chatUrl||'#contact';
+      return `<article class="business-spotlight-card"><span class="business-state-badge">${region.toUpperCase()==='NY'?'NEW YORK':region.toUpperCase()}</span><div class="business-spotlight-logo"><img src="${item.image}" alt="${name} logo"></div><div class="business-spotlight-copy"><p class="business-category" data-ko="${categoryKo}" data-en="${categoryEn}">${currentLanguage==='en'?categoryEn:categoryKo}</p><h3>${name}</h3><p class="business-location"><span aria-hidden="true">⌖</span> <span data-ko="${locationKo}" data-en="${locationEn}">${currentLanguage==='en'?locationEn:locationKo}</span></p><p class="business-summary">${summary}</p><p class="business-contact">${contact||''}</p><a class="business-detail-link" href="${target}" ${target.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}><span data-ko="자세히 보기" data-en="View details">${currentLanguage==='en'?'View details':'자세히 보기'}</span> <b aria-hidden="true">→</b></a></div></article>`;
+    }).join('');
   }
-  dots.innerHTML=advertisingCarouselItems.map((_,index)=>`<button type="button" class="${index===advertisingCarouselIndex?'active':''}" data-ad-carousel-index="${index}" aria-label="${index+1}번 업체"></button>`).join('');
-  dots.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{advertisingCarouselIndex=Number(button.dataset.adCarouselIndex);renderAdvertisingCarousel();restartAdvertisingCarousel();}));
-}
-function restartAdvertisingCarousel(){window.clearInterval(advertisingCarouselTimer);advertisingCarouselTimer=window.setInterval(()=>{advertisingCarouselIndex=(advertisingCarouselIndex+1)%advertisingCarouselItems.length;renderAdvertisingCarousel();},2800);}
-document.querySelector('.ad-carousel-prev')?.addEventListener('click',()=>{advertisingCarouselIndex=(advertisingCarouselIndex-1+advertisingCarouselItems.length)%advertisingCarouselItems.length;renderAdvertisingCarousel();restartAdvertisingCarousel();});
-document.querySelector('.ad-carousel-next')?.addEventListener('click',()=>{advertisingCarouselIndex=(advertisingCarouselIndex+1)%advertisingCarouselItems.length;renderAdvertisingCarousel();restartAdvertisingCarousel();});
-renderAdvertisingCarousel();restartAdvertisingCarousel();
+  filters.querySelectorAll('[data-business-region]').forEach(button=>button.addEventListener('click',()=>renderBusinessSpotlights(button.dataset.businessRegion)));
+  setLanguage(currentLanguage);
+};
+renderBusinessSpotlights();
 
 const hole19Advertiser=adRooms.premium.items.find(item=>item.name==='HOLE19 Golf Lounge');
 if(hole19Advertiser){
