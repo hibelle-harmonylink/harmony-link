@@ -1364,9 +1364,9 @@ const dmsCareBusiness = {
 const businessSpotlights = [
   {region:'ny',item:{...adRooms.premium.items[0],summaryKo:'뉴욕 부동산 상담과 계약 지원',summaryEn:'New York real estate guidance'},categoryKo:'부동산',categoryEn:'Real Estate',locationKo:'Manhattan, New York',locationEn:'Manhattan, New York',flyers:['assets/ads/highline-residential-ko.png']},
   {region:'ny',item:{...adRooms.premium.items[1],summaryKo:'유기농 건강식품과 한국 전통 식품',summaryEn:'Organic health foods and Korean specialties'},categoryKo:'유기농 식품',categoryEn:'Organic Foods',locationKo:'Flushing, New York',locationEn:'Flushing, New York',flyers:['assets/ads/organic-one/family-products.png','assets/ads/organic-one/traditional-foods.png'],snsUrl:'https://www.instagram.com/organicone_/'},
-  {region:'ny',item:{...adRooms.premium.items[2],summaryKo:'골프 레슨과 실전 교육',summaryEn:'Golf lessons and practical training'},categoryKo:'골프·레저',categoryEn:'Golf & Leisure',locationKo:'Flushing, New York',locationEn:'Flushing, New York',flyers:['assets/ads/hole19/open-banner.png','assets/ads/hole19/promotion.png','assets/ads/hole19/features.png'],snsUrl:'https://www.instagram.com/hole19_golflounge/'},
+  {region:'ny',item:{...adRooms.premium.items[2],summaryKo:'골프 레슨과 실전 교육',summaryEn:'Golf lessons and practical training'},categoryKo:'골프·레저',categoryEn:'Golf & Leisure',locationKo:'Flushing, New York',locationEn:'Flushing, New York',address:'154-05 Northern Blvd, 2F, Flushing, NY 11354',flyers:['assets/ads/hole19/open-banner.png','assets/ads/hole19/promotion.png','assets/ads/hole19/features.png'],snsUrl:'https://www.instagram.com/hole19_golflounge/'},
   {region:'ny',item:{...adRooms.community.items[0],summaryKo:'아시안 커뮤니티와 사법기관 협력 지원',summaryEn:'Asian community and law-enforcement collaboration'},categoryKo:'커뮤니티 서비스',categoryEn:'Community Service',locationKo:'Flushing, New York',locationEn:'Flushing, New York',flyers:['assets/partners/aaleac-identity.png']},
-  {region:'ny',item:{...adRooms.community.items[1],summaryKo:'시니어를 위한 데이케어 서비스',summaryEn:'Daycare services for seniors'},categoryKo:'시니어 케어',categoryEn:'Senior Care',locationKo:'Flushing, New York',locationEn:'Flushing, New York',flyers:['assets/partners/jangsu-daycare-banner.png']},
+  {region:'ny',item:{...adRooms.community.items[1],url:'',summaryKo:'시니어를 위한 데이케어 서비스',summaryEn:'Daycare services for seniors'},categoryKo:'시니어 케어',categoryEn:'Senior Care',locationKo:'Flushing, New York',locationEn:'Flushing, New York',flyers:['assets/partners/jangsu-daycare-banner.png']},
   {region:'tx',item:dmsCareBusiness,categoryKo:'케어 전문 교육센터',categoryEn:'Care Training Center',locationKo:'Texas',locationEn:'Texas',flyers:['assets/images/dms-care-flyer-en.png']}
 ];
 const businessFlyerModal=document.createElement('div');
@@ -1376,6 +1376,7 @@ document.body.appendChild(businessFlyerModal);
 let businessFlyerReturnFocus=null;
 const closeBusinessFlyer=()=>{if(businessFlyerModal.hidden)return;businessFlyerModal.hidden=true;document.body.classList.remove('modal-open');businessFlyerReturnFocus?.focus();};
 const openBusinessFlyer=(business,trigger)=>{
+  closeMessagePanel?.();
   const {item,flyers=[]}=business;const name=currentLanguage==='en'?(item.displayNameEn||item.name):(item.displayNameKo||item.name);
   const website=item.brokerUrl||item.url||'';const sns=business.snsUrl||item.instagramUrl||'';
   businessFlyerReturnFocus=trigger;
@@ -1388,6 +1389,13 @@ const openBusinessFlyer=(business,trigger)=>{
 };
 businessFlyerModal.querySelectorAll('[data-business-flyer-close]').forEach(control=>control.addEventListener('click',closeBusinessFlyer));
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!businessFlyerModal.hidden)closeBusinessFlyer();});
+const messageWidget=document.createElement('aside');messageWidget.className='floating-message';
+messageWidget.innerHTML=`<section class="floating-message-panel" hidden aria-labelledby="floatingMessageTitle"><button type="button" class="floating-message-close" aria-label="닫기">×</button><p>HARMONY LINK</p><h2 id="floatingMessageTitle">무엇이든 물어보세요</h2><span>궁금한 내용을 남겨주세요.</span><form><textarea name="message" required placeholder="메시지를 입력하세요."></textarea><button type="submit">보내기</button><small role="status"></small></form></section><button type="button" class="floating-message-trigger" aria-label="메시지 보내기"><span aria-hidden="true">💬</span> 메시지 보내기</button>`;document.body.appendChild(messageWidget);
+const messagePanel=messageWidget.querySelector('.floating-message-panel'),messageTrigger=messageWidget.querySelector('.floating-message-trigger');
+const resetMessagePanel=()=>{const form=messagePanel.querySelector('form');form.reset();form.querySelector('small').textContent='';const button=form.querySelector('button');button.disabled=false;button.textContent='보내기';};
+const closeMessagePanel=()=>{messagePanel.hidden=true;resetMessagePanel();messageTrigger.focus();};messageTrigger.addEventListener('click',()=>{if(!messagePanel.hidden){closeMessagePanel();return;}resetMessagePanel();messagePanel.hidden=false;messagePanel.querySelector('textarea').focus();});messageWidget.querySelector('.floating-message-close').addEventListener('click',closeMessagePanel);
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!messagePanel.hidden)closeMessagePanel();});
+messagePanel.querySelector('form').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget,status=form.querySelector('small'),button=form.querySelector('button'),message=form.message.value.trim();if(button.disabled)return;if(!message){status.textContent='메시지를 입력해주세요.';form.message.focus();return;}button.disabled=true;button.textContent='보내는 중...';status.textContent='';try{const data=new FormData();data.set('문의 유형','홈페이지 메시지');data.set('문의사항',message);data.set('_subject','Harmony Link 홈페이지 메시지');data.set('_captcha','false');const response=await fetch('https://formsubmit.co/ajax/hibelle@hibelleconsulting.com',{method:'POST',headers:{Accept:'application/json'},body:data});if(!response.ok)throw new Error('send failed');status.textContent='메시지가 전송되었습니다.';form.reset();}catch{status.textContent='전송하지 못했습니다. 다시 시도해주세요.';}finally{button.disabled=false;button.textContent='보내기';}});
 const renderBusinessSpotlights = (selectedRegion='all') => {
   const filters=advertisingArea?.querySelector('.business-region-filters');
   const grid=advertisingArea?.querySelector('.business-spotlight-grid');
@@ -1398,13 +1406,15 @@ const renderBusinessSpotlights = (selectedRegion='all') => {
     const region=businessRegions.find(candidate=>candidate.id===selectedRegion);
     grid.innerHTML=`<p class="business-spotlight-empty" data-ko="${region?.labelKo||''} 지역의 비즈니스 정보는 준비 중입니다." data-en="Business listings for ${region?.labelEn||''} are coming soon.">${currentLanguage==='en'?`Business listings for ${region?.labelEn||''} are coming soon.`:`${region?.labelKo||''} 지역의 비즈니스 정보는 준비 중입니다.`}</p>`;
   }else{
-    grid.innerHTML=businesses.map((business,index)=>{const {region,item,categoryKo,categoryEn,locationKo,locationEn}=business;
+    grid.innerHTML=businesses.map((business,index)=>{const {region,item,categoryKo,categoryEn,locationKo,locationEn,address}=business;
       const name=currentLanguage==='en'?(item.displayNameEn||item.name):(item.displayNameKo||item.name);
       const summary=currentLanguage==='en'?(item.summaryEn||item.copyEn):(item.summaryKo||item.copy);
       const contact=currentLanguage==='en'?item.contactEn:item.contactKo;
       const regionLabel=businessRegions.find(candidate=>candidate.id===region)?.labelKo||region.toUpperCase();
       const contactMarkup=item.phoneHref?`<a class="business-contact business-phone-link" href="${item.phoneHref}">${contact||''}</a>`:`<p class="business-contact">${contact||''}</p>`;
-      return `<article class="business-spotlight-card" tabindex="0" role="button" data-business-spotlight-index="${index}" aria-label="${name} ${currentLanguage==='en'?'advertising details':'광고 상세 보기'}"><span class="business-state-badge">${regionLabel}</span><div class="business-spotlight-logo"><img src="${item.image}" alt="${name} logo"></div><div class="business-spotlight-copy"><p class="business-category" data-ko="${categoryKo}" data-en="${categoryEn}">${currentLanguage==='en'?categoryEn:categoryKo}</p><h3>${name}</h3><p class="business-location"><span aria-hidden="true">⌖</span> <span data-ko="${locationKo}" data-en="${locationEn}">${currentLanguage==='en'?locationEn:locationKo}</span></p><p class="business-summary">${summary}</p>${contactMarkup}<div class="business-detail-actions"><button type="button" class="business-detail-link" data-business-flyer-open><span data-ko="자세히 보기" data-en="View details">${currentLanguage==='en'?'View details':'자세히 보기'}</span> <b aria-hidden="true">→</b></button></div></div></article>`;
+      const displayLocation=currentLanguage==='en'?locationEn:locationKo;
+      const addressMarkup=address?`<a class="business-address" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}" target="_blank" rel="noopener noreferrer">${address}</a>`:`<p class="business-address" data-ko="${locationKo}" data-en="${locationEn}">${displayLocation}</p>`;
+      return `<article class="business-spotlight-card" tabindex="0" role="button" data-business-spotlight-index="${index}" aria-label="${name} ${currentLanguage==='en'?'advertising details':'광고 상세 보기'}"><span class="business-state-badge">${regionLabel}</span><div class="business-spotlight-logo"><img src="${item.image}" alt="${name} logo"></div><div class="business-spotlight-copy"><p class="business-category" data-ko="${categoryKo}" data-en="${categoryEn}">${currentLanguage==='en'?categoryEn:categoryKo}</p><h3>${name}</h3><p class="business-summary">${summary}</p>${contactMarkup}${addressMarkup}<div class="business-detail-actions"><button type="button" class="business-detail-link" data-business-flyer-open><span data-ko="자세히 보기" data-en="View details">${currentLanguage==='en'?'View details':'자세히 보기'}</span> <b aria-hidden="true">→</b></button></div></div></article>`;
     }).join('');
     grid.querySelectorAll('.business-spotlight-card').forEach(card=>{
       const business=businesses[Number(card.dataset.businessSpotlightIndex)];
