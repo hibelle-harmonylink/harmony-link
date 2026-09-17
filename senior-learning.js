@@ -36,6 +36,11 @@
       { id:'privacy', title:'개인정보 지키기', description:'비밀번호와 개인정보를 안전하게 관리합니다.', status:'preparing', accessLevel:'free' }
     ]}
   ];
+  // Keep mini apps data-driven so new member tools can be added without
+  // changing the learning-home structure.
+  const miniApps = [
+    { id:'easy-hanja', icon:'漢', title:'쉬운 한자 찾기', description:'한글이나 한자를 입력하면 뜻과 읽는 법을 쉽게 찾아드려요.', href:'easy-hanja.html' }
+  ];
 
   const app = document.getElementById('seniorLearningApp');
   const gate = document.getElementById('seniorLearningGate');
@@ -70,7 +75,7 @@
     breadcrumb.innerHTML = parts.join('');
   };
   const renderCategories = () => {
-    content.innerHTML = `<section class="senior-category-view"><h2>무엇을 다시 배우고 싶으세요?</h2><p>원하는 분야를 누르면 교재 목록을 볼 수 있어요.</p><div class="senior-category-grid">${learningData.map(category => `<button class="senior-category-card" type="button" data-senior-category="${category.id}"><span aria-hidden="true">${category.icon}</span><strong>${category.title}</strong><small>${category.description}</small></button>`).join('')}</div></section>`;
+    content.innerHTML = `<section class="senior-category-view"><h2>무엇을 다시 배우고 싶으세요?</h2><p>원하는 분야를 누르면 교재 목록을 볼 수 있어요.</p><div class="senior-category-grid">${learningData.map(category => `<button class="senior-category-card" type="button" data-senior-category="${category.id}"><span aria-hidden="true">${category.icon}</span><strong>${category.title}</strong><small>${category.description}</small></button>`).join('')}</div></section><section class="senior-mini-apps" aria-labelledby="seniorMiniAppsTitle"><div class="senior-mini-apps-heading"><h2 id="seniorMiniAppsTitle">미니앱</h2><p>배운 내용을 바로 활용할 수 있는 쉬운 디지털 도구</p></div><div class="senior-mini-app-grid">${miniApps.map(app => `<article class="senior-mini-app-card"><span class="senior-mini-app-icon" aria-hidden="true">${app.icon}</span><div><h3>${app.title}</h3><p>${app.description}</p></div><a class="senior-primary-button" href="${app.href}">사용하기</a></article>`).join('')}</div></section>`;
   };
   const renderLessons = category => {
     content.innerHTML = `<section class="senior-lesson-view"><div class="senior-view-heading"><span aria-hidden="true">${category.icon}</span><div><h2>${category.title}</h2><p>${category.description}</p></div></div><div class="senior-lesson-list">${category.lessons.map(lesson => `<article class="senior-lesson-card ${lesson.status === 'ready' ? 'is-ready' : 'is-preparing'}"><div><h3>${lesson.title}</h3><p>${lesson.description}</p></div>${lesson.status === 'ready' ? `<button class="senior-primary-button" type="button" data-senior-lesson="${lesson.id}">교재 보기</button>` : '<span class="senior-preparing">자료 준비 중</span>'}</article>`).join('')}</div></section>`;
