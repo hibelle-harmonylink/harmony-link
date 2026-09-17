@@ -49,14 +49,15 @@ test('easy hanja finder searches Hangul and Hanja locally, then supports large d
   assert.match(script, /data-hanja-copy/);
 });
 
-test('homepage provides a mini apps category entry point instead of a standalone easy hanja card', () => {
+test('homepage keeps cognition as the original category and keeps mini apps outside primary navigation', () => {
   const homepage = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const categoryStart = homepage.indexOf('id="program-categories"');
   const categoryMarkup = homepage.slice(categoryStart, homepage.indexOf('</section>', categoryStart));
-  assert.match(categoryMarkup, /취미<\/strong><\/button>\s*<a class="program-category-card is-linked reveal" href="mini-apps\.html"/s);
-  assert.match(categoryMarkup, /data-ko="미니 앱"/);
-  assert.doesNotMatch(categoryMarkup, /배움에 도움이 되는 간단한 도구를 사용해보세요/);
-  assert.doesNotMatch(categoryMarkup, /mini-apps-category-card/);
+  const primaryNav = homepage.match(/<nav class="primary-nav"[\s\S]*?<\/nav>/)?.[0] || '';
+  assert.match(categoryMarkup, /data-program-coming-soon[\s\S]*?data-ko="인지" data-en="Cognitive">인지<\/strong>/);
+  assert.doesNotMatch(categoryMarkup, /href="mini-apps\.html"/);
+  assert.doesNotMatch(primaryNav, /미니\s*앱|Mini Apps/);
+  assert.doesNotMatch(primaryNav, />인지</);
   assert.doesNotMatch(homepage, /easy-hanja-entry/);
   assert.match(homepage, /auth\.js\?v=20260916-15/);
 });

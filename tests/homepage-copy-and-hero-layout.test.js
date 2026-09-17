@@ -19,8 +19,8 @@ test('community home control keeps its destination and uses the homepage label',
 });
 
 test('laptop hero uses non-overlapping copy and image tracks with matching cache keys', () => {
-  assert.equal(version.version, '20260916-27');
-  assert.match(homepage, /const pageVersion = '20260916-27'/);
+  assert.equal(version.version, '20260916-28');
+  assert.match(homepage, /const pageVersion = '20260916-28'/);
   assert.match(homepage, /homepage-ui\.css\?v=20260916-18/);
   assert.match(homepage, /script\.js\?v=20260916-25/);
   assert.match(homepageCss, /@media\(max-width:1200px\) and \(min-width:901px\)/);

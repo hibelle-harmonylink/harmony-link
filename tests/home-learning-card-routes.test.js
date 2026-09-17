@@ -19,7 +19,7 @@ test('homepage category cards route only to prepared detail pages', () => {
 });
 
 test('unprepared category cards open an accessible coming-soon modal without navigation', () => {
-  assert.equal((html.match(/data-program-coming-soon/g) || []).length, 8);
+  assert.equal((html.match(/data-program-coming-soon/g) || []).length, 9);
   assert.match(script, /programComingSoonModal\.className = 'program-coming-soon-modal'/);
   assert.match(script, /data-ko="준비중입니다"/);
   assert.match(script, /더 좋은 프로그램으로 곧 찾아뵙겠습니다\./);

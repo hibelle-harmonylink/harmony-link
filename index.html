@@ -13,7 +13,7 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <script>
     (() => {
-      const pageVersion = '20260916-27';
+      const pageVersion = '20260916-28';
       fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
         .then(response => response.ok ? response.json() : null)
         .then(release => {
@@ -172,7 +172,7 @@
           <button class="program-category-card is-coming-soon reveal" type="button" data-program-coming-soon><span class="program-category-icon" aria-hidden="true">🎭</span><strong data-ko="문화" data-en="Culture">문화</strong></button>
           <button class="program-category-card is-coming-soon reveal" type="button" data-program-coming-soon><span class="program-category-icon" aria-hidden="true">💼</span><strong data-ko="직업" data-en="Career">직업</strong></button>
           <button class="program-category-card is-coming-soon reveal" type="button" data-program-coming-soon><span class="program-category-icon" aria-hidden="true">🧩</span><strong data-ko="취미" data-en="Hobby">취미</strong></button>
-          <a class="program-category-card is-linked reveal" href="mini-apps.html"><span class="program-category-icon" aria-hidden="true">📱</span><strong data-ko="미니 앱" data-en="Mini Apps">미니 앱</strong></a>
+          <button class="program-category-card is-coming-soon reveal" type="button" data-program-coming-soon><span class="program-category-icon" aria-hidden="true">🧠</span><strong data-ko="인지" data-en="Cognitive">인지</strong></button>
         </div>
       </div>
     </section>

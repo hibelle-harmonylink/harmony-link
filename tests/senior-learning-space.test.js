@@ -28,6 +28,22 @@ test('senior learning space defines six data-driven learning categories', () => 
   assert.match(script, /assets\/digital-program\/slide-\$\{index \+ 1\}\.png/);
 });
 
+test('senior learning keeps the original cognition card and provides an extensible mini-app area', () => {
+  assert.match(home, /class="program-category-card is-coming-soon reveal" type="button" data-program-coming-soon/);
+  assert.match(home, /<strong data-ko="인지" data-en="Cognitive">인지<\/strong>/);
+  assert.doesNotMatch(home.match(/<nav class="primary-nav"[\s\S]*?<\/nav>/)?.[0] || '', />미니\s*앱</);
+  assert.match(script, /const miniApps = \[/);
+  assert.match(script, /title:'쉬운 한자 찾기'/);
+  assert.match(script, /href:'easy-hanja\.html'/);
+  assert.match(script, /id="seniorMiniAppsTitle">미니앱</);
+  assert.match(script, /배운 내용을 바로 활용할 수 있는 쉬운 디지털 도구/);
+  assert.match(script, />사용하기</);
+  assert.match(css, /\.senior-mini-app-grid \{ display:grid; grid-template-columns:repeat\(2,minmax\(0,1fr\)\); gap:18px; \}/);
+  assert.match(css, /@media \(max-width:620px\)[\s\S]*?\.senior-mini-app-grid \{ grid-template-columns:1fr;/);
+  assert.match(page, /senior-learning\.css\?v=20260916-21/);
+  assert.match(page, /senior-learning\.js\?v=20260916-21/);
+});
+
 test('senior learning viewer supports navigation, fullscreen, progress, and keyboard controls', () => {
   assert.match(script, /data-senior-previous/);
   assert.match(script, /data-senior-next/);
