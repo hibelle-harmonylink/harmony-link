@@ -42,7 +42,7 @@
       icon:'📱',
       image:'assets/senior-learning/material-smartphone.svg',
       title:'스마트폰',
-      description:'스마트폰 기본 사용법을 쉽게 배워보세요.',
+      description:'스마트폰 사용법을 쉽게 배워보세요.',
       lessons:[
         ...sourceLearningData.find(category => category.id === 'smartphone').lessons,
         ...sourceLearningData.find(category => category.id === 'settings').lessons,
@@ -55,7 +55,7 @@
       icon:'💻',
       image:'assets/senior-learning/material-computer.svg',
       title:'컴퓨터',
-      description:'컴퓨터 기본 사용법을 쉽게 배워보세요.',
+      description:'컴퓨터 사용법을 쉽게 배워보세요.',
       lessons:[...sourceLearningData.find(category => category.id === 'digital-hobby').lessons]
     },
     {
@@ -63,7 +63,7 @@
       icon:'✨',
       image:'assets/senior-learning/material-ai.svg',
       title:'AI 도구',
-      description:'생활에 유용한 AI 도구를 쉽게 배워보세요.',
+      description:'유용한 AI 도구를 쉽게 배워보세요.',
       lessons:[...sourceLearningData.find(category => category.id === 'ai').lessons]
     }
   ];
