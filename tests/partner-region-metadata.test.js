@@ -53,10 +53,15 @@ test('current admin metadata RPC remains untouched while business spotlight stay
   assert.match(homepageScript, /Business listings for/);
   assert.match(homepageScript, /const dmsCareBusiness/);
   assert.match(homepageScript, /name:'DMS Care Training Center'/);
-  assert.match(homepageScript, /image:'assets\/images\/dms-care-logo\.jpg'/);
+  assert.match(homepageScript, /image:'assets\/images\/dms-care-logo\.webp'/);
   assert.match(homepageScript, /brokerUrl:'https:\/\/dmscare\.org\/ko'/);
-  assert.match(homepageScript, /instagramUrl:'https:\/\/www\.instagram\.com\/dmscarekorea'/);
+  assert.doesNotMatch(homepageScript, /instagramUrl:'https:\/\/www\.instagram\.com\/dmscarekorea'/);
   assert.match(homepageScript, /phoneHref:'tel:\+14696056035'/);
   assert.match(homepageScript, /\{region:'tx',item:dmsCareBusiness/);
+  assert.match(homepageScript, /summaryKo:'전문 케어 인력 양성을 위한 교육·트레이닝 센터'/);
+  assert.match(homepageScript, /locationKo:'Manhattan, New York'/);
+  assert.match(homepageScript, /locationKo:'Flushing, New York'/);
   assert.match(homepageScript, /const adRooms=/);
+  const homepageStyles = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
+  assert.match(homepageStyles, /\.business-summary\{height:21px;overflow:hidden;[\s\S]*?white-space:nowrap;text-overflow:ellipsis\}/);
 });
