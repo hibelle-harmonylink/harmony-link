@@ -1358,17 +1358,37 @@ const businessRegions = [
 ];
 const dmsCareBusiness = {
   name:'DMS Care Training Center',displayNameKo:'DMS Care Training Center',displayNameEn:'DMS Care Training Center',
-  summaryKo:'전문 케어 인력 양성을 위한 교육·트레이닝 센터',summaryEn:'Professional care workforce education and training center',contactKo:'전화 469-605-6035',contactEn:'Phone 469-605-6035',
+  summaryKo:'전문 케어 인력 교육',summaryEn:'Professional care workforce education',contactKo:'전화 469-605-6035',contactEn:'Phone 469-605-6035',
   phoneHref:'tel:+14696056035',image:'assets/images/dms-care-logo.webp',brokerUrl:'https://dmscare.org/ko'
 };
 const businessSpotlights = [
-  {region:'ny',item:adRooms.premium.items[0],categoryKo:'부동산',categoryEn:'Real Estate',locationKo:'Manhattan, New York',locationEn:'Manhattan, New York'},
-  {region:'ny',item:adRooms.premium.items[1],categoryKo:'유기농 식품',categoryEn:'Organic Foods',locationKo:'Flushing, New York',locationEn:'Flushing, New York'},
-  {region:'ny',item:adRooms.premium.items[2],categoryKo:'골프·레저',categoryEn:'Golf & Leisure',locationKo:'Flushing, New York',locationEn:'Flushing, New York'},
-  {region:'ny',item:adRooms.community.items[0],categoryKo:'커뮤니티 서비스',categoryEn:'Community Service',locationKo:'Flushing, New York',locationEn:'Flushing, New York'},
-  {region:'ny',item:adRooms.community.items[1],categoryKo:'시니어 케어',categoryEn:'Senior Care',locationKo:'Flushing, New York',locationEn:'Flushing, New York'},
-  {region:'tx',item:dmsCareBusiness,categoryKo:'Care Training Center',categoryEn:'Care Training Center',locationKo:'Texas',locationEn:'Texas'}
+  {region:'ny',item:{...adRooms.premium.items[0],summaryKo:'뉴욕 부동산 상담과 계약 지원',summaryEn:'New York real estate guidance'},categoryKo:'부동산',categoryEn:'Real Estate',locationKo:'Manhattan, New York',locationEn:'Manhattan, New York',flyers:['assets/ads/highline-residential-ko.png']},
+  {region:'ny',item:{...adRooms.premium.items[1],summaryKo:'유기농 건강식품과 한국 전통 식품',summaryEn:'Organic health foods and Korean specialties'},categoryKo:'유기농 식품',categoryEn:'Organic Foods',locationKo:'Flushing, New York',locationEn:'Flushing, New York',flyers:['assets/ads/organic-one/family-products.png','assets/ads/organic-one/traditional-foods.png'],flyerLabels:['제품 안내','전통식품'],snsUrl:'https://www.instagram.com/organicone_/'},
+  {region:'ny',item:{...adRooms.premium.items[2],summaryKo:'골프 레슨과 실전 교육',summaryEn:'Golf lessons and practical training'},categoryKo:'골프·레저',categoryEn:'Golf & Leisure',locationKo:'Flushing, New York',locationEn:'Flushing, New York',flyers:['assets/ads/hole19/open-banner.png','assets/ads/hole19/promotion.png','assets/ads/hole19/features.png'],flyerLabels:['오픈 안내','프로모션','시설 안내'],snsUrl:'https://www.instagram.com/hole19_golflounge/'},
+  {region:'ny',item:{...adRooms.community.items[0],summaryKo:'아시안 커뮤니티와 사법기관 협력 지원',summaryEn:'Asian community and law-enforcement collaboration'},categoryKo:'커뮤니티 서비스',categoryEn:'Community Service',locationKo:'Flushing, New York',locationEn:'Flushing, New York',flyers:['assets/partners/aaleac-identity.png']},
+  {region:'ny',item:{...adRooms.community.items[1],summaryKo:'시니어를 위한 데이케어 서비스',summaryEn:'Daycare services for seniors'},categoryKo:'시니어 케어',categoryEn:'Senior Care',locationKo:'Flushing, New York',locationEn:'Flushing, New York',flyers:['assets/partners/jangsu-daycare-banner.png']},
+  {region:'tx',item:dmsCareBusiness,categoryKo:'케어 전문 교육센터',categoryEn:'Care Training Center',locationKo:'Texas',locationEn:'Texas',flyers:['assets/images/dms-care-flyer-ko.png','assets/images/dms-care-flyer-en.png'],flyerLabels:['한글 전단지','English Flyer']}
 ];
+const businessFlyerModal=document.createElement('div');
+businessFlyerModal.className='business-flyer-modal';businessFlyerModal.hidden=true;
+businessFlyerModal.innerHTML=`<div class="business-flyer-backdrop" data-business-flyer-close></div><section class="business-flyer-panel" role="dialog" aria-modal="true" aria-labelledby="businessFlyerTitle"><header class="business-flyer-head"><div><p>BUSINESS SPOTLIGHT</p><h2 id="businessFlyerTitle"></h2></div><button type="button" class="business-flyer-close" data-business-flyer-close aria-label="닫기">×</button></header><div class="business-flyer-scroll"><div class="business-flyer-switcher" role="tablist" aria-label="전단지 선택"></div><div class="business-flyer-images"></div></div><footer class="business-flyer-actions"><div class="business-flyer-external-links"></div><button type="button" class="business-flyer-dismiss" data-business-flyer-close data-ko="닫기" data-en="Close">닫기</button></footer></section>`;
+document.body.appendChild(businessFlyerModal);
+let businessFlyerReturnFocus=null;
+const closeBusinessFlyer=()=>{if(businessFlyerModal.hidden)return;businessFlyerModal.hidden=true;document.body.classList.remove('modal-open');businessFlyerReturnFocus?.focus();};
+const openBusinessFlyer=(business,trigger)=>{
+  const {item,flyers=[],flyerLabels=[]}=business;const name=currentLanguage==='en'?(item.displayNameEn||item.name):(item.displayNameKo||item.name);
+  const website=item.brokerUrl||item.url||'';const sns=business.snsUrl||item.instagramUrl||'';
+  businessFlyerReturnFocus=trigger;
+  const switcher=businessFlyerModal.querySelector('.business-flyer-switcher');const images=businessFlyerModal.querySelector('.business-flyer-images');
+  const showFlyer=index=>{images.innerHTML=flyers.length?`<img src="${flyers[index]}" alt="${name} ${currentLanguage==='en'?'advertising flyer':'광고 전단지'}${flyers.length>1?` ${index+1}`:''}">`:`<p class="business-flyer-pending" data-ko="전단지 이미지 준비 중" data-en="Flyer image coming soon">${currentLanguage==='en'?'Flyer image coming soon':'전단지 이미지 준비 중'}</p>`;switcher.querySelectorAll('[data-business-flyer-index]').forEach(button=>{const selected=Number(button.dataset.businessFlyerIndex)===index;button.classList.toggle('is-active',selected);button.setAttribute('aria-selected',String(selected));});};
+  businessFlyerModal.querySelector('#businessFlyerTitle').textContent=name;
+  switcher.innerHTML=flyers.length>1?flyers.map((flyer,index)=>`<button type="button" role="tab" data-business-flyer-index="${index}" aria-selected="${index===0}">${flyerLabels[index]||`${currentLanguage==='en'?'Flyer':'전단지'} ${index+1}`}</button>`).join(''):'';
+  switcher.hidden=flyers.length<2;switcher.querySelectorAll('[data-business-flyer-index]').forEach(button=>button.addEventListener('click',()=>showFlyer(Number(button.dataset.businessFlyerIndex))));showFlyer(0);
+  businessFlyerModal.querySelector('.business-flyer-external-links').innerHTML=`${website?`<a class="business-flyer-website" href="${website}" target="_blank" rel="noopener noreferrer" data-ko="홈페이지 보기" data-en="Visit website">${currentLanguage==='en'?'Visit website':'홈페이지 보기'}</a>`:''}${sns?`<a class="business-flyer-sns" href="${sns}" target="_blank" rel="noopener noreferrer" data-ko="SNS 보기" data-en="View social media">${currentLanguage==='en'?'View social media':'SNS 보기'}</a>`:''}`;
+  businessFlyerModal.hidden=false;document.body.classList.add('modal-open');setLanguage(currentLanguage);businessFlyerModal.querySelector('.business-flyer-close')?.focus();
+};
+businessFlyerModal.querySelectorAll('[data-business-flyer-close]').forEach(control=>control.addEventListener('click',closeBusinessFlyer));
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!businessFlyerModal.hidden)closeBusinessFlyer();});
 const renderBusinessSpotlights = (selectedRegion='all') => {
   const filters=advertisingArea?.querySelector('.business-region-filters');
   const grid=advertisingArea?.querySelector('.business-spotlight-grid');
@@ -1379,16 +1399,21 @@ const renderBusinessSpotlights = (selectedRegion='all') => {
     const region=businessRegions.find(candidate=>candidate.id===selectedRegion);
     grid.innerHTML=`<p class="business-spotlight-empty" data-ko="${region?.labelKo||''} 지역의 비즈니스 정보는 준비 중입니다." data-en="Business listings for ${region?.labelEn||''} are coming soon.">${currentLanguage==='en'?`Business listings for ${region?.labelEn||''} are coming soon.`:`${region?.labelKo||''} 지역의 비즈니스 정보는 준비 중입니다.`}</p>`;
   }else{
-    grid.innerHTML=businesses.map(({region,item,categoryKo,categoryEn,locationKo,locationEn})=>{
+    grid.innerHTML=businesses.map((business,index)=>{const {region,item,categoryKo,categoryEn,locationKo,locationEn}=business;
       const name=currentLanguage==='en'?(item.displayNameEn||item.name):(item.displayNameKo||item.name);
       const summary=currentLanguage==='en'?(item.summaryEn||item.copyEn):(item.summaryKo||item.copy);
       const contact=currentLanguage==='en'?item.contactEn:item.contactKo;
-      const target=item.brokerUrl||item.url||item.chatUrl||'#contact';
       const regionLabel=businessRegions.find(candidate=>candidate.id===region)?.labelKo||region.toUpperCase();
       const contactMarkup=item.phoneHref?`<a class="business-contact business-phone-link" href="${item.phoneHref}">${contact||''}</a>`:`<p class="business-contact">${contact||''}</p>`;
-      const instagramMarkup=item.instagramUrl?`<a class="business-detail-link business-instagram-link" href="${item.instagramUrl}" target="_blank" rel="noopener noreferrer">Instagram <b aria-hidden="true">→</b></a>`:'';
-      return `<article class="business-spotlight-card"><span class="business-state-badge">${regionLabel}</span><div class="business-spotlight-logo"><img src="${item.image}" alt="${name} logo"></div><div class="business-spotlight-copy"><p class="business-category" data-ko="${categoryKo}" data-en="${categoryEn}">${currentLanguage==='en'?categoryEn:categoryKo}</p><h3>${name}</h3><p class="business-location"><span aria-hidden="true">⌖</span> <span data-ko="${locationKo}" data-en="${locationEn}">${currentLanguage==='en'?locationEn:locationKo}</span></p><p class="business-summary">${summary}</p>${contactMarkup}<div class="business-detail-actions"><a class="business-detail-link" href="${target}" ${target.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}><span data-ko="자세히 보기" data-en="View details">${currentLanguage==='en'?'View details':'자세히 보기'}</span> <b aria-hidden="true">→</b></a>${instagramMarkup}</div></div></article>`;
+      return `<article class="business-spotlight-card" tabindex="0" role="button" data-business-spotlight-index="${index}" aria-label="${name} ${currentLanguage==='en'?'advertising details':'광고 상세 보기'}"><span class="business-state-badge">${regionLabel}</span><div class="business-spotlight-logo"><img src="${item.image}" alt="${name} logo"></div><div class="business-spotlight-copy"><p class="business-category" data-ko="${categoryKo}" data-en="${categoryEn}">${currentLanguage==='en'?categoryEn:categoryKo}</p><h3>${name}</h3><p class="business-location"><span aria-hidden="true">⌖</span> <span data-ko="${locationKo}" data-en="${locationEn}">${currentLanguage==='en'?locationEn:locationKo}</span></p><p class="business-summary">${summary}</p>${contactMarkup}<div class="business-detail-actions"><button type="button" class="business-detail-link" data-business-flyer-open><span data-ko="자세히 보기" data-en="View details">${currentLanguage==='en'?'View details':'자세히 보기'}</span> <b aria-hidden="true">→</b></button></div></div></article>`;
     }).join('');
+    grid.querySelectorAll('.business-spotlight-card').forEach(card=>{
+      const business=businesses[Number(card.dataset.businessSpotlightIndex)];
+      const open=()=>openBusinessFlyer(business,card);
+      card.addEventListener('click',event=>{if(!event.target.closest('a,button'))open();});
+      card.addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&event.target===card){event.preventDefault();open();}});
+      card.querySelector('[data-business-flyer-open]')?.addEventListener('click',open);
+    });
   }
   filters.querySelectorAll('[data-business-region]').forEach(button=>button.addEventListener('click',()=>renderBusinessSpotlights(button.dataset.businessRegion)));
   setLanguage(currentLanguage);
