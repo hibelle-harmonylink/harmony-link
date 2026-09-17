@@ -83,7 +83,8 @@ test('current admin metadata RPC remains untouched while business spotlight stay
     '1933 E Frankford Rd. Suite 165, Carrollton, TX 75007'
   ]) assert.match(homepageScript, new RegExp(`address:'${address.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}'`));
   assert.doesNotMatch(homepageScript, /address:'154-05 Northern Blvd, 2F, Flushing, NY 11354'/);
-  assert.match(homepageScript, /https:\/\/www\.google\.com\/maps\/search\/\?api=1&query=\$\{encodeURIComponent\(address\)\}/);
+  assert.match(homepageScript, /mapQuery:'ORGANIC ONE NY, 154-08 Northern Blvd #1F-4, Flushing, NY 11354'/);
+  assert.match(homepageScript, /https:\/\/www\.google\.com\/maps\/search\/\?api=1&query=\$\{encodeURIComponent\(mapQuery\|\|address\)\}/);
   assert.match(homepageScript, /class="business-address"[\s\S]*?target="_blank" rel="noopener noreferrer"/);
   assert.match(homepageScript, /const displayLocation=currentLanguage==='en'\?locationEn:locationKo/);
   assert.match(homepageScript, /:`<p class="business-address" data-ko="\$\{locationKo\}" data-en="\$\{locationEn\}">\$\{displayLocation\}<\/p>`/);
