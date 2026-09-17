@@ -1292,8 +1292,8 @@ footer .footer-bottom{padding-top:11px!important}
   #events .event-info{padding:20px 20px!important}
 }
 
-/* Past-event cards keep only the Google Maps link -- no 자세히 보기 button
-   (script.js now scopes that button to the upcoming-events grid only). */
+/* Past-event cards keep their existing poster assets available in the flyer
+   modal without adding or changing any event data. */
 #events .past-event-grid .event-detail-button{display:none!important}
 
 /* The poster lightbox (.event-flyer-modal) previously only worked on
@@ -1546,4 +1546,16 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
 @media (prefers-reduced-motion:reduce){
   :is(.value-card,.program-card,.program-category-card,.audience-card,.event-card,.volunteer-program,.business-spotlight-card,#partner-center .partner-tier-guide button){transition:none!important}
   :is(.value-card,.program-card,.program-category-card,.audience-card,.event-card,.volunteer-program,.business-spotlight-card,#partner-center .partner-tier-guide button):hover{transform:none!important}
+}
+
+/* Event cards also carry .reveal. The readable-content override for that
+   animation uses transform:none!important, so event hover needs its own
+   equally scoped, deliberate cascade rule. */
+@media (hover:hover) and (pointer:fine){
+  #events .event-grid>.event-card:not(.event-coming),#events .past-event-grid>.event-card{transition:transform .22s ease,box-shadow .22s ease!important}
+  #events .event-grid>.event-card:not(.event-coming):hover,#events .past-event-grid>.event-card:hover{transform:translateY(-4px)!important;box-shadow:0 14px 30px rgba(21,68,116,.12)}
+}
+@media (prefers-reduced-motion:reduce){
+  #events .event-grid>.event-card:not(.event-coming),#events .past-event-grid>.event-card{transition:none!important}
+  #events .event-grid>.event-card:not(.event-coming):hover,#events .past-event-grid>.event-card:hover{transform:none!important}
 }

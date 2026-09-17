@@ -42,6 +42,31 @@ test('hover feedback is limited to content cards, desktop pointers, and reduced-
   assert.match(styles, /@media \(prefers-reduced-motion:reduce\)[\s\S]*?transform:none!important/);
 });
 
+test('event cards override the reveal transform only for the five visible event-card grids', () => {
+  assert.match(styles, /main>section \.reveal\{opacity:1!important;transform:none!important\}/);
+  assert.match(styles, /#events \.event-grid>\.event-card:not\(\.event-coming\),#events \.past-event-grid>\.event-card\{transition:transform \.22s ease,box-shadow \.22s ease!important\}/);
+  assert.match(styles, /#events \.event-grid>\.event-card:not\(\.event-coming\):hover,#events \.past-event-grid>\.event-card:hover\{transform:translateY\(-4px\)!important/);
+  assert.match(styles, /@media \(prefers-reduced-motion:reduce\)\{[\s\S]*?#events \.event-grid>\.event-card:not\(\.event-coming\):hover,#events \.past-event-grid>\.event-card:hover\{transform:none!important\}/);
+});
+
+test('past event cards reuse only their existing poster assets in the flyer modal', () => {
+  assert.match(homepageScript, /pastGrid\.querySelectorAll\('\.event-card'\)/);
+  assert.match(homepageScript, /button\.className = 'btn event-flyer-button'/);
+  assert.match(homepageScript, /button\.href = poster\.href/);
+  assert.match(homepageScript, /data-ko="전단지 보기" data-en="View Flyer"/);
+  assert.match(homepageScript, /#events \.event-poster, #events \.event-flyer-button/);
+  assert.match(homepage, /assets\/events\/one-day-class\.jpg/);
+  assert.match(homepage, /assets\/events\/finance-ai-seminar\.jpg/);
+});
+
+test('DMS keeps its existing business data while using the requested Korean summary', () => {
+  assert.match(homepageScript, /summaryKo:'미국 의료 직업 학교'/);
+  assert.match(homepageScript, /categoryKo:'케어 전문 교육센터'/);
+  assert.match(homepageScript, /1933 E Frankford Rd\. Suite 165, Carrollton, TX 75007/);
+  assert.match(homepageScript, /469-605-6035/);
+  assert.match(styles, /\.business-summary\{[^}]*height:21px[^}]*white-space:nowrap[^}]*text-overflow:ellipsis/);
+});
+
 test('the learning and services heading is updated while business phone display stays intact and calls do not open flyers', () => {
   assert.match(homepage, /data-ko="배움과 서비스를 만나보세요" data-en="Discover Learning & Services">배움과 서비스를 만나보세요<\/h2>/);
   assert.match(homepageScript, /const renderBusinessPhone = contact => String\(contact \|\| ''\)\.replace/);
