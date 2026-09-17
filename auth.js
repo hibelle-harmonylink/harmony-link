@@ -41,9 +41,9 @@
 
   const requestedEasyHanjaReturn = () => {
     const fromUrl = new URLSearchParams(location.search).get('return');
-    if (['easy-hanja.html', 'senior-learning.html', 'senior-learning-materials.html', 'senior-mini-apps.html'].includes(fromUrl)) return fromUrl;
+    if (['easy-hanja.html', 'senior-learning.html', 'senior-learning-materials.html', 'senior-mini-apps.html', 'community.html'].includes(fromUrl)) return fromUrl;
     const fromStorage = localStorage.getItem('harmonyAuthReturn');
-    return ['easy-hanja.html', 'senior-learning.html', 'senior-learning-materials.html', 'senior-mini-apps.html'].includes(fromStorage) ? fromStorage : '';
+    return ['easy-hanja.html', 'senior-learning.html', 'senior-learning-materials.html', 'senior-mini-apps.html', 'community.html'].includes(fromStorage) ? fromStorage : '';
   };
 
   const returnToEasyHanjaIfRequested = session => {

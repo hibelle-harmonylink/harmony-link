@@ -112,7 +112,12 @@
     '<a class="senior-section-choice" href="senior-learning-materials.html"><img src="assets/senior-learning/textbook-card.svg" alt=""><strong>교재</strong><span>스마트폰과 디지털 사용법을 다시 확인해보세요.</span><b>교재 보기</b></a>' +
     '<a class="senior-section-choice" href="senior-mini-apps.html"><img src="assets/senior-learning/mini-app-card.svg" alt=""><strong>미니앱</strong><span>생활에 도움이 되는 간편한 디지털 도구</span><b>미니앱 보기</b></a></section>';
   const renderCategories = () => {
-    content.innerHTML = `<section class="senior-category-view"><div class="senior-category-grid">${learningData.map(category => `<button class="senior-category-card" type="button" data-senior-category="${category.id}"><img src="${category.image}" alt=""><strong>${category.title}</strong><small>${category.description}</small><b>교재 보기</b></button>`).join('')}</div></section>`;
+    content.innerHTML = `<section class="senior-category-view"><div class="senior-category-grid">${learningData.map(category => category.id === 'smartphone'
+      ? `<article class="senior-category-card is-preparing" aria-label="스마트폰 교재보기 자료 준비중"><img src="${category.image}" alt=""><strong>${category.title}</strong><small>${category.description}</small><b>자료 준비중</b></article>`
+      : `<button class="senior-category-card" type="button" data-senior-category="${category.id}"><img src="${category.image}" alt=""><strong>${category.title}</strong><small>${category.description}</small><b>교재 보기</b></button>`).join('')}</div></section>`;
+  };
+  const renderSmartphonePreparation = () => {
+    content.innerHTML = '<section class="senior-lesson-view senior-materials-preparing"><div class="senior-view-heading"><span aria-hidden="true">📱</span><div><h2>스마트폰 교재보기</h2><p>자료를 준비하고 있습니다.</p></div></div><div class="senior-preparing-card"><strong>자료 준비중</strong><p>스마트폰 교재를 준비하고 있습니다.</p></div></section>';
   };
   const renderMiniApps = () => `<section class="senior-mini-apps"><div class="senior-mini-app-grid">${miniApps.map(app => `<a class="senior-mini-app-card" data-mini-app-card href="${app.href}" aria-label="${app.title} 사용하기"><img src="${app.image}" alt=""><div><h3>${app.title}</h3><p>${app.description}</p></div><span class="senior-primary-button" aria-hidden="true">사용하기</span></a>`).join('')}</div></section>`;
   const renderLessons = category => {
@@ -130,7 +135,8 @@
     if (pageMode === 'mini-apps') { content.innerHTML = renderMiniApps(); return; }
     const category = findCategory(state.categoryId);
     const lesson = state.lessonId && findLesson(state.categoryId, state.lessonId);
-    if (category && lesson?.status === 'ready') renderViewer(category, lesson);
+    if (category?.id === 'smartphone') renderSmartphonePreparation();
+    else if (category && lesson?.status === 'ready') renderViewer(category, lesson);
     else if (category) renderLessons(category);
     else renderCategories();
   };
