@@ -40,8 +40,23 @@ test('senior learning keeps the original cognition card and provides an extensib
   assert.match(script, />사용하기</);
   assert.match(css, /\.senior-mini-app-grid \{ display:grid; grid-template-columns:repeat\(2,minmax\(0,1fr\)\); gap:18px; \}/);
   assert.match(css, /@media \(max-width:620px\)[\s\S]*?\.senior-mini-app-grid \{ grid-template-columns:1fr;/);
-  assert.match(page, /senior-learning\.css\?v=20260916-21/);
-  assert.match(page, /senior-learning\.js\?v=20260916-21/);
+  assert.match(page, /senior-learning\.css\?v=20260916-22/);
+  assert.match(page, /senior-learning\.js\?v=20260916-22/);
+});
+
+test('senior learning defaults to textbooks and isolates mini apps behind its own tab', () => {
+  assert.match(page, /senior-account-actions/);
+  assert.match(page, /id="seniorSignout"/);
+  assert.match(script, /tab:'textbooks'/);
+  assert.match(script, /data-senior-tab="textbooks">교재/);
+  assert.match(script, /data-senior-tab="mini-apps">미니앱/);
+  assert.match(script, /textbooks\.hidden = state\.tab === 'mini-apps'/);
+  assert.match(script, /apps\.hidden = state\.tab !== 'mini-apps'/);
+  assert.match(script, /const setTab = tab =>/);
+  assert.match(script, /client\?\.auth\.signOut\(\)/);
+  assert.match(css, /\.tool-site-header \{ min-height:68px; background:#eef8f1!important;/);
+  assert.match(css, /\.senior-content-tabs \{ display:grid; grid-template-columns:repeat\(2,minmax\(0,1fr\)\);/);
+  assert.match(css, /@media \(max-width:620px\).*?\.senior-content-tab \{ min-height:64px/s);
 });
 
 test('senior learning viewer supports navigation, fullscreen, progress, and keyboard controls', () => {
