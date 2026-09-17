@@ -32,7 +32,7 @@
     })();
   </script>
   <link rel="stylesheet" href="styles.css?v=20260916-3">
-  <link rel="stylesheet" href="admin.css?v=20260917-2">
+  <link rel="stylesheet" href="admin.css?v=20260917-3">
 </head>
 <body class="admin-page">
   <header class="admin-header">
@@ -80,10 +80,11 @@
     </section>
   </main>
 
-  <dialog class="member-dialog" id="memberDialog" aria-labelledby="memberDialogTitle"><form method="dialog" class="member-dialog-head"><div><p class="eyebrow">MEMBER DETAIL</p><h2 id="memberDialogTitle">회원 상세</h2></div><button value="cancel" aria-label="닫기">×</button></form><div id="memberDetail"></div></dialog>
+  <dialog class="member-dialog" id="memberDialog" aria-labelledby="memberDialogTitle"><form method="dialog" class="member-dialog-head"><div><p class="eyebrow">MEMBER DETAIL</p><h2 id="memberDialogTitle">회원 상세</h2></div><button value="cancel" aria-label="닫기">×</button></form><div id="memberDetail"></div><div class="admin-toast" id="adminToast" role="status" aria-live="polite" hidden></div></dialog>
+  <dialog class="partner-region-dialog" id="partnerRegionDialog" aria-labelledby="partnerRegionDialogTitle"><div class="partner-region-dialog-shell"><header class="partner-region-dialog-head"><div><p class="eyebrow">PARTNER REGION</p><h2 id="partnerRegionDialogTitle">활동 지역 관리</h2></div><button id="partnerRegionDialogClose" type="button" aria-label="닫기">×</button></header><div class="partner-region-dialog-body" id="partnerRegionDialogBody"></div></div></dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="access-control.js?v=20260904-1"></script>
-  <script src="admin.js?v=20260917-2"></script>
+  <script src="admin.js?v=20260917-3"></script>
 </body>
 </html>

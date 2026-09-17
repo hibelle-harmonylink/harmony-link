@@ -39,6 +39,6 @@ test('compacts desktop rows while preserving mobile readability and updates asse
   assert.match(css, /\.member-page-button:disabled\{opacity:1[\s\S]*background:#d9dee5[\s\S]*color:#4b5563/);
   assert.match(css, /@media\(max-width:440px\)\{[\s\S]*\.member-pagination\{align-items:flex-start;flex-direction:column[\s\S]*\.member-pagination-controls\{width:100%;flex-wrap:wrap;justify-content:flex-end;align-items:center;row-gap:6px;column-gap:6px/);
   assert.equal(version.version, '20260916-29');
-  assert.match(html, /admin\.css\?v=20260917-2/);
-  assert.match(html, /admin\.js\?v=20260917-2/);
+  assert.match(html, /admin\.css\?v=20260917-3/);
+  assert.match(html, /admin\.js\?v=20260917-3/);
 });
