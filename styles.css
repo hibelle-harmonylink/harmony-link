@@ -1540,10 +1540,10 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
 
 /* Shared hover feedback for selectable content cards, never for page controls or overlays. */
 @media (hover:hover) and (pointer:fine){
-  :is(.value-card,.program-card,.program-category-card,.audience-card,.event-card,.volunteer-program,.business-spotlight-card){transition:transform .22s ease,box-shadow .22s ease}
-  :is(.value-card,.program-card,.program-category-card,.audience-card,.event-card,.volunteer-program,.business-spotlight-card):hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(21,68,116,.12)}
+  :is(.value-card,.program-card,.program-category-card,.audience-card,.event-card,.volunteer-program,.business-spotlight-card,#partner-center .partner-tier-guide button){transition:transform .22s ease,box-shadow .22s ease}
+  :is(.value-card,.program-card,.program-category-card,.audience-card,.event-card,.volunteer-program,.business-spotlight-card,#partner-center .partner-tier-guide button):hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(21,68,116,.12)}
 }
 @media (prefers-reduced-motion:reduce){
-  :is(.value-card,.program-card,.program-category-card,.audience-card,.event-card,.volunteer-program,.business-spotlight-card){transition:none!important}
-  :is(.value-card,.program-card,.program-category-card,.audience-card,.event-card,.volunteer-program,.business-spotlight-card):hover{transform:none!important}
+  :is(.value-card,.program-card,.program-category-card,.audience-card,.event-card,.volunteer-program,.business-spotlight-card,#partner-center .partner-tier-guide button){transition:none!important}
+  :is(.value-card,.program-card,.program-category-card,.audience-card,.event-card,.volunteer-program,.business-spotlight-card,#partner-center .partner-tier-guide button):hover{transform:none!important}
 }
