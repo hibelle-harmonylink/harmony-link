@@ -296,7 +296,7 @@
     const resourceTier = isAdmin || isPremiumPartner ? 50 : isBasicPartner ? 20 : 0;
     // Membership establishes the highest tier a partner may open and shows
     // the established cumulative material set for that membership.
-    if (approvedPartner) window.HarmonyPartnerResources?.setAccessTier(resourceTier, resourceTier);
+    if (approvedPartner) window.HarmonyPartnerResources?.setAccessTier(resourceTier);
     if (lock) {
       lock.textContent = approvedPartner ? '✓' : signedIn ? '⏳' : '🔒';
       lock.classList.toggle('partner-lock-action', approvedPartner);

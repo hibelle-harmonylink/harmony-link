@@ -16,13 +16,15 @@ test('the production partner center, not the application modal, owns tier state'
   assert.doesNotMatch(resourceBlock, /partnerModal|partner-modal-plans/);
 });
 
-test('partner center restores the established cumulative FREE, BASIC, and PREMIUM access sets', () => {
+test('partner center keeps the established cumulative access sets closed until a tier is selected', () => {
   assert.match(script, /const benefitText=\{0:'FREE · 2개 시작 자료를 이용할 수 있습니다\.',20:'BASIC · FREE 포함 총 6개 자료를 이용할 수 있습니다\.',50:'PREMIUM · 전체 12개 자료를 모두 이용할 수 있습니다\.'/);
-  assert.match(script, /const setAccessTier=\(maxTier=0,selectedTier=maxTier\)=>/);
-  assert.match(script, /const visible=Number\(section\.dataset\.resourceTier\)<=selected;/);
+  assert.match(script, /const setAccessTier=\(maxTier=0,selectedTier=null\)=>/);
+  assert.match(script, /const selected=selectedTier!==null&&allowed\.includes\(requestedTier\)\?requestedTier:null;/);
+  assert.match(script, /const visible=selected!==null&&Number\(section\.dataset\.resourceTier\)<=selected;/);
   assert.doesNotMatch(script, /resourceTier\)===selected/);
-  assert.match(script, /setAccessTier\(0,0\);/);
-  assert.match(auth, /HarmonyPartnerResources\?\.setAccessTier\(resourceTier, resourceTier\)/);
+  assert.match(script, /setAccessTier\(0\);/);
+  assert.match(script, /#primary-nav a\[href="#partner-center"\][\s\S]*?setAccessTier\(Number\(downloads\.dataset\.maxTier\|\|0\)\);/);
+  assert.match(auth, /HarmonyPartnerResources\?\.setAccessTier\(resourceTier\);/);
   assert.match(resourceBlock, /tier:0[\s\S]*?tier:0[\s\S]*?tier:20[\s\S]*?tier:20[\s\S]*?tier:20[\s\S]*?tier:20[\s\S]*?tier:50[\s\S]*?tier:50[\s\S]*?tier:50[\s\S]*?tier:50[\s\S]*?tier:50[\s\S]*?tier:50/);
 });
 
