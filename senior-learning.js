@@ -36,6 +36,14 @@
       { id:'privacy', title:'개인정보 지키기', description:'비밀번호와 개인정보를 안전하게 관리합니다.', status:'preparing', accessLevel:'free' }
     ]}
   ];
+  // Keep the underlying source lessons and slides intact.  Only the current
+  // presentation state is preparing, so each lesson can be enabled later.
+  const smartphoneLessons = [
+    ...sourceLearningData.find(category => category.id === 'smartphone').lessons,
+    ...sourceLearningData.find(category => category.id === 'settings').lessons,
+    ...sourceLearningData.find(category => category.id === 'daily-digital').lessons,
+    ...sourceLearningData.find(category => category.id === 'safety').lessons
+  ].map(lesson => ({ ...lesson, status:'preparing' }));
   const learningData = [
     {
       id:'smartphone',
@@ -43,12 +51,7 @@
       image:'assets/senior-learning/material-smartphone.svg',
       title:'스마트폰',
       description:'스마트폰 기본 사용법을 쉽게 배워보세요.',
-      lessons:[
-        ...sourceLearningData.find(category => category.id === 'smartphone').lessons,
-        ...sourceLearningData.find(category => category.id === 'settings').lessons,
-        ...sourceLearningData.find(category => category.id === 'daily-digital').lessons,
-        ...sourceLearningData.find(category => category.id === 'safety').lessons
-      ]
+      lessons:smartphoneLessons
     },
     {
       id:'computer',
@@ -87,6 +90,7 @@
 
   const findCategory = id => learningData.find(category => category.id === id);
   const findLesson = (categoryId, lessonId) => findCategory(categoryId)?.lessons.find(lesson => lesson.id === lessonId);
+  const isLessonAvailable = lesson => ['ready', 'available'].includes(lesson?.status);
   const escapeHtml = value => String(value).replace(/[&<>'"]/g, character => ({ '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' }[character]));
   const showLoading = () => { loading.hidden = false; gate.hidden = true; app.hidden = true; signoutButton.hidden = true; };
   const showGate = () => { loading.hidden = true; app.hidden = true; gate.hidden = false; signoutButton.hidden = true; };
@@ -112,16 +116,11 @@
     '<a class="senior-section-choice" href="senior-learning-materials.html"><img src="assets/senior-learning/textbook-card.svg" alt=""><strong>교재</strong><span>스마트폰과 디지털 사용법을 다시 확인해보세요.</span><b>교재 보기</b></a>' +
     '<a class="senior-section-choice" href="senior-mini-apps.html"><img src="assets/senior-learning/mini-app-card.svg" alt=""><strong>미니앱</strong><span>생활에 도움이 되는 간편한 디지털 도구</span><b>미니앱 보기</b></a></section>';
   const renderCategories = () => {
-    content.innerHTML = `<section class="senior-category-view"><div class="senior-category-grid">${learningData.map(category => category.id === 'smartphone'
-      ? `<article class="senior-category-card is-preparing" aria-label="스마트폰 교재보기 자료 준비중"><img src="${category.image}" alt=""><strong>${category.title}</strong><small>${category.description}</small><b>자료 준비중</b></article>`
-      : `<button class="senior-category-card" type="button" data-senior-category="${category.id}"><img src="${category.image}" alt=""><strong>${category.title}</strong><small>${category.description}</small><b>교재 보기</b></button>`).join('')}</div></section>`;
-  };
-  const renderSmartphonePreparation = () => {
-    content.innerHTML = '<section class="senior-lesson-view senior-materials-preparing"><div class="senior-view-heading"><span aria-hidden="true">📱</span><div><h2>스마트폰 교재보기</h2><p>자료를 준비하고 있습니다.</p></div></div><div class="senior-preparing-card"><strong>자료 준비중</strong><p>스마트폰 교재를 준비하고 있습니다.</p></div></section>';
+    content.innerHTML = `<section class="senior-category-view"><div class="senior-category-grid">${learningData.map(category => `<button class="senior-category-card" type="button" data-senior-category="${category.id}"><img src="${category.image}" alt=""><strong>${category.title}</strong><small>${category.description}</small><b>교재 보기</b></button>`).join('')}</div></section>`;
   };
   const renderMiniApps = () => `<section class="senior-mini-apps"><div class="senior-mini-app-grid">${miniApps.map(app => `<a class="senior-mini-app-card" data-mini-app-card href="${app.href}" aria-label="${app.title} 사용하기"><img src="${app.image}" alt=""><div><h3>${app.title}</h3><p>${app.description}</p></div><span class="senior-primary-button" aria-hidden="true">사용하기</span></a>`).join('')}</div></section>`;
   const renderLessons = category => {
-    content.innerHTML = `<section class="senior-lesson-view"><div class="senior-view-heading"><span aria-hidden="true">${category.icon}</span><div><h2>${category.title}</h2><p>${category.description}</p></div></div><div class="senior-lesson-list">${category.lessons.map(lesson => `<article class="senior-lesson-card ${lesson.status === 'ready' ? 'is-ready' : 'is-preparing'}"><div><h3>${lesson.title}</h3><p>${lesson.description}</p></div>${lesson.status === 'ready' ? `<button class="senior-primary-button" type="button" data-senior-lesson="${lesson.id}">교재 보기</button>` : '<span class="senior-preparing">자료 준비 중</span>'}</article>`).join('')}</div></section>`;
+    content.innerHTML = `<section class="senior-lesson-view"><div class="senior-view-heading"><span aria-hidden="true">${category.icon}</span><div><h2>${category.title}</h2><p>${category.description}</p></div></div><div class="senior-lesson-list">${category.lessons.map(lesson => { const available = isLessonAvailable(lesson); return `<article class="senior-lesson-card ${available ? 'is-ready' : 'is-preparing'}"${available ? '' : ' aria-disabled="true"'}><div><h3>${lesson.title}</h3><p>${lesson.description}</p></div>${available ? `<button class="senior-primary-button" type="button" data-senior-lesson="${lesson.id}">교재 보기</button>` : '<span class="senior-preparing">자료 준비중</span>'}</article>`; }).join('')}</div></section>`;
   };
   const renderViewer = (category, lesson) => {
     const total = lesson.slides.length;
@@ -135,8 +134,7 @@
     if (pageMode === 'mini-apps') { content.innerHTML = renderMiniApps(); return; }
     const category = findCategory(state.categoryId);
     const lesson = state.lessonId && findLesson(state.categoryId, state.lessonId);
-    if (category?.id === 'smartphone') renderSmartphonePreparation();
-    else if (category && lesson?.status === 'ready') renderViewer(category, lesson);
+    if (category && isLessonAvailable(lesson)) renderViewer(category, lesson);
     else if (category) renderLessons(category);
     else renderCategories();
   };
