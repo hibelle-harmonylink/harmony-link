@@ -22,8 +22,14 @@ test('senior learning space has a homepage entry and uses existing member authen
   assert.match(auth, /window\.location\.replace\(returnTarget\)/);
 });
 
-test('senior learning space defines six data-driven learning categories', () => {
+test('senior learning preserves six source categories while grouping their materials into three cards', () => {
   for (const title of ['스마트폰', '설정과 화면', '생활 디지털', 'AI 배우기', '디지털 취미', '디지털 안전']) assert.match(script, new RegExp(`title:'${title}'`));
+  for (const title of ['스마트폰', '컴퓨터', 'AI 도구']) assert.match(script, new RegExp(`title:'${title}'`));
+  assert.match(script, /const sourceLearningData = \[/);
+  assert.match(script, /sourceLearningData\.find\(category => category\.id === 'settings'\)\.lessons/);
+  assert.match(script, /sourceLearningData\.find\(category => category\.id === 'daily-digital'\)\.lessons/);
+  assert.match(script, /sourceLearningData\.find\(category => category\.id === 'safety'\)\.lessons/);
+  assert.match(script, /sourceLearningData\.find\(category => category\.id === 'digital-hobby'\)\.lessons/);
   assert.match(script, /accessLevel:'free'/);
   assert.match(script, /status:'ready'/);
   assert.match(script, /status:'preparing'/);
@@ -37,12 +43,13 @@ test('senior learning keeps the original cognition card and provides an extensib
   assert.match(script, /const miniApps = \[/);
   assert.match(script, /title:'한자 변환기'/);
   assert.match(script, /href:'easy-hanja\.html'/);
-  assert.match(script, /한글 또는 한자를 입력해 필요한 한자 정보를 쉽게 확인할 수 있어요/);
+  assert.match(script, /한자 정보를 쉽게 확인해보세요/);
   assert.match(script, />사용하기</);
-  assert.match(css, /\.senior-mini-app-grid \{ display:grid; grid-template-columns:repeat\(2,minmax\(0,1fr\)\); gap:18px; \}/);
+  assert.match(script, /mini-hanja\.svg/);
+  assert.match(css, /\.senior-mini-app-grid \{ display:grid; grid-template-columns:repeat\(3,minmax\(0,1fr\)\); gap:22px; \}/);
   assert.match(css, /@media \(max-width:620px\)[\s\S]*?\.senior-mini-app-grid \{ grid-template-columns:1fr;/);
-  assert.match(page, /senior-learning\.css\?v=20260916-24/);
-  assert.match(page, /senior-learning\.js\?v=20260916-24/);
+  assert.match(page, /senior-learning\.css\?v=20260916-25/);
+  assert.match(page, /senior-learning\.js\?v=20260916-25/);
   assert.match(miniAppsPage, /data-senior-page="mini-apps"/);
   assert.match(miniAppsPage, /생활에 도움이 되는 간편한 디지털 도구를 이용해보세요/);
   assert.match(miniAppsPage, /href="senior-learning\.html">← 시니어 배움터/);
@@ -79,6 +86,12 @@ test('senior learning materials and mini apps share protected rendering without 
   assert.doesNotMatch(miniAppsPage, /senior-section-choice/);
   assert.match(script, /const renderCategories =/);
   assert.match(script, /const renderMiniApps =/);
+  for (const asset of ['material-smartphone.svg', 'material-computer.svg', 'material-ai.svg', 'mini-hanja.svg']) {
+    assert.equal(fs.existsSync(path.join(root, 'assets', 'senior-learning', asset)), true, `${asset} exists`);
+  }
+  assert.match(script, /<b>교재 보기<\/b>/);
+  assert.match(css, /\.senior-category-card \{ min-height:390px;/);
+  assert.match(css, /\.senior-mini-app-card \{ min-height:390px;/);
 });
 
 test('senior learning viewer supports navigation, fullscreen, progress, and keyboard controls', () => {

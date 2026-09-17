@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 190" role="img" aria-label="스마트폰 교재 그림">
+  <rect width="320" height="190" rx="28" fill="#e8f4ff"/>
+  <rect x="118" y="18" width="84" height="154" rx="16" fill="#0b5fc2"/>
+  <rect x="126" y="32" width="68" height="116" rx="8" fill="#fff"/>
+  <circle cx="160" cy="160" r="5" fill="#bddcff"/>
+  <path d="M143 62h34M143 78h26M143 106h34" stroke="#5d99d8" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="159" cy="124" r="12" fill="#79c5a0"/>
+  <path d="M159 117v14M152 124h14" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+</svg>
