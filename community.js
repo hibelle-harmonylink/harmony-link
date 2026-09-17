@@ -18,6 +18,7 @@
     { value: 'question', label: '질문과 답변' },
     { value: 'info', label: '정보 공유' },
     { value: 'jobs', label: '구인·구직' },
+    { value: 'business', label: '업체 홍보' },
     { value: 'free', label: '자유게시판' }
   ];
   const labels = { ...Object.fromEntries(boardCategories.map(category => [category.value, category.label])), review: '정보 공유', intro: '자유게시판', resource: '자료방' };
@@ -72,7 +73,12 @@
   };
   const closeComposer = () => { modal.hidden = true; document.body.style.overflow = ''; form.reset(); document.getElementById('editingPostId').value = ''; };
   const openComposer = (post = null) => {
-    if (!user || !profile) { setMessage('글 작성은 로그인 후 이용할 수 있습니다.', true); return; }
+    if (!user || !profile) {
+      document.getElementById('communityLoginPrompt').hidden = false;
+      setMessage('게시글을 작성하려면 로그인이 필요합니다.', true);
+      return;
+    }
+    document.getElementById('communityLoginPrompt').hidden = true;
     form.reset();
     populateComposerCategories();
     document.getElementById('editingPostId').value = post?.id || '';
@@ -206,7 +212,8 @@
 
   const showGuestView = () => {
     user = null; profile = null;
-    document.getElementById('openComposer').hidden = true;
+    document.getElementById('openComposer').hidden = false;
+    document.getElementById('communityLoginPrompt').hidden = true;
     document.getElementById('memberBadge').textContent = '게스트';
     document.getElementById('welcomeName').textContent = '';
   };
@@ -246,6 +253,7 @@
       } else {
         profile = { ...member, display_name: member.display_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0] };
         document.getElementById('openComposer').hidden = false;
+        document.getElementById('communityLoginPrompt').hidden = true;
         populateComposerCategories(); document.getElementById('memberBadge').textContent = profile.role === 'member' ? (profile.member_type === 'student' ? '수강생 커뮤니티' : '일반회원 커뮤니티') : (roleLabels[profile.role] || '회원 커뮤니티'); document.getElementById('welcomeName').textContent = profile.role === 'admin' ? '하이벨님' : `${profile.display_name}님, 반갑습니다.`;
       }
     } else {

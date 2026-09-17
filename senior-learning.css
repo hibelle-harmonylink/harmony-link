@@ -39,6 +39,12 @@ body { margin:0; color:var(--senior-text); background:#f6faff; }
 .senior-category-card strong { font-size:28px; }
 .senior-category-card small { color:var(--senior-muted); font-size:16px; line-height:1.5; }
 .senior-category-card b { min-width:132px; min-height:48px; padding:0 18px; border-radius:11px; background:var(--senior-blue); color:#fff; display:inline-flex; align-items:center; justify-content:center; font-size:17px; font-weight:700; }
+.senior-category-card.is-preparing { border-color:#dbe3eb; background:#f8fafc; cursor:default; }
+.senior-category-card.is-preparing:hover { border-color:#dbe3eb; box-shadow:none; }
+.senior-category-card.is-preparing b { background:#e9eef3; color:#52667a; }
+.senior-preparing-card { margin-top:24px; padding:28px; border:1px solid #dbe3eb; border-radius:16px; background:#f8fafc; color:var(--senior-text); }
+.senior-preparing-card strong { display:block; font-size:22px; }
+.senior-preparing-card p { margin:8px 0 0; color:var(--senior-muted); font-size:17px; }
 .senior-content-tabs { width:min(940px,100%); display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; margin:0 auto 34px; }
 .senior-section-choice { min-height:360px; padding:24px; border:2px solid #cfdeea; border-radius:18px; background:#fff; color:var(--senior-deep); display:grid; grid-template-rows:minmax(136px,1fr) auto auto auto; align-items:start; gap:12px; text-align:left; font:inherit; cursor:pointer; box-shadow:none; transition:border-color .18s ease,background .18s ease; }
 .senior-section-choice { text-decoration:none; }
