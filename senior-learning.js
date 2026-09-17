@@ -39,7 +39,7 @@
   // Keep mini apps data-driven so new member tools can be added without
   // changing the learning-home structure.
   const miniApps = [
-    { id:'easy-hanja', icon:'漢', title:'쉬운 한자 찾기', description:'한글이나 한자를 입력하면 뜻과 읽는 법을 쉽게 찾아드려요.', href:'easy-hanja.html' }
+    { id:'easy-hanja', icon:'漢', title:'한자 변환기', description:'한글 또는 한자를 입력해 필요한 한자 정보를 쉽게 확인할 수 있어요.', href:'easy-hanja.html' }
   ];
 
   const app = document.getElementById('seniorLearningApp');
@@ -49,7 +49,7 @@
   const breadcrumb = document.getElementById('seniorBreadcrumb');
   const signoutButton = document.getElementById('seniorSignout');
   const client = window.supabase?.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true } });
-  let state = { tab:'textbooks', categoryId:null, lessonId:null, slideIndex:0 };
+  let state = { tab:null, categoryId:null, lessonId:null, slideIndex:0 };
   let memberCheckId = 0;
 
   const findCategory = id => learningData.find(category => category.id === id);
@@ -79,14 +79,17 @@
   const renderSectionContent = () => {
     content.innerHTML = `<section class="senior-category-view"><h2>무엇을 다시 배우고 싶으세요?</h2><p>원하는 분야를 누르면 교재 목록을 볼 수 있어요.</p><div class="senior-category-grid">${learningData.map(category => `<button class="senior-category-card" type="button" data-senior-category="${category.id}"><span aria-hidden="true">${category.icon}</span><strong>${category.title}</strong><small>${category.description}</small></button>`).join('')}</div></section><section class="senior-mini-apps" aria-labelledby="seniorMiniAppsTitle"><div class="senior-mini-apps-heading"><h2 id="seniorMiniAppsTitle">미니앱</h2><p>배운 내용을 바로 활용할 수 있는 쉬운 디지털 도구</p></div><div class="senior-mini-app-grid">${miniApps.map(app => `<article class="senior-mini-app-card"><span class="senior-mini-app-icon" aria-hidden="true">${app.icon}</span><div><h3>${app.title}</h3><p>${app.description}</p></div><a class="senior-primary-button" href="${app.href}">사용하기</a></article>`).join('')}</div></section>`;
   };
-  const renderTabs = () => '<div class="senior-content-tabs" role="tablist" aria-label="시니어 배움터 콘텐츠">' +
-    '<button class="senior-content-tab ' + (state.tab === 'textbooks' ? 'is-active' : '') + '" type="button" role="tab" aria-selected="' + (state.tab === 'textbooks') + '" data-senior-tab="textbooks">교재</button>' +
-    '<button class="senior-content-tab ' + (state.tab === 'mini-apps' ? 'is-active' : '') + '" type="button" role="tab" aria-selected="' + (state.tab === 'mini-apps') + '" data-senior-tab="mini-apps">미니앱</button></div>';
+  const renderTabs = () => '<section class="senior-content-tabs" aria-label="시니어 배움터 선택">' +
+    '<button class="senior-section-choice ' + (state.tab === 'textbooks' ? 'is-active' : '') + '" type="button" aria-pressed="' + (state.tab === 'textbooks') + '" data-senior-tab="textbooks"><img src="assets/senior-learning/textbook-card.svg" alt=""><strong>교재</strong><span>스마트폰과 디지털 사용법을 다시 확인해보세요.</span><b>교재 보기</b></button>' +
+    '<button class="senior-section-choice ' + (state.tab === 'mini-apps' ? 'is-active' : '') + '" type="button" aria-pressed="' + (state.tab === 'mini-apps') + '" data-senior-tab="mini-apps"><img src="assets/senior-learning/mini-app-card.svg" alt=""><strong>미니앱</strong><span>생활에 도움이 되는 간편한 디지털 도구</span><b>미니앱 보기</b></button></section>';
   const renderCategories = () => {
     renderSectionContent();
     const textbooks = content.querySelector('.senior-category-view');
     const apps = content.querySelector('.senior-mini-apps');
-    textbooks.hidden = state.tab === 'mini-apps';
+    textbooks.querySelector('h2')?.remove();
+    textbooks.querySelector('p')?.remove();
+    apps.querySelector('.senior-mini-apps-heading')?.remove();
+    textbooks.hidden = state.tab !== 'textbooks';
     apps.hidden = state.tab !== 'mini-apps';
     content.insertAdjacentHTML('afterbegin', renderTabs());
   };
@@ -106,6 +109,7 @@
     if (category && lesson?.status === 'ready') renderViewer(category, lesson);
     else if (category) renderLessons(category);
     else renderCategories();
+    if (category) content.insertAdjacentHTML('afterbegin', renderTabs());
   };
   const getMemberProfile = async session => {
     const { data: rpcData, error: rpcError } = await client.rpc('get_own_member_profile');
@@ -136,7 +140,7 @@
     const categoryButton = event.target.closest('[data-senior-category]');
     const lessonButton = event.target.closest('[data-senior-lesson]');
     if (tab) setTab(tab.dataset.seniorTab);
-    else if (home) setState({ tab:'textbooks', categoryId:null, lessonId:null, slideIndex:0 });
+    else if (home) setState({ tab:null, categoryId:null, lessonId:null, slideIndex:0 });
     else if (categoryButton) setState({ categoryId:categoryButton.dataset.seniorCategory, lessonId:null, slideIndex:0 });
     else if (lessonButton) setState({ lessonId:lessonButton.dataset.seniorLesson, slideIndex:0 });
     else if (event.target.closest('[data-senior-previous]')) setState({ slideIndex:state.slideIndex - 1 });
@@ -146,7 +150,7 @@
   breadcrumb.addEventListener('click', event => {
     const home = event.target.closest('[data-senior-home]');
     const categoryButton = event.target.closest('[data-senior-category]');
-    if (home) setState({ tab:'textbooks', categoryId:null, lessonId:null, slideIndex:0 });
+    if (home) setState({ tab:null, categoryId:null, lessonId:null, slideIndex:0 });
     if (categoryButton) setState({ categoryId:categoryButton.dataset.seniorCategory, lessonId:null, slideIndex:0 });
   });
   document.addEventListener('keydown', event => {
@@ -156,9 +160,9 @@
     if (event.key === 'ArrowRight' && state.slideIndex < lesson.slides.length - 1) setState({ slideIndex:state.slideIndex + 1 });
   });
   signoutButton.addEventListener('click', async () => { await client?.auth.signOut(); });
-  window.addEventListener('popstate', () => { const params = new URLSearchParams(location.search); state = { tab:'textbooks', categoryId:params.get('category'), lessonId:params.get('lesson'), slideIndex:Math.max(0, Number(params.get('page') || 1) - 1) }; render(); });
+  window.addEventListener('popstate', () => { const params = new URLSearchParams(location.search); state = { tab:params.get('category') ? 'textbooks' : null, categoryId:params.get('category'), lessonId:params.get('lesson'), slideIndex:Math.max(0, Number(params.get('page') || 1) - 1) }; render(); });
   const params = new URLSearchParams(location.search);
-  state = { tab:'textbooks', categoryId:params.get('category'), lessonId:params.get('lesson'), slideIndex:Math.max(0, Number(params.get('page') || 1) - 1) };
+  state = { tab:params.get('category') ? 'textbooks' : null, categoryId:params.get('category'), lessonId:params.get('lesson'), slideIndex:Math.max(0, Number(params.get('page') || 1) - 1) };
   client?.auth.onAuthStateChange((event, session) => { if (event !== 'INITIAL_SESSION') void checkMember(session); });
   void checkMember();
 })();
