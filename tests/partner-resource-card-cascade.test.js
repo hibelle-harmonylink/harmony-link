@@ -11,38 +11,38 @@ const resourceBlock = script.slice(script.indexOf('const partnerResourceSections
 
 test('the production partner center, not the application modal, owns tier state', () => {
   assert.match(script, /if \(downloads\) \{/);
-  assert.match(script, /const partnerResourceState = \{ selectedTier: 0, openPanel: null, detailExpanded: null, maxTier: 0 \}/);
   assert.match(script, /data-resource-tier="\$\{section\.tier\}"/);
   assert.match(script, /window\.HarmonyPartnerResources=\{setAccessTier:/);
   assert.doesNotMatch(resourceBlock, /partnerModal|partner-modal-plans/);
 });
 
-test('partner center starts on FREE and shows only the selected tier, never cumulative tiers', () => {
-  assert.match(script, /const setAccessTier=\(maxTier=0,selectedTier=0\)=>/);
-  assert.match(script, /const visible=Number\(section\.dataset\.resourceTier\)===selected;/);
-  assert.doesNotMatch(script, /resourceTier\)<=selected/);
+test('partner center restores the established cumulative FREE, BASIC, and PREMIUM access sets', () => {
+  assert.match(script, /const benefitText=\{0:'FREE · 2개 시작 자료를 이용할 수 있습니다\.',20:'BASIC · FREE 포함 총 6개 자료를 이용할 수 있습니다\.',50:'PREMIUM · 전체 12개 자료를 모두 이용할 수 있습니다\.'/);
+  assert.match(script, /const setAccessTier=\(maxTier=0,selectedTier=maxTier\)=>/);
+  assert.match(script, /const visible=Number\(section\.dataset\.resourceTier\)<=selected;/);
+  assert.doesNotMatch(script, /resourceTier\)===selected/);
   assert.match(script, /setAccessTier\(0,0\);/);
-  assert.match(auth, /HarmonyPartnerResources\?\.setAccessTier\(resourceTier, 0\)/);
+  assert.match(auth, /HarmonyPartnerResources\?\.setAccessTier\(resourceTier, resourceTier\)/);
+  assert.match(resourceBlock, /tier:0[\s\S]*?tier:0[\s\S]*?tier:20[\s\S]*?tier:20[\s\S]*?tier:20[\s\S]*?tier:20[\s\S]*?tier:50[\s\S]*?tier:50[\s\S]*?tier:50[\s\S]*?tier:50[\s\S]*?tier:50[\s\S]*?tier:50/);
 });
 
-test('the actual resource groups use one-open-panel and confirm-before-details behavior', () => {
-  assert.match(script, /class="partner-resource-panel" id="partnerResourcePanel\$\{index\}" hidden/);
-  assert.match(script, /class="partner-resource-detail-toggle" aria-expanded="false" aria-controls="partnerResourceDetails\$\{index\}">확인/);
-  assert.match(script, /class="partner-resource-items" id="partnerResourceDetails\$\{index\}" hidden/);
-  assert.match(script, /const resetResourcePanels = \(\) =>/);
-  assert.match(script, /partnerResourceState\.openPanel = null;/);
-  assert.match(script, /partnerResourceState\.detailExpanded = null;/);
-  assert.match(script, /const shouldOpen = panel\?\.hidden;[\s\S]*?resetResourcePanels\(\);/);
-  assert.match(script, /const shouldShow = detail\?\.hidden;[\s\S]*?detail\.hidden = false;/);
+test('the actual resource groups restore one-click open and one-open-at-a-time details', () => {
+  assert.match(script, /class="partner-resource-items" id="partnerResource\$\{index\}" hidden/);
+  assert.doesNotMatch(resourceBlock, /partner-resource-panel/);
+  assert.doesNotMatch(resourceBlock, /partner-resource-detail-toggle/);
+  assert.match(script, /const closeResource = button =>/);
+  assert.match(script, /downloads\.querySelectorAll\('\.partner-resource-toggle'\)\.forEach\(other=>\{if\(other!==button\)closeResource\(other\);\}\);/);
+  assert.match(script, /textContent=open\?'닫기':'열기'/);
 });
 
-test('partner center stage styles are scoped to the actual resource DOM and remain mobile safe', () => {
-  assert.match(css, /#partner-center \.partner-resource-group\.is-open/);
-  assert.match(css, /#partner-center \.partner-resource-panel\[hidden\]\{display:none!important\}/);
-  assert.match(css, /#partner-center \.partner-resource-detail-toggle\{display:inline-flex!important/);
+test('partner resource details use the restored uniform grid at every breakpoint', () => {
+  assert.doesNotMatch(css, /#partner-center \.partner-resource-panel\{/);
+  assert.doesNotMatch(css, /#partner-center \.partner-resource-detail-toggle\{/);
   assert.match(css, /#partner-center \.partner-resource-items\{display:grid!important;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)!important/);
   assert.match(css, /@media\(max-width:760px\)\{[\s\S]*?#partner-center \.partner-resource-items\{grid-template-columns:minmax\(0,1fr\)!important/);
   assert.match(css, /#partner-center \.partner-resource-item>a\[download\]\{background:#20834b!important;color:#fff!important\}/);
+  assert.match(css, /#partner-center \.partner-resource-item>a:not\(\[download\]\)\{background:#6554a6!important;color:#fff!important\}/);
+  assert.match(css, /#partner-center \.partner-resource-item>small\{background:#e2e6eb!important;color:#4b5563!important;cursor:default!important\}/);
 });
 
 test('partner resource titles remain concise one-line labels without changing their actions', () => {

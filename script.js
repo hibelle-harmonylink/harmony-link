@@ -1565,9 +1565,9 @@ document.querySelectorAll('.contact-form-open').forEach(button => button.addEven
 }));
 
 // Partner-only resource library. Available files download immediately; planned files are clearly labeled.
-// Twelve fixed categories are grouped by their own tier. The selected tier
-// is a presentation state, separate from a member's maximum allowed tier:
-// selecting BASIC shows BASIC sections only; it never accumulates FREE.
+// Twelve fixed categories are grouped by the tier that first unlocks them.
+// BASIC and PREMIUM retain the established cumulative partner access:
+// FREE = 2 categories, BASIC = 6, PREMIUM = all 12.
 const partnerResourceSections = [
   {tier:0,icon:'🚀',title:'시작하기',copy:'입점 후 가장 먼저 확인하는 필수 안내 자료',items:[['시작 안내서','downloads/HarmonyLink_Partner_Getting_Started.pdf','PDF'],['플랫폼 운영 정책','downloads/HarmonyLink_Partner_Policy_v1.0.pdf','PDF'],['파트너 계약서','downloads/HarmonyLink_Partner_Agreement_v2.0.pdf','PDF'],['강사 활동 안내','downloads/HarmonyLink_Instructor_Activity_Guide_v1.0.pdf','PDF'],['FAQ','downloads/HarmonyLink_Partner_FAQ_v1.0.pdf','PDF']]},
   {tier:0,icon:'📌',title:'공지사항',copy:'Harmony Link 운영 공지 및 주요 업데이트',items:[['최신 공지','https://hibelleharmony.com/community.html?refresh=20260815-301&category=notice','바로가기','view'],['파트너 공지','downloads/HarmonyLink_Partner_Notice_Guide_v1.0.pdf','PDF'],['행사 일정'],['자료실 업데이트']]},
@@ -1584,38 +1584,25 @@ const partnerResourceSections = [
 ];
 if (downloads) {
   const resourceMarkup = partnerResourceSections.map((section,index) => `<article class="partner-resource-group${section.premium?' premium-resource':''}" data-resource-tier="${section.tier}">
-    <button type="button" class="partner-resource-toggle" aria-expanded="false" aria-controls="partnerResourcePanel${index}"><span class="resource-number"></span><div class="partner-resource-summary"><h3>${section.title}<em class="resource-tier-label">$${section.tier}</em></h3><p>${section.copy}</p></div><span class="partner-resource-action" aria-hidden="true">열기</span></button>
-    <div class="partner-resource-panel" id="partnerResourcePanel${index}" hidden><p class="partner-resource-detail-copy">${section.copy}</p><button type="button" class="partner-resource-detail-toggle" aria-expanded="false" aria-controls="partnerResourceDetails${index}">확인</button><div class="partner-resource-items" id="partnerResourceDetails${index}" hidden>${section.items.map(item=>`<div class="partner-resource-item"><span>${item[2]||'준비 중'}</span><strong>${item[0]}</strong>${item[1]?(item[3]==='view'?`<a href="${item[1]}">자료 보기 →</a>`:`<a href="${item[1]}" download>다운로드 ↓</a>`):'<small>자료 준비 중</small>'}</div>`).join('')}</div></div>
+    <button type="button" class="partner-resource-toggle" aria-expanded="false" aria-controls="partnerResource${index}"><span class="resource-number"></span><div class="partner-resource-summary"><h3>${section.title}<em class="resource-tier-label">$${section.tier}</em></h3><p>${section.copy}</p></div><span class="partner-resource-action" aria-hidden="true">열기</span></button>
+    <div class="partner-resource-items" id="partnerResource${index}" hidden><p class="partner-resource-detail-copy">${section.copy}</p>${section.items.map(item=>`<div class="partner-resource-item"><span>${item[2]||'준비 중'}</span><strong>${item[0]}</strong>${item[1]?(item[3]==='view'?`<a href="${item[1]}">자료 보기 →</a>`:`<a href="${item[1]}" download>다운로드 ↓</a>`):'<small>자료 준비 중</small>'}</div>`).join('')}</div>
   </article>`).join('');
   downloads.innerHTML = `<div class="partner-library-head"><div class="partner-library-status"><span class="unlocked-badge">접근 승인됨</span><p>필요한 영역을 선택하면 다운로드 가능한 파일과 준비 중인 자료를 확인할 수 있습니다.</p></div><div class="partner-tier-guide" aria-label="파트너 등급"><button type="button" data-tier="0"><strong>$0</strong><b>FREE</b></button><button type="button" data-tier="20"><strong>$20</strong><b>BASIC</b></button><button type="button" data-tier="50"><strong>$50</strong><b>PREMIUM</b></button></div><p class="partner-tier-benefit" aria-live="polite"></p></div><div class="partner-resource-library">${resourceMarkup}</div><p class="partner-download-warning">이 자료는 승인된 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다.</p>`;
-  const benefitText={0:'FREE · FREE 시작 자료 2개를 이용할 수 있습니다.',20:'BASIC · BASIC 등급 자료 4개를 이용할 수 있습니다.',50:'PREMIUM · PREMIUM 등급 자료 6개를 이용할 수 있습니다.'};
+  const benefitText={0:'FREE · 2개 시작 자료를 이용할 수 있습니다.',20:'BASIC · FREE 포함 총 6개 자료를 이용할 수 있습니다.',50:'PREMIUM · 전체 12개 자료를 모두 이용할 수 있습니다.'};
   const library = downloads.querySelector('.partner-resource-library');
-  const partnerResourceState = { selectedTier: 0, openPanel: null, detailExpanded: null, maxTier: 0 };
-  const resetResourcePanels = () => {
-    partnerResourceState.openPanel = null;
-    partnerResourceState.detailExpanded = null;
-    downloads.querySelectorAll('.partner-resource-group').forEach(group => {
-      group.classList.remove('is-open');
-      const toggle = group.querySelector('.partner-resource-toggle');
-      const panel = group.querySelector('.partner-resource-panel');
-      const detailToggle = group.querySelector('.partner-resource-detail-toggle');
-      const detail = group.querySelector('.partner-resource-items');
-      toggle?.setAttribute('aria-expanded', 'false');
-      if (toggle) toggle.querySelector('.partner-resource-action').textContent = '열기';
-      if (panel) panel.hidden = true;
-      detailToggle?.setAttribute('aria-expanded', 'false');
-      if (detailToggle) detailToggle.textContent = '확인';
-      if (detail) detail.hidden = true;
-    });
+  const closeResource = button => {
+    const panel = downloads.querySelector(`#${button.getAttribute('aria-controls')}`);
+    if (!panel) return;
+    panel.hidden = true;
+    button.setAttribute('aria-expanded', 'false');
+    button.querySelector('.partner-resource-action').textContent = '열기';
   };
-  const setAccessTier=(maxTier=0,selectedTier=0)=>{
-    partnerResourceState.maxTier = Number(maxTier) || 0;
-    const requested = Number(selectedTier);
-    const selected = [0,20,50].includes(requested) && requested <= partnerResourceState.maxTier ? requested : 0;
-    partnerResourceState.selectedTier = selected;
+  const setAccessTier=(maxTier=0,selectedTier=maxTier)=>{
+    const allowed=[0,20,50].filter(tier=>tier<=maxTier);
+    const selected=allowed.includes(Number(selectedTier))?Number(selectedTier):Math.max(...allowed);
     downloads.querySelectorAll('.partner-tier-guide button').forEach(button=>{
       const tier=Number(button.dataset.tier);
-      button.disabled=tier>partnerResourceState.maxTier;
+      button.disabled=tier>maxTier;
       button.classList.toggle('active',tier===selected);
       button.setAttribute('aria-pressed',String(tier===selected));
     });
@@ -1623,49 +1610,20 @@ if (downloads) {
     const sections=[...downloads.querySelectorAll('[data-resource-tier]')];
     let visibleCount=0;
     sections.forEach(section=>{
-      const visible=Number(section.dataset.resourceTier)===selected;
+      const visible=Number(section.dataset.resourceTier)<=selected;
       section.hidden=!visible;
       if(visible){visibleCount+=1;section.querySelector('.resource-number').textContent=String(visibleCount).padStart(2,'0');}
     });
     if(library) library.dataset.count=String(visibleCount);
-    resetResourcePanels();
   };
-  downloads.querySelectorAll('.partner-tier-guide button').forEach(button=>button.addEventListener('click',()=>setAccessTier(partnerResourceState.maxTier,Number(button.dataset.tier))));
-  window.HarmonyPartnerResources={setAccessTier:(maxTier,selectedTier=0)=>{downloads.dataset.maxTier=String(maxTier);setAccessTier(maxTier,selectedTier);}};
+  downloads.querySelectorAll('.partner-tier-guide button').forEach(button=>button.addEventListener('click',()=>setAccessTier(Number(downloads.dataset.maxTier||0),Number(button.dataset.tier))));
+  window.HarmonyPartnerResources={setAccessTier:(maxTier,selectedTier=maxTier)=>{downloads.dataset.maxTier=String(maxTier);setAccessTier(maxTier,selectedTier);}};
   setAccessTier(0,0);
-  downloads.addEventListener('click', event => {
-    const toggle = event.target.closest('.partner-resource-toggle');
-    if (toggle) {
-      const group = toggle.closest('.partner-resource-group');
-      const panel = group?.querySelector('.partner-resource-panel');
-      const shouldOpen = panel?.hidden;
-      resetResourcePanels();
-      if (shouldOpen) {
-        partnerResourceState.openPanel = panel.id;
-        group.classList.add('is-open');
-        panel.hidden = false;
-        toggle.setAttribute('aria-expanded', 'true');
-        toggle.querySelector('.partner-resource-action').textContent = '닫기';
-      }
-      return;
-    }
-    const detailToggle = event.target.closest('.partner-resource-detail-toggle');
-    if (detailToggle) {
-      const group = detailToggle.closest('.partner-resource-group');
-      const detail = group?.querySelector('.partner-resource-items');
-      const shouldShow = detail?.hidden;
-      downloads.querySelectorAll('.partner-resource-items').forEach(item => { item.hidden = true; });
-      downloads.querySelectorAll('.partner-resource-detail-toggle').forEach(button => { button.setAttribute('aria-expanded', 'false'); button.textContent = '확인'; });
-      if (shouldShow) {
-        partnerResourceState.detailExpanded = detail.id;
-        detail.hidden = false;
-        detailToggle.setAttribute('aria-expanded', 'true');
-        detailToggle.textContent = '닫기';
-      } else {
-        partnerResourceState.detailExpanded = null;
-      }
-    }
-  });
+  downloads.querySelectorAll('.partner-resource-toggle').forEach(button=>button.addEventListener('click',()=>{
+    const panel=downloads.querySelector(`#${button.getAttribute('aria-controls')}`);const open=panel.hidden;
+    downloads.querySelectorAll('.partner-resource-toggle').forEach(other=>{if(other!==button)closeResource(other);});
+    panel.hidden=!open;button.setAttribute('aria-expanded',String(open));button.querySelector('.partner-resource-action').textContent=open?'닫기':'열기';
+  }));
 }
 document.querySelectorAll('#events .event-card:not(.event-coming)').forEach(card=>{
   const heading=card.querySelector('.event-info h3');

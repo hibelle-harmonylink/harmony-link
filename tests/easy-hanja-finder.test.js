@@ -58,7 +58,7 @@ test('homepage provides a mini apps category entry point instead of a standalone
   assert.doesNotMatch(categoryMarkup, /배움에 도움이 되는 간단한 도구를 사용해보세요/);
   assert.doesNotMatch(categoryMarkup, /mini-apps-category-card/);
   assert.doesNotMatch(homepage, /easy-hanja-entry/);
-  assert.match(homepage, /auth\.js\?v=20260916-14/);
+  assert.match(homepage, /auth\.js\?v=20260916-15/);
 });
 
 test('mini apps page provides the easy hanja finder as its first app', () => {
