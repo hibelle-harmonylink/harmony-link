@@ -53,8 +53,9 @@ test('reapplies Sheet G/H/I colors from the current display values', () => {
   assert.match(appsScript, /applyRosterDisplayStyles_\(sheet, 2, Math\.max\(sheet\.getLastRow\(\) - 1, 0\)\)/);
 });
 
-test('keeps the detail dialog compact and prevents horizontal overflow at desktop and mobile breakpoints', () => {
-  assert.match(adminCss, /\.member-dialog\{width:min\(900px,calc\(100% - 28px\)\);max-height:calc\(100vh - 28px\);overflow-x:hidden\}/);
-  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail\{max-height:none;overflow:visible/);
+test('keeps the detail dialog compact with an internal vertical scroll at desktop and mobile breakpoints', () => {
+  assert.match(adminCss, /\.member-dialog\{width:min\(780px,calc\(100% - 28px\)\);max-height:90vh;overflow:hidden\}/);
+  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail\{max-height:calc\(90vh - 56px\);overflow-y:auto;overflow-x:hidden;padding:8px 16px;gap:7px\}/);
   assert.match(adminCss, /@media\(max-width:680px\)\{[\s\S]*?overflow-x:hidden/);
+  assert.match(adminCss, /\.partner-region-dialog\{width:min\(640px,calc\(100vw - 32px\)\);max-height:80vh/);
 });
