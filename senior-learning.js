@@ -47,16 +47,17 @@
   const loading = document.getElementById('seniorLearningLoading');
   const content = document.getElementById('seniorLearningContent');
   const breadcrumb = document.getElementById('seniorBreadcrumb');
+  const signoutButton = document.getElementById('seniorSignout');
   const client = window.supabase?.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true } });
-  let state = { categoryId:null, lessonId:null, slideIndex:0 };
+  let state = { tab:'textbooks', categoryId:null, lessonId:null, slideIndex:0 };
   let memberCheckId = 0;
 
   const findCategory = id => learningData.find(category => category.id === id);
   const findLesson = (categoryId, lessonId) => findCategory(categoryId)?.lessons.find(lesson => lesson.id === lessonId);
   const escapeHtml = value => String(value).replace(/[&<>'"]/g, character => ({ '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' }[character]));
-  const showLoading = () => { loading.hidden = false; gate.hidden = true; app.hidden = true; };
-  const showGate = () => { loading.hidden = true; app.hidden = true; gate.hidden = false; };
-  const showApp = () => { loading.hidden = true; gate.hidden = true; app.hidden = false; render(); };
+  const showLoading = () => { loading.hidden = false; gate.hidden = true; app.hidden = true; signoutButton.hidden = true; };
+  const showGate = () => { loading.hidden = true; app.hidden = true; gate.hidden = false; signoutButton.hidden = true; };
+  const showApp = () => { loading.hidden = true; gate.hidden = true; app.hidden = false; signoutButton.hidden = false; render(); };
   const updateHistory = () => {
     const params = new URLSearchParams();
     if (state.categoryId) params.set('category', state.categoryId);
@@ -66,16 +67,28 @@
     history.pushState(state, '', `senior-learning.html${query ? `?${query}` : ''}`);
   };
   const setState = next => { state = { ...state, ...next }; updateHistory(); render(); };
+  const setTab = tab => { state = { tab, categoryId:null, lessonId:null, slideIndex:0 }; render(); };
   const renderBreadcrumb = () => {
     const category = findCategory(state.categoryId);
     const lesson = state.lessonId && findLesson(state.categoryId, state.lessonId);
-    const parts = ['<button type="button" data-senior-home>시니어 배움터</button>'];
+    const parts = state.categoryId ? ['<button type="button" data-senior-home>시니어 배움터</button>'] : [];
     if (category) parts.push(`<span>›</span><button type="button" data-senior-category="${category.id}">${escapeHtml(category.title)}</button>`);
     if (lesson) parts.push(`<span>›</span><strong>${escapeHtml(lesson.title)}</strong>`);
     breadcrumb.innerHTML = parts.join('');
   };
-  const renderCategories = () => {
+  const renderSectionContent = () => {
     content.innerHTML = `<section class="senior-category-view"><h2>무엇을 다시 배우고 싶으세요?</h2><p>원하는 분야를 누르면 교재 목록을 볼 수 있어요.</p><div class="senior-category-grid">${learningData.map(category => `<button class="senior-category-card" type="button" data-senior-category="${category.id}"><span aria-hidden="true">${category.icon}</span><strong>${category.title}</strong><small>${category.description}</small></button>`).join('')}</div></section><section class="senior-mini-apps" aria-labelledby="seniorMiniAppsTitle"><div class="senior-mini-apps-heading"><h2 id="seniorMiniAppsTitle">미니앱</h2><p>배운 내용을 바로 활용할 수 있는 쉬운 디지털 도구</p></div><div class="senior-mini-app-grid">${miniApps.map(app => `<article class="senior-mini-app-card"><span class="senior-mini-app-icon" aria-hidden="true">${app.icon}</span><div><h3>${app.title}</h3><p>${app.description}</p></div><a class="senior-primary-button" href="${app.href}">사용하기</a></article>`).join('')}</div></section>`;
+  };
+  const renderTabs = () => '<div class="senior-content-tabs" role="tablist" aria-label="시니어 배움터 콘텐츠">' +
+    '<button class="senior-content-tab ' + (state.tab === 'textbooks' ? 'is-active' : '') + '" type="button" role="tab" aria-selected="' + (state.tab === 'textbooks') + '" data-senior-tab="textbooks">교재</button>' +
+    '<button class="senior-content-tab ' + (state.tab === 'mini-apps' ? 'is-active' : '') + '" type="button" role="tab" aria-selected="' + (state.tab === 'mini-apps') + '" data-senior-tab="mini-apps">미니앱</button></div>';
+  const renderCategories = () => {
+    renderSectionContent();
+    const textbooks = content.querySelector('.senior-category-view');
+    const apps = content.querySelector('.senior-mini-apps');
+    textbooks.hidden = state.tab === 'mini-apps';
+    apps.hidden = state.tab !== 'mini-apps';
+    content.insertAdjacentHTML('afterbegin', renderTabs());
   };
   const renderLessons = category => {
     content.innerHTML = `<section class="senior-lesson-view"><div class="senior-view-heading"><span aria-hidden="true">${category.icon}</span><div><h2>${category.title}</h2><p>${category.description}</p></div></div><div class="senior-lesson-list">${category.lessons.map(lesson => `<article class="senior-lesson-card ${lesson.status === 'ready' ? 'is-ready' : 'is-preparing'}"><div><h3>${lesson.title}</h3><p>${lesson.description}</p></div>${lesson.status === 'ready' ? `<button class="senior-primary-button" type="button" data-senior-lesson="${lesson.id}">교재 보기</button>` : '<span class="senior-preparing">자료 준비 중</span>'}</article>`).join('')}</div></section>`;
@@ -118,10 +131,12 @@
     if (checkId === memberCheckId) showGate();
   };
   content.addEventListener('click', event => {
+    const tab = event.target.closest('[data-senior-tab]');
     const home = event.target.closest('[data-senior-home]');
     const categoryButton = event.target.closest('[data-senior-category]');
     const lessonButton = event.target.closest('[data-senior-lesson]');
-    if (home) setState({ categoryId:null, lessonId:null, slideIndex:0 });
+    if (tab) setTab(tab.dataset.seniorTab);
+    else if (home) setState({ tab:'textbooks', categoryId:null, lessonId:null, slideIndex:0 });
     else if (categoryButton) setState({ categoryId:categoryButton.dataset.seniorCategory, lessonId:null, slideIndex:0 });
     else if (lessonButton) setState({ lessonId:lessonButton.dataset.seniorLesson, slideIndex:0 });
     else if (event.target.closest('[data-senior-previous]')) setState({ slideIndex:state.slideIndex - 1 });
@@ -131,7 +146,7 @@
   breadcrumb.addEventListener('click', event => {
     const home = event.target.closest('[data-senior-home]');
     const categoryButton = event.target.closest('[data-senior-category]');
-    if (home) setState({ categoryId:null, lessonId:null, slideIndex:0 });
+    if (home) setState({ tab:'textbooks', categoryId:null, lessonId:null, slideIndex:0 });
     if (categoryButton) setState({ categoryId:categoryButton.dataset.seniorCategory, lessonId:null, slideIndex:0 });
   });
   document.addEventListener('keydown', event => {
@@ -140,9 +155,10 @@
     if (event.key === 'ArrowLeft' && state.slideIndex > 0) setState({ slideIndex:state.slideIndex - 1 });
     if (event.key === 'ArrowRight' && state.slideIndex < lesson.slides.length - 1) setState({ slideIndex:state.slideIndex + 1 });
   });
-  window.addEventListener('popstate', () => { const params = new URLSearchParams(location.search); state = { categoryId:params.get('category'), lessonId:params.get('lesson'), slideIndex:Math.max(0, Number(params.get('page') || 1) - 1) }; render(); });
+  signoutButton.addEventListener('click', async () => { await client?.auth.signOut(); });
+  window.addEventListener('popstate', () => { const params = new URLSearchParams(location.search); state = { tab:'textbooks', categoryId:params.get('category'), lessonId:params.get('lesson'), slideIndex:Math.max(0, Number(params.get('page') || 1) - 1) }; render(); });
   const params = new URLSearchParams(location.search);
-  state = { categoryId:params.get('category'), lessonId:params.get('lesson'), slideIndex:Math.max(0, Number(params.get('page') || 1) - 1) };
+  state = { tab:'textbooks', categoryId:params.get('category'), lessonId:params.get('lesson'), slideIndex:Math.max(0, Number(params.get('page') || 1) - 1) };
   client?.auth.onAuthStateChange((event, session) => { if (event !== 'INITIAL_SESSION') void checkMember(session); });
   void checkMember();
 })();

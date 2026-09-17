@@ -13,7 +13,7 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <script>
     (() => {
-      const pageVersion = '20260916-28';
+    const pageVersion = '20260916-29';
       fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
         .then(response => response.ok ? response.json() : null)
         .then(release => {
