@@ -6,17 +6,16 @@ const test = require('node:test');
 const root = path.join(__dirname, '..');
 const admin = fs.readFileSync(path.join(root, 'admin.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'admin.css'), 'utf8');
+const adminHtml = fs.readFileSync(path.join(root, 'admin.html'), 'utf8');
 const readerMigration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '202609170002_admin_partner_region_reader.sql'), 'utf8');
 
-test('activity region is a partner-only detail block with country, state, city, service areas, and service modes', () => {
+test('activity region is a compact, partner-only summary in the member detail', () => {
   assert.match(admin, /class="partner-region partner-metadata" hidden/);
   assert.match(admin, /활동 지역/);
-  assert.match(admin, /id="detailCountryCode"/);
-  assert.match(admin, /id="detailStateCode"/);
-  assert.match(admin, /id="detailCity"/);
-  assert.match(admin, /id="detailServiceAreaInput"/);
-  assert.match(admin, /온라인 수업 가능/);
-  assert.match(admin, /미국 전역 가능/);
+  assert.match(admin, /id="detailPartnerRegionSummary"/);
+  assert.match(admin, /id="detailPartnerRegionServices"/);
+  assert.match(admin, /id="detailManagePartnerRegion"[^>]*>지역정보 관리/);
+  assert.doesNotMatch(admin, /id="detailCountryCode"/);
   assert.match(admin, /field\.hidden = selectedType !== 'partner'/);
 });
 
@@ -28,20 +27,20 @@ test('region choices use extensible country and state data with current US, New 
   assert.match(admin, /const setStateOptions = selectedCountry/);
 });
 
-test('service areas are trimmed, de-duplicated, removable chips rather than a comma string', () => {
+test('region manager preserves trimmed, de-duplicated, removable service-area chips', () => {
   assert.match(admin, /const normalizeServiceAreas = values/);
   assert.match(admin, /toLocaleLowerCase\('en-US'\)/);
-  assert.match(admin, /detailAddServiceArea/);
+  assert.match(admin, /regionAddServiceArea/);
   assert.match(admin, /\$\{area\} 제거/);
   assert.match(admin, /serviceAreas = serviceAreas\.filter/);
-  assert.match(admin, /p_service_area: nextRegion\.service_area/);
+  assert.match(admin, /p_service_area: requested\.service_area/);
 });
 
-test('region summary and inactive toggles preserve the expected admin display semantics', () => {
+test('region summary separates the location from the service-mode detail', () => {
   assert.match(admin, /지역 미등록/);
-  assert.match(admin, /modes\.push\('방문'\)/);
-  assert.match(admin, /modes\.push\('온라인'\)/);
-  assert.match(admin, /modes\.push\('미국 전역 가능'\)/);
+  assert.match(admin, /partnerRegion\.city \|\| partnerRegion\.service_area\.length \? '방문 가능'/);
+  assert.match(admin, /partnerRegion\.online_available \? '온라인 수업 가능'/);
+  assert.match(admin, /partnerRegion\.nationwide_available \? '미국 전역 가능'/);
   assert.match(admin, /online_available: Boolean\(region\?\.online_available\)/);
   assert.match(admin, /nationwide_available: Boolean\(region\?\.nationwide_available\)/);
 });
@@ -72,44 +71,51 @@ test('reader migration is active-admin-only security definer and leaves the exis
   assert.doesNotMatch(readerMigration, /create or replace function public\.admin_list_members/);
 });
 
-test('partner region controls have responsive, non-overflowing mobile layout', () => {
+test('the independent region manager has responsive, non-overflowing fields', () => {
   assert.match(css, /\.partner-region-grid\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
   assert.match(css, /\.partner-service-area-controls\{display:grid;grid-template-columns:minmax\(0,1fr\) auto/);
-  assert.match(css, /\.partner-region-grid\{grid-template-columns:1fr\}/);
-  assert.match(css, /\.partner-service-area-controls\{grid-template-columns:1fr\}/);
+  assert.match(css, /\.partner-region-dialog\{width:min\(640px,calc\(100vw - 32px\)\);max-height:80vh/);
+  assert.match(css, /\.partner-region-dialog-body \.partner-region-grid\{grid-template-columns:1fr\}/);
+  assert.match(css, /\.partner-region-dialog-body \.partner-service-area-controls\{grid-template-columns:1fr\}/);
 });
 
-test('only partners receive a clear, dedicated region save action', () => {
+test('only partners receive a compact region summary and management action', () => {
   assert.match(admin, /class="partner-region partner-metadata" hidden/);
-  assert.match(admin, /id="detailRegionSave" type="button" class="btn btn-primary" disabled>지역정보 저장/);
-  assert.match(admin, /regionSaveButton\.disabled = !editablePartner/);
-  assert.match(css, /\.partner-region-save\{display:flex;align-items:center;justify-content:flex-end/);
+  assert.match(admin, /id="detailManagePartnerRegion"/);
+  assert.match(admin, /manageRegionButton\.addEventListener\('click', openRegionManager\)/);
+  assert.match(css, /\.partner-region-actions\{display:flex;justify-content:flex-end/);
 });
 
-test('dedicated region save calls only the existing region RPC and never member metadata or access RPCs', () => {
-  const start = admin.indexOf('const savePartnerRegion = async () =>');
-  const end = admin.indexOf("countryCode.addEventListener", start);
-  const saveAction = admin.slice(start, end);
-  assert.match(saveAction, /admin_update_partner_region/);
-  assert.match(saveAction, /p_country_code: requested\.country_code/);
-  assert.match(saveAction, /p_service_area: requested\.service_area/);
-  assert.doesNotMatch(saveAction, /admin_update_member_(?:metadata|access|name)/);
+test('region manager is a separate modal and uses only the existing region RPC', () => {
+  assert.match(adminHtml, /id="partnerRegionDialog"/);
+  assert.match(adminHtml, /id="partnerRegionDialogClose"/);
+  assert.match(admin, /regionDialog\.showModal\(\)/);
+  assert.match(admin, /admin_update_partner_region/);
+  assert.match(admin, /p_country_code: requested\.country_code/);
+  assert.match(admin, /p_service_area: requested\.service_area/);
+  const managerStart = admin.indexOf('const openRegionManager = () =>');
+  const managerAction = admin.slice(managerStart, admin.indexOf('if (nicknameInput)', managerStart));
+  assert.doesNotMatch(managerAction, /admin_update_member_(?:metadata|access|name)/);
 });
 
-test('dedicated region save prevents duplicate clicks, verifies persistence, and reports success or failure', () => {
-  const start = admin.indexOf('const savePartnerRegion = async () =>');
-  const end = admin.indexOf("countryCode.addEventListener", start);
-  const saveAction = admin.slice(start, end);
-  assert.match(saveAction, /if \(regionSaveButton\.disabled\) return/);
-  assert.match(saveAction, /regionSaveButton\.textContent = '저장 중…'/);
-  assert.match(saveAction, /const saved = await readPartnerRegion\(\)/);
-  assert.match(saveAction, /samePartnerRegion\(saved, requested\)/);
-  assert.match(saveAction, /지역정보가 저장되었습니다\./);
-  assert.match(saveAction, /지역정보 저장에 실패했습니다:/);
-  assert.match(saveAction, /regionSaveButton\.textContent = '지역정보 저장'/);
+test('region save prevents duplicates, re-reads persistence, closes the modal, and clears toast feedback', () => {
+  const managerStart = admin.indexOf('const openRegionManager = () =>');
+  const managerAction = admin.slice(managerStart, admin.indexOf('if (nicknameInput)', managerStart));
+  assert.match(managerAction, /if \(saveButton\.disabled\) return/);
+  assert.match(managerAction, /saveButton\.textContent = '저장 중…'/);
+  assert.match(managerAction, /const saved = await readPartnerRegion\(\)/);
+  assert.match(managerAction, /samePartnerRegion\(saved, requested\)/);
+  assert.match(managerAction, /regionDialog\.close\(\)/);
+  assert.match(managerAction, /showToast\('지역정보가 저장되었습니다\.'\)/);
+  assert.match(adminHtml, /id="memberDialog"[\s\S]*id="adminToast"/);
+  assert.match(managerAction, /지역정보 저장에 실패했습니다:/);
+  assert.match(admin, /window\.setTimeout\(\(\) => \{[\s\S]*adminToast\.hidden = true/);
 });
 
-test('region save remains prominent and full-width on a 390px mobile detail dialog', () => {
-  assert.match(css, /\.partner-region-save\{display:grid;grid-template-columns:1fr\}/);
-  assert.match(css, /\.partner-region-save button\{width:100%;min-height:46px\}/);
+test('region manager supports close, cancel, overlay, escape, and compact mobile actions', () => {
+  assert.match(admin, /regionDialogClose\.onclick = closeRegionManager/);
+  assert.match(admin, /regionDialogCancel/);
+  assert.match(admin, /regionDialog\.onclick = event => \{ if \(event\.target === regionDialog\) closeRegionManager\(\); \}/);
+  assert.match(admin, /regionDialog\.oncancel = event => \{ if \(saving\) event\.preventDefault\(\); \}/);
+  assert.match(css, /\.partner-region-dialog-actions \.btn\{min-height:42px;flex:1\}/);
 });
