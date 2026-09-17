@@ -25,6 +25,7 @@ test('senior learning space has a homepage entry and uses existing member authen
 test('senior learning preserves six source categories while grouping their materials into three cards', () => {
   for (const title of ['스마트폰', '설정과 화면', '생활 디지털', 'AI 배우기', '디지털 취미', '디지털 안전']) assert.match(script, new RegExp(`title:'${title}'`));
   for (const title of ['스마트폰', '컴퓨터', 'AI 도구']) assert.match(script, new RegExp(`title:'${title}'`));
+  for (const description of ['스마트폰 사용법을 쉽게 배워보세요.', '컴퓨터 사용법을 쉽게 배워보세요.', '유용한 AI 도구를 쉽게 배워보세요.']) assert.match(script, new RegExp(`description:'${description.replace(/[.]/g, '\\.')}'`));
   assert.match(script, /const sourceLearningData = \[/);
   assert.match(script, /sourceLearningData\.find\(category => category\.id === 'settings'\)\.lessons/);
   assert.match(script, /sourceLearningData\.find\(category => category\.id === 'daily-digital'\)\.lessons/);
@@ -70,6 +71,7 @@ test('senior learning home keeps its choices and routes each choice to a dedicat
   assert.match(materialsPage, /스마트폰과 디지털 사용법을 필요한 주제별로 확인해보세요/);
   assert.match(materialsPage, /href="senior-learning\.html">← 시니어 배움터/);
   assert.match(materialsPage, /return=senior-learning-materials\.html/);
+  assert.match(materialsPage, /senior-learning\.js\?v=20260916-26/);
   assert.match(script, /client\?\.auth\.signOut\(\)/);
   assert.match(css, /\.tool-site-header \{ min-height:68px; background:#eef8f1!important;/);
   assert.match(css, /\.senior-content-tabs \{[^}]*display:grid; grid-template-columns:repeat\(2,minmax\(0,1fr\)\);/);
