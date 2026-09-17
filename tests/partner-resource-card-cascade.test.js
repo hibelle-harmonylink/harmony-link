@@ -33,12 +33,14 @@ test('the actual resource groups restore one-click open and one-open-at-a-time d
   assert.match(script, /const closeResource = button =>/);
   assert.match(script, /downloads\.querySelectorAll\('\.partner-resource-toggle'\)\.forEach\(other=>\{if\(other!==button\)closeResource\(other\);\}\);/);
   assert.match(script, /textContent=open\?'닫기':'열기'/);
+  assert.match(script, /downloads\.querySelectorAll\('\.partner-resource-toggle'\)\.forEach\(closeResource\);/);
 });
 
 test('partner resource details use the restored uniform grid at every breakpoint', () => {
   assert.doesNotMatch(css, /#partner-center \.partner-resource-panel\{/);
   assert.doesNotMatch(css, /#partner-center \.partner-resource-detail-toggle\{/);
   assert.match(css, /#partner-center \.partner-resource-items\{display:grid!important;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)!important/);
+  assert.match(css, /#partner-center \.partner-resource-items\[hidden\]\{display:none!important\}/);
   assert.match(css, /@media\(max-width:760px\)\{[\s\S]*?#partner-center \.partner-resource-items\{grid-template-columns:minmax\(0,1fr\)!important/);
   assert.match(css, /#partner-center \.partner-resource-item>a\[download\]\{background:#20834b!important;color:#fff!important\}/);
   assert.match(css, /#partner-center \.partner-resource-item>a:not\(\[download\]\)\{background:#6554a6!important;color:#fff!important\}/);

@@ -1600,6 +1600,7 @@ if (downloads) {
   const setAccessTier=(maxTier=0,selectedTier=maxTier)=>{
     const allowed=[0,20,50].filter(tier=>tier<=maxTier);
     const selected=allowed.includes(Number(selectedTier))?Number(selectedTier):Math.max(...allowed);
+    downloads.querySelectorAll('.partner-resource-toggle').forEach(closeResource);
     downloads.querySelectorAll('.partner-tier-guide button').forEach(button=>{
       const tier=Number(button.dataset.tier);
       button.disabled=tier>maxTier;
