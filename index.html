@@ -76,27 +76,27 @@
     </div>
   </header>
 
-  <div class="app-install-banner" id="appInstallBanner" role="region" aria-label="앱 설치 안내">
+  <div class="app-install-banner" id="appInstallBanner" role="region" data-ko-aria-label="앱 설치 안내" data-en-aria-label="App installation" aria-label="앱 설치 안내">
     <div class="container app-install-banner-inner">
       <span class="app-install-icon" aria-hidden="true">📲</span>
       <p><strong data-ko="Harmony Link 앱으로 더 편하게" data-en="Enjoy Harmony Link as an app">Harmony Link 앱으로 더 편하게</strong><span data-ko="홈 화면에 추가하고 새 소식도 빠르게 받아보세요." data-en="Add it to your home screen for quick, easy access.">홈 화면에 추가하고 새 소식도 빠르게 받아보세요.</span><span class="app-install-status" id="appInstallStatus" role="status" hidden></span></p>
       <button class="app-install-banner-cta" id="appInstallButton" type="button" data-ko="앱 설치하기" data-en="Install App">앱 설치하기</button>
-      <button class="app-install-banner-close" id="appInstallBannerClose" type="button" aria-label="닫기">×</button>
+      <button class="app-install-banner-close" id="appInstallBannerClose" type="button" data-ko-aria-label="닫기" data-en-aria-label="Close" aria-label="닫기">×</button>
     </div>
   </div>
 
   <div class="pwa-install-help" id="pwaInstallHelp" hidden role="dialog" aria-modal="true" aria-labelledby="pwaInstallHelpTitle">
-    <button class="pwa-install-help-backdrop" type="button" data-pwa-help-close aria-label="닫기"></button>
+    <button class="pwa-install-help-backdrop" type="button" data-pwa-help-close data-ko-aria-label="닫기" data-en-aria-label="Close" aria-label="닫기"></button>
     <div class="pwa-install-help-panel">
-      <button class="pwa-install-help-close" type="button" data-pwa-help-close aria-label="닫기">×</button>
+      <button class="pwa-install-help-close" type="button" data-pwa-help-close data-ko-aria-label="닫기" data-en-aria-label="Close" aria-label="닫기">×</button>
       <h2 id="pwaInstallHelpTitle" data-ko="Harmony Link 앱 설치 안내" data-en="Install Harmony Link">Harmony Link 앱 설치 안내</h2>
       <p id="pwaInstallHelpMessage"></p>
-      <button class="pwa-chrome-open" id="pwaChromeOpen" type="button" hidden>Chrome에서 열기</button>
+      <button class="pwa-chrome-open" id="pwaChromeOpen" type="button" hidden data-ko="Chrome에서 열기" data-en="Open in Chrome">Chrome에서 열기</button>
       <div class="pwa-chrome-fallback" id="pwaChromeFallback" hidden>
-        <ol><li>아래 주소 복사</li><li>Chrome 앱 열기</li><li>위 주소창에 붙여넣기</li></ol>
+        <ol><li data-ko="아래 주소 복사" data-en="Copy the address below">아래 주소 복사</li><li data-ko="Chrome 앱 열기" data-en="Open the Chrome app">Chrome 앱 열기</li><li data-ko="위 주소창에 붙여넣기" data-en="Paste it into Chrome's address bar">위 주소창에 붙여넣기</li></ol>
         <code id="pwaCurrentUrl"></code>
-        <button id="pwaCopyUrl" type="button">홈페이지 주소 복사</button>
-        <strong id="pwaCopyComplete" role="status" hidden>주소가 복사되었습니다</strong>
+        <button id="pwaCopyUrl" type="button" data-ko="홈페이지 주소 복사" data-en="Copy website address">홈페이지 주소 복사</button>
+        <strong id="pwaCopyComplete" role="status" hidden data-ko="주소가 복사되었습니다" data-en="Address copied">주소가 복사되었습니다</strong>
       </div>
     </div>
   </div>
@@ -127,7 +127,7 @@
       <div class="container hero-grid">
         <div class="hero-copy reveal">
           <p class="eyebrow" data-ko="HARMONY LINK · 이음문화센터" data-en="HARMONY LINK · E-EUM CULTURE CENTER">HARMONY LINK · 이음문화센터</p>
-          <h1 data-ko="배우고 싶은 사람과<br><em>가르치는 사람을 연결합니다.</em>" data-en="Connecting people who want to learn<br><em>with people ready to teach.</em>">배우고 싶은 사람과<br><em>가르치는 사람을 연결합니다.</em></h1>
+          <h1 data-ko="배우고 싶은 사람과<br><em>가르치는 사람을 연결합니다.</em>" data-en="Connecting people who want to learn <em>with people ready to teach.</em>">배우고 싶은 사람과<br><em>가르치는 사람을 연결합니다.</em></h1>
           <p class="hero-desc" data-ko="디지털 · 음악 · 언어 · 건강 · 문화 · 생활교육까지<br>필요한 교육을 찾고 전문 강사와 연결하세요." data-en="From digital skills, music, and language to wellness, culture, and everyday learning,<br>find the education you need and connect with expert instructors.">디지털 · 음악 · 언어 · 건강 · 문화 · 생활교육까지<br>필요한 교육을 찾고 전문 강사와 연결하세요.</p>
           <div class="hero-actions">
             <a class="btn btn-explore" href="#digital-why"><span data-ko="교육 프로그램 찾기" data-en="Find Programs">교육 프로그램 찾기</span><b aria-hidden="true">→</b></a>
@@ -512,9 +512,9 @@
     </section>
   </main>
 
-  <footer><div class="container footer-top"><a class="logo logo-light" href="#top"><span class="logo-mark brand-image footer-brand-image"><img src="assets/harmony-logo.png" alt=""></span><span class="logo-name">Harmony <b>Link</b><small data-ko="이음문화센터" data-en="E-eum Culture Center">이음문화센터</small></span></a><p data-ko="하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다." data-en="A cultural and educational project operated<br class='mobile-en-only-break'>by Hibelle Consulting.">하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다.</p><div class="footer-nav"><a href="#about" data-ko="회사 소개" data-en="About">회사 소개</a><a href="#digital-why" data-ko="전문 교육" data-en="Specialty Programs">전문 교육</a><a href="#events" data-ko="강좌·행사" data-en="Classes & Events">강좌·행사</a><a href="community.html" data-ko="커뮤니티" data-en="Community">커뮤니티</a><a href="#contact" data-ko="문의하기" data-en="Contact">문의하기</a></div></div><div class="container footer-bottom"><span>© 2026 Hibelle Consulting · Harmony Link / 이음문화센터</span><div><a href="#" data-ko="개인정보처리방침" data-en="Privacy Policy">개인정보처리방침</a><a href="#" data-ko="이용약관" data-en="Terms">이용약관</a><button id="footerDeleteAccount" type="button" class="auth-delete footer-account-delete" data-ko="회원 탈퇴" data-en="Delete Account">회원 탈퇴</button></div></div></footer>
+  <footer><div class="container footer-top"><a class="logo logo-light" href="#top"><span class="logo-mark brand-image footer-brand-image"><img src="assets/harmony-logo.png" alt=""></span><span class="logo-name">Harmony <b>Link</b><small data-ko="이음문화센터" data-en="E-eum Culture Center">이음문화센터</small></span></a><p data-ko="하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다." data-en="A cultural and educational project operated<br class='mobile-en-only-break'>by Hibelle Consulting.">하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다.</p><div class="footer-nav"><a href="#about" data-ko="회사 소개" data-en="About">회사 소개</a><a href="#digital-why" data-ko="전문 교육" data-en="Specialty Programs">전문 교육</a><a href="#events" data-ko="강좌·행사" data-en="Classes & Events">강좌·행사</a><a href="community.html" data-ko="커뮤니티" data-en="Community">커뮤니티</a><a href="#contact" data-ko="문의하기" data-en="Contact">문의하기</a></div></div><div class="container footer-bottom"><span data-ko="© 2026 Hibelle Consulting · Harmony Link / 이음문화센터" data-en="© 2026 Hibelle Consulting · Harmony Link / E-eum Culture Center">© 2026 Hibelle Consulting · Harmony Link / 이음문화센터</span><div><a href="#" data-ko="개인정보처리방침" data-en="Privacy Policy">개인정보처리방침</a><a href="#" data-ko="이용약관" data-en="Terms">이용약관</a><button id="footerDeleteAccount" type="button" class="auth-delete footer-account-delete" data-ko="회원 탈퇴" data-en="Delete Account">회원 탈퇴</button></div></div></footer>
   <button class="to-top" type="button" aria-label="맨 위로">↑</button>
-  <script src="script.js?v=20260918-27"></script>
+  <script src="script.js?v=20260918-28"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="access-control.js?v=20260904-1"></script>
   <script src="auth.js?v=20260916-15"></script>

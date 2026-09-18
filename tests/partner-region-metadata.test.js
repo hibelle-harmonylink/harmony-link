@@ -103,14 +103,14 @@ test('current admin metadata RPC remains untouched while business spotlight stay
   assert.match(homepageScript, /item:\{\.\.\.adRooms\.community\.items\[1\],url:''/);
   assert.match(homepageScript, /className='floating-message'/);
   assert.match(homepageScript, /무엇이든 물어보세요/);
-  assert.match(homepageScript, /placeholder="메시지를 입력하세요\."/);
+  assert.match(homepageScript, /data-placeholder-ko="\$\{messageCopy\.ko\.placeholder\}" data-placeholder-en="\$\{messageCopy\.en\.placeholder\}"/);
   assert.match(homepageScript, /https:\/\/formsubmit\.co\/ajax\/hibelle@hibelleconsulting\.com/);
   assert.match(homepageScript, /if\(!response\.ok\)throw new Error\('send failed'\)/);
   assert.match(homepageScript, /const form=event\.currentTarget,status=form\.querySelector\('small'\),button=form\.querySelector\('button'\),message=form\.message\.value\.trim\(\)/);
   assert.match(homepageScript, /if\(button\.disabled\)return/);
-  assert.match(homepageScript, /if\(!message\)\{status\.textContent='메시지를 입력해주세요\.'/);
-  assert.match(homepageScript, /button\.textContent='보내는 중\.\.\.'/);
-  assert.match(homepageScript, /메시지가 전송되었습니다\./);
+  assert.match(homepageScript, /if\(!message\)\{status\.textContent=copy\.required/);
+  assert.match(homepageScript, /button\.textContent=copy\.sending/);
+  assert.match(homepageScript, /success:'메시지가 전송되었습니다\.'/);
   assert.match(homepageScript, /전송하지 못했습니다\. 다시 시도해주세요\./);
   assert.match(homepageScript, /const resetMessagePanel=.*?form\.reset\(\).*?textContent=''/);
   assert.match(homepageScript, /closeMessagePanel\?\.\(\)/);
