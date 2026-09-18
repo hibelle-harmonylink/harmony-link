@@ -82,6 +82,7 @@
   const content = document.getElementById('seniorLearningContent');
   const breadcrumb = document.getElementById('seniorBreadcrumb');
   const signoutButton = document.getElementById('seniorSignout');
+  const signinButton = document.getElementById('seniorSignin');
   const pageMode = document.body.dataset.seniorPage || 'home';
   const pagePath = pageMode === 'materials' ? 'senior-learning-materials.html' : pageMode === 'mini-apps' ? 'senior-mini-apps.html' : 'senior-learning.html';
   const client = window.supabase?.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true } });
@@ -92,9 +93,9 @@
   const findLesson = (categoryId, lessonId) => findCategory(categoryId)?.lessons.find(lesson => lesson.id === lessonId);
   const isLessonAvailable = lesson => ['ready', 'available'].includes(lesson?.status);
   const escapeHtml = value => String(value).replace(/[&<>'"]/g, character => ({ '&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;' }[character]));
-  const showLoading = () => { loading.hidden = false; gate.hidden = true; app.hidden = true; signoutButton.hidden = true; };
-  const showGate = () => { loading.hidden = true; app.hidden = true; gate.hidden = false; signoutButton.hidden = true; };
-  const showApp = () => { loading.hidden = true; gate.hidden = true; app.hidden = false; signoutButton.hidden = false; render(); };
+  const showLoading = () => { loading.hidden = false; gate.hidden = true; app.hidden = true; signoutButton.hidden = true; signinButton.hidden = false; };
+  const showGate = () => { loading.hidden = true; app.hidden = true; gate.hidden = false; signoutButton.hidden = true; signinButton.hidden = false; };
+  const showApp = () => { loading.hidden = true; gate.hidden = true; app.hidden = false; signoutButton.hidden = false; signinButton.hidden = true; render(); };
   const updateHistory = () => {
     const params = new URLSearchParams();
     if (state.categoryId) params.set('category', state.categoryId);

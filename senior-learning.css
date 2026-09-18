@@ -7,7 +7,7 @@ body { margin:0; color:var(--senior-text); background:#f6faff; }
 .tool-site-header .logo b { font-weight:600!important; }
 .tool-site-header .logo-name { line-height:1.04!important; }
 .senior-account-actions { display:flex; align-items:center; justify-content:flex-end; gap:8px; margin-left:auto; white-space:nowrap; }
-.tool-site-header .header-login { min-width:82px!important; min-height:40px!important; margin:0!important; display:inline-flex!important; align-items:center!important; justify-content:center!important; padding:0 14px!important; line-height:1!important; font-weight:600!important; }
+.tool-site-header .header-login:not([hidden]) { min-width:82px!important; min-height:40px!important; margin:0!important; display:inline-flex!important; align-items:center!important; justify-content:center!important; padding:0 14px!important; line-height:1!important; font-weight:600!important; }
 .tool-site-header .senior-signout-button { font:inherit; color:#17416f; cursor:pointer; }
 .senior-learning-main { min-height:calc(100vh - 120px); padding:132px 0 60px; }
 .senior-learning-container { width:min(1120px, calc(100% - 40px)); margin:0 auto; }
