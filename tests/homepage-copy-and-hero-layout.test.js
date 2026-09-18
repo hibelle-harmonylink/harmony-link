@@ -18,13 +18,19 @@ test('community home control keeps its destination and uses the homepage label',
   assert.match(community, /id="communityHomeButton" class="home-button" href="\.\/" hidden>홈페이지<\/a>/);
 });
 
-test('laptop hero uses non-overlapping copy and image tracks with matching cache keys', () => {
+test('English Hero wraps inside its own grid track without changing Korean layout rules', () => {
   assert.equal(version.version, '20260916-29');
   assert.match(homepage, /const pageVersion = '20260916-29'/);
-  assert.match(homepage, /homepage-ui\.css\?v=20260918-20/);
+  assert.match(homepage, /homepage-ui\.css\?v=20260918-21/);
   assert.match(homepage, /script\.js\?v=20260918-27/);
   assert.match(homepageCss, /@media\(max-width:1200px\) and \(min-width:901px\)/);
   assert.match(homepageCss, /grid-template-columns:minmax\(0,1fr\) minmax\(0,\.95fr\)!important/);
   assert.match(homepageCss, /white-space:normal!important/);
   assert.match(homepageCss, /\.hero \.hero-copy,\s*\.hero \.hero-visual\{min-width:0!important;\}/);
+  assert.match(homepageCss, /html\[lang="en"\] \.hero \.hero-copy\{min-width:0!important;\}/);
+  assert.match(homepageCss, /html\[lang="en"\] \.hero h1\{[\s\S]*?max-width:100%!important;[\s\S]*?white-space:normal!important;[\s\S]*?overflow-wrap:normal!important;[\s\S]*?word-break:normal!important;/);
+  assert.match(homepageCss, /html\[lang="en"\] \.hero h1 br\{display:none!important;\}/);
+  assert.match(homepageCss, /@media\(max-width:900px\) and \(min-width:761px\)\{[\s\S]*?html\[lang="en"\] \.hero \.hero-grid\{grid-template-columns:minmax\(0,1fr\)!important/);
+  assert.match(homepageCss, /html\[lang="en"\] \.hero \.hero-actions\{flex-wrap:wrap!important;\}/);
+  assert.doesNotMatch(homepageCss, /\n\.hero h1\{\s*max-width:100%!important/);
 });
