@@ -1285,6 +1285,19 @@ footer .footer-bottom{padding-top:11px!important}
 #events .event-info dl div{margin:3px 0!important}
 #events .event-map-link{margin-top:5px!important;padding:4px 8px!important}
 #events .event-detail-button{margin-top:14px!important}
+/* .event-flyer-button (past-event "전단지 보기") never had its own
+   margin-top rule, so it always sat right after the <dl> -- with
+   .event-info's flex:1 filling the grid-stretched card height, any slack
+   from a shorter card's content (e.g. a one-line "진행 방식" value vs. a
+   two-line 장소/address block) was left below the button instead of
+   above it, so it floated higher than a taller card's button even though
+   both cards were the same overall height. margin-top:auto pushes it to
+   the bottom of .event-info regardless of how tall the preceding content
+   is, so this holds for any future past-event card without per-card
+   tweaks -- unlike .event-detail-button above, its sibling cards always
+   carry matching content-line counts today, so it keeps its intentional
+   fixed 14px margin. */
+#events .event-flyer-button{margin-top:auto!important}
 #events .event-coming{height:100%!important}
 @media(max-width:760px){
   #events .event-card{height:auto!important}
