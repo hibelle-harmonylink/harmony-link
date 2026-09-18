@@ -113,3 +113,43 @@ test('senior learning layout is responsive and never relies on horizontal scroll
   assert.match(css, /@media \(max-width:620px\).*grid-template-columns:1fr/s);
   assert.match(css, /aspect-ratio:16\/9/);
 });
+
+test('senior learning header auth button reflects real session state instead of always showing signed out', () => {
+  // The CSS bug: an unconditional `display:...!important` on .header-login
+  // overrode the browser's native [hidden] styling, so #seniorSignout stayed
+  // visibly rendered (with its static "로그아웃" text) even while JS had
+  // correctly set signoutButton.hidden = true for a logged-out visitor.
+  // :not([hidden]) makes the forced layout only apply while the element is
+  // actually shown, so the hidden attribute -- and therefore the real
+  // session check below -- has a visible effect again.
+  assert.match(css, /\.tool-site-header \.header-login:not\(\[hidden\]\) \{[^}]*display:inline-flex!important/);
+  assert.doesNotMatch(css, /\.tool-site-header \.header-login \{[^}]*display:inline-flex/);
+
+  // 1) session 없음 -> 로그인 button visible, 로그아웃 hidden.
+  assert.match(script, /const showGate = \(\) => \{ loading\.hidden = true; app\.hidden = true; gate\.hidden = false; signoutButton\.hidden = true; signinButton\.hidden = false; \};/);
+  // 2) session 있음 -> 로그아웃 button visible, 로그인 hidden.
+  assert.match(script, /const showApp = \(\) => \{ loading\.hidden = true; gate\.hidden = true; app\.hidden = false; signoutButton\.hidden = false; signinButton\.hidden = true; render\(\); \};/);
+  // 3) logout 후 -> re-runs the real session check (not a hardcoded flip),
+  //    which lands back on showGate() (로그인) once getSession() reports no user.
+  assert.match(script, /signoutButton\.addEventListener\('click', async \(\) => \{ await client\?\.auth\.signOut\(\); \}\);/);
+  assert.match(script, /client\?\.auth\.onAuthStateChange\(\(event, session\) => \{ if \(event !== 'INITIAL_SESSION'\) void checkMember\(session\); \}\);/);
+  // 6) Auth client failing to initialize is treated as logged-out (로그인), never as authenticated.
+  assert.match(script, /if \(!client\) \{ if \(checkId === memberCheckId\) showGate\(\); return; \}/);
+  assert.match(script, /if \(!session\?\.user\) \{ if \(checkId === memberCheckId\) showGate\(\); return; \}/);
+  // 7) The member-only content gate itself is unchanged.
+  assert.match(page, /하모니링크 회원을 위한 배움터예요/);
+  assert.match(page, /무료 회원가입/);
+
+  // Safe initial paint: #seniorSignin ships with no [hidden] attribute (visible
+  // "로그인" from first paint), while #seniorSignout ships hidden -- so there is
+  // no flash of "로그아웃" before JS confirms the real session state.
+  for (const markup of [page, materialsPage, miniAppsPage]) {
+    assert.match(markup, /<a class="header-login senior-signin-button" id="seniorSignin" href="index\.html\?auth=login&amp;return=[^"]+\.html">로그인<\/a>/);
+    assert.match(markup, /<button class="header-login senior-signout-button" id="seniorSignout" type="button" hidden>로그아웃<\/button>/);
+  }
+  // Reuses the existing HarmonyLink login flow and per-page return path --
+  // no new sign-in system, same pattern already used by the gate's own link.
+  assert.match(page, /id="seniorSignin" href="index\.html\?auth=login&amp;return=senior-learning\.html"/);
+  assert.match(materialsPage, /id="seniorSignin" href="index\.html\?auth=login&amp;return=senior-learning-materials\.html"/);
+  assert.match(miniAppsPage, /id="seniorSignin" href="index\.html\?auth=login&amp;return=senior-mini-apps\.html"/);
+});

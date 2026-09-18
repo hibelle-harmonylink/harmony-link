@@ -12,7 +12,7 @@ body { margin: 0; background: linear-gradient(180deg, #f4f8fd 0, #fff 48%); colo
 /* Tool pages deliberately reuse the homepage's .logo and .header-login blocks. */
 .tool-site-header .nav-wrap { justify-content: space-between !important; }
 .hanja-account-actions { display:flex; align-items:center; gap:8px; margin-left:auto; white-space:nowrap; }
-.tool-site-header .hanja-account-actions .header-login { margin-left:0; width:auto !important; min-width:82px !important; flex:0 0 auto !important; display:inline-flex !important; align-items:center !important; justify-content:center !important; line-height:1 !important; }
+.tool-site-header .hanja-account-actions .header-login:not([hidden]) { margin-left:0; width:auto !important; min-width:82px !important; flex:0 0 auto !important; display:inline-flex !important; align-items:center !important; justify-content:center !important; line-height:1 !important; }
 .skip-link { position: absolute; left: -9999px; }
 .skip-link:focus { left: 16px; top: 16px; z-index: 10; padding: 10px; background: #fff; color: var(--hanja-deep); }
 .hanja-container { width: min(100% - 32px, 940px); margin: 0 auto; }

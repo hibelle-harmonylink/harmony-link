@@ -123,3 +123,16 @@ test('easy hanja header reuses the homepage logo markup and header login style',
   assert.match(page, /homepage-ui\.css\?v=20260916-16/);
   assert.doesNotMatch(page, /hanja-logo-mark|hanja-home-link/);
 });
+
+test('hanja signout button respects its hidden attribute instead of always rendering', () => {
+  // Same class of bug as senior-learning.css: an unconditional
+  // `display:...!important` on .header-login overrode the browser's native
+  // [hidden] styling, so #hanjaSignout stayed visible with its static
+  // "로그아웃" text even for a logged-out visitor whose session check had
+  // already set signout.hidden = true.
+  assert.match(css, /\.tool-site-header \.hanja-account-actions \.header-login:not\(\[hidden\]\) \{[^}]*display:inline-flex !important/);
+  assert.doesNotMatch(css, /\.tool-site-header \.hanja-account-actions \.header-login \{[^}]*display:inline-flex/);
+  assert.match(script, /loading\.hidden = false;[\s\S]*?signout\.hidden = true;/);
+  assert.match(script, /gate\.hidden = false;[\s\S]*?signout\.hidden = true;/);
+  assert.match(script, /app\.hidden = false;[\s\S]*?signout\.hidden = false;/);
+});
