@@ -687,7 +687,7 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
 .site-header .primary-nav>a:not(.header-education-cta)::after{bottom:1px!important;background:var(--hl-primary)!important}
 .site-header .header-partner-link{font-size:0!important}
 .site-header .header-partner-link::before{content:"파트너";font-size:13px}
-html[lang="en"] .site-header .header-partner-link::before{content:"Partners"}
+html[lang="en"] .site-header .header-partner-link::before{content:"Partner Center"}
 .site-header .lang-toggle{flex:0 0 auto!important;background:#f2f5f9!important;border:1px solid #e1e7ef!important}
 .site-header .lang-toggle .active{background:var(--hl-primary)!important;color:#fff!important}
 .site-header .auth-nav-slot{display:flex!important;align-items:center!important;gap:8px!important}
@@ -1383,7 +1383,6 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
 @media(min-width:761px) and (max-width:1200px){
   .site-header .nav-wrap{width:min(1360px,calc(100% - 48px))!important;gap:7px!important}
   .site-header .primary-nav{grid-template-columns:60px 94px 60px 68px 56px 44px 44px 90px max-content;gap:3px!important;font-size:clamp(11px,1.05vw,13px)!important}
-  html[lang="en"] .site-header .primary-nav{font-size:11px!important}
   .site-header .admin-member-link{padding-inline:6px!important;font-size:9px!important}
   .site-header .auth-user{grid-template-columns:30px minmax(0,82px) auto!important;gap:4px!important;white-space:nowrap!important}
   .site-header .auth-avatar-edit,
@@ -1404,22 +1403,15 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
    existing hamburger navigation instead of letting a one-line grid overflow. */
 @media(min-width:1201px){
   html[lang="en"] .site-header .primary-nav{
-    grid-template-columns:64px minmax(96px,112px) 106px 72px 74px 48px 52px 90px max-content;
+    grid-template-columns:64px minmax(96px,112px) 106px 96px 74px 48px 52px 90px max-content;
     gap:clamp(3px,.5vw,7px)!important;
   }
 }
-@media(min-width:901px) and (max-width:1200px){
-  html[lang="en"] .site-header .primary-nav{
-    grid-template-columns:60px 94px 87px 68px 64px 44px 44px 90px max-content;
-    gap:2px!important;
-    font-size:11px!important;
-  }
-}
-@media(min-width:761px) and (max-width:900px){
+@media(max-width:1200px){
   html[lang="en"] .site-header .nav-wrap{width:calc(100% - 32px)!important}
   html[lang="en"] .site-header .menu-toggle{display:block!important;position:relative;z-index:103}
   html[lang="en"] .site-header .mobile-lang-toggle{display:flex!important;margin-left:auto;margin-right:8px;position:relative;z-index:103}
-  html[lang="en"] .site-header .primary-nav{position:fixed!important;inset:0!important;z-index:102!important;display:flex!important;flex-direction:column!important;justify-content:center!important;gap:14px!important;padding:88px 24px 40px!important;overflow-y:auto!important;background:#fff!important;transform:translateX(100%)!important;visibility:hidden!important;pointer-events:none!important;opacity:0!important;transition:transform .35s ease,opacity .25s ease,visibility 0s linear .35s!important}
+  html[lang="en"] .site-header .primary-nav{position:fixed!important;inset:0!important;z-index:102!important;display:flex!important;flex-direction:column!important;justify-content:center!important;gap:14px!important;padding:88px 24px 40px!important;overflow-y:auto!important;background:#fff!important;font-size:13px!important;transform:translateX(100%)!important;visibility:hidden!important;pointer-events:none!important;opacity:0!important;transition:transform .35s ease,opacity .25s ease,visibility 0s linear .35s!important}
   html[lang="en"] .site-header .primary-nav.open{transform:translateX(0)!important;visibility:visible!important;pointer-events:auto!important;opacity:1!important;transition:transform .35s ease,opacity .25s ease!important}
   html[lang="en"] .site-header .primary-nav>a,html[lang="en"] .site-header .primary-nav>button,html[lang="en"] .site-header .primary-nav>.auth-nav-slot{width:min(100%,320px)!important;margin-inline:auto!important;min-height:44px!important}
   html[lang="en"] .site-header .primary-nav .lang-toggle{display:none!important}

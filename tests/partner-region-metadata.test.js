@@ -59,6 +59,7 @@ test('current admin metadata RPC remains untouched while business spotlight stay
   assert.match(homepageScript, /phoneHref:'tel:\+14696056035'/);
   assert.match(homepageScript, /\{region:'tx',item:dmsCareBusiness/);
   assert.match(homepageScript, /summaryKo:'미국 의료 직업 학교'/);
+  assert.match(homepageScript, /summaryEn:'Professional care workforce education'/);
   assert.match(homepageScript, /categoryKo:'케어 전문 교육센터'/);
   assert.match(homepageScript, /assets\/images\/dms-care-flyer-en\.png/);
   assert.doesNotMatch(homepageScript, /flyers:\['assets\/images\/dms-care-flyer-ko\.png'/);
@@ -95,6 +96,9 @@ test('current admin metadata RPC remains untouched while business spotlight stay
   assert.doesNotMatch(homepageScript, /encodeURIComponent\(mapQuery\|\|address\)/);
   assert.match(homepageScript, /class="business-address"[\s\S]*?target="_blank" rel="noopener noreferrer"/);
   assert.match(homepageScript, /const displayLocation=currentLanguage==='en'\?locationEn:locationKo/);
+  assert.match(homepageScript, /let selectedBusinessRegion = 'all';/);
+  assert.match(homepageScript, /function renderBusinessSpotlights\(selectedRegion=selectedBusinessRegion\)/);
+  assert.doesNotMatch(homepageScript, /renderAdvertisingCarousel/);
   assert.match(homepageScript, /:`<p class="business-address" data-ko="\$\{locationKo\}" data-en="\$\{locationEn\}">\$\{displayLocation\}<\/p>`/);
   assert.match(homepageScript, /item:\{\.\.\.adRooms\.community\.items\[1\],url:''/);
   assert.match(homepageScript, /className='floating-message'/);
