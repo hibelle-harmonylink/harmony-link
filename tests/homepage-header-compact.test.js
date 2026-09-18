@@ -22,6 +22,13 @@ test('KO and EN use equal centered button cells', () => {
   assert.match(css, /lang-toggle span\{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:42px!important;height:32px!important/);
 });
 
+test('English header cells fit the full labels before switching to the existing compact menu', () => {
+  assert.match(css, /html\[lang="en"\] \.site-header \.primary-nav\{\s*grid-template-columns:64px minmax\(96px,112px\) 106px 72px 74px 48px 52px 90px max-content/);
+  assert.match(css, /html\[lang="en"\] \.site-header \.primary-nav\{\s*grid-template-columns:60px 94px 87px 68px 64px 44px 44px 90px max-content/);
+  assert.match(css, /@media\(min-width:761px\) and \(max-width:900px\)\{[\s\S]*?html\[lang="en"\] \.site-header \.primary-nav\.open/);
+  assert.match(script, /const usesCompactHeader = \(\) => window\.innerWidth <= 760 \|\| \(currentLanguage === 'en' && window\.innerWidth <= 900\)/);
+});
+
 test('homepage menu keeps the senior learning link and uses the requested education-program title', () => {
   assert.match(page, /href="senior-learning\.html"/);
   assert.match(script, /EDUCATION PROGRAMS/);
