@@ -228,7 +228,6 @@ function setLanguage(language) {
   langButton.setAttribute('aria-label', language === 'ko' ? 'Switch to English' : '한국어로 전환');
   menuButton.setAttribute('aria-label', language === 'ko' ? '메뉴 열기' : 'Open menu');
   toTop.setAttribute('aria-label', language === 'ko' ? '맨 위로' : 'Back to top');
-  document.getElementById('appInstallBannerClose')?.setAttribute('aria-label', language === 'ko' ? '닫기' : 'Close');
   document.title = language === 'ko' ? 'Harmony Link | 배움으로 이어지는 우리' : 'Harmony Link | Connected through learning';
   localStorage.setItem('harmonyLanguage', language);
   if (!nav.classList.contains('open')) {
@@ -371,8 +370,12 @@ const openInAppChromeGuide = (showFallback = false) => {
   pwaInstallHelp.classList.add('in-app-browser');
   pwaInstallHelpBackdrop.disabled = true;
   pwaInstallHelpClose.hidden = true;
-  pwaInstallHelpTitle.textContent = showFallback ? 'Chrome으로 자동 이동하지 않았어요.' : '앱 설치는 Chrome에서 가능합니다';
-  pwaInstallHelpMessage.textContent = showFallback ? '' : '아래 버튼을 누르면 현재 홈페이지를 Chrome으로 엽니다.';
+  pwaInstallHelpTitle.textContent = showFallback
+    ? (currentLanguage === 'en' ? 'Chrome did not open automatically.' : 'Chrome으로 자동 이동하지 않았어요.')
+    : (currentLanguage === 'en' ? 'App installation is available in Chrome.' : '앱 설치는 Chrome에서 가능합니다');
+  pwaInstallHelpMessage.textContent = showFallback ? '' : (currentLanguage === 'en'
+    ? 'Use the button below to open this page in Chrome.'
+    : '아래 버튼을 누르면 현재 홈페이지를 Chrome으로 엽니다.');
   pwaChromeOpen.hidden = showFallback;
   pwaChromeFallback.hidden = !showFallback;
   pwaCurrentUrl.textContent = location.href;
@@ -419,7 +422,9 @@ const copyCurrentPageUrl = async () => {
     copied = document.execCommand('copy');
     input.remove();
   }
-  pwaCopyComplete.textContent = copied ? '주소가 복사되었습니다' : '주소를 길게 눌러 복사해 주세요';
+  pwaCopyComplete.textContent = copied
+    ? (currentLanguage === 'en' ? 'Address copied' : '주소가 복사되었습니다')
+    : (currentLanguage === 'en' ? 'Press and hold the address to copy it.' : '주소를 길게 눌러 복사해 주세요');
   pwaCopyComplete.hidden = false;
 };
 
@@ -1407,13 +1412,14 @@ const openBusinessFlyer=(business,trigger)=>{
 };
 businessFlyerModal.querySelectorAll('[data-business-flyer-close]').forEach(control=>control.addEventListener('click',closeBusinessFlyer));
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!businessFlyerModal.hidden)closeBusinessFlyer();});
+const messageCopy={ko:{close:'닫기',title:'무엇이든 물어보세요',description:'궁금한 내용을 남겨주세요.',placeholder:'메시지를 입력하세요.',send:'보내기',sending:'보내는 중...',required:'메시지를 입력해주세요.',success:'메시지가 전송되었습니다.',failure:'전송하지 못했습니다. 다시 시도해주세요.',trigger:'메시지 보내기'},en:{close:'Close',title:'Ask us anything',description:'Leave us a message.',placeholder:'Type your message.',send:'Send',sending:'Sending...',required:'Please enter a message.',success:'Your message has been sent.',failure:'We could not send your message. Please try again.',trigger:'Send Message'}};
 const messageWidget=document.createElement('aside');messageWidget.className='floating-message';
-messageWidget.innerHTML=`<section class="floating-message-panel" hidden aria-labelledby="floatingMessageTitle"><button type="button" class="floating-message-close" aria-label="닫기">×</button><p>HARMONY LINK</p><h2 id="floatingMessageTitle">무엇이든 물어보세요</h2><span>궁금한 내용을 남겨주세요.</span><form><textarea name="message" required placeholder="메시지를 입력하세요."></textarea><button type="submit">보내기</button><small role="status"></small></form></section><button type="button" class="floating-message-trigger" aria-label="메시지 보내기"><span aria-hidden="true">💬</span> 메시지 보내기</button>`;document.body.appendChild(messageWidget);
+messageWidget.innerHTML=`<section class="floating-message-panel" hidden aria-labelledby="floatingMessageTitle"><button type="button" class="floating-message-close" data-ko-aria-label="${messageCopy.ko.close}" data-en-aria-label="${messageCopy.en.close}" aria-label="${messageCopy.ko.close}">×</button><p>HARMONY LINK</p><h2 id="floatingMessageTitle" data-ko="${messageCopy.ko.title}" data-en="${messageCopy.en.title}">${messageCopy.ko.title}</h2><span data-ko="${messageCopy.ko.description}" data-en="${messageCopy.en.description}">${messageCopy.ko.description}</span><form><textarea name="message" required data-placeholder-ko="${messageCopy.ko.placeholder}" data-placeholder-en="${messageCopy.en.placeholder}" placeholder="${messageCopy.ko.placeholder}"></textarea><button type="submit" data-ko="${messageCopy.ko.send}" data-en="${messageCopy.en.send}">${messageCopy.ko.send}</button><small role="status"></small></form></section><button type="button" class="floating-message-trigger" data-ko-aria-label="${messageCopy.ko.trigger}" data-en-aria-label="${messageCopy.en.trigger}" aria-label="${messageCopy.ko.trigger}"><span aria-hidden="true">💬</span><span data-ko="${messageCopy.ko.trigger}" data-en="${messageCopy.en.trigger}">${messageCopy.ko.trigger}</span></button>`;document.body.appendChild(messageWidget);
 const messagePanel=messageWidget.querySelector('.floating-message-panel'),messageTrigger=messageWidget.querySelector('.floating-message-trigger');
-const resetMessagePanel=()=>{const form=messagePanel.querySelector('form');form.reset();form.querySelector('small').textContent='';const button=form.querySelector('button');button.disabled=false;button.textContent='보내기';};
+const resetMessagePanel=()=>{const form=messagePanel.querySelector('form');form.reset();form.querySelector('small').textContent='';const button=form.querySelector('button');button.disabled=false;button.textContent=messageCopy[currentLanguage].send;};
 const closeMessagePanel=()=>{messagePanel.hidden=true;resetMessagePanel();messageTrigger.focus();};messageTrigger.addEventListener('click',()=>{if(!messagePanel.hidden){closeMessagePanel();return;}resetMessagePanel();messagePanel.hidden=false;messagePanel.querySelector('textarea').focus();});messageWidget.querySelector('.floating-message-close').addEventListener('click',closeMessagePanel);
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!messagePanel.hidden)closeMessagePanel();});
-messagePanel.querySelector('form').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget,status=form.querySelector('small'),button=form.querySelector('button'),message=form.message.value.trim();if(button.disabled)return;if(!message){status.textContent='메시지를 입력해주세요.';form.message.focus();return;}button.disabled=true;button.textContent='보내는 중...';status.textContent='';try{const data=new FormData();data.set('문의 유형','홈페이지 메시지');data.set('문의사항',message);data.set('_subject','Harmony Link 홈페이지 메시지');data.set('_captcha','false');const response=await fetch('https://formsubmit.co/ajax/hibelle@hibelleconsulting.com',{method:'POST',headers:{Accept:'application/json'},body:data});if(!response.ok)throw new Error('send failed');status.textContent='메시지가 전송되었습니다.';form.reset();}catch{status.textContent='전송하지 못했습니다. 다시 시도해주세요.';}finally{button.disabled=false;button.textContent='보내기';}});
+messagePanel.querySelector('form').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget,status=form.querySelector('small'),button=form.querySelector('button'),message=form.message.value.trim(),copy=messageCopy[currentLanguage];if(button.disabled)return;if(!message){status.textContent=copy.required;form.message.focus();return;}button.disabled=true;button.textContent=copy.sending;status.textContent='';try{const data=new FormData();data.set('문의 유형','홈페이지 메시지');data.set('문의사항',message);data.set('_subject','Harmony Link 홈페이지 메시지');data.set('_captcha','false');const response=await fetch('https://formsubmit.co/ajax/hibelle@hibelleconsulting.com',{method:'POST',headers:{Accept:'application/json'},body:data});if(!response.ok)throw new Error('send failed');status.textContent=copy.success;form.reset();}catch{status.textContent=copy.failure;}finally{button.disabled=false;button.textContent=copy.send;}});
 let selectedBusinessRegion = 'all';
 function renderBusinessSpotlights(selectedRegion=selectedBusinessRegion) {
   selectedBusinessRegion = selectedRegion;
@@ -1622,6 +1628,23 @@ document.querySelectorAll('.contact-form-open').forEach(button => button.addEven
 // Twelve fixed categories are grouped by the tier that first unlocks them.
 // BASIC and PREMIUM retain the established cumulative partner access:
 // FREE = 2 categories, BASIC = 6, PREMIUM = all 12.
+const partnerResourceTranslations={
+  '시작하기':'Getting Started','입점 후 가장 먼저 확인하는 필수 안내 자료':'Essential guidance to review first after joining','시작 안내서':'Getting Started Guide','플랫폼 운영 정책':'Platform Operations Policy','파트너 계약서':'Partner Agreement','강사 활동 안내':'Instructor Activity Guide',
+  '공지사항':'Announcements','Harmony Link 운영 공지 및 주요 업데이트':'Harmony Link operating notices and key updates','최신 공지':'Latest notices','바로가기':'Open','파트너 공지':'Partner notices','행사 일정':'Event schedule','자료실 업데이트':'Resource updates',
+  '운영 매뉴얼':'Operations Manual','기관 출강과 실제 수업 운영을 위한 기본 가이드':'Core guidance for institutional classes and delivery','기관 수업 진행':'Running institutional classes','출강 체크':'Teaching visit checklist','첫 수업 준비':'First class preparation','수업 마무리':'Closing a class','강사 매너·복장':'Instructor etiquette and attire','안전 수칙':'Safety guidelines',
+  '수업 자료':'Class Resources','수업 준비와 진행에 활용할 수 있는 교육 자료':'Resources for class preparation and delivery','수업계획서 양식':'Lesson plan template','출석부':'Attendance sheet','만족도 조사':'Satisfaction survey','수료증 양식':'Certificate template','강의 노트 양식':'Lecture notes template','PPT 템플릿':'PPT template','스마트폰 교안':'Smartphone lesson materials','컴퓨터 교안':'Computer lesson materials','영상편집 교안':'Video editing lesson materials','합창곡':'Choir music','반주 자료':'Accompaniment materials','발성 자료':'Voice training materials','음악 활동지':'Music activity sheets','악보':'Sheet music',
+  '홍보 자료':'Promotional Resources','Harmony Link 브랜드 홍보 및 프로그램 안내 자료':'Harmony Link branding and program information resources','브랜드 로고':'Brand logo','전단지 예시':'Flyer examples','컬러 가이드':'Color guide','SNS 카드뉴스':'Social media cards','배너':'Banner','명함 디자인':'Business card design','프로필 템플릿':'Profile template',
+  '서식 · 템플릿':'Forms & Templates','강사 운영에 필요한 기본 문서와 실무 양식':'Core documents and working templates for instructors','강사 프로필 양식':'Instructor profile template','강의계획서':'Course plan','일정표':'Schedule','기관 소개서':'Organization profile','PDF 템플릿':'PDF template',
+  'Canva 디자인 자료':'Canva Design Resources','전단지·배너·SNS 제작에 활용하는 디자인 자료':'Design resources for flyers, banners, and social media','Canva 템플릿':'Canva templates','Canva 사용법':'Using Canva',
+  '기관 제안 · 영업 자료':'Institutional Proposals & Outreach','기관 제안과 프로그램 영업에 활용하는 실전 자료':'Practical resources for institutional proposals and program outreach','프로그램 제안서':'Program proposal','견적서':'Quote template','기관 계약 방법':'Institutional contracts','마케팅 방법':'Marketing methods',
+  'AI 수업 활용 자료':'AI Teaching Resources','AI·ChatGPT 등을 교육에 활용하기 위한 강의 자료':'Teaching materials for using AI and ChatGPT in education','ChatGPT 자료':'ChatGPT resources','AI 활용 자료':'AI usage resources','ChatGPT 활용법':'Using ChatGPT',
+  'SNS · 콘텐츠 자료':'Social Media & Content','SNS 홍보와 콘텐츠 제작에 활용하는 운영 자료':'Operational resources for social promotion and content creation','디지털 이미지':'Digital images','화상영어 이미지':'Online English images','멜로디 이미지':'Melody images','모집 포스터':'Recruitment posters',
+  '프로그램 기획 자료':'Program Planning Resources','새로운 강좌와 프로그램을 설계하기 위한 기획 자료':'Planning resources for new classes and programs','프로그램 예시':'Program examples','강의 잘하는 방법':'Effective teaching','시니어 수업 노하우':'Senior class guidance',
+  '파트너 성장 자료':'Partner Growth Resources','수업 확대·기관 확보·브랜드 성장에 활용하는 자료':'Resources for class expansion, institutional outreach, and brand growth','홍보 디자인':'Promotional design','추천 노출 신청':'Featured placement request','프로그램 등록':'Program registration',
+  '준비 중':'Coming soon','자료 준비 중':'Resource coming soon','자료 보기 →':'View resource →','다운로드 ↓':'Download ↓','열기':'Open','닫기':'Close','접근 승인됨':'Access granted','필요한 영역을 선택하면 다운로드 가능한 파일과 준비 중인 자료를 확인할 수 있습니다.':'Select an area to view available downloads and resources in preparation.','이 자료는 승인된 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다.':'These resources are for approved partners only. External sharing and unauthorized distribution are prohibited.'
+};
+const partnerResourceText=ko=>({ko,en:partnerResourceTranslations[ko]||ko});
+const partnerResourceMarkup=(tag,ko,className='')=>{const text=partnerResourceText(ko),attribute=className?` class="${className}"`:'';return `<${tag}${attribute} data-ko="${text.ko}" data-en="${text.en}">${currentLanguage==='en'?text.en:text.ko}</${tag}>`;};
 const partnerResourceSections = [
   {tier:0,icon:'🚀',title:'시작하기',copy:'입점 후 가장 먼저 확인하는 필수 안내 자료',items:[['시작 안내서','downloads/HarmonyLink_Partner_Getting_Started.pdf','PDF'],['플랫폼 운영 정책','downloads/HarmonyLink_Partner_Policy_v1.0.pdf','PDF'],['파트너 계약서','downloads/HarmonyLink_Partner_Agreement_v2.0.pdf','PDF'],['강사 활동 안내','downloads/HarmonyLink_Instructor_Activity_Guide_v1.0.pdf','PDF'],['FAQ','downloads/HarmonyLink_Partner_FAQ_v1.0.pdf','PDF']]},
   {tier:0,icon:'📌',title:'공지사항',copy:'Harmony Link 운영 공지 및 주요 업데이트',items:[['최신 공지','https://hibelleharmony.com/community.html?refresh=20260815-301&category=notice','바로가기','view'],['파트너 공지','downloads/HarmonyLink_Partner_Notice_Guide_v1.0.pdf','PDF'],['행사 일정'],['자료실 업데이트']]},
@@ -1638,18 +1661,18 @@ const partnerResourceSections = [
 ];
 if (downloads) {
   const resourceMarkup = partnerResourceSections.map((section,index) => `<article class="partner-resource-group${section.premium?' premium-resource':''}" data-resource-tier="${section.tier}">
-    <button type="button" class="partner-resource-toggle" aria-expanded="false" aria-controls="partnerResource${index}"><span class="resource-number"></span><div class="partner-resource-summary"><h3>${section.title}<em class="resource-tier-label">$${section.tier}</em></h3><p>${section.copy}</p></div><span class="partner-resource-action" aria-hidden="true">열기</span></button>
-    <div class="partner-resource-items" id="partnerResource${index}" hidden><p class="partner-resource-detail-copy">${section.copy}</p>${section.items.map(item=>`<div class="partner-resource-item"><span>${item[2]||'준비 중'}</span><strong>${item[0]}</strong>${item[1]?(item[3]==='view'?`<a href="${item[1]}">자료 보기 →</a>`:`<a href="${item[1]}" download>다운로드 ↓</a>`):'<small>자료 준비 중</small>'}</div>`).join('')}</div>
+    <button type="button" class="partner-resource-toggle" aria-expanded="false" aria-controls="partnerResource${index}"><span class="resource-number"></span><div class="partner-resource-summary"><h3>${partnerResourceMarkup('span',section.title)}<em class="resource-tier-label">$${section.tier}</em></h3>${partnerResourceMarkup('p',section.copy)}</div>${partnerResourceMarkup('span','열기','partner-resource-action')}</button>
+    <div class="partner-resource-items" id="partnerResource${index}" hidden>${partnerResourceMarkup('p',section.copy,'partner-resource-detail-copy')}${section.items.map(item=>`<div class="partner-resource-item">${partnerResourceMarkup('span',item[2]||'준비 중')}${partnerResourceMarkup('strong',item[0])}${item[1]?(item[3]==='view'?partnerResourceMarkup('a','자료 보기 →') .replace('>',` href="${item[1]}">`):partnerResourceMarkup('a','다운로드 ↓').replace('>',` href="${item[1]}" download>`)):partnerResourceMarkup('small','자료 준비 중')}</div>`).join('')}</div>
   </article>`).join('');
-  downloads.innerHTML = `<div class="partner-library-head"><div class="partner-library-status"><span class="unlocked-badge">접근 승인됨</span><p>필요한 영역을 선택하면 다운로드 가능한 파일과 준비 중인 자료를 확인할 수 있습니다.</p></div><div class="partner-tier-guide" aria-label="파트너 등급"><button type="button" data-tier="0"><strong>$0</strong><b>FREE</b></button><button type="button" data-tier="20"><strong>$20</strong><b>BASIC</b></button><button type="button" data-tier="50"><strong>$50</strong><b>PREMIUM</b></button></div><p class="partner-tier-benefit" aria-live="polite"></p></div><div class="partner-resource-library">${resourceMarkup}</div><p class="partner-download-warning">이 자료는 승인된 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다.</p>`;
-  const benefitText={0:'FREE · 2개 시작 자료를 이용할 수 있습니다.',20:'BASIC · FREE 포함 총 6개 자료를 이용할 수 있습니다.',50:'PREMIUM · 전체 12개 자료를 모두 이용할 수 있습니다.'};
+  downloads.innerHTML = `<div class="partner-library-head"><div class="partner-library-status">${partnerResourceMarkup('span','접근 승인됨','unlocked-badge')}${partnerResourceMarkup('p','필요한 영역을 선택하면 다운로드 가능한 파일과 준비 중인 자료를 확인할 수 있습니다.')}</div><div class="partner-tier-guide" aria-label="Partner tiers"><button type="button" data-tier="0"><strong>$0</strong><b>FREE</b></button><button type="button" data-tier="20"><strong>$20</strong><b>BASIC</b></button><button type="button" data-tier="50"><strong>$50</strong><b>PREMIUM</b></button></div><p class="partner-tier-benefit" aria-live="polite"></p></div><div class="partner-resource-library">${resourceMarkup}</div>${partnerResourceMarkup('p','이 자료는 승인된 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다.','partner-download-warning')}`;
+  const benefitText={0:{ko:'FREE · 2개 시작 자료를 이용할 수 있습니다.',en:'FREE · Access 2 starter resource groups.'},20:{ko:'BASIC · FREE 포함 총 6개 자료를 이용할 수 있습니다.',en:'BASIC · Access 6 resource groups including FREE.'},50:{ko:'PREMIUM · 전체 12개 자료를 모두 이용할 수 있습니다.',en:'PREMIUM · Access all 12 resource groups.'}};
   const library = downloads.querySelector('.partner-resource-library');
   const closeResource = button => {
     const panel = downloads.querySelector(`#${button.getAttribute('aria-controls')}`);
     if (!panel) return;
     panel.hidden = true;
     button.setAttribute('aria-expanded', 'false');
-    button.querySelector('.partner-resource-action').textContent = '열기';
+    const action=button.querySelector('.partner-resource-action');action.textContent=currentLanguage==='en'?'Open':'열기';
   };
   const setAccessTier=(maxTier=0,selectedTier=null)=>{
     const allowed=[0,20,50].filter(tier=>tier<=maxTier);
@@ -1662,7 +1685,7 @@ if (downloads) {
       button.classList.toggle('active',tier===selected);
       button.setAttribute('aria-pressed',String(tier===selected));
     });
-    const benefit=downloads.querySelector('.partner-tier-benefit');benefit.textContent=selected===null?'':benefitText[selected];benefit.hidden=selected===null||!benefitText[selected];
+    const benefit=downloads.querySelector('.partner-tier-benefit'),benefitCopy=selected===null?null:benefitText[selected];if(benefitCopy){benefit.dataset.ko=benefitCopy.ko;benefit.dataset.en=benefitCopy.en;}benefit.textContent=benefitCopy?(currentLanguage==='en'?benefitCopy.en:benefitCopy.ko):'';benefit.hidden=!benefitCopy;
     const sections=[...downloads.querySelectorAll('[data-resource-tier]')];
     let visibleCount=0;
     sections.forEach(section=>{
@@ -1681,7 +1704,7 @@ if (downloads) {
   downloads.querySelectorAll('.partner-resource-toggle').forEach(button=>button.addEventListener('click',()=>{
     const panel=downloads.querySelector(`#${button.getAttribute('aria-controls')}`);const open=panel.hidden;
     downloads.querySelectorAll('.partner-resource-toggle').forEach(other=>{if(other!==button)closeResource(other);});
-    panel.hidden=!open;button.setAttribute('aria-expanded',String(open));button.querySelector('.partner-resource-action').textContent=open?'닫기':'열기';
+    panel.hidden=!open;button.setAttribute('aria-expanded',String(open));button.querySelector('.partner-resource-action').textContent=currentLanguage==='en'?(open?'Close':'Open'):(open?'닫기':'열기');
   }));
 }
 document.querySelectorAll('#events .event-card:not(.event-coming)').forEach(card=>{

@@ -17,7 +17,7 @@ test('the production partner center, not the application modal, owns tier state'
 });
 
 test('partner center keeps the established cumulative access sets closed until a tier is selected', () => {
-  assert.match(script, /const benefitText=\{0:'FREE · 2개 시작 자료를 이용할 수 있습니다\.',20:'BASIC · FREE 포함 총 6개 자료를 이용할 수 있습니다\.',50:'PREMIUM · 전체 12개 자료를 모두 이용할 수 있습니다\.'/);
+  assert.match(script, /const benefitText=\{0:\{ko:'FREE · 2개 시작 자료를 이용할 수 있습니다\.',en:'FREE · Access 2 starter resource groups\.'/);
   assert.match(script, /const setAccessTier=\(maxTier=0,selectedTier=null\)=>/);
   assert.match(script, /const selected=selectedTier!==null&&allowed\.includes\(requestedTier\)\?requestedTier:null;/);
   assert.match(script, /const visible=selected!==null&&Number\(section\.dataset\.resourceTier\)<=selected;/);
@@ -34,7 +34,7 @@ test('the actual resource groups restore one-click open and one-open-at-a-time d
   assert.doesNotMatch(resourceBlock, /partner-resource-detail-toggle/);
   assert.match(script, /const closeResource = button =>/);
   assert.match(script, /downloads\.querySelectorAll\('\.partner-resource-toggle'\)\.forEach\(other=>\{if\(other!==button\)closeResource\(other\);\}\);/);
-  assert.match(script, /textContent=open\?'닫기':'열기'/);
+  assert.match(script, /textContent=currentLanguage==='en'\?\(open\?'Close':'Open'\):\(open\?'닫기':'열기'\)/);
   assert.match(script, /downloads\.querySelectorAll\('\.partner-resource-toggle'\)\.forEach\(closeResource\);/);
 });
 
