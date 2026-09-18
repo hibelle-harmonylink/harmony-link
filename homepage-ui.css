@@ -1400,6 +1400,34 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
   .site-header .primary-nav{display:flex!important}
 }
 
+/* English labels need wider fixed desktop cells. At tablet widths, reuse the
+   existing hamburger navigation instead of letting a one-line grid overflow. */
+@media(min-width:1201px){
+  html[lang="en"] .site-header .primary-nav{
+    grid-template-columns:64px minmax(96px,112px) 106px 72px 74px 48px 52px 90px max-content;
+    gap:clamp(3px,.5vw,7px)!important;
+  }
+}
+@media(min-width:901px) and (max-width:1200px){
+  html[lang="en"] .site-header .primary-nav{
+    grid-template-columns:60px 94px 87px 68px 64px 44px 44px 90px max-content;
+    gap:2px!important;
+    font-size:11px!important;
+  }
+}
+@media(min-width:761px) and (max-width:900px){
+  html[lang="en"] .site-header .nav-wrap{width:calc(100% - 32px)!important}
+  html[lang="en"] .site-header .menu-toggle{display:block!important;position:relative;z-index:103}
+  html[lang="en"] .site-header .mobile-lang-toggle{display:flex!important;margin-left:auto;margin-right:8px;position:relative;z-index:103}
+  html[lang="en"] .site-header .primary-nav{position:fixed!important;inset:0!important;z-index:102!important;display:flex!important;flex-direction:column!important;justify-content:center!important;gap:14px!important;padding:88px 24px 40px!important;overflow-y:auto!important;background:#fff!important;transform:translateX(100%)!important;visibility:hidden!important;pointer-events:none!important;opacity:0!important;transition:transform .35s ease,opacity .25s ease,visibility 0s linear .35s!important}
+  html[lang="en"] .site-header .primary-nav.open{transform:translateX(0)!important;visibility:visible!important;pointer-events:auto!important;opacity:1!important;transition:transform .35s ease,opacity .25s ease!important}
+  html[lang="en"] .site-header .primary-nav>a,html[lang="en"] .site-header .primary-nav>button,html[lang="en"] .site-header .primary-nav>.auth-nav-slot{width:min(100%,320px)!important;margin-inline:auto!important;min-height:44px!important}
+  html[lang="en"] .site-header .primary-nav .lang-toggle{display:none!important}
+  html[lang="en"] .site-header .primary-nav .header-login{width:min(100%,320px)!important;min-width:0!important;min-height:44px!important}
+  html[lang="en"] .site-header.menu-open{height:100dvh!important;max-height:none!important;background:#fff!important;backdrop-filter:none!important}
+  html[lang="en"] .site-header.menu-open .nav-wrap,html[lang="en"] .site-header.menu-open .primary-nav{height:100dvh!important;max-height:none!important}
+}
+
 /* English event metadata: aligned labels with compact, even row spacing. */
 html[lang="en"] #events .event-info dl{display:grid!important;gap:6px!important}
 html[lang="en"] #events .event-info dl>div{display:grid!important;grid-template-columns:82px minmax(0,1fr)!important;align-items:start!important;gap:10px!important;margin:0!important}

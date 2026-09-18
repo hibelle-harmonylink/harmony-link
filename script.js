@@ -147,12 +147,14 @@ document.querySelectorAll('[data-program]').forEach(link => {
 });
 document.querySelectorAll('.digital-request-btn').forEach(link => connectForm(link, digitalFormUrl));
 
+const usesCompactHeader = () => window.innerWidth <= 760 || (currentLanguage === 'en' && window.innerWidth <= 900);
+
 function closeMenu() {
   menuButton.classList.remove('open');
   nav.classList.remove('open');
   document.querySelector('.site-header')?.classList.remove('menu-open');
   menuButton.setAttribute('aria-expanded', 'false');
-  if (window.innerWidth <= 760) nav.setAttribute('aria-hidden', 'true');
+  if (usesCompactHeader()) nav.setAttribute('aria-hidden', 'true');
   else nav.removeAttribute('aria-hidden');
   document.body.classList.remove('mobile-menu-open');
   document.body.style.overflow = '';
@@ -169,7 +171,7 @@ menuButton.addEventListener('click', () => {
   document.body.style.overflow = open ? 'hidden' : '';
 });
 
-if (window.innerWidth <= 760) nav.setAttribute('aria-hidden', 'true');
+if (usesCompactHeader()) nav.setAttribute('aria-hidden', 'true');
 nav.addEventListener('click', event => {
   const link = event.target.closest('a');
   if (!link || !nav.contains(link)) return;
@@ -192,7 +194,7 @@ document.addEventListener('keydown', event => {
 });
 
 window.addEventListener('resize', () => {
-  if (window.innerWidth > 760) {
+  if (!usesCompactHeader()) {
     if (nav.classList.contains('open')) closeMenu();
     nav.removeAttribute('aria-hidden');
   } else if (!nav.classList.contains('open')) {
@@ -229,6 +231,9 @@ function setLanguage(language) {
   document.getElementById('appInstallBannerClose')?.setAttribute('aria-label', language === 'ko' ? '닫기' : 'Close');
   document.title = language === 'ko' ? 'Harmony Link | 배움으로 이어지는 우리' : 'Harmony Link | Connected through learning';
   localStorage.setItem('harmonyLanguage', language);
+  if (!nav.classList.contains('open')) {
+    nav.toggleAttribute('aria-hidden', usesCompactHeader());
+  }
 }
 
 langButton.onclick=()=>{
