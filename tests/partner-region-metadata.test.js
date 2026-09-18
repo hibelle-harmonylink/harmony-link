@@ -60,7 +60,7 @@ test('current admin metadata RPC remains untouched while business spotlight stay
   assert.match(homepageScript, /\{region:'tx',item:dmsCareBusiness/);
   assert.match(homepageScript, /summaryKo:'미국 의료 직업 학교'/);
   assert.match(homepageScript, /summaryEn:'Professional care workforce education'/);
-  assert.match(homepageScript, /categoryKo:'케어 전문 교육센터'/);
+  assert.match(homepageScript, /categoryKo:'미국 의료 직업 학교'/);
   assert.match(homepageScript, /assets\/images\/dms-care-flyer-en\.png/);
   assert.doesNotMatch(homepageScript, /flyers:\['assets\/images\/dms-care-flyer-ko\.png'/);
   assert.match(homepageScript, /summaryKo:'골프 레슨과 실전 교육'/);

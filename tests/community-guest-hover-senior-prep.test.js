@@ -70,7 +70,7 @@ test('event flyer overlay closes only outside the modal panel', () => {
 
 test('DMS keeps its existing business data while using the requested Korean summary', () => {
   assert.match(homepageScript, /summaryKo:'미국 의료 직업 학교'/);
-  assert.match(homepageScript, /categoryKo:'케어 전문 교육센터'/);
+  assert.match(homepageScript, /categoryKo:'미국 의료 직업 학교'/);
   assert.match(homepageScript, /1933 E Frankford Rd\. Suite 165, Carrollton, TX 75007/);
   assert.match(homepageScript, /469-605-6035/);
   assert.match(styles, /\.business-summary\{[^}]*height:21px[^}]*white-space:nowrap[^}]*text-overflow:ellipsis/);
