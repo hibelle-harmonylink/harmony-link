@@ -147,7 +147,7 @@ document.querySelectorAll('[data-program]').forEach(link => {
 });
 document.querySelectorAll('.digital-request-btn').forEach(link => connectForm(link, digitalFormUrl));
 
-const usesCompactHeader = () => window.innerWidth <= 760 || (currentLanguage === 'en' && window.innerWidth <= 900);
+const usesCompactHeader = () => window.innerWidth <= 760 || (currentLanguage === 'en' && window.innerWidth <= 1200);
 
 function closeMenu() {
   menuButton.classList.remove('open');
@@ -238,7 +238,7 @@ function setLanguage(language) {
 
 langButton.onclick=()=>{
   setLanguage(currentLanguage==='ko'?'en':'ko');
-  window.setTimeout(()=>renderAdvertisingCarousel?.(),0);
+  window.setTimeout(renderBusinessSpotlights,0);
 };
 
 window.addEventListener('scroll', () => {
@@ -1102,7 +1102,7 @@ if (contactNavLink) {
   const partnerCenterNav = document.querySelector('#primary-nav a[href="#partner-center"]') || document.createElement('a');
   partnerCenterNav.href = '#partner-center';
   partnerCenterNav.dataset.ko = '파트너';
-  partnerCenterNav.dataset.en = 'Partners';
+  partnerCenterNav.dataset.en = 'Partner Center';
   partnerCenterNav.textContent = currentLanguage === 'ko' ? partnerCenterNav.dataset.ko : partnerCenterNav.dataset.en;
   if (!partnerCenterNav.isConnected) contactNavLink.before(partnerCenterNav);
 }
@@ -1414,7 +1414,9 @@ const resetMessagePanel=()=>{const form=messagePanel.querySelector('form');form.
 const closeMessagePanel=()=>{messagePanel.hidden=true;resetMessagePanel();messageTrigger.focus();};messageTrigger.addEventListener('click',()=>{if(!messagePanel.hidden){closeMessagePanel();return;}resetMessagePanel();messagePanel.hidden=false;messagePanel.querySelector('textarea').focus();});messageWidget.querySelector('.floating-message-close').addEventListener('click',closeMessagePanel);
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!messagePanel.hidden)closeMessagePanel();});
 messagePanel.querySelector('form').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget,status=form.querySelector('small'),button=form.querySelector('button'),message=form.message.value.trim();if(button.disabled)return;if(!message){status.textContent='메시지를 입력해주세요.';form.message.focus();return;}button.disabled=true;button.textContent='보내는 중...';status.textContent='';try{const data=new FormData();data.set('문의 유형','홈페이지 메시지');data.set('문의사항',message);data.set('_subject','Harmony Link 홈페이지 메시지');data.set('_captcha','false');const response=await fetch('https://formsubmit.co/ajax/hibelle@hibelleconsulting.com',{method:'POST',headers:{Accept:'application/json'},body:data});if(!response.ok)throw new Error('send failed');status.textContent='메시지가 전송되었습니다.';form.reset();}catch{status.textContent='전송하지 못했습니다. 다시 시도해주세요.';}finally{button.disabled=false;button.textContent='보내기';}});
-const renderBusinessSpotlights = (selectedRegion='all') => {
+let selectedBusinessRegion = 'all';
+function renderBusinessSpotlights(selectedRegion=selectedBusinessRegion) {
+  selectedBusinessRegion = selectedRegion;
   const filters=advertisingArea?.querySelector('.business-region-filters');
   const grid=advertisingArea?.querySelector('.business-spotlight-grid');
   if(!filters||!grid)return;
@@ -1444,7 +1446,7 @@ const renderBusinessSpotlights = (selectedRegion='all') => {
   }
   filters.querySelectorAll('[data-business-region]').forEach(button=>button.addEventListener('click',()=>renderBusinessSpotlights(button.dataset.businessRegion)));
   setLanguage(currentLanguage);
-};
+}
 renderBusinessSpotlights();
 
 const hole19Advertiser=adRooms.premium.items.find(item=>item.name==='HOLE19 Golf Lounge');
@@ -1812,7 +1814,7 @@ if (!document.querySelector('.mobile-lang-toggle')) {
   mobileLanguageButton.setAttribute('aria-label','한국어와 영어 전환');
   mobileLanguageButton.onclick=()=>{
     setLanguage(currentLanguage==='ko'?'en':'ko');
-    renderAdvertisingCarousel?.();
+    renderBusinessSpotlights();
   };
   document.querySelector('.nav-wrap')?.insertBefore(mobileLanguageButton,document.querySelector('.menu-toggle'));
   setLanguage(currentLanguage);
