@@ -9,7 +9,7 @@ const appPage = read('app/index.html');
 const appScript = read('app/app.js');
 const sharedContent = read('shared-content.js');
 const webScript = read('script.js');
-const serviceWorker = read('app/service-worker-v94.js');
+const serviceWorker = read('app/service-worker-v95.js');
 
 test('app menu links to the existing Senior Learning web page instead of duplicating it', () => {
   assert.match(appPage, /<a href="\.\.\/senior-learning\.html" data-ko="시니어 배움터" data-en="Senior Learning">시니어 배움터<\/a>/);
@@ -74,14 +74,39 @@ test('app events include the current Production 3 upcoming + 3 past classes', ()
   assert.deepEqual(sharedEventIds.sort(), ['ai-business-automation', 'finance-ai-seminar', 'free-music-class', 'hole19-tournament', 'one-day-class', 'seminars-coming'].sort());
 });
 
-test('service worker v94 precaches the new DMS and AI workshop assets without changing the caching strategy', () => {
-  assert.match(serviceWorker, /const CACHE="harmony-link-app-v94"/);
+test('service worker v95 precaches the restyled app.css/overrides.css without changing the caching strategy', () => {
+  assert.match(serviceWorker, /const CACHE="harmony-link-app-v95"/);
   assert.match(serviceWorker, /"\.\.\/assets\/events\/ai-business-automation-free-class-20260911\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/images\/dms-care-logo\.webp"/);
+  assert.match(serviceWorker, /"\.\/app\.css\?v=62"/);
+  assert.match(serviceWorker, /"\.\/overrides\.css\?v=97"/);
   assert.match(serviceWorker, /"\.\/app\.js\?v=94"/);
-  // Same network-first, cache-as-fallback strategy as v93 -- not rewritten.
+  // Same network-first, cache-as-fallback strategy as v94 -- not rewritten.
   assert.match(serviceWorker, /fetch\(event\.request,\{cache:"no-store"\}\)/);
-  assert.match(appScript, /register\("service-worker-v94\.js",\{updateViaCache:"none"\}\)/);
+  assert.match(appScript, /register\("service-worker-v95\.js",\{updateViaCache:"none"\}\)/);
   // Older versions are kept on disk (asset safety), not deleted.
+  assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v94.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v93.js')), true);
+});
+
+test('app design-unification pass: bottom nav, contact focus, page background, and partner/specialty tints are blue-family, not the stale green leftovers', () => {
+  const appCss = read('app/app.css');
+  const overridesCss = read('app/overrides.css');
+  // The old sage-green leftovers from the original app.css skeleton are gone.
+  assert.doesNotMatch(appCss, /background:#dde4df/);
+  assert.doesNotMatch(appCss, /color:#8b9793/);
+  assert.doesNotMatch(appCss, /border-color:#7ca395/);
+  assert.doesNotMatch(appCss, /rgba\(124,163,149/);
+  assert.doesNotMatch(appCss, /rgba\(23,63,58/);
+  // Replaced with tokens/values from the same blue-family palette already used elsewhere in the app.
+  assert.match(appCss, /body\{margin:0;background:var\(--cream\)/);
+  assert.match(appCss, /\.bottom-nav button\{border:0;background:none;color:#8290a3/);
+  assert.match(appCss, /border-color:#1155d9;box-shadow:0 0 0 3px rgba\(17,85,217,\.08\)/);
+  // The pale-cyan image/logo container tint is unified with the web's sky-blue token.
+  assert.doesNotMatch(overridesCss, /#c1f9ff/);
+  assert.equal((overridesCss.match(/#dbeaff/g) || []).length >= 5, true);
+  // Card hover lift is gated to fine-pointer devices and disabled under reduced motion,
+  // so a tap on a touchscreen never leaves a card stuck in its hover state.
+  assert.match(overridesCss, /@media\(hover:hover\) and \(pointer:fine\)\{[\s\S]*\.program-card,\.app-specialty-card,\.event-card,\.app-partner-card\{transition:transform/);
+  assert.match(overridesCss, /@media\(prefers-reduced-motion:reduce\)\{[\s\S]*transition:none!important/);
 });
