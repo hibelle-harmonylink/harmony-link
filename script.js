@@ -1378,20 +1378,41 @@ const businessRegions = [
   {id:'ny',labelKo:'NEW YORK',labelEn:'NEW YORK'},
   {id:'tx',labelKo:'TEXAS',labelEn:'TEXAS'}
 ];
-const dmsCareBusiness = {
-  name:'DMS Care Training Center',displayNameKo:'DMS Care Training Center',displayNameEn:'DMS Care Training Center',
-  summaryKo:'미국 의료 직업 학교',summaryEn:'Professional care workforce education',contactKo:'전화 469-605-6035',contactEn:'Phone 469-605-6035',
-  phoneHref:'tel:+14696056035',image:'assets/images/dms-care-logo.webp',brokerUrl:'https://dmscare.org/ko'
-};
 const renderBusinessPhone = contact => String(contact || '').replace(/(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g, number => `<a class="business-phone-link" href="tel:${number.replace(/[^\d+]/g, '')}">${number}</a>`);
-const businessSpotlights = [
-  {region:'ny',item:{...adRooms.premium.items[0],summaryKo:'뉴욕 부동산 상담과 계약 지원',summaryEn:'New York real estate guidance'},categoryKo:'부동산',categoryEn:'Real Estate',locationKo:'Manhattan, New York',locationEn:'Manhattan, New York',flyers:['assets/ads/highline-residential-ko.png']},
-  {region:'ny',item:{...adRooms.premium.items[1],summaryKo:'유기농 건강식품과 한국 전통 식품',summaryEn:'Organic health foods and Korean specialties'},categoryKo:'유기농 식품',categoryEn:'Organic Foods',locationKo:'Flushing, New York',locationEn:'Flushing, New York',address:'154-08 Northern Blvd #1F-4, Flushing, NY 11354',mapUrl:'https://www.google.com/maps/place/ORGANIC+ONE+NY/@40.7644339,-73.8132378,17z/data=!3m1!4b1!4m6!3m5!1s0x89c2611a9ca04bf5:0x3ea0dbfdbd78ccd!8m2!3d40.7644299!4d-73.8106629!16s%2Fg%2F11zbys_9x7?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D',flyers:['assets/ads/organic-one/family-products.png','assets/ads/organic-one/traditional-foods.png'],snsUrl:'https://www.instagram.com/organicone_/'},
-  {region:'ny',item:{...adRooms.premium.items[2],summaryKo:'골프 레슨과 실전 교육',summaryEn:'Golf lessons and practical training'},categoryKo:'골프·레저',categoryEn:'Golf & Leisure',locationKo:'Flushing, New York',locationEn:'Flushing, New York',address:'154-05 Northern Blvd 2nd Floor, Flushing, NY 11354',mapUrl:'https://www.google.com/maps/place/HOLE19+Golf+Lounge/@40.7648888,-73.813133,17z/data=!3m1!4b1!4m6!3m5!1s0x89c26107f62c5d31:0xd3703cd9ef99a5e0!8m2!3d40.7648848!4d-73.8105581!16s%2Fg%2F11z9394sl7?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D',flyers:['assets/ads/hole19/open-banner.png','assets/ads/hole19/promotion.png','assets/ads/hole19/features.png'],snsUrl:'https://www.instagram.com/hole19_golflounge/'},
-  {region:'ny',item:{...adRooms.community.items[0],summaryKo:'아시안 커뮤니티와 사법기관 협력 지원',summaryEn:'Asian community and law-enforcement collaboration'},categoryKo:'커뮤니티 서비스',categoryEn:'Community Service',locationKo:'Flushing, New York',locationEn:'Flushing, New York',flyers:['assets/partners/aaleac-identity.png']},
-  {region:'ny',item:{...adRooms.community.items[1],url:'',summaryKo:'시니어를 위한 데이케어 서비스',summaryEn:'Daycare services for seniors'},categoryKo:'시니어 케어',categoryEn:'Senior Care',locationKo:'Flushing, New York',locationEn:'Flushing, New York',address:'32-38 148th St, Flushing, NY 11354',mapUrl:'https://www.google.com/maps/place/%EC%9E%A5%EC%88%98%EB%8D%B0%EC%9D%B4%EC%BC%80%EC%96%B4+JANGSU+Adult+Day+Care/@40.7692212,-73.8210753,17z/data=!3m1!4b1!4m6!3m5!1s0x89c261d50904e783:0x524c9bbcbcc5da1e!8m2!3d40.7692172!4d-73.8185004!16s%2Fg%2F11lll_thly?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D',flyers:['assets/partners/jangsu-daycare-banner.png']},
-  {region:'tx',item:dmsCareBusiness,categoryKo:'미국 의료 직업 학교',categoryEn:'Care Training Center',locationKo:'Texas',locationEn:'Texas',address:'1933 E Frankford Rd. Suite 165, Carrollton, TX 75007',mapUrl:'https://www.google.com/maps/place/DMS+Care+Training+Center/@33.0008059,-96.8869749,17z/data=!3m1!4b1!4m6!3m5!1s0x864c25005c81bf67:0x1ff6428391587d36!8m2!3d33.0008014!4d-96.8844!16s%2Fg%2F11lddvd23w?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D',flyers:['assets/images/dms-care-flyer-en.png']}
-];
+// Business Spotlight's 6 companies now come from the canonical shared/data/businesses.js
+// (single source of truth for web + app) instead of being hand-duplicated here. This
+// reshapes each canonical entry into the {region,item,categoryKo,...} shape the existing
+// renderBusinessSpotlights()/openBusinessFlyer() below already expect, so neither of
+// those functions needed to change. adRooms/dmsCareBusiness are not sources for this
+// array anymore, but adRooms itself is untouched -- it still separately powers the
+// Premium/Community/Culture partner-directory modal.
+if (!window.HARMONY_LINK_BUSINESSES) {
+  console.warn('[businesses] shared/data/businesses.js did not load; Business Spotlight will show no businesses.');
+}
+const businessSpotlights = (window.HARMONY_LINK_BUSINESSES || []).map(business => ({
+  region: business.region,
+  item: {
+    name: business.nameEn,
+    displayNameKo: business.nameKo,
+    displayNameEn: business.nameEn,
+    summaryKo: business.summaryKo,
+    summaryEn: business.summaryEn,
+    copy: business.copyKo,
+    copyEn: business.copyEn,
+    contactKo: business.phoneKo ? `전화 ${business.phoneKo}` : '',
+    contactEn: business.phoneEn ? `Phone ${business.phoneEn}` : '',
+    image: business.logo,
+    brokerUrl: business.websiteUrl || ''
+  },
+  categoryKo: business.categoryKo,
+  categoryEn: business.categoryEn,
+  locationKo: business.locationKo,
+  locationEn: business.locationEn,
+  address: business.address || undefined,
+  mapUrl: business.mapUrl || undefined,
+  flyers: business.flyers && business.flyers.length ? business.flyers : [],
+  snsUrl: business.snsUrl || undefined
+}));
 const businessFlyerModal=document.createElement('div');
 businessFlyerModal.className='business-flyer-modal';businessFlyerModal.hidden=true;
 businessFlyerModal.innerHTML=`<div class="business-flyer-backdrop" data-business-flyer-close></div><section class="business-flyer-panel" role="dialog" aria-modal="true" aria-labelledby="businessFlyerTitle"><header class="business-flyer-head"><div><p>BUSINESS SPOTLIGHT</p><h2 id="businessFlyerTitle"></h2></div><button type="button" class="business-flyer-close" data-business-flyer-close aria-label="닫기">×</button></header><div class="business-flyer-scroll"><div class="business-flyer-navigation" aria-label="전단지 이동" hidden><button type="button" data-business-flyer-previous data-ko="이전" data-en="Previous">이전</button><span class="business-flyer-position" aria-live="polite"></span><button type="button" data-business-flyer-next data-ko="다음" data-en="Next">다음</button></div><div class="business-flyer-images"></div></div><footer class="business-flyer-actions"><div class="business-flyer-external-links"></div><button type="button" class="business-flyer-dismiss" data-business-flyer-close data-ko="닫기" data-en="Close">닫기</button></footer></section>`;

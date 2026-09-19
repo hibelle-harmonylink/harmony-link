@@ -8,8 +8,9 @@ const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const appPage = read('app/index.html');
 const appScript = read('app/app.js');
 const sharedContent = read('shared-content.js');
+const businessesData = read('shared/data/businesses.js');
 const webScript = read('script.js');
-const serviceWorker = read('app/service-worker-v98.js');
+const serviceWorker = read('app/service-worker-v99.js');
 
 test('app menu links to the existing Senior Learning web page instead of duplicating it', () => {
   assert.match(appPage, /<a href="\.\.\/senior-learning\.html" data-ko="시니어 배움터" data-en="Senior Learning">시니어 배움터<\/a>/);
@@ -34,28 +35,33 @@ test('shared-content.js accurately describes its own scope', () => {
   assert.match(sharedContent, /mirrored from the public website/);
 });
 
-test('app Business Spotlight includes all 6 Production businesses, matching web script.js data', () => {
-  const advertising = (sharedContent.match(/kind:"advertising"/g) || []).length;
-  const community = (sharedContent.match(/kind:"community"/g) || []).length;
+test('app Business Spotlight includes all 6 Production businesses, now sourced from shared/data/businesses.js instead of duplicated in shared-content.js', () => {
+  // As of the Phase 1 web/app data unification, the 6 businesses moved out of
+  // shared-content.js's promotions[] and into the canonical shared/data/businesses.js
+  // that both script.js and app/app.js read (see tests/shared-business-data.test.js
+  // for the full field-level coverage). This test keeps checking the Production
+  // values this test originally asserted, just from their new home.
+  const advertising = (businessesData.match(/kind:"advertising"/g) || []).length;
+  const community = (businessesData.match(/kind:"community"/g) || []).length;
   assert.equal(advertising + community, 6);
-  // DMS added with the exact Production fields from script.js's dmsCareBusiness / businessSpotlights.
-  assert.match(sharedContent, /titleKo:"DMS Care Training Center",titleEn:"DMS Care Training Center"/);
-  assert.match(sharedContent, /미국 의료 직업 학교/);
-  assert.match(sharedContent, /Professional care workforce education/);
-  assert.match(sharedContent, /469-605-6035/);
-  assert.match(sharedContent, /1933 E Frankford Rd\. Suite 165, Carrollton, TX 75007/);
-  assert.match(sharedContent, /url:"https:\/\/dmscare\.org\/ko"/);
-  assert.match(sharedContent, /image:"\/assets\/images\/dms-care-logo\.webp"/);
+  // DMS matches the exact Production fields from script.js's former dmsCareBusiness / businessSpotlights.
+  assert.match(businessesData, /nameKo:"DMS Care Training Center",nameEn:"DMS Care Training Center"/);
+  assert.match(businessesData, /미국 의료 직업 학교/);
+  assert.match(businessesData, /Professional care workforce education/);
+  assert.match(businessesData, /469-605-6035/);
+  assert.match(businessesData, /1933 E Frankford Rd\. Suite 165, Carrollton, TX 75007/);
+  assert.match(businessesData, /websiteUrl:"https:\/\/dmscare\.org\/ko"/);
+  assert.match(businessesData, /logo:"assets\/images\/dms-care-logo\.webp"/);
   // No SNS link fabricated for DMS.
-  const dmsEntry = sharedContent.match(/\{kind:"advertising"[^}]*DMS Care Training Center[^}]*\}/)?.[0] || '';
+  const dmsEntry = businessesData.match(/\{id:"dms-care"[^}]*\}/)?.[0] || '';
   assert.doesNotMatch(dmsEntry, /instagram|facebook|threads/i);
-  // DMS phone/address/homepage match the web's authoritative record exactly (no invented mapUrl or data).
-  assert.match(webScript, /phoneHref:'tel:\+14696056035'/);
-  assert.match(webScript, /address:'1933 E Frankford Rd\. Suite 165, Carrollton, TX 75007'/);
-  assert.match(webScript, /brokerUrl:'https:\/\/dmscare\.org\/ko'/);
-  // AALEAC display name now matches web Production (adRooms.community displayNameKo/En: 'AALEAC').
-  assert.match(sharedContent, /titleKo:"AALEAC",titleEn:"AALEAC"/);
-  assert.doesNotMatch(sharedContent, /아시안 아메리칸 사법 경찰자문위원회/);
+  assert.match(dmsEntry, /snsUrl:null/);
+  // AALEAC display name matches web Production.
+  assert.match(businessesData, /nameKo:"AALEAC",nameEn:"AALEAC"/);
+  assert.doesNotMatch(businessesData, /아시안 아메리칸 사법 경찰자문위원회/);
+  // shared-content.js itself no longer carries these 6 businesses.
+  assert.doesNotMatch(sharedContent, /DMS Care Training Center/);
+  assert.doesNotMatch(sharedContent, /AALEAC/);
 });
 
 test('app events include the current Production 3 upcoming + 3 past classes', () => {
@@ -74,21 +80,21 @@ test('app events include the current Production 3 upcoming + 3 past classes', ()
   assert.deepEqual(sharedEventIds.sort(), ['ai-business-automation', 'finance-ai-seminar', 'free-music-class', 'hole19-tournament', 'one-day-class', 'seminars-coming'].sort());
 });
 
-test('service worker v97 precaches the mobile design-system pass without changing the caching strategy', () => {
-  assert.match(serviceWorker, /const CACHE="harmony-link-app-v98"/);
+test('service worker v99 precaches the mobile design-system pass without changing the caching strategy', () => {
+  assert.match(serviceWorker, /const CACHE="harmony-link-app-v99"/);
   assert.match(serviceWorker, /"\.\.\/assets\/events\/ai-business-automation-free-class-20260911\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/images\/dms-care-logo\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/home\/harmony-community-learning\.png"/);
   assert.match(serviceWorker, /"\.\/app\.css\?v=65"/);
   assert.match(serviceWorker, /"\.\/overrides\.css\?v=100"/);
-  assert.match(serviceWorker, /"\.\/app\.js\?v=97"/);
-  // Same network-first, cache-as-fallback strategy as v97 -- not rewritten.
+  assert.match(serviceWorker, /"\.\/app\.js\?v=98"/);
+  // Same network-first, cache-as-fallback strategy as v98 -- not rewritten.
   assert.match(serviceWorker, /fetch\(event\.request,\{cache:"no-store"\}\)/);
-  assert.match(appScript, /register\("service-worker-v98\.js",\{updateViaCache:"none"\}\)/);
+  assert.match(appScript, /register\("service-worker-v99\.js",\{updateViaCache:"none"\}\)/);
   // Older versions are kept on disk (asset safety), not deleted.
+  assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v98.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v97.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v96.js')), true);
-  assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v95.js')), true);
 });
 
 test('app header collapses the always-expanded top menu into a hamburger panel, matching the web pattern', () => {

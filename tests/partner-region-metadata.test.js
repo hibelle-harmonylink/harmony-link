@@ -45,28 +45,38 @@ test('future region updates preserve active-admin, self-update, withdrawn, and p
 test('current admin metadata RPC remains untouched while business spotlight stays separate from partner access', () => {
   assert.doesNotMatch(migration, /create or replace function public\.admin_update_member_metadata/i);
   const homepageScript = fs.readFileSync(path.join(root, 'script.js'), 'utf8');
+  // As of the Phase 1 web/app data unification, the 6 Business Spotlight companies'
+  // literal data (name/summary/category/location/address/mapUrl/flyers) moved out of
+  // script.js and into the canonical shared/data/businesses.js that script.js now reads
+  // (see tests/shared-business-data.test.js for full field-level coverage there); this
+  // test now checks that data in its new home, while still confirming script.js reads
+  // it and that renderBusinessSpotlights()/openBusinessFlyer() themselves are untouched.
+  const businessesData = fs.readFileSync(path.join(root, 'shared', 'data', 'businesses.js'), 'utf8');
   assert.match(homepageScript, /BUSINESS SPOTLIGHT/);
   assert.match(homepageScript, /비즈니스 스포트라이트/);
   assert.match(homepageScript, /const businessRegions/);
-  assert.match(homepageScript, /const businessSpotlights/);
+  assert.match(homepageScript, /const businessSpotlights\s*=\s*\(window\.HARMONY_LINK_BUSINESSES\s*\|\|\s*\[\]\)\.map\(/);
   assert.match(homepageScript, /\{id:'tx',labelKo:'TEXAS'/);
   assert.match(homepageScript, /Business listings for/);
-  assert.match(homepageScript, /const dmsCareBusiness/);
-  assert.match(homepageScript, /name:'DMS Care Training Center'/);
-  assert.match(homepageScript, /image:'assets\/images\/dms-care-logo\.webp'/);
-  assert.match(homepageScript, /brokerUrl:'https:\/\/dmscare\.org\/ko'/);
-  assert.doesNotMatch(homepageScript, /instagramUrl:'https:\/\/www\.instagram\.com\/dmscarekorea'/);
-  assert.match(homepageScript, /phoneHref:'tel:\+14696056035'/);
-  assert.match(homepageScript, /\{region:'tx',item:dmsCareBusiness/);
-  assert.match(homepageScript, /summaryKo:'미국 의료 직업 학교'/);
-  assert.match(homepageScript, /summaryEn:'Professional care workforce education'/);
-  assert.match(homepageScript, /categoryKo:'미국 의료 직업 학교'/);
-  assert.match(homepageScript, /assets\/images\/dms-care-flyer-en\.png/);
-  assert.doesNotMatch(homepageScript, /flyers:\['assets\/images\/dms-care-flyer-ko\.png'/);
-  assert.match(homepageScript, /summaryKo:'골프 레슨과 실전 교육'/);
-  assert.match(homepageScript, /summaryKo:'시니어를 위한 데이케어 서비스'/);
-  assert.match(homepageScript, /locationKo:'Manhattan, New York'/);
-  assert.match(homepageScript, /locationKo:'Flushing, New York'/);
+  assert.doesNotMatch(homepageScript, /const dmsCareBusiness/);
+  assert.match(businessesData, /nameKo:"DMS Care Training Center",nameEn:"DMS Care Training Center"/);
+  assert.match(businessesData, /logo:"assets\/images\/dms-care-logo\.webp"/);
+  assert.match(businessesData, /websiteUrl:"https:\/\/dmscare\.org\/ko"/);
+  assert.doesNotMatch(businessesData, /instagram\.com\/dmscarekorea/);
+  assert.match(businessesData, /phoneHref:"\+14696056035"/);
+  assert.match(businessesData, /categoryKo:"미국 의료 직업 학교"/);
+  assert.match(businessesData, /summaryKo:"미국 의료 직업 학교"/);
+  assert.match(businessesData, /summaryEn:"Professional care workforce education"/);
+  assert.match(businessesData, /assets\/images\/dms-care-flyer-en\.png/);
+  assert.doesNotMatch(businessesData, /dms-care-flyer-ko\.png/);
+  assert.match(businessesData, /summaryKo:"골프 레슨과 실전 교육"/);
+  assert.match(businessesData, /summaryKo:"시니어를 위한 데이케어 서비스"/);
+  assert.match(businessesData, /locationKo:"Manhattan, New York"/);
+  assert.match(businessesData, /locationKo:"Flushing, New York"/);
+  // Jangsu Daycare has no homepage -- script.js resolves that generically from the
+  // canonical field (business.websiteUrl||''), not a per-business literal anymore.
+  assert.match(businessesData, /id:"jangsu-daycare"[\s\S]*?websiteUrl:null/);
+  assert.match(homepageScript, /brokerUrl:\s*business\.websiteUrl\s*\|\|\s*''/);
   assert.match(homepageScript, /const businessFlyerModal/);
   assert.match(homepageScript, /data-business-flyer-open/);
   assert.doesNotMatch(homepageScript, /flyerLabels:/);
@@ -82,15 +92,15 @@ test('current admin metadata RPC remains untouched while business spotlight stay
     '154-05 Northern Blvd 2nd Floor, Flushing, NY 11354',
     '32-38 148th St, Flushing, NY 11354',
     '1933 E Frankford Rd. Suite 165, Carrollton, TX 75007'
-  ]) assert.match(homepageScript, new RegExp(`address:'${address.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}'`));
-  assert.doesNotMatch(homepageScript, /address:'154-05 Northern Blvd, 2F, Flushing, NY 11354'/);
+  ]) assert.match(businessesData, new RegExp(`address:"${address.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`));
+  assert.doesNotMatch(businessesData, /address:"154-05 Northern Blvd, 2F, Flushing, NY 11354"/);
   assert.doesNotMatch(homepageScript, /mapQuery:'ORGANIC ONE NY/);
   for (const mapUrl of [
     'https://www.google.com/maps/place/ORGANIC+ONE+NY/@40.7644339,-73.8132378,17z/data=!3m1!4b1!4m6!3m5!1s0x89c2611a9ca04bf5:0x3ea0dbfdbd78ccd!8m2!3d40.7644299!4d-73.8106629!16s%2Fg%2F11zbys_9x7?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D',
     'https://www.google.com/maps/place/HOLE19+Golf+Lounge/@40.7648888,-73.813133,17z/data=!3m1!4b1!4m6!3m5!1s0x89c26107f62c5d31:0xd3703cd9ef99a5e0!8m2!3d40.7648848!4d-73.8105581!16s%2Fg%2F11z9394sl7?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D',
     'https://www.google.com/maps/place/%EC%9E%A5%EC%88%98%EB%8D%B0%EC%9D%B4%EC%BC%80%EC%96%B4+JANGSU+Adult+Day+Care/@40.7692212,-73.8210753,17z/data=!3m1!4b1!4m6!3m5!1s0x89c261d50904e783:0x524c9bbcbcc5da1e!8m2!3d40.7692172!4d-73.8185004!16s%2Fg%2F11lll_thly?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D',
     'https://www.google.com/maps/place/DMS+Care+Training+Center/@33.0008059,-96.8869749,17z/data=!3m1!4b1!4m6!3m5!1s0x864c25005c81bf67:0x1ff6428391587d36!8m2!3d33.0008014!4d-96.8844!16s%2Fg%2F11lddvd23w?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D'
-  ]) assert.ok(homepageScript.includes(`mapUrl:'${mapUrl}'`));
+  ]) assert.ok(businessesData.includes(`mapUrl:"${mapUrl}"`));
   assert.match(homepageScript, /const \{region,item,categoryKo,categoryEn,locationKo,locationEn,address,mapUrl\}=business/);
   assert.match(homepageScript, /address\?\(mapUrl\?`<a class="business-address" href="\$\{mapUrl\}" target="_blank" rel="noopener noreferrer">\$\{address\}<\/a>`/);
   assert.doesNotMatch(homepageScript, /encodeURIComponent\(mapQuery\|\|address\)/);
@@ -100,7 +110,9 @@ test('current admin metadata RPC remains untouched while business spotlight stay
   assert.match(homepageScript, /function renderBusinessSpotlights\(selectedRegion=selectedBusinessRegion\)/);
   assert.doesNotMatch(homepageScript, /renderAdvertisingCarousel/);
   assert.match(homepageScript, /:`<p class="business-address" data-ko="\$\{locationKo\}" data-en="\$\{locationEn\}">\$\{displayLocation\}<\/p>`/);
-  assert.match(homepageScript, /item:\{\.\.\.adRooms\.community\.items\[1\],url:''/);
+  // Jangsu Daycare's blank homepage (previously an inline url:'' override on the
+  // adRooms.community spread) is now simply the canonical websiteUrl:null resolving
+  // through the generic brokerUrl: business.websiteUrl||'' line asserted above.
   assert.match(homepageScript, /className='floating-message'/);
   assert.match(homepageScript, /무엇이든 물어보세요/);
   assert.match(homepageScript, /data-placeholder-ko="\$\{messageCopy\.ko\.placeholder\}" data-placeholder-en="\$\{messageCopy\.en\.placeholder\}"/);

@@ -13,6 +13,7 @@ const senior = read('senior-learning.js');
 const seniorCss = read('senior-learning.css');
 const homepage = read('index.html');
 const homepageScript = read('script.js');
+const businessesData = read('shared/data/businesses.js');
 
 test('guest community writers get the existing homepage login route while active members keep compose access', () => {
   assert.match(communityPage, /id="communityLoginPrompt"/);
@@ -69,10 +70,13 @@ test('event flyer overlay closes only outside the modal panel', () => {
 });
 
 test('DMS keeps its existing business data while using the requested Korean summary', () => {
-  assert.match(homepageScript, /summaryKo:'미국 의료 직업 학교'/);
-  assert.match(homepageScript, /categoryKo:'미국 의료 직업 학교'/);
-  assert.match(homepageScript, /1933 E Frankford Rd\. Suite 165, Carrollton, TX 75007/);
-  assert.match(homepageScript, /469-605-6035/);
+  // DMS's data (like the other 5 Business Spotlight companies) moved out of script.js
+  // and into the canonical shared/data/businesses.js as part of the Phase 1 web/app
+  // data unification; see tests/shared-business-data.test.js for full coverage there.
+  assert.match(businessesData, /summaryKo:"미국 의료 직업 학교"/);
+  assert.match(businessesData, /categoryKo:"미국 의료 직업 학교"/);
+  assert.match(businessesData, /1933 E Frankford Rd\. Suite 165, Carrollton, TX 75007/);
+  assert.match(businessesData, /469-605-6035/);
   assert.match(styles, /\.business-summary\{[^}]*height:21px[^}]*white-space:nowrap[^}]*text-overflow:ellipsis/);
 });
 
@@ -82,8 +86,10 @@ test('the learning and services heading is updated while business phone display 
   assert.match(homepageScript, /href="tel:\$\{number\.replace\(\/\[\^\\d\+\]\/g, ''\)\}"/);
   assert.match(homepageScript, /const contactMarkup=`<p class="business-contact">\$\{renderBusinessPhone\(contact\)\}<\/p>`/);
   assert.match(homepageScript, /event\.target\.closest\('a,button'\)/);
+  // The actual phone numbers now live in the canonical shared/data/businesses.js that
+  // script.js reads, rather than as literals in script.js itself.
   for (const phone of ['516-390-1383', '201-585-0958', '929-845-0958', '929-766-0088', '646-996-8093', '718-799-0133', '718-864-6430', '469-605-6035']) {
-    assert.match(homepageScript, new RegExp(phone.replace(/-/g, '\\-')));
+    assert.match(businessesData, new RegExp(phone.replace(/-/g, '\\-')));
   }
 });
 
