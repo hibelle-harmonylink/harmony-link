@@ -92,12 +92,15 @@ function eventCard(item){
   const title=language==="ko"?item.titleKo:item.titleEn;
   const text=language==="ko"?item.textKo:item.textEn;
   const badge=language==="ko"?item.badgeKo:item.badgeEn;
-  const zoomLabel=language==="ko"?"이미지 클릭 시 크게 보기":"Tap image to enlarge";
+  const zoomLabel=language==="ko"?"이미지 크게 보기":"View larger image";
+  const flyerLabel=language==="ko"?"전단지 보기":"View Flyer";
   const category=language==="ko"?(item.categoryKo||badge):(item.categoryEn||badge);
-  const media=item.isPlaceholder?`<div class="event-placeholder-art" aria-hidden="true">✦</div>`:`<button class="event-image-open" type="button" data-event-image="${item.image}" data-event-alt="${title}" aria-label="${zoomLabel}"><img src="${item.image}" alt="${title}"><span>${zoomLabel}</span></button>`;
+  const media=item.isPlaceholder?`<div class="event-placeholder-art" aria-hidden="true">✦</div>`:`<button class="event-image-open" type="button" data-event-image="${item.image}" data-event-alt="${title}" aria-label="${zoomLabel}"><img src="${item.image}" alt="${title}"></button>`;
   const detailUrl=item.url||({"hole19-tournament":"../special-event-hole19.html","free-music-class":"../special-event-music-class.html"}[item.id]||"");
   const detail=detailUrl?`<a class="event-detail-link" href="${detailUrl}">${language==="ko"?"자세히 보기":"View Details"}</a>`:"";
-  return `<article class="event-card${item.isPlaceholder?" event-placeholder":""}">${media}<div><span class="badge${item.badgeDark?" dark":""}">${category}</span><h2>${title}</h2><p>${text}</p>${detail}</div></article>`;
+  const flyer=item.isPlaceholder?"":`<button class="event-flyer-link" type="button" data-event-image="${item.image}" data-event-alt="${title}">${flyerLabel}</button>`;
+  const actions=detail||flyer?`<div class="event-card-actions">${detail}${flyer}</div>`:"";
+  return `<article class="event-card${item.isPlaceholder?" event-placeholder":""}">${media}<div><span class="badge${item.badgeDark?" dark":""}">${category}</span><h2>${title}</h2><p>${text}</p>${actions}</div></article>`;
 }
 function renderEvents(){
   const today=new Date().toISOString().slice(0,10);
@@ -554,7 +557,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true;clos
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v96.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v97.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;
