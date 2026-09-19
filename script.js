@@ -256,6 +256,7 @@ const pwaInstallHelpMessage = document.getElementById('pwaInstallHelpMessage');
 const pwaInstallHelpTitle = document.getElementById('pwaInstallHelpTitle');
 const pwaInstallHelpBackdrop = document.querySelector('.pwa-install-help-backdrop');
 const pwaInstallHelpClose = document.querySelector('.pwa-install-help-close');
+const pwaIosSeniorGuide = document.getElementById('pwaIosSeniorGuide');
 const pwaChromeOpen = document.getElementById('pwaChromeOpen');
 const pwaChromeFallback = document.getElementById('pwaChromeFallback');
 const pwaCurrentUrl = document.getElementById('pwaCurrentUrl');
@@ -350,16 +351,20 @@ const pwaInstallDiagnostics = async () => {
 const closePwaInstallHelp = () => {
   if (!pwaInstallHelp) return;
   pwaInstallHelp.hidden = true;
-  pwaInstallHelp.classList.remove('in-app-browser');
+  pwaInstallHelp.classList.remove('in-app-browser', 'ios-senior-guide');
+  if (pwaIosSeniorGuide) pwaIosSeniorGuide.hidden = true;
   document.body.style.overflow = '';
 };
 const openPwaInstallHelp = () => {
   if (!pwaInstallHelp || !pwaInstallHelpMessage) return;
+  const isEnglish = document.documentElement.lang === 'en';
   pwaInstallHelp.classList.remove('in-app-browser');
+  pwaInstallHelp.classList.add('ios-senior-guide');
   pwaInstallHelpBackdrop.disabled = false;
   pwaInstallHelpClose.hidden = false;
-  pwaInstallHelpTitle.textContent = document.documentElement.lang === 'en' ? 'Install Harmony Link' : 'Harmony Link 앱 설치 안내';
-  pwaInstallHelpMessage.textContent = pwaInstallFallbackMessage();
+  pwaInstallHelpTitle.textContent = isEnglish ? 'Install Harmony Link on iPhone' : '아이폰에 Harmony Link 설치';
+  pwaInstallHelpMessage.textContent = isEnglish ? 'Just follow these 3 large steps.' : '아래 3가지만 차례대로 눌러주세요.';
+  if (pwaIosSeniorGuide) pwaIosSeniorGuide.hidden = false;
   pwaChromeOpen.hidden = true;
   pwaChromeFallback.hidden = true;
   pwaInstallHelp.hidden = false;
@@ -367,6 +372,8 @@ const openPwaInstallHelp = () => {
 };
 const openInAppChromeGuide = (showFallback = false) => {
   if (!pwaInstallHelp) return;
+  pwaInstallHelp.classList.remove('ios-senior-guide');
+  if (pwaIosSeniorGuide) pwaIosSeniorGuide.hidden = true;
   pwaInstallHelp.classList.add('in-app-browser');
   pwaInstallHelpBackdrop.disabled = true;
   pwaInstallHelpClose.hidden = true;

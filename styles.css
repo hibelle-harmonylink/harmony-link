@@ -1572,3 +1572,17 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
   #events .event-grid>.event-card:not(.event-coming),#events .past-event-grid>.event-card{transition:none!important}
   #events .event-grid>.event-card:not(.event-coming):hover,#events .past-event-grid>.event-card:hover{transform:none!important}
 }
+
+
+/* iPhone senior-friendly PWA install guide */
+.pwa-ios-senior-guide{display:grid;gap:14px;margin:18px 0 4px}
+.pwa-ios-senior-guide[hidden]{display:none}
+.pwa-ios-step{display:grid;grid-template-columns:48px 1fr;gap:14px;align-items:start;padding:16px;border:2px solid #dbe7f5;border-radius:18px;background:#f8fbff;text-align:left}
+.pwa-ios-step-number{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:#0b4a8b;color:#fff;font-size:24px;font-weight:800}
+.pwa-ios-step strong{display:block;color:#061d45;font-size:20px;line-height:1.35}
+.pwa-ios-step small{display:block;margin-top:6px;color:#52657d;font-size:15px;line-height:1.55}
+.pwa-ios-step-primary{border-color:#0b4a8b;background:#eef6ff}
+.pwa-ios-share-symbol{display:inline-flex;position:relative;align-items:center;justify-content:center;width:52px;height:44px;margin:10px 0 2px;border:3px solid #0b4a8b;border-radius:8px;color:transparent}
+.pwa-ios-share-symbol b{position:absolute;left:50%;top:-16px;transform:translateX(-50%);color:#0b4a8b;font-size:34px;line-height:1;font-weight:500}
+.pwa-ios-final{margin:2px 0 0;padding:14px 16px;border-radius:14px;background:#061d45;color:#fff;font-size:17px;font-weight:700;line-height:1.5;text-align:center}
+@media(max-width:520px){.pwa-install-help.ios-senior-guide .pwa-install-help-panel{width:calc(100% - 20px);max-height:92vh;overflow:auto;padding:24px 18px}.pwa-install-help.ios-senior-guide h2{font-size:25px}.pwa-ios-step{grid-template-columns:42px 1fr;padding:14px 12px;gap:11px}.pwa-ios-step-number{width:42px;height:42px;font-size:21px}.pwa-ios-step strong{font-size:18px}.pwa-ios-step small{font-size:14px}}
