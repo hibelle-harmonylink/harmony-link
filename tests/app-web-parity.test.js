@@ -9,7 +9,7 @@ const appPage = read('app/index.html');
 const appScript = read('app/app.js');
 const sharedContent = read('shared-content.js');
 const webScript = read('script.js');
-const serviceWorker = read('app/service-worker-v96.js');
+const serviceWorker = read('app/service-worker-v97.js');
 
 test('app menu links to the existing Senior Learning web page instead of duplicating it', () => {
   assert.match(appPage, /<a href="\.\.\/senior-learning\.html" data-ko="시니어 배움터" data-en="Senior Learning">시니어 배움터<\/a>/);
@@ -25,7 +25,7 @@ test('app menu links to the existing Senior Learning web page instead of duplica
 test('app community links all use same-window navigation so the back gesture returns to the app', () => {
   assert.match(appPage, /<a class="community-card-link" href="\.\.\/community\.html"><span data-ko="커뮤니티 보기"/);
   assert.doesNotMatch(appPage, /class="community-card-link" href="\.\.\/community\.html" target="_blank"/);
-  assert.match(appPage, /<a href="\.\.\/community\.html"><span>◎<\/span>/);
+  assert.match(appPage, /<a href="\.\.\/community\.html"><span class="bn-icon-wrap">/);
   assert.match(appPage, /data-ko="커뮤니티" data-en="Community">커뮤니티<\/a>/);
 });
 
@@ -74,20 +74,20 @@ test('app events include the current Production 3 upcoming + 3 past classes', ()
   assert.deepEqual(sharedEventIds.sort(), ['ai-business-automation', 'finance-ai-seminar', 'free-music-class', 'hole19-tournament', 'one-day-class', 'seminars-coming'].sort());
 });
 
-test('service worker v96 precaches the redesigned header/hero assets without changing the caching strategy', () => {
-  assert.match(serviceWorker, /const CACHE="harmony-link-app-v96"/);
+test('service worker v97 precaches the mobile design-system pass without changing the caching strategy', () => {
+  assert.match(serviceWorker, /const CACHE="harmony-link-app-v97"/);
   assert.match(serviceWorker, /"\.\.\/assets\/events\/ai-business-automation-free-class-20260911\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/images\/dms-care-logo\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/home\/harmony-community-learning\.png"/);
-  assert.match(serviceWorker, /"\.\/app\.css\?v=63"/);
-  assert.match(serviceWorker, /"\.\/overrides\.css\?v=98"/);
-  assert.match(serviceWorker, /"\.\/app\.js\?v=95"/);
-  // Same network-first, cache-as-fallback strategy as v95 -- not rewritten.
+  assert.match(serviceWorker, /"\.\/app\.css\?v=64"/);
+  assert.match(serviceWorker, /"\.\/overrides\.css\?v=99"/);
+  assert.match(serviceWorker, /"\.\/app\.js\?v=96"/);
+  // Same network-first, cache-as-fallback strategy as v96 -- not rewritten.
   assert.match(serviceWorker, /fetch\(event\.request,\{cache:"no-store"\}\)/);
-  assert.match(appScript, /register\("service-worker-v96\.js",\{updateViaCache:"none"\}\)/);
+  assert.match(appScript, /register\("service-worker-v97\.js",\{updateViaCache:"none"\}\)/);
   // Older versions are kept on disk (asset safety), not deleted.
+  assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v96.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v95.js')), true);
-  assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v94.js')), true);
 });
 
 test('app header collapses the always-expanded top menu into a hamburger panel, matching the web pattern', () => {
@@ -154,7 +154,7 @@ test('app design-unification pass: bottom nav, contact focus, page background, a
   assert.doesNotMatch(appCss, /rgba\(23,63,58/);
   // Replaced with tokens/values from the same blue-family palette already used elsewhere in the app.
   assert.match(appCss, /body\{margin:0;background:var\(--cream\)/);
-  assert.match(appCss, /\.bottom-nav button\{border:0;background:none;color:#8290a3/);
+  assert.match(appCss, /\.bottom-nav button\{border:0;background:none;color:#5b6b85/);
   assert.match(appCss, /border-color:#1155d9;box-shadow:0 0 0 3px rgba\(17,85,217,\.08\)/);
   // The pale-cyan image/logo container tint is unified with the web's sky-blue token.
   assert.doesNotMatch(overridesCss, /#c1f9ff/);
@@ -163,4 +163,55 @@ test('app design-unification pass: bottom nav, contact focus, page background, a
   // so a tap on a touchscreen never leaves a card stuck in its hover state.
   assert.match(overridesCss, /@media\(hover:hover\) and \(pointer:fine\)\{[\s\S]*\.program-card,\.app-specialty-card,\.event-card,\.app-partner-card\{transition:transform/);
   assert.match(overridesCss, /@media\(prefers-reduced-motion:reduce\)\{[\s\S]*transition:none!important/);
+});
+
+test('bottom nav uses one consistent SVG icon system instead of mismatched glyph characters', () => {
+  const bottomNav = appPage.match(/<nav class="bottom-nav"[\s\S]*?<\/nav>/)?.[0] || '';
+  // Every one of the 5 items wraps its icon the same way (button and the Community <a> alike),
+  // so nothing falls back to the old inconsistent Unicode glyphs (⌂ ▦ ✦ ◎ ✉).
+  assert.equal((bottomNav.match(/<span class="bn-icon-wrap"><svg class="bn-icon" viewBox="0 0 24 24"/g) || []).length, 5);
+  assert.doesNotMatch(bottomNav, /[⌂▦✦◎✉]/);
+  // The <a> (Community) and <button> items share the exact same alignment rule, so their icon
+  // centers and label baselines line up -- this was the root cause of the reported misalignment.
+  const overridesCss = read('app/overrides.css');
+  assert.match(overridesCss, /\.bottom-nav a\{border:0;background:none;color:#5b6b85;display:flex;flex-direction:column;align-items:center;justify-content:center/);
+  const appCss = read('app/app.css');
+  assert.match(appCss, /\.bottom-nav button\{border:0;background:none;color:#5b6b85;display:flex;flex-direction:column;align-items:center;justify-content:center/);
+  // Active state is HarmonyLink primary blue + bold with a soft pill behind the icon, not the
+  // old plain navy; inactive stays a readable muted navy instead of a too-pale gray.
+  assert.match(appCss, /\.bottom-nav button\.active\{color:#1155d9;font-weight:700\}/);
+  assert.match(overridesCss, /\.bottom-nav button\.active \.bn-icon-wrap\{background:#dbeaff\}/);
+  assert.match(overridesCss, /\.bottom-nav button\.active small\{font-weight:700\}/);
+  // 44px minimum touch target per item.
+  assert.match(overridesCss, /\.bottom-nav button,\.bottom-nav a\{min-height:44px/);
+});
+
+test('event cards show the full flyer instead of a cropped sliver, and the "click to enlarge" overlay is replaced by an explicit button', () => {
+  // The overlay pill that used to sit on top of the flyer image is gone from the generated markup.
+  assert.doesNotMatch(appScript, /이미지 클릭 시 크게 보기/);
+  assert.doesNotMatch(appScript, /<span>\$\{zoomLabel\}<\/span>/);
+  // A dedicated "전단지 보기" button opens the same lightbox as the thumbnail (reusing the
+  // existing data-event-image delegated click handler -- no new JS wiring needed).
+  assert.match(appScript, /const flyer=item\.isPlaceholder\?"":`<button class="event-flyer-link" type="button" data-event-image="\$\{item\.image\}" data-event-alt="\$\{title\}">\$\{flyerLabel\}<\/button>`;/);
+  assert.match(appScript, /const actions=detail\|\|flyer\?`<div class="event-card-actions">\$\{detail\}\$\{flyer\}<\/div>`:"";/);
+  // The flyer frame uses a fixed aspect-ratio with object-fit:contain on a neutral background,
+  // so a tall poster is shown whole instead of being cropped by object-fit:cover at 240px.
+  const overridesCss = read('app/overrides.css');
+  assert.match(overridesCss, /\.event-card \.event-image-open\{aspect-ratio:4\/3;height:auto!important;background:#eef5ff!important\}/);
+  assert.match(overridesCss, /\.event-card \.event-image-open img\{height:100%!important;object-fit:contain!important\}/);
+});
+
+test('Business Spotlight description is no longer hard-clamped to 3 lines, so longer entries like DMS are not silently truncated', () => {
+  const overridesCss = read('app/overrides.css');
+  assert.match(overridesCss, /\.app-partner-copy p\{display:block!important;overflow:visible!important;-webkit-line-clamp:unset!important;min-height:0!important\}/);
+});
+
+test('Korean eyebrows are localized instead of showing raw English site-wide', () => {
+  // The three eyebrows the design brief called out by name.
+  assert.match(appPage, /<p class="eyebrow" data-ko="프로그램" data-en="PROFESSIONAL PROGRAMS">PROFESSIONAL PROGRAMS<\/p>/);
+  assert.match(appPage, /<p class="eyebrow" data-ko="소식 · 행사" data-en="NEWS & EVENTS">NEWS & EVENTS<\/p>/);
+  assert.match(appPage, /<p class="eyebrow" data-ko="파트너" data-en="PARTNERS">PARTNERS<\/p>/);
+  // The Events and Contact screens' own page-heading eyebrows, for the same reason.
+  assert.match(appPage, /<p class="eyebrow" data-ko="행사" data-en="EVENTS">EVENTS<\/p>/);
+  assert.match(appPage, /<p class="eyebrow" data-ko="문의" data-en="CONTACT">CONTACT<\/p>/);
 });
