@@ -9,7 +9,7 @@ const appPage = read('app/index.html');
 const appScript = read('app/app.js');
 const sharedContent = read('shared-content.js');
 const webScript = read('script.js');
-const serviceWorker = read('app/service-worker-v95.js');
+const serviceWorker = read('app/service-worker-v96.js');
 
 test('app menu links to the existing Senior Learning web page instead of duplicating it', () => {
   assert.match(appPage, /<a href="\.\.\/senior-learning\.html" data-ko="시니어 배움터" data-en="Senior Learning">시니어 배움터<\/a>/);
@@ -74,19 +74,73 @@ test('app events include the current Production 3 upcoming + 3 past classes', ()
   assert.deepEqual(sharedEventIds.sort(), ['ai-business-automation', 'finance-ai-seminar', 'free-music-class', 'hole19-tournament', 'one-day-class', 'seminars-coming'].sort());
 });
 
-test('service worker v95 precaches the restyled app.css/overrides.css without changing the caching strategy', () => {
-  assert.match(serviceWorker, /const CACHE="harmony-link-app-v95"/);
+test('service worker v96 precaches the redesigned header/hero assets without changing the caching strategy', () => {
+  assert.match(serviceWorker, /const CACHE="harmony-link-app-v96"/);
   assert.match(serviceWorker, /"\.\.\/assets\/events\/ai-business-automation-free-class-20260911\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/images\/dms-care-logo\.webp"/);
-  assert.match(serviceWorker, /"\.\/app\.css\?v=62"/);
-  assert.match(serviceWorker, /"\.\/overrides\.css\?v=97"/);
-  assert.match(serviceWorker, /"\.\/app\.js\?v=94"/);
-  // Same network-first, cache-as-fallback strategy as v94 -- not rewritten.
+  assert.match(serviceWorker, /"\.\.\/assets\/home\/harmony-community-learning\.png"/);
+  assert.match(serviceWorker, /"\.\/app\.css\?v=63"/);
+  assert.match(serviceWorker, /"\.\/overrides\.css\?v=98"/);
+  assert.match(serviceWorker, /"\.\/app\.js\?v=95"/);
+  // Same network-first, cache-as-fallback strategy as v95 -- not rewritten.
   assert.match(serviceWorker, /fetch\(event\.request,\{cache:"no-store"\}\)/);
-  assert.match(appScript, /register\("service-worker-v95\.js",\{updateViaCache:"none"\}\)/);
+  assert.match(appScript, /register\("service-worker-v96\.js",\{updateViaCache:"none"\}\)/);
   // Older versions are kept on disk (asset safety), not deleted.
+  assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v95.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v94.js')), true);
-  assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v93.js')), true);
+});
+
+test('app header collapses the always-expanded top menu into a hamburger panel, matching the web pattern', () => {
+  // A hamburger toggle exists, wired to the reused nav via aria-controls.
+  assert.match(appPage, /<button class="app-menu-toggle" id="appMenuToggle" type="button" aria-expanded="false" aria-controls="appPrimaryNav"/);
+  assert.match(appPage, /<nav class="desktop-app-nav" id="appPrimaryNav" aria-label="주요 메뉴">/);
+  // Menu order/labels match the web's own hamburger menu exactly (item order + Korean/English copy).
+  const nav = appPage.match(/<nav class="desktop-app-nav" id="appPrimaryNav"[\s\S]*?<\/nav>/)?.[0] || '';
+  const labels = [...nav.matchAll(/data-ko="([^"]+)"/g)].map(m => m[1].replace(/<[^>]+>/g, '').trim());
+  assert.deepEqual(labels, ['프로그램', '시니어 배움터', '강좌·행사', '파트너 🔒', '커뮤니티', '소개', '문의']);
+  // Login and language stay visible in the compact header itself, not folded into the hamburger panel.
+  assert.match(appPage, /<div class="app-language-toggle"/);
+  assert.match(appPage, /id="appAuthButton"/);
+  // Off-canvas mobile panel is fine-pointer/coarse-pointer agnostic (CSS-driven), gated under 900px,
+  // and disabled under reduced motion so it never gets stuck mid-transition.
+  const overridesCss = read('app/overrides.css');
+  assert.match(overridesCss, /@media\(max-width:899px\)\{\s*\.app-menu-toggle\{display:block!important/);
+  assert.match(overridesCss, /\.desktop-app-nav\{position:fixed!important/);
+  assert.match(overridesCss, /\.desktop-app-nav\.open\{opacity:1;visibility:visible;pointer-events:auto/);
+  assert.match(overridesCss, /body\.app-menu-open\{overflow:hidden\}/);
+  assert.match(overridesCss, /body\.app-menu-open \.bottom-nav\{display:none!important\}/);
+});
+
+test('app Home Hero is rebuilt from the current mobile web copy instead of the old intro-card layout', () => {
+  const heroBlock = appPage.match(/<div class="hero">[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/)?.[0] || appPage;
+  // Exact web copy (Korean + English), not an invented headline.
+  assert.match(appPage, /data-ko="HARMONY LINK · 이음문화센터" data-en="HARMONY LINK · E-EUM CULTURE CENTER"/);
+  assert.match(appPage, /data-ko="배우고 싶은 사람과<br><em>가르치는 사람을 연결합니다\.<\/em>" data-en="Connecting people who want to learn <em>with people ready to teach\.<\/em>"/);
+  assert.match(appPage, /디지털 · 음악 · 언어 · 건강 · 문화 · 생활교육까지<br>필요한 교육을 찾고 전문 강사와 연결하세요\./);
+  // The old intro-card copy and circular "교육과 사람을 잇다" visual are gone from Home.
+  assert.doesNotMatch(appPage, /Harmony Link\(이음문화센터\)는 하이벨컨설팅이/);
+  assert.doesNotMatch(appPage, /마음을 잇고,<br><em>가능성을 열다<\/em>/);
+  assert.doesNotMatch(appPage, /class="hero-connection-visual"/);
+  // Two CTAs matching the web's primary/secondary structure, reusing the app's existing Programs screen.
+  assert.match(appPage, /<button class="primary-action app-program-explore" type="button" data-go="programs"><span data-ko="교육 프로그램 찾기" data-en="Find Programs">/);
+  assert.match(appPage, /<a class="app-hero-secondary-action" href="\.\.\/#partner-application">/);
+  // Web's own hero photo is reused (not a new/invented asset), with the working data-ko-alt/data-en-alt switch.
+  assert.match(appPage, /<img src="\.\.\/assets\/home\/harmony-community-learning\.png\?v=20260915-1" alt="함께 배우고 대화하는 Harmony Link 학습 공동체" data-ko-alt="함께 배우고 대화하는 Harmony Link 학습 공동체" data-en-alt="Harmony Link learning community studying and talking together">/);
+  assert.match(appScript, /\$\$\("\[data-ko-alt\]"\)\.forEach\(el=>\{el\.alt=el\.dataset\[`\$\{language\}Alt`\]\}\);/);
+});
+
+test('app Home Hero renders on a light background with blue-family text, not the old dark navy card', () => {
+  const overridesCss = read('app/overrides.css');
+  assert.match(overridesCss, /\.app-shell #home \.hero\{background:linear-gradient\(125deg,#f7fbff 0%,#fff 49%,#eef5ff 100%\)!important;color:#111b36!important;border-color:#e4edf8!important\}/);
+  assert.match(overridesCss, /\.app-shell #home \.hero \.eyebrow\{color:#1a34ac!important\}/);
+  assert.match(overridesCss, /\.app-shell #home \.hero h1\{color:#111b36!important\}/);
+  // The stale cream/ivory leftover (#fffcf0, unrelated to the blue palette) is gone.
+  assert.doesNotMatch(overridesCss, /#fffcf0/);
+  // The base .eyebrow and .section-title button rules (used by every section label in the app,
+  // including "PROFESSIONAL PROGRAMS"/"NEWS & EVENTS"/"PARTNERS") no longer render the old
+  // sage-green leftover -- they resolve to the same blue used everywhere else in the app.
+  const appCss = read('app/app.css');
+  assert.doesNotMatch(appCss, /color:#78998e/);
 });
 
 test('app design-unification pass: bottom nav, contact focus, page background, and partner/specialty tints are blue-family, not the stale green leftovers', () => {

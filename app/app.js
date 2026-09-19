@@ -205,6 +205,7 @@ function applyLanguage(){
   $$("[data-ko-placeholder]").forEach(el=>{el.placeholder=el.dataset[`${language}Placeholder`]});
   $$("[data-ko-src]").forEach(el=>{el.src=el.dataset[`${language}Src`]});
   $$("[data-ko-alt]").forEach(el=>{el.alt=el.dataset[`${language}Alt`]});
+  $$("[data-ko-aria-label]").forEach(el=>{el.setAttribute("aria-label",el.dataset[`${language}AriaLabel`])});
   $$('[data-language]').forEach(button=>{
     const selected=button.dataset.language===language;
     button.classList.toggle('active',selected);
@@ -266,12 +267,32 @@ function restartPartnerTimer(){
   clearInterval(partnerTimer);
   partnerTimer=setInterval(()=>{partnerIndex+=1;renderPartners()},5000);
 }
+
+const appMenuToggle=$("#appMenuToggle");
+const appPrimaryNav=$("#appPrimaryNav");
+function closeAppMenu(){
+  appMenuToggle.classList.remove("open");
+  appPrimaryNav.classList.remove("open");
+  appMenuToggle.setAttribute("aria-expanded","false");
+  document.body.classList.remove("app-menu-open");
+}
+appMenuToggle.addEventListener("click",()=>{
+  const open=!appPrimaryNav.classList.contains("open");
+  appMenuToggle.classList.toggle("open",open);
+  appPrimaryNav.classList.toggle("open",open);
+  appMenuToggle.setAttribute("aria-expanded",String(open));
+  document.body.classList.toggle("app-menu-open",open);
+});
+appPrimaryNav.addEventListener("click",event=>{
+  if(event.target.closest("a,button")) closeAppMenu();
+});
 document.addEventListener("keydown",event=>{
   const eventImage=event.target.closest?.("[data-event-image]");
   if(eventImage&&(event.key==="Enter"||event.key===" ")){
     event.preventDefault();
     openImageLightbox(eventImage.dataset.eventImage,eventImage.dataset.eventAlt||"");
   }
+  if(event.key==="Escape"&&appPrimaryNav.classList.contains("open")) closeAppMenu();
 });
 $("#programSearch")?.addEventListener("input",renderPrograms);
 $("#pastEventsToggle").addEventListener("click",()=>{pastEventsOpen=!pastEventsOpen;renderEvents()});
@@ -533,7 +554,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true;clos
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v95.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v96.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;
@@ -571,6 +592,14 @@ const initialContactMode=initialParams.get("contact")==="volunteer"?"volunteer":
 navigate(initialScreen,initialContactMode,"none");
 const initialBase=`${location.pathname}${location.search}`;
 history.replaceState({screen:"home",contactMode:"general"},"",`${initialBase}#home`);
+window.scrollTo(0,0);
+if(initialScreen==="home"){
+  let allowAutoScrollLock=true;
+  const lockScrollTop=()=>{if(allowAutoScrollLock&&document.scrollingElement.scrollTop!==0)window.scrollTo(0,0)};
+  ["pointerdown","wheel","touchstart","keydown"].forEach(type=>window.addEventListener(type,()=>{allowAutoScrollLock=false},{once:true,passive:true}));
+  window.addEventListener("scroll",lockScrollTop,{passive:true});
+  setTimeout(()=>window.removeEventListener("scroll",lockScrollTop),1500);
+}
 if(initialScreen!=="home"){
   history.pushState({screen:initialScreen,contactMode:initialContactMode},"",`${initialBase}#${initialScreen}`);
 }
