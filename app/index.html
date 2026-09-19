@@ -12,8 +12,8 @@
   <link rel="manifest" href="manifest-v72.webmanifest">
   <link rel="icon" type="image/png" href="icon-192-v71.png">
   <link rel="apple-touch-icon" href="icon-192-v71.png">
-  <link rel="stylesheet" href="app.css?v=64">
-  <link rel="stylesheet" href="overrides.css?v=99">
+  <link rel="stylesheet" href="app.css?v=65">
+  <link rel="stylesheet" href="overrides.css?v=100">
 </head>
 <body>
   <div class="app-shell">
@@ -76,7 +76,7 @@
 
         <section class="home-programs app-home-events">
           <div class="section-title">
-            <div><p class="eyebrow" data-ko="소식 · 행사" data-en="NEWS & EVENTS">NEWS & EVENTS</p><h2 data-ko="하모니링크 소식·행사" data-en="Harmony Link News & Events">하모니링크 소식·행사</h2></div>
+            <div><p class="eyebrow" data-ko="소식 · 행사" data-en="NEWS & EVENTS">NEWS & EVENTS</p><h2 data-ko="강좌 · 행사" data-en="Classes & Events">강좌 · 행사</h2></div>
             <button type="button" data-go="events" data-ko="행사 보기" data-en="View Events">행사 보기</button>
           </div>
           <div class="app-home-event-grid" id="homeEvents"></div>
@@ -118,7 +118,7 @@
       <section class="screen" id="events" data-screen="events">
         <div class="page-heading">
           <p class="eyebrow" data-ko="행사" data-en="EVENTS">EVENTS</p>
-          <h1 class="events-main-title" data-ko="하모니링크 소식·행사" data-en="Harmony Link News & Events">하모니링크 소식·행사</h1>
+          <h1 class="events-main-title" data-ko="강좌 · 행사" data-en="Classes & Events">강좌 · 행사</h1>
         </div>
         <div id="upcomingEventsList"></div>
         <button type="button" class="past-events-toggle" id="pastEventsToggle" hidden>
@@ -129,8 +129,8 @@
 
       <section class="screen" id="contact" data-screen="contact">
         <div class="page-heading">
-          <p class="eyebrow" data-ko="문의" data-en="CONTACT">CONTACT</p>
-          <h1 id="contactTitle" data-ko="궁금한 점을 편하게 남겨주세요" data-en="Tell us how we can help">궁금한 점을 편하게 남겨주세요</h1>
+          <p class="eyebrow" data-ko="문의" data-en="GET IN TOUCH">GET IN TOUCH</p>
+          <h1 id="contactTitle" data-ko="궁금한 점이 있으신가요?" data-en="Have a question?">궁금한 점이 있으신가요?</h1>
           <p id="contactDescription" data-ko="프로그램, 강사·파트너 입점 문의를 주시면 확인 후 연락드립니다." data-en="Send us your program, instructor, or partner inquiry and we will get back to you.">프로그램, 강사·파트너 입점 문의를 주시면 확인 후 연락드립니다.</p>
         </div>
         <form class="contact-form" id="contactForm">
@@ -174,7 +174,7 @@
       <button class="app-auth-backdrop" type="button" data-app-auth-close aria-label="닫기"></button>
       <section class="app-auth-panel">
         <button class="app-auth-close" type="button" data-app-auth-close aria-label="닫기">×</button>
-        <div class="app-auth-brand"><img src="../assets/harmony-logo.png" alt=""><span>HARMONY LINK MEMBER</span></div>
+        <div class="app-auth-brand"><span class="logo-mark brand-image"><img src="../assets/harmony-logo.png" alt=""></span><span>HARMONY LINK MEMBER</span></div>
         <div class="app-auth-choice" data-app-auth-step="choice"><h2 id="appAuthTitle" data-ko="회원 메뉴를 선택해주세요" data-en="Choose a member option">회원 메뉴를 선택해주세요</h2><button type="button" data-app-auth-mode="login" data-ko="로그인하기" data-en="Sign In">로그인하기</button><button type="button" data-app-auth-mode="signup" data-ko="가입하기" data-en="Join">가입하기</button></div>
         <div class="app-auth-flow" data-app-auth-step="flow" hidden><button class="app-auth-back" type="button" data-app-auth-back data-ko="← 이전" data-en="← Back">← 이전</button><h2 data-app-auth-heading></h2><p data-app-auth-description></p><div class="app-signup-types" data-app-signup-types hidden><button type="button" class="active" data-app-signup-type="student"><b data-ko="수강생" data-en="Learner">수강생</b><small data-ko="교육 신청과 수강 안내" data-en="Learning requests and class updates">교육 신청과 수강 안내</small></button><button type="button" data-app-signup-type="partner"><b data-ko="입점 파트너" data-en="Partner Provider">입점 파트너</b><small data-ko="신청 후 관리자 승인" data-en="Administrator approval required">신청 후 관리자 승인</small></button></div><div class="app-auth-providers"><button type="button" data-app-auth-provider="google"><img src="../assets/auth/google.svg" alt="Google"><span>Google</span></button><button type="button" class="kakao" data-app-auth-provider="kakao"><img src="../assets/auth/kakao.svg" alt="Kakao"><span>Kakao</span></button></div><p class="app-auth-status" role="status"></p></div>
       </section>
@@ -208,6 +208,6 @@
   </div>
   <script src="../shared-content.js?v=88"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=96"></script>
+  <script src="app.js?v=97"></script>
 </body>
 </html>

@@ -93,13 +93,14 @@ function eventCard(item){
   const text=language==="ko"?item.textKo:item.textEn;
   const badge=language==="ko"?item.badgeKo:item.badgeEn;
   const zoomLabel=language==="ko"?"이미지 크게 보기":"View larger image";
-  const flyerLabel=language==="ko"?"전단지 보기":"View Flyer";
+  const detailLabel=language==="ko"?"자세히 보기":"View Details";
   const category=language==="ko"?(item.categoryKo||badge):(item.categoryEn||badge);
   const media=item.isPlaceholder?`<div class="event-placeholder-art" aria-hidden="true">✦</div>`:`<button class="event-image-open" type="button" data-event-image="${item.image}" data-event-alt="${title}" aria-label="${zoomLabel}"><img src="${item.image}" alt="${title}"></button>`;
   const detailUrl=item.url||({"hole19-tournament":"../special-event-hole19.html","free-music-class":"../special-event-music-class.html"}[item.id]||"");
-  const detail=detailUrl?`<a class="event-detail-link" href="${detailUrl}">${language==="ko"?"자세히 보기":"View Details"}</a>`:"";
-  const flyer=item.isPlaceholder?"":`<button class="event-flyer-link" type="button" data-event-image="${item.image}" data-event-alt="${title}">${flyerLabel}</button>`;
-  const actions=detail||flyer?`<div class="event-card-actions">${detail}${flyer}</div>`:"";
+  // One button per card. Events with a dedicated detail page link to it (unchanged); events
+  // without one reuse the same imageLightbox as the thumbnail instead of a second button.
+  const detail=item.isPlaceholder?"":(detailUrl?`<a class="event-detail-link" href="${detailUrl}">${detailLabel}</a>`:`<button class="event-detail-link" type="button" data-event-image="${item.image}" data-event-alt="${title}">${detailLabel}</button>`);
+  const actions=detail?`<div class="event-card-actions">${detail}</div>`:"";
   return `<article class="event-card${item.isPlaceholder?" event-placeholder":""}">${media}<div><span class="badge${item.badgeDark?" dark":""}">${category}</span><h2>${title}</h2><p>${text}</p>${actions}</div></article>`;
 }
 function renderEvents(){
@@ -181,8 +182,8 @@ function setContactMode(mode="general"){
     submitLabel.dataset.ko="신청하기";
     submitLabel.dataset.en="Apply";
   }else{
-    title.dataset.ko="궁금한 점을 편하게 남겨주세요";
-    title.dataset.en="Tell us how we can help";
+    title.dataset.ko="궁금한 점이 있으신가요?";
+    title.dataset.en="Have a question?";
     description.dataset.ko="프로그램, 강사·파트너 입점 문의를 주시면 확인 후 연락드립니다.";
     description.dataset.en="Send us your program, instructor, or partner inquiry and we will get back to you.";
     select.innerHTML='<option value="수업 신청 문의" data-ko="수업 신청 문의" data-en="Class inquiry">수업 신청 문의</option><option value="입점 파트너 문의" data-ko="입점 파트너 문의" data-en="Partner inquiry">입점 파트너 문의</option><option value="기타 문의" data-ko="기타 문의" data-en="Other inquiry">기타 문의</option>';
@@ -557,7 +558,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true;clos
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v97.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v98.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;

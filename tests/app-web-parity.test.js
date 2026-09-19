@@ -9,7 +9,7 @@ const appPage = read('app/index.html');
 const appScript = read('app/app.js');
 const sharedContent = read('shared-content.js');
 const webScript = read('script.js');
-const serviceWorker = read('app/service-worker-v97.js');
+const serviceWorker = read('app/service-worker-v98.js');
 
 test('app menu links to the existing Senior Learning web page instead of duplicating it', () => {
   assert.match(appPage, /<a href="\.\.\/senior-learning\.html" data-ko="시니어 배움터" data-en="Senior Learning">시니어 배움터<\/a>/);
@@ -75,17 +75,18 @@ test('app events include the current Production 3 upcoming + 3 past classes', ()
 });
 
 test('service worker v97 precaches the mobile design-system pass without changing the caching strategy', () => {
-  assert.match(serviceWorker, /const CACHE="harmony-link-app-v97"/);
+  assert.match(serviceWorker, /const CACHE="harmony-link-app-v98"/);
   assert.match(serviceWorker, /"\.\.\/assets\/events\/ai-business-automation-free-class-20260911\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/images\/dms-care-logo\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/home\/harmony-community-learning\.png"/);
-  assert.match(serviceWorker, /"\.\/app\.css\?v=64"/);
-  assert.match(serviceWorker, /"\.\/overrides\.css\?v=99"/);
-  assert.match(serviceWorker, /"\.\/app\.js\?v=96"/);
-  // Same network-first, cache-as-fallback strategy as v96 -- not rewritten.
+  assert.match(serviceWorker, /"\.\/app\.css\?v=65"/);
+  assert.match(serviceWorker, /"\.\/overrides\.css\?v=100"/);
+  assert.match(serviceWorker, /"\.\/app\.js\?v=97"/);
+  // Same network-first, cache-as-fallback strategy as v97 -- not rewritten.
   assert.match(serviceWorker, /fetch\(event\.request,\{cache:"no-store"\}\)/);
-  assert.match(appScript, /register\("service-worker-v97\.js",\{updateViaCache:"none"\}\)/);
+  assert.match(appScript, /register\("service-worker-v98\.js",\{updateViaCache:"none"\}\)/);
   // Older versions are kept on disk (asset safety), not deleted.
+  assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v97.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v96.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v95.js')), true);
 });
@@ -190,15 +191,26 @@ test('event cards show the full flyer instead of a cropped sliver, and the "clic
   // The overlay pill that used to sit on top of the flyer image is gone from the generated markup.
   assert.doesNotMatch(appScript, /이미지 클릭 시 크게 보기/);
   assert.doesNotMatch(appScript, /<span>\$\{zoomLabel\}<\/span>/);
-  // A dedicated "전단지 보기" button opens the same lightbox as the thumbnail (reusing the
-  // existing data-event-image delegated click handler -- no new JS wiring needed).
-  assert.match(appScript, /const flyer=item\.isPlaceholder\?"":`<button class="event-flyer-link" type="button" data-event-image="\$\{item\.image\}" data-event-alt="\$\{title\}">\$\{flyerLabel\}<\/button>`;/);
-  assert.match(appScript, /const actions=detail\|\|flyer\?`<div class="event-card-actions">\$\{detail\}\$\{flyer\}<\/div>`:"";/);
   // The flyer frame uses a fixed aspect-ratio with object-fit:contain on a neutral background,
   // so a tall poster is shown whole instead of being cropped by object-fit:cover at 240px.
   const overridesCss = read('app/overrides.css');
   assert.match(overridesCss, /\.event-card \.event-image-open\{aspect-ratio:4\/3;height:auto!important;background:#eef5ff!important\}/);
   assert.match(overridesCss, /\.event-card \.event-image-open img\{height:100%!important;object-fit:contain!important\}/);
+});
+
+test('event cards show exactly one "자세히 보기" button spanning the full card width, reusing the imageLightbox for events without a detail page', () => {
+  // Events with a dedicated detail page link to it; events without one reuse the same
+  // imageLightbox as the thumbnail via a button carrying the same data-event-image attribute
+  // (the existing delegated click handler wires it up, no new JS needed).
+  assert.match(appScript, /const detail=item\.isPlaceholder\?"":\(detailUrl\?`<a class="event-detail-link" href="\$\{detailUrl\}">\$\{detailLabel\}<\/a>`:`<button class="event-detail-link" type="button" data-event-image="\$\{item\.image\}" data-event-alt="\$\{title\}">\$\{detailLabel\}<\/button>`\);/);
+  assert.match(appScript, /const actions=detail\?`<div class="event-card-actions">\$\{detail\}<\/div>`:"";/);
+  // No flyer button/variable remains, and the old two-column trigger is gone.
+  assert.doesNotMatch(appScript, /event-flyer-link/);
+  const overridesCss = read('app/overrides.css');
+  assert.doesNotMatch(overridesCss, /event-flyer-link/);
+  // Single-column action row, full-width button.
+  assert.match(overridesCss, /\.event-card-actions\{display:grid;grid-template-columns:1fr;margin-top:4px\}/);
+  assert.match(overridesCss, /\.event-detail-link\{display:flex!important;align-items:center;justify-content:center;width:100%;border:0;background:#1155d9;color:#fff;text-decoration:none;font-family:inherit;cursor:pointer\}/);
 });
 
 test('Business Spotlight description is no longer hard-clamped to 3 lines, so longer entries like DMS are not silently truncated', () => {
@@ -213,5 +225,50 @@ test('Korean eyebrows are localized instead of showing raw English site-wide', (
   assert.match(appPage, /<p class="eyebrow" data-ko="파트너" data-en="PARTNERS">PARTNERS<\/p>/);
   // The Events and Contact screens' own page-heading eyebrows, for the same reason.
   assert.match(appPage, /<p class="eyebrow" data-ko="행사" data-en="EVENTS">EVENTS<\/p>/);
-  assert.match(appPage, /<p class="eyebrow" data-ko="문의" data-en="CONTACT">CONTACT<\/p>/);
+  assert.match(appPage, /<p class="eyebrow" data-ko="문의" data-en="GET IN TOUCH">GET IN TOUCH<\/p>/);
+});
+
+test('Events and Contact main titles match the website\'s actual section titles, not app-invented wording', () => {
+  // Web source of truth: index.html's Events section uses "강좌 · 행사" / "Classes & Events",
+  // and its Contact section heading is "궁금한 점이 있으신가요?" / "Have a question?".
+  assert.match(appPage, /<h2 data-ko="강좌 · 행사" data-en="Classes & Events">강좌 · 행사<\/h2>/);
+  assert.match(appPage, /<h1 class="events-main-title" data-ko="강좌 · 행사" data-en="Classes & Events">강좌 · 행사<\/h1>/);
+  // The Contact screen's initial (pre-JS) markup mirrors the same text; setContactMode() in
+  // app.js re-applies this exact wording at runtime for the default "general" contact mode.
+  assert.match(appPage, /<h1 id="contactTitle" data-ko="궁금한 점이 있으신가요\?" data-en="Have a question\?">궁금한 점이 있으신가요\?<\/h1>/);
+  assert.match(appScript, /title\.dataset\.ko="궁금한 점이 있으신가요\?";/);
+  assert.match(appScript, /title\.dataset\.en="Have a question\?";/);
+});
+
+test('the login modal logo uses the same asset and the same colored container as the header logo, so its white portions stay visible on the white modal panel', () => {
+  // Same asset as the header (no separate login-specific logo variant).
+  assert.match(appPage, /<span class="logo-mark brand-image" aria-hidden="true"><img src="\.\.\/assets\/harmony-logo\.png" alt=""><\/span>/);
+  assert.match(appPage, /<div class="app-auth-brand"><span class="logo-mark brand-image"><img src="\.\.\/assets\/harmony-logo\.png" alt=""><\/span><span>HARMONY LINK MEMBER<\/span><\/div>/);
+  // The modal's logo gets its own scoped copy of the header's colored gradient container,
+  // since app-auth-brand sits on a plain white panel where a bare <img> would lose its white parts.
+  const overridesCss = read('app/overrides.css');
+  assert.match(overridesCss, /\.app-auth-brand \.logo-mark\{width:40px;height:40px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0\}/);
+  assert.match(overridesCss, /\.app-auth-brand \.brand-image\{padding:4px;border-radius:11px;background:linear-gradient\(145deg,#bcd5fb,#6f9fe6\);box-shadow:0 5px 16px rgba\(12,64,140,\.16\);overflow:hidden\}/);
+  assert.match(overridesCss, /\.app-auth-brand \.brand-image img\{display:block;width:100%;height:100%;object-fit:contain\}/);
+});
+
+test('Contact form fields share one column, one width, and one input/select/textarea style so nothing drifts out of alignment', () => {
+  const appCss = read('app/app.css');
+  // Single-column grid; every field is a direct grid row (no nested layout to misalign against).
+  assert.match(appCss, /\.contact-form\{padding:0 20px 25px;display:grid;gap:16px\}/);
+  // input/select/textarea share width, border, radius, padding, font, background -- no per-field
+  // variation, and the select's wrapper is block-level so it doesn't opt out of the 100% width.
+  assert.match(appCss, /\.contact-form input,\.contact-form select,\.contact-form textarea\{width:100%;border:1px solid var\(--line\);border-radius:14px;padding:14px;font:inherit;color:var\(--ink\);background:white;outline:none\}/);
+  assert.match(appCss, /\.contact-form \.select-wrap\{display:block;position:relative;padding-left:0\}/);
+  // Input and select share one explicit height on the Contact screen itself.
+  assert.match(appCss, /#contact \.contact-form input,#contact \.contact-form select\{height:38px;padding-top:7px;padding-bottom:7px\}/);
+  // The submit button is a grid row like every other field, so it shares the same left/right edges.
+  assert.match(appCss, /\.submit-button\{height:52px;border:0;border-radius:26px;background:var\(--ink\);color:white;padding:0 22px;display:flex;align-items:center;justify-content:space-between;font-weight:700\}/);
+  // Shared blue focus ring across all three field types.
+  assert.match(appCss, /\.contact-form input:focus,\.contact-form select:focus,\.contact-form textarea:focus\{border-color:#1155d9;box-shadow:0 0 0 3px rgba\(17,85,217,\.08\)\}/);
+});
+
+test('section eyebrow weight/size moves closer to the website\'s eyebrow style (800/12px) without touching layout spacing', () => {
+  const appCss = read('app/app.css');
+  assert.match(appCss, /\.eyebrow\{margin:0 0 12px;color:#1a34ac;font-weight:800;font-size:12px;letter-spacing:\.14em\}/);
 });
