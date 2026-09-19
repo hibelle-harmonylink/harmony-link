@@ -9,8 +9,9 @@ const appPage = read('app/index.html');
 const appScript = read('app/app.js');
 const sharedContent = read('shared-content.js');
 const businessesData = read('shared/data/businesses.js');
+const eventsData = read('shared/data/events.js');
 const webScript = read('script.js');
-const serviceWorker = read('app/service-worker-v99.js');
+const serviceWorker = read('app/service-worker-v100.js');
 
 test('app menu links to the existing Senior Learning web page instead of duplicating it', () => {
   assert.match(appPage, /<a href="\.\.\/senior-learning\.html" data-ko="시니어 배움터" data-en="Senior Learning">시니어 배움터<\/a>/);
@@ -65,33 +66,37 @@ test('app Business Spotlight includes all 6 Production businesses, now sourced f
 });
 
 test('app events include the current Production 3 upcoming + 3 past classes', () => {
-  assert.match(sharedContent, /id:"ai-business-automation"/);
-  assert.match(sharedContent, /titleKo:"AI 업무자동화 무료 특강",titleEn:"Free AI Business Automation Workshop"/);
-  assert.match(sharedContent, /date:"2026-09-11",endDate:"2026-09-11"/);
-  assert.match(sharedContent, /image:"\/assets\/events\/ai-business-automation-free-class-20260911\.webp"/);
-  // Messiah was already present in app.js with matching title/dates/venue/contact -- left untouched.
-  assert.match(appScript, /id:"messiah".*titleKo:"미란멜로디와 함께하는 헨델의 메시아"/);
-  assert.match(appScript, /date:"2026-12-09",endDate:"2026-12-13"/);
-  // Total distinct event ids across the app's active data source: messiah (app.js) +
-  // hole19-tournament, ai-business-automation, free-music-class, one-day-class,
-  // finance-ai-seminar (shared-content.js, excluding the seminars-coming placeholder) = 6.
-  const eventsBlock = sharedContent.match(/events: \[([\s\S]*?)\],\n  promotions:/)?.[1] || '';
-  const sharedEventIds = [...eventsBlock.matchAll(/id:"([a-z0-9-]+)"/g)].map(m => m[1]);
-  assert.deepEqual(sharedEventIds.sort(), ['ai-business-automation', 'finance-ai-seminar', 'free-music-class', 'hole19-tournament', 'one-day-class', 'seminars-coming'].sort());
+  // As of the Phase 2 web/app data unification, all 6 events (including messiah, which
+  // used to be hardcoded separately in app.js) moved out of app.js/shared-content.js
+  // and into the canonical shared/data/events.js that both script.js and app/app.js
+  // read (see tests/shared-event-data.test.js for full field-level coverage). This
+  // test keeps checking the Production values it originally asserted, from their new home.
+  assert.match(eventsData, /id:"ai-business-automation"/);
+  assert.match(eventsData, /titleKo:"AI 업무자동화 무료 특강",titleEn:"Free AI Business Automation Workshop"/);
+  assert.match(eventsData, /dateStart:"2026-09-11",dateEnd:"2026-09-11"/);
+  assert.match(eventsData, /flyerKo:"assets\/events\/ai-business-automation-free-class-20260911\.webp"/);
+  assert.match(eventsData, /id:"messiah"[\s\S]*?titleKo:"미란멜로디와 함께하는 헨델의 메시아"/);
+  assert.match(eventsData, /dateStart:"2026-12-09",dateEnd:"2026-12-13"/);
+  // shared-content.js no longer carries any of the 6 events.
+  assert.doesNotMatch(sharedContent, /events:\s*\[/);
+  const ids = [...eventsData.matchAll(/id:"([a-z0-9-]+)"/g)].map(m => m[1]);
+  assert.deepEqual(ids, ['messiah', 'hole19-tournament', 'free-music-class', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar']);
 });
 
-test('service worker v99 precaches the mobile design-system pass without changing the caching strategy', () => {
-  assert.match(serviceWorker, /const CACHE="harmony-link-app-v99"/);
+test('service worker v100 precaches the mobile design-system pass without changing the caching strategy', () => {
+  assert.match(serviceWorker, /const CACHE="harmony-link-app-v100"/);
   assert.match(serviceWorker, /"\.\.\/assets\/events\/ai-business-automation-free-class-20260911\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/images\/dms-care-logo\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/home\/harmony-community-learning\.png"/);
+  assert.match(serviceWorker, /"\.\.\/shared\/data\/events\.js\?v=1"/);
   assert.match(serviceWorker, /"\.\/app\.css\?v=65"/);
   assert.match(serviceWorker, /"\.\/overrides\.css\?v=100"/);
-  assert.match(serviceWorker, /"\.\/app\.js\?v=98"/);
-  // Same network-first, cache-as-fallback strategy as v98 -- not rewritten.
+  assert.match(serviceWorker, /"\.\/app\.js\?v=99"/);
+  // Same network-first, cache-as-fallback strategy as v99 -- not rewritten.
   assert.match(serviceWorker, /fetch\(event\.request,\{cache:"no-store"\}\)/);
-  assert.match(appScript, /register\("service-worker-v99\.js",\{updateViaCache:"none"\}\)/);
+  assert.match(appScript, /register\("service-worker-v100\.js",\{updateViaCache:"none"\}\)/);
   // Older versions are kept on disk (asset safety), not deleted.
+  assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v99.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v98.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v97.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v96.js')), true);

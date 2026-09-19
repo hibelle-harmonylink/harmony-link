@@ -37,13 +37,21 @@ const fallbackPopupNews=[
   {badgeKo:"파트너 모집",badgeEn:"PARTNER RECRUITMENT",titleKo:"입점 파트너 모집",titleEn:"Partner Recruitment",textKo:"전문 강사와 교육업체의 좋은 프로그램이 더 많은<br>사람과 만날 수 있도록 연결합니다.",textEn:"We connect trusted instructors and education providers<br>with more learners and organizations.",image:"../assets/partners/partner-recruitment.png",actionKo:"문의하기",actionEn:"Contact us",screen:"contact"}
 ];
 const popupNews=sharedContent.promotions?.length?[...sharedContent.promotions,...businessPromotions]:fallbackPopupNews;
-const messiahEvent={id:"messiah",date:"2026-12-09",endDate:"2026-12-13",categoryKo:"특별 행사",categoryEn:"SPECIAL EVENT",badgeKo:"특별 행사",badgeEn:"SPECIAL EVENT",titleKo:"미란멜로디와 함께하는 헨델의 메시아",titleEn:"Handel's Messiah with Meeran Melody",textKo:"2026년 12월 9일(수)~13일(일)<br>David Geffen Hall at Lincoln Center<br>문의 817-905-3468",textEn:"December 9–13, 2026<br>David Geffen Hall at Lincoln Center<br>Contact 817-905-3468",image:"../assets/events/meeran-melody-messiah-20261209.png",url:"../special-event-messiah.html"};
-const sharedEvents=(sharedContent.events?.length?sharedContent.events:[
-  {id:"free-music-class",date:"2026-08-22",endDate:"2026-11-22",badgeKo:"무료 체험",badgeEn:"FREE TRIAL",titleKo:"3개월 무료 음악 클래스",titleEn:"Three-Month Free Music Class",textKo:"매주 토요일 오전 10시, 할렐루야 교회에서 진행합니다.",textEn:"Every Saturday at 10 AM at Hallelujah Church.",image:"../assets/events/free-music-class-20260822.png"},
-  {id:"one-day-class",date:"2026-08-01",endDate:"2026-08-01",badgeKo:"지난 무료 체험",badgeEn:"PAST FREE TRIAL",titleKo:"음악과 디지털 1일 체험 클래스",titleEn:"Music & Digital One-Day Experience",textKo:"2026년 8월 1일 진행된 무료 체험 클래스입니다.",textEn:"A free trial class held on August 1, 2026.",image:"../assets/events/one-day-class.jpg"},
-  {id:"finance-ai-seminar",date:"2026-07-10",endDate:"2026-07-24",badgeKo:"지난 무료 세미나",badgeEn:"PAST FREE SEMINAR",badgeDark:true,titleKo:"재정과 AI의 협력, 더 나은 미래 설계",titleEn:"Finance and AI: Designing a Better Future",textKo:"2026년 7월에 진행된 무료 세미나입니다.",textEn:"A free seminar held in July 2026.",image:"../assets/events/finance-ai-seminar.jpg"}
-]);
-const events=[messiahEvent,...sharedEvents.filter(item=>!item.isPlaceholder)];
+if(!window.HARMONY_LINK_EVENTS){
+  console.warn("[events] shared/data/events.js did not load; the events screen will be empty.");
+}
+// Adapts a canonical shared/data/events.js entry into the {id,date,endDate,...} shape
+// eventCard() already expects. The app's existing pre-formatted card text/image path
+// is preserved byte-for-byte (stored as appText*/appImage on the canonical entry
+// instead of duplicated here); titleKo/titleEn fall back to the shared title unless
+// the canonical entry carries an app-specific override (see events.js's header
+// comment -- currently only free-music-class, whose app copy predates and differs
+// slightly from the web's current title). detailUrl is resolved into the app's own
+// "../"-relative path instead of storing a second literal URL.
+function eventToAppModel(event){
+  return{id:event.id,date:event.dateStart,endDate:event.dateEnd,badgeKo:event.badgeKo,badgeEn:event.badgeEn,badgeDark:event.appBadgeDark,titleKo:event.appTitleKo||event.titleKo,titleEn:event.appTitleEn||event.titleEn,textKo:event.appTextKo,textEn:event.appTextEn,image:event.appImage,url:event.detailUrl?`../${event.detailUrl}`:""};
+}
+const events=(window.HARMONY_LINK_EVENTS||[]).map(eventToAppModel);
 let language=localStorage.getItem("hl-language")||"ko";
 let activeCategory="전체";
 let saved=new Set(JSON.parse(localStorage.getItem("hl-saved")||"[]"));
@@ -573,7 +581,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true;clos
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v99.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v100.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;

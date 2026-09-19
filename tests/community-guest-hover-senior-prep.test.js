@@ -14,6 +14,7 @@ const seniorCss = read('senior-learning.css');
 const homepage = read('index.html');
 const homepageScript = read('script.js');
 const businessesData = read('shared/data/businesses.js');
+const eventsData = read('shared/data/events.js');
 
 test('guest community writers get the existing homepage login route while active members keep compose access', () => {
   assert.match(communityPage, /id="communityLoginPrompt"/);
@@ -56,8 +57,11 @@ test('past event cards reuse only their existing poster assets in the flyer moda
   assert.match(homepageScript, /button\.href = poster\.href/);
   assert.match(homepageScript, /data-ko="전단지 보기" data-en="View Flyer"/);
   assert.match(homepageScript, /#events \.event-poster, #events \.event-flyer-button/);
-  assert.match(homepage, /assets\/events\/one-day-class\.jpg/);
-  assert.match(homepage, /assets\/events\/finance-ai-seminar\.jpg/);
+  // The events grid itself is now rendered from shared/data/events.js at runtime
+  // (see tests/shared-event-data.test.js), so these poster asset paths live there
+  // instead of in index.html's now-empty .event-grid container.
+  assert.match(eventsData, /assets\/events\/one-day-class\.jpg/);
+  assert.match(eventsData, /assets\/events\/finance-ai-seminar\.jpg/);
 });
 
 test('event flyer overlay closes only outside the modal panel', () => {

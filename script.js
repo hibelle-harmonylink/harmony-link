@@ -747,8 +747,28 @@ const aboutCopy=document.querySelector('.about-copy');
 aboutCopy?.classList.add('about-copy-card');
 const contactWrap=document.querySelector('.contact-wrap');
 contactWrap?.insertAdjacentHTML('afterbegin','<div class="contact-illustration" aria-hidden="true"><span>✉</span><i></i><b></b><em>♥</em></div>');
+// Events (강좌 · 행사) now render from the canonical shared/data/events.js instead of
+// being hand-authored HTML here, so a data change (new event, edited date/phone/flyer)
+// only needs to happen in that one file. This reproduces the exact article markup the
+// grid previously had, so none of the code below it (current/past date migration,
+// Google Maps auto-link injection, detail/flyer-button injection, the flyer modal's
+// delegated click handler, and setLanguage()'s data-ko/data-ko-href/data-ko-src
+// attribute swapping) needed to change.
+if (!window.HARMONY_LINK_EVENTS) {
+  console.warn('[events] shared/data/events.js did not load; the events grid will be empty.');
+}
+function eventToWebHtml(event) {
+  const cardClass = ['event-card', event.cardClass, 'reveal', event.revealDelay].filter(Boolean).join(' ');
+  const hasSeparateEnFlyer = event.flyerEn && event.flyerEn !== event.flyerKo;
+  const posterLangAttrs = hasSeparateEnFlyer ? ` data-ko-href="${event.flyerKo}" data-en-href="${event.flyerEn}"` : '';
+  const imgLangAttrs = hasSeparateEnFlyer ? ` data-ko-src="${event.flyerKo}" data-en-src="${event.flyerEn}"` : '';
+  const badgeClass = ['event-badge', event.badgeClass].filter(Boolean).join(' ');
+  const detailButton = event.detailUrl ? `<a class="btn event-detail-button" href="${event.detailUrl}"><span data-ko="자세히 보기" data-en="View Details">자세히 보기</span><b>→</b></a>` : '';
+  return `<article class="${cardClass}" data-event-category="${event.category || ''}" data-event-start="${event.dateStart}" data-event-end="${event.dateEnd}"><a class="event-poster" href="${event.flyerKo}"${posterLangAttrs} target="_blank" aria-label="${event.posterAriaLabel}"><img src="${event.flyerKo}"${imgLangAttrs} alt="${event.posterAlt}"></a><div class="event-info"><span class="${badgeClass}" data-ko="${event.badgeKo}" data-en="${event.badgeEn}">${event.badgeKo}</span><h3 data-ko="${event.titleKo}" data-en="${event.titleEn}">${event.titleKo}</h3><p data-ko="${event.descriptionKo}" data-en="${event.descriptionEn}">${event.descriptionKo}</p><dl>${event.detailRowsHtml}</dl>${detailButton}</div></article>`;
+}
 const eventGrid=document.querySelector('.event-grid');
 if(eventGrid){
+  eventGrid.innerHTML=(window.HARMONY_LINK_EVENTS||[]).map(eventToWebHtml).join('');
   eventGrid.querySelectorAll('.reveal').forEach(item=>item.classList.add('visible'));
 }
 setLanguage(currentLanguage);
