@@ -13,6 +13,21 @@ const basePrograms = [
   {id:"career",emoji:"💼",ko:"자격증·직업교육",en:"Career & Certification",category:"직업",tagsKo:"자격증 · 취업 · 창업",tagsEn:"Certificates · Employment · Business",color:"#cbd8e5"}
 ];
 const sharedContent=window.HARMONY_LINK_SHARED_CONTENT||{};
+if(!window.HARMONY_LINK_BUSINESSES){
+  console.warn("[businesses] shared/data/businesses.js did not load; Business Spotlight will show no businesses.");
+}
+// Adapts a canonical shared/data/businesses.js entry into the {kind,titleKo,...} shape
+// this file's promotion renderers (renderPartners, the home news popup) already expect.
+// The app-specific title/text/badge/logo/CTA-label copy is preserved byte-for-byte from
+// the app's own previously-hardcoded values (now stored on the canonical entry as
+// appTitleKo/appTextKo/etc. instead of duplicated here); only the CTA link target is
+// resolved from the canonical field appCtaField points at, so that URL is never
+// duplicated as a second literal string.
+function businessToPromotion(business){
+  const ctaUrl=business.appCtaField==="phone"?(business.phoneHref?`tel:${business.phoneHref}`:""):(business[business.appCtaField]||"");
+  return{kind:business.kind,titleKo:business.appTitleKo,titleEn:business.appTitleEn,textKo:business.appTextKo,textEn:business.appTextEn,badgeKo:business.appBadgeKo,badgeEn:business.appBadgeEn,image:business.appLogo,url:ctaUrl,actionKo:business.appCtaKo,actionEn:business.appCtaEn};
+}
+const businessPromotions=(window.HARMONY_LINK_BUSINESSES||[]).map(businessToPromotion);
 const programs=[...(sharedContent.featuredPrograms||[]),...basePrograms];
 const categoryNames={전체:"All",디지털:"Digital",언어:"Language",음악:"Music"};
 const currentBasePrograms=basePrograms.filter(program=>Object.hasOwn(categoryNames,program.category));
@@ -21,7 +36,7 @@ const fallbackPopupNews=[
   {badgeKo:"지역사회 봉사",badgeEn:"COMMUNITY SUPPORT",titleKo:"무료 방문 디지털 지원",titleEn:"Free in-home digital support",textKo:"스마트폰과 디지털 기기 사용이 어려운 이웃을<br>직접 찾아가 친절하게 도와드립니다.",textEn:"Friendly volunteers visit neighbors who need help<br>using smartphones and digital devices.",image:"../assets/volunteer/digital-volunteer.png",actionKo:"신청하기",actionEn:"Apply",screen:"contact"},
   {badgeKo:"파트너 모집",badgeEn:"PARTNER RECRUITMENT",titleKo:"입점 파트너 모집",titleEn:"Partner Recruitment",textKo:"전문 강사와 교육업체의 좋은 프로그램이 더 많은<br>사람과 만날 수 있도록 연결합니다.",textEn:"We connect trusted instructors and education providers<br>with more learners and organizations.",image:"../assets/partners/partner-recruitment.png",actionKo:"문의하기",actionEn:"Contact us",screen:"contact"}
 ];
-const popupNews=sharedContent.promotions?.length?sharedContent.promotions:fallbackPopupNews;
+const popupNews=sharedContent.promotions?.length?[...sharedContent.promotions,...businessPromotions]:fallbackPopupNews;
 const messiahEvent={id:"messiah",date:"2026-12-09",endDate:"2026-12-13",categoryKo:"특별 행사",categoryEn:"SPECIAL EVENT",badgeKo:"특별 행사",badgeEn:"SPECIAL EVENT",titleKo:"미란멜로디와 함께하는 헨델의 메시아",titleEn:"Handel's Messiah with Meeran Melody",textKo:"2026년 12월 9일(수)~13일(일)<br>David Geffen Hall at Lincoln Center<br>문의 817-905-3468",textEn:"December 9–13, 2026<br>David Geffen Hall at Lincoln Center<br>Contact 817-905-3468",image:"../assets/events/meeran-melody-messiah-20261209.png",url:"../special-event-messiah.html"};
 const sharedEvents=(sharedContent.events?.length?sharedContent.events:[
   {id:"free-music-class",date:"2026-08-22",endDate:"2026-11-22",badgeKo:"무료 체험",badgeEn:"FREE TRIAL",titleKo:"3개월 무료 음악 클래스",titleEn:"Three-Month Free Music Class",textKo:"매주 토요일 오전 10시, 할렐루야 교회에서 진행합니다.",textEn:"Every Saturday at 10 AM at Hallelujah Church.",image:"../assets/events/free-music-class-20260822.png"},
@@ -76,7 +91,7 @@ function renderRecommended(){
 function renderPartners(){
   const container=$("#partnerPrograms");
   if(!container)return;
-  const partners=(sharedContent.promotions||[]).filter(item=>item.kind==="advertising"||item.kind==="community");
+  const partners=businessPromotions;
   if(!partners.length){container.innerHTML="";return}
   partnerIndex=(partnerIndex+partners.length)%partners.length;
   const visible=Array.from({length:Math.min(3,partners.length)},(_,offset)=>partners[(partnerIndex+offset)%partners.length]);
@@ -558,7 +573,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true;clos
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v98.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v99.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;
