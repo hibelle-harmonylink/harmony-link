@@ -66,8 +66,12 @@ function showPartnerEmailStatus() {
 // Google Form question text is, so no exact header wording is assumed.
 const APPLICATION_FIELD_KEYWORDS = {
   phone: ['연락처', '전화', 'phone', 'mobile', 'contact'],
-  specialty: ['전문분야', '전문 분야', 'specialty'],
-  teachingSubjects: ['강의과목', '강의 과목', 'teaching'],
+  // The partner application form uses 지원 분야, while other intake forms
+  // use 전문분야. Both are the same member specialty metadata.
+  specialty: ['전문분야', '전문 분야', '지원 분야', '지원분야', 'specialty'],
+  // Partner applications describe classes as 제공 가능한 프로그램; retain
+  // the existing 강의과목 aliases for other forms.
+  teachingSubjects: ['강의과목', '강의 과목', '제공 가능한 프로그램', '제공가능한 프로그램', 'teaching'],
   enrolledSubject: ['수강과목', '수강 과목', 'enrolled'],
   assignedInstructor: ['담당강사', '담당 강사', 'instructor']
 };

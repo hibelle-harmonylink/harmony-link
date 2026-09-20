@@ -41,10 +41,10 @@ test('the forward is best-effort and never breaks the welcome email that already
   assert.match(handler, /try \{\s*\n\s*forwardApplicationToRoster_\(email, name, values\);\s*\n\s*\} catch \(error\) \{/);
 });
 
-test('application fields are matched by real-header substring keywords, not one hardcoded exact label, mirroring the existing email/name/organization lookup', () => {
+test('application fields are matched by real-header substring keywords, including the partner form support-area and offered-program labels', () => {
   assert.match(partnerScript, /phone: \['연락처', '전화', 'phone', 'mobile', 'contact'\]/);
-  assert.match(partnerScript, /specialty: \['전문분야', '전문 분야', 'specialty'\]/);
-  assert.match(partnerScript, /teachingSubjects: \['강의과목', '강의 과목', 'teaching'\]/);
+  assert.match(partnerScript, /specialty: \['전문분야', '전문 분야', '지원 분야', '지원분야', 'specialty'\]/);
+  assert.match(partnerScript, /teachingSubjects: \['강의과목', '강의 과목', '제공 가능한 프로그램', '제공가능한 프로그램', 'teaching'\]/);
   assert.match(partnerScript, /enrolledSubject: \['수강과목', '수강 과목', 'enrolled'\]/);
   assert.match(partnerScript, /assignedInstructor: \['담당강사', '담당 강사', 'instructor'\]/);
 });
