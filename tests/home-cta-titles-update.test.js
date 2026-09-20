@@ -22,11 +22,27 @@ test('Hero CTA row: no arrow glyph, exactly 2 CTAs, destinations and styling unc
 });
 
 test('Hero CTA row lays out both buttons side by side with equal-width grid columns, scoped to the dashboard hero only', () => {
-  assert.match(overridesCss, /\.hero-dashboard \.hero-cta-row\{display:grid!important;grid-template-columns:1fr 1fr!important/);
+  assert.match(overridesCss, /\.hero-dashboard \.hero-cta-row\{display:grid!important;grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)!important/);
   assert.match(overridesCss, /\.hero-dashboard \.hero-cta-row \.app-program-explore\{min-height:44px!important;height:44px!important/);
   assert.match(overridesCss, /\.hero-dashboard \.hero-cta-row \.app-hero-secondary-action\{min-height:44px!important;height:44px!important/);
   // Touch target floor (44px) is preserved, not reduced further.
   assert.doesNotMatch(overridesCss, /\.hero-dashboard \.hero-cta-row[^{]*\{[^}]*height:(?:[1-3]?\d|4[0-3])px/);
+});
+
+test('Hero CTA grid columns use minmax(0,1fr) with min-width:0 on both buttons -- a bare "1fr 1fr" is exactly the regression that broke English width parity', () => {
+  // A plain "1fr 1fr" track still lets a nowrap child's min-content size push its
+  // own column wider than its sibling's; minmax(0, 1fr) clamps the track's floor to
+  // 0 so the two columns split the row exactly evenly regardless of content length.
+  assert.doesNotMatch(overridesCss, /grid-template-columns:1fr 1fr!important/);
+  assert.match(overridesCss, /grid-template-columns:minmax\(0,1fr\) minmax\(0,1fr\)!important/);
+  assert.match(overridesCss, /\.hero-dashboard \.hero-cta-row \.app-program-explore,\n\.hero-dashboard \.hero-cta-row \.app-hero-secondary-action\{min-width:0!important\}/);
+  // English gets its own font-size tiers (scoped via html[lang="en"], never touching
+  // the Korean 13px/12px sizing) so the longer "Join as an Instructor or Provider"
+  // copy still fits one line at true equal width instead of being cut off/ellipsized.
+  assert.match(overridesCss, /html\[lang="en"\] \.hero-dashboard \.hero-cta-row \.app-program-explore,\nhtml\[lang="en"\] \.hero-dashboard \.hero-cta-row \.app-hero-secondary-action\{font-size:10px!important/);
+  assert.match(overridesCss, /@media\(max-width:430px\)\{\n  html\[lang="en"\][\s\S]*?font-size:8\.5px!important/);
+  assert.match(overridesCss, /@media\(max-width:380px\)\{\n  html\[lang="en"\][\s\S]*?font-size:8px!important/);
+  assert.match(overridesCss, /@media\(min-width:520px\)\{\n  html\[lang="en"\][\s\S]*?font-size:13px!important/);
 });
 
 test('Hero headline, description, image, and badge are untouched by the CTA edit', () => {
