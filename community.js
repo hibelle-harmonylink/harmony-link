@@ -212,6 +212,8 @@
 
   const showGuestView = () => {
     user = null; profile = null;
+    document.getElementById('signOutButton').hidden = true;
+    document.getElementById('communityHomeButton').hidden = true;
     document.getElementById('openComposer').hidden = false;
     document.getElementById('communityLoginPrompt').hidden = true;
     document.getElementById('memberBadge').textContent = '게스트';
@@ -239,31 +241,48 @@
   // it stays a neutral loading state until the session check resolves, so
   // a signed-in user navigating in from index.html never sees a stale
   // login prompt while their session is still being confirmed.
+  // signOutButton/communityHomeButton and the login-required prompt must always
+  // derive from this SAME resolved "allowed" outcome, never from raw session
+  // presence on its own -- otherwise a signed-in-but-not-approved session can
+  // show "로그아웃" at the top while the guest-only login prompt shows below it.
+  const resolveAccess = async () => {
+    if (!client) { showGuestView(); return; }
+    const { data } = await client.auth.getSession(); user = data.session?.user || null;
+    if (!user) { showGuestView(); return; }
+    const { data: member, error } = await client.from('member_profiles').select('role,account_status,display_name,member_type').eq('id', user.id).maybeSingle();
+    const allowed = !error && member && window.HarmonyAccess?.hasFeatureAccess(member, 'community');
+    if (!allowed) {
+      showGuestView();
+    } else {
+      profile = { ...member, display_name: member.display_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0] };
+      document.getElementById('signOutButton').hidden = false;
+      document.getElementById('communityHomeButton').hidden = false;
+      document.getElementById('openComposer').hidden = false;
+      document.getElementById('communityLoginPrompt').hidden = true;
+      populateComposerCategories(); document.getElementById('memberBadge').textContent = profile.role === 'member' ? (profile.member_type === 'student' ? '수강생 커뮤니티' : '일반회원 커뮤니티') : (roleLabels[profile.role] || '회원 커뮤니티'); document.getElementById('welcomeName').textContent = profile.role === 'admin' ? '하이벨님' : `${profile.display_name}님, 반갑습니다.`;
+    }
+  };
+
   const initialize = async () => {
     showLoading();
-    if (!client) { showGuestView(); access.hidden = true; app.hidden = false; setMessage('게시글을 불러오지 못했습니다.', true); return; }
-    const { data } = await client.auth.getSession(); user = data.session?.user || null;
-    document.getElementById('signOutButton').hidden = !user;
-    document.getElementById('communityHomeButton').hidden = !user;
-    if (user) {
-      const { data: member, error } = await client.from('member_profiles').select('role,account_status,display_name,member_type').eq('id', user.id).maybeSingle();
-      const allowed = !error && member && window.HarmonyAccess?.hasFeatureAccess(member, 'community');
-      if (!allowed) {
-        showGuestView();
-      } else {
-        profile = { ...member, display_name: member.display_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email.split('@')[0] };
-        document.getElementById('openComposer').hidden = false;
-        document.getElementById('communityLoginPrompt').hidden = true;
-        populateComposerCategories(); document.getElementById('memberBadge').textContent = profile.role === 'member' ? (profile.member_type === 'student' ? '수강생 커뮤니티' : '일반회원 커뮤니티') : (roleLabels[profile.role] || '회원 커뮤니티'); document.getElementById('welcomeName').textContent = profile.role === 'admin' ? '하이벨님' : `${profile.display_name}님, 반갑습니다.`;
-      }
-    } else {
-      showGuestView();
-    }
+    await resolveAccess();
+    if (!client) { access.hidden = true; app.hidden = false; setMessage('게시글을 불러오지 못했습니다.', true); return; }
     const requestedCategory = new URLSearchParams(location.search).get('category');
     if ([...categoryFilter.options].some(option => option.value === requestedCategory)) categoryFilter.value = requestedCategory;
     access.hidden = true; app.hidden = false; await loadPosts();
   };
   initialize();
+
+  // Live auth transitions (e.g. signing out in another tab, or a session that
+  // expires while this page is open) reuse the Supabase SDK's own
+  // onAuthStateChange listener -- the same pattern auth.js already relies on --
+  // instead of a page-specific auth mechanism. INITIAL_SESSION/TOKEN_REFRESHED
+  // are ignored here since initialize() already resolves the first session and
+  // a token refresh doesn't change who is signed in.
+  client?.auth.onAuthStateChange(event => {
+    if (event !== 'SIGNED_IN' && event !== 'SIGNED_OUT') return;
+    resolveAccess().then(() => { access.hidden = true; app.hidden = false; });
+  });
 
   const volunteerModal = document.getElementById('volunteerRequestModal');
   const volunteerForm = document.getElementById('volunteerRequestForm');

@@ -21,7 +21,7 @@ test('community home control keeps its destination and uses the homepage label',
 test('English Hero wraps inside its own grid track without changing Korean layout rules', () => {
   assert.equal(version.version, '20260916-29');
   assert.match(homepage, /const pageVersion = '20260916-29'/);
-  assert.match(homepage, /homepage-ui\.css\?v=20260918-21/);
+  assert.match(homepage, /homepage-ui\.css\?v=20260920-1/);
   assert.match(homepage, /script\.js\?v=20260918-28/);
   assert.match(homepageCss, /@media\(max-width:1200px\) and \(min-width:901px\)/);
   assert.match(homepageCss, /grid-template-columns:minmax\(0,1fr\) minmax\(0,\.95fr\)!important/);

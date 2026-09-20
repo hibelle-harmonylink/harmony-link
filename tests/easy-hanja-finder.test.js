@@ -49,15 +49,14 @@ test('hanja converter uses an extensible local word lexicon and only returns ver
   assert.match(script, /data-hanja-copy/);
 });
 
-test('homepage keeps cognition as the original category and keeps mini apps outside primary navigation', () => {
+test('homepage keeps art as a pending category and keeps mini apps outside primary navigation', () => {
   const homepage = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const categoryStart = homepage.indexOf('id="program-categories"');
   const categoryMarkup = homepage.slice(categoryStart, homepage.indexOf('</section>', categoryStart));
   const primaryNav = homepage.match(/<nav class="primary-nav"[\s\S]*?<\/nav>/)?.[0] || '';
-  assert.match(categoryMarkup, /data-program-coming-soon[\s\S]*?data-ko="인지" data-en="Cognitive">인지<\/strong>/);
+  assert.match(categoryMarkup, /data-program-coming-soon[\s\S]*?data-ko="미술" data-en="Art">미술<\/strong>/);
   assert.doesNotMatch(categoryMarkup, /href="mini-apps\.html"/);
   assert.doesNotMatch(primaryNav, /미니\s*앱|Mini Apps/);
-  assert.doesNotMatch(primaryNav, />인지</);
   assert.doesNotMatch(homepage, /easy-hanja-entry/);
   assert.match(homepage, /auth\.js\?v=20260916-15/);
 });
