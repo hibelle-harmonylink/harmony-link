@@ -11,7 +11,7 @@ const sharedContent = read('shared-content.js');
 const businessesData = read('shared/data/businesses.js');
 const eventsData = read('shared/data/events.js');
 const webScript = read('script.js');
-const serviceWorker = read('app/service-worker-v101.js');
+const serviceWorker = read('app/service-worker-v103.js');
 
 test('app menu links to the existing Senior Learning web page instead of duplicating it', () => {
   assert.match(appPage, /<a href="\.\.\/senior-learning\.html" data-ko="시니어 배움터" data-en="Senior Learning">시니어 배움터<\/a>/);
@@ -83,22 +83,23 @@ test('app events include the current Production 3 upcoming + 3 past classes', ()
   assert.deepEqual(ids, ['messiah', 'hole19-tournament', 'free-music-class', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar']);
 });
 
-test('service worker v101 precaches the HOME dashboard redesign pass without changing the caching strategy', () => {
-  assert.match(serviceWorker, /const CACHE="harmony-link-app-v101"/);
+test('service worker v103 precaches the HOME English CTA width-fix pass without changing the caching strategy', () => {
+  assert.match(serviceWorker, /const CACHE="harmony-link-app-v103"/);
   assert.match(serviceWorker, /"\.\.\/assets\/events\/ai-business-automation-free-class-20260911\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/images\/dms-care-logo\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/home\/harmony-community-learning\.png"/);
   assert.match(serviceWorker, /"\.\.\/shared\/data\/events\.js\?v=1"/);
   assert.match(serviceWorker, /"\.\/app\.css\?v=65"/);
-  assert.match(serviceWorker, /"\.\/overrides\.css\?v=101"/);
-  assert.match(serviceWorker, /"\.\/app\.js\?v=101"/);
-  // Same network-first, cache-as-fallback strategy as v100 -- not rewritten.
+  assert.match(serviceWorker, /"\.\/overrides\.css\?v=103"/);
+  assert.match(serviceWorker, /"\.\/app\.js\?v=103"/);
+  // Same network-first, cache-as-fallback strategy as v102 -- not rewritten.
   assert.match(serviceWorker, /fetch\(event\.request,\{cache:"no-store"\}\)/);
-  assert.match(appScript, /register\("service-worker-v101\.js",\{updateViaCache:"none"\}\)/);
+  assert.match(appScript, /register\("service-worker-v103\.js",\{updateViaCache:"none"\}\)/);
   // Older versions are kept on disk (asset safety), not deleted.
+  assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v102.js')), true);
+  assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v101.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v100.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v99.js')), true);
-  assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v98.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v97.js')), true);
 });
 
@@ -230,10 +231,12 @@ test('Business Spotlight description is no longer hard-clamped to 3 lines, so lo
 });
 
 test('Korean eyebrows are localized instead of showing raw English site-wide', () => {
-  // The three eyebrows the design brief called out by name.
-  assert.match(appPage, /<p class="eyebrow" data-ko="프로그램" data-en="PROFESSIONAL PROGRAMS">PROFESSIONAL PROGRAMS<\/p>/);
+  // The three eyebrows the design brief called out by name. Programs/Business Spotlight
+  // now match the wording the real website uses for the same content (see
+  // tests/home-dashboard-redesign.test.js for the full title-unification coverage).
+  assert.match(appPage, /<p class="eyebrow" data-ko="프로그램" data-en="EDUCATION PROGRAMS">EDUCATION PROGRAMS<\/p>/);
   assert.match(appPage, /<p class="eyebrow" data-ko="소식 · 행사" data-en="NEWS & EVENTS">NEWS & EVENTS<\/p>/);
-  assert.match(appPage, /<p class="eyebrow" data-ko="파트너" data-en="PARTNERS">PARTNERS<\/p>/);
+  assert.match(appPage, /<p class="eyebrow" data-ko="BUSINESS SPOTLIGHT" data-en="BUSINESS SPOTLIGHT">BUSINESS SPOTLIGHT<\/p>/);
   // The Events and Contact screens' own page-heading eyebrows, for the same reason.
   assert.match(appPage, /<p class="eyebrow" data-ko="행사" data-en="EVENTS">EVENTS<\/p>/);
   assert.match(appPage, /<p class="eyebrow" data-ko="문의" data-en="GET IN TOUCH">GET IN TOUCH<\/p>/);

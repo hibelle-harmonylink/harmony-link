@@ -802,7 +802,47 @@ a.program-mini h3{color:inherit;text-decoration:none}
    ============================================================ */
 .app-shell #home .hero.hero-dashboard{min-height:0!important;padding:18px 20px 14px!important}
 .hero-dashboard .hero-desc{margin:6px 0 12px!important}
-.hero-dashboard .hero-cta-row{gap:8px!important}
+/* CTA row: both buttons side-by-side with genuinely equal-width grid columns at
+   every width, including 360px, instead of stacked full-width buttons.
+   minmax(0,1fr) + min-width:0 on the grid items is required -- a bare "1fr 1fr"
+   still lets a nowrap child's min-content width push its own track wider than
+   its sibling's (this broke width parity for the longer English secondary CTA
+   even though both tracks were nominally "1fr"). */
+.hero-dashboard .hero-cta-row{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important}
+.hero-dashboard .hero-cta-row .app-program-explore,
+.hero-dashboard .hero-cta-row .app-hero-secondary-action{min-width:0!important}
+.hero-dashboard .hero-cta-row .app-program-explore{min-height:44px!important;height:44px!important;margin-top:0!important;padding:0 6px!important;gap:0!important;border-radius:12px!important;font-size:13px!important;font-weight:700!important;box-shadow:none!important;justify-content:center!important}
+.hero-dashboard .hero-cta-row .app-hero-secondary-action{min-height:44px!important;height:44px!important;padding:0 6px!important;border-radius:12px!important;font-size:13px!important}
+.hero-dashboard .hero-cta-row .app-program-explore span,
+.hero-dashboard .hero-cta-row .app-hero-secondary-action span{display:block;width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center}
+@media(max-width:380px){
+  .hero-dashboard .hero-cta-row .app-program-explore,
+  .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-size:12px!important;padding:0 5px!important}
+}
+/* English CTA copy ("Join as an Instructor or Provider") is longer than its Korean
+   counterpart, so with true equal-width columns it needs a smaller font to still
+   fit on one line without wrapping or being cut off -- scoped to English only via
+   the language toggle's html[lang] attribute, never touching the Korean sizing.
+   Font sizes below were derived by measuring the exact width the longer English
+   label needs at each width tier (Playwright-driven binary search against the
+   live layout) and rounding down for a safety margin, rather than guessed:
+   431-519px needs <=10.8px, 381-430px needs <=9.2px, <=380px needs <=8.5px, and
+   520px+ already fits the full 13px Korean size (the app shell caps at 560px
+   wide, so nothing above ~520px is ever this cramped). */
+html[lang="en"] .hero-dashboard .hero-cta-row .app-program-explore,
+html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-size:10px!important;padding:0 4px!important;letter-spacing:-.01em!important}
+@media(max-width:430px){
+  html[lang="en"] .hero-dashboard .hero-cta-row .app-program-explore,
+  html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-size:8.5px!important;padding:0 3px!important}
+}
+@media(max-width:380px){
+  html[lang="en"] .hero-dashboard .hero-cta-row .app-program-explore,
+  html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-size:8px!important;padding:0 2px!important}
+}
+@media(min-width:520px){
+  html[lang="en"] .hero-dashboard .hero-cta-row .app-program-explore,
+  html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-size:13px!important;padding:0 6px!important;letter-spacing:normal!important}
+}
 .hero-visual.hero-visual-compact{margin-top:12px!important}
 .hero-visual.hero-visual-compact img{height:96px!important}
 .hero-visual.hero-visual-compact .hero-visual-badge{padding:7px 11px!important;font-size:11px!important;left:10px!important;bottom:10px!important}

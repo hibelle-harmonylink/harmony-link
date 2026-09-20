@@ -108,12 +108,12 @@ test('Auth/Contact/Senior Learning/Community are not touched by the HOME redesig
   assert.match(appPage, /<a href="\.\.\/community\.html"><span class="bn-icon-wrap">/);
 });
 
-test('service worker v101 registers and versions bump together (app.js, overrides.css, service worker)', () => {
-  assert.match(appPage, /overrides\.css\?v=101/);
-  assert.match(appPage, /app\.js\?v=101/);
-  assert.match(appScript, /register\("service-worker-v101\.js"/);
-  const sw101 = read('app/service-worker-v101.js');
-  assert.match(sw101, /const CACHE="harmony-link-app-v101"/);
-  assert.match(sw101, /"\.\/overrides\.css\?v=101"/);
-  assert.match(sw101, /"\.\/app\.js\?v=101"/);
+test('service worker v103 registers and versions bump together (app.js, overrides.css, service worker)', () => {
+  assert.match(appPage, /overrides\.css\?v=103/);
+  assert.match(appPage, /app\.js\?v=103/);
+  assert.match(appScript, /register\("service-worker-v103\.js"/);
+  const sw103 = read('app/service-worker-v103.js');
+  assert.match(sw103, /const CACHE="harmony-link-app-v103"/);
+  assert.match(sw103, /"\.\/overrides\.css\?v=103"/);
+  assert.match(sw103, /"\.\/app\.js\?v=103"/);
 });

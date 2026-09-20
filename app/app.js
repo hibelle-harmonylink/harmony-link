@@ -581,7 +581,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true;clos
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v101.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v103.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;
