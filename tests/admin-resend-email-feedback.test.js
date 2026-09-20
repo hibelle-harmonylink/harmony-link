@@ -20,9 +20,9 @@ test('resend immediately disables its button and prevents a duplicate click', ()
 test('resend reports confirmed delivery inside the detail feedback region', () => {
   assert.match(resend, /const feedback = detail\.querySelector\('#detailSaveFeedback'\);/);
   assert.match(resend, /await sendRoleNotification\(member\);/);
-  assert.match(resend, /feedback\.innerHTML = `<strong>안내메일을 성공적으로 보냈습니다\.<\/strong><span>\$\{escapeHtml\(member\.email\)\}<\/span>`;/);
+  assert.match(resend, /feedback\.textContent = '안내메일을 성공적으로 보냈습니다\.';/);
   assert.match(resend, /feedback\.className = 'member-save-feedback success';/);
-  assert.match(resend, /feedback\.scrollIntoView\(\{ block: 'nearest', behavior: 'smooth' \}\);/);
+  assert.doesNotMatch(resend, /feedback\.scrollIntoView/);
 });
 
 test('resend shows a detail error and always restores the button', () => {
@@ -42,17 +42,12 @@ test('admin asset versions advance together for the resend UX', () => {
   assert.match(adminHtml, /admin\.js\?v=20260917-3/);
 });
 
-test('detail feedback stays immediately above the action row on desktop and mobile', () => {
-  // The compact one-screen layout (2026-09) put the groups/feedback/actions in
-  // their final visual order directly in the DOM, so no CSS `order:` override
-  // is needed anymore to place feedback right before the action row.
-  const assemblyStart = adminJs.indexOf('detail.innerHTML = `');
-  const assembly = adminJs.slice(assemblyStart, adminJs.indexOf('`;', assemblyStart));
-  const feedbackIndex = assembly.indexOf('id="detailSaveFeedback"');
-  const actionsIndex = assembly.indexOf('${actions}');
-  assert.ok(feedbackIndex > -1 && actionsIndex > -1 && feedbackIndex < actionsIndex, 'detailSaveFeedback must render immediately before ${actions} in the DOM');
+test('detail feedback stays in a reserved action-row slot instead of adding layout height', () => {
+  const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
+  assert.match(detail, /const feedback = '<p class="member-save-feedback" id="detailSaveFeedback"/);
+  assert.match(detail, /member-detail-actions">\$\{feedback\}<button/);
   assert.doesNotMatch(adminCss, /\.member-save-feedback\{order:/);
-  assert.match(adminCss, /\.member-save-feedback\.success,.member-save-feedback\.error\{display:grid/);
+  assert.match(adminCss, /\.member-save-feedback\{display:block;min-height:15px;max-height:15px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis/);
 });
 
 test('retries only transient delivery-status reads without requeueing an email', () => {

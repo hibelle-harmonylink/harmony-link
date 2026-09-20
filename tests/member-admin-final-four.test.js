@@ -61,9 +61,10 @@ test('reapplies Sheet G/H/I colors from the current display values', () => {
   assert.match(appsScript, /applyRosterDisplayStyles_\(sheet, 2, Math\.max\(sheet\.getLastRow\(\) - 1, 0\)\)/);
 });
 
-test('detail dialog uses a compact grouped grid designed to fit desktop viewports without an internal scroll, keeping a capped max-height only as a fallback', () => {
+test('detail dialog uses a compact grouped grid with desktop no-scroll and mobile fallback scrolling', () => {
   assert.match(adminCss, /\.member-dialog\{width:min\(900px,calc\(100% - 24px\)\);max-height:92vh;overflow:hidden\}/);
   assert.match(adminCss, /\.member-detail\{max-height:calc\(92vh - 54px\);overflow-y:auto;overflow-x:hidden;gap:\d+px\}/);
+  assert.match(adminCss, /@media\(min-width:681px\)\{\s*\.member-dialog\{max-height:none\}\s*\.member-detail\{max-height:none;overflow-y:visible;position:relative\}/);
   assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-groups\{grid-template-columns:1fr 1fr/);
   assert.match(adminCss, /\.partner-region-dialog\{width:min\(640px,calc\(100vw - 32px\)\);max-height:80vh/);
 });

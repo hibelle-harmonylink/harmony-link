@@ -444,7 +444,7 @@
 
   const featureHtml = member => {
     const features = access.getFeatureAccess(member);
-    const renderList = allowed => features.filter(item => item.allowed === allowed).map(item => `<li>${item.label}</li>`).join('') || '<li>없음</li>';
+    const renderList = allowed => features.filter(item => item.allowed === allowed).map(item => `<li class="feature-${item.feature}">${item.label}</li>`).join('') || '<li>없음</li>';
     return `<div class="feature-columns"><section class="feature-box allowed"><h3>이용 가능한 기능</h3><ul>${renderList(true)}</ul></section><section class="feature-box denied"><h3>이용 불가능한 기능</h3><ul>${renderList(false)}</ul></section></div>`;
   };
 
@@ -459,6 +459,9 @@
     const withdrawn = member.is_withdrawn || member.account_status === 'withdrawn';
     const protectedAccount = member.is_admin || member.id === currentUserId;
     const name = resolveDisplayName(member);
+    const editable = !withdrawn && !protectedAccount;
+    const editableClass = editable ? ' admin-editable-field' : '';
+    const editableDisabled = editable ? '' : ' disabled aria-disabled="true"';
     detail.className = 'member-detail';
     // Compact one-screen layout (2026-09): three labeled groups instead of a
     // read-only summary list followed by a separately-scrolling edit form
@@ -467,19 +470,20 @@
     // used to appear twice (닉네임/이름/연락처/회원유형/멤버십/계정상태) now
     // renders exactly once, as its live input/select, which is what removed
     // the internal scrollbar on common desktop viewports (1366x768+).
-    const readonlyField = (label, valueHtml, truncate = false) => `<div class="member-readonly${truncate ? ' member-readonly-truncate' : ''}"><span>${label}</span><strong${truncate ? ` title="${escapeHtml(member.email || '')}"` : ''}>${valueHtml}</strong></div>`;
-    const basicInfoFields = `<section class="member-group"><h3>기본 정보</h3><div class="member-group-grid">${readonlyField('회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>`)}${readonlyField('이메일', escapeHtml(member.email || ''), true)}${readonlyField('가입일', formatDate(member.created_at))}<label>닉네임/업체명<input id="detailNickname" type="text" maxlength="80" autocomplete="nickname"></label><label>이름<input id="detailFullName" type="text" maxlength="80" autocomplete="name"></label><label>연락처<input id="detailPhone" type="tel" maxlength="30" autocomplete="tel" value="${escapeHtml(formatPhone(member.phone ?? ''))}"></label></div></section>`;
+    const readonlyField = (label, valueHtml, truncate = false) => `<div class="member-readonly member-system-field${truncate ? ' member-readonly-truncate' : ''}"><span>${label}<em>자동 관리</em></span><strong${truncate ? ` title="${escapeHtml(member.email || '')}"` : ''}>${valueHtml}</strong></div>`;
+    const basicInfoFields = `<section class="member-group"><h3>기본 정보 <small class="member-editable-note">관리자 수정 가능</small></h3><div class="member-group-grid">${readonlyField('회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>`)}${readonlyField('이메일', escapeHtml(member.email || ''), true)}${readonlyField('가입일', formatDate(member.created_at))}<label class="${editableClass.trim()}">닉네임/업체명<input id="detailNickname" type="text" maxlength="80" autocomplete="nickname"${editableDisabled}></label><label class="${editableClass.trim()}">이름<input id="detailFullName" type="text" maxlength="80" autocomplete="name"${editableDisabled}></label><label class="${editableClass.trim()}">연락처<input id="detailPhone" type="tel" maxlength="30" autocomplete="tel" value="${escapeHtml(formatPhone(member.phone ?? ''))}"${editableDisabled}></label></div></section>`;
     const protectedNotice = withdrawn || protectedAccount ? `<div class="member-protected-copy">${withdrawn ? '탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다.' : '관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.'}</div>` : '';
-    const accessInputs = withdrawn || protectedAccount ? '' : `<label class="member-name-field">회원 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label>회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label>멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label>계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label>`;
-    const roleMetadataInputs = `<label class="partner-metadata">전문분야<input id="detailSpecialty" type="text" maxlength="120"></label><label class="partner-metadata">강의과목<input id="detailTeachingSubjects" type="text" maxlength="240"></label><label class="student-metadata">수강과목<input id="detailEnrolledSubject" type="text" maxlength="120"></label><label class="student-metadata">담당강사<input id="detailAssignedInstructor" type="text" maxlength="120"></label>`;
-    const roleInfoFields = `<section class="member-group"><h3>회원·파트너 정보</h3>${protectedNotice}<div class="member-group-grid">${accessInputs}${roleMetadataInputs}</div></section>`;
+    const accessInputs = withdrawn || protectedAccount ? '' : `<label class="member-name-field${editableClass}">회원 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label class="${editableClass.trim()}">회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label class="${editableClass.trim()}">멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label class="${editableClass.trim()}">계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label>`;
+    const roleMetadataInputs = `<label class="partner-metadata${editableClass}">전문분야<input id="detailSpecialty" type="text" maxlength="120"${editableDisabled}></label><label class="partner-metadata${editableClass}">강의과목<input id="detailTeachingSubjects" type="text" maxlength="240"${editableDisabled}></label><label class="student-metadata${editableClass}">수강과목<input id="detailEnrolledSubject" type="text" maxlength="120"${editableDisabled}></label><label class="student-metadata${editableClass}">담당강사<input id="detailAssignedInstructor" type="text" maxlength="120"${editableDisabled}></label>`;
+    const roleInfoFields = `<section class="member-group"><h3>회원·파트너 정보 <small class="member-editable-note">관리자 수정 가능</small></h3>${protectedNotice}<div class="member-group-grid">${accessInputs}${roleMetadataInputs}</div></section>`;
     const partnerRegionFields = `<section class="partner-region partner-metadata" hidden aria-labelledby="detailPartnerRegionTitle"><div class="partner-region-heading"><div><h3 id="detailPartnerRegionTitle">활동 지역</h3><p id="detailPartnerRegionSummary">지역 정보를 불러오는 중…</p><p id="detailPartnerRegionServices" class="partner-region-services" hidden></p></div><span class="partner-region-note">파트너 전용</span></div><div class="partner-region-actions"><button id="detailManagePartnerRegion" type="button" class="member-region-manage">지역정보 관리</button></div></section>`;
     const regionAccessFields = `<section class="member-group"><h3>지역·권한</h3><div class="member-region-access-row">${partnerRegionFields}<div id="detailFeatures">${withdrawn ? '' : featureHtml(member)}</div></div></section>`;
+    const feedback = '<p class="member-save-feedback" id="detailSaveFeedback" role="status" aria-live="polite"></p>';
     const actions = withdrawn
-      ? '<div class="member-detail-actions"><button type="button" class="btn member-save-disabled" id="detailSave" disabled>변경 불가</button></div>'
+      ? `<div class="member-detail-actions">${feedback}<button type="button" class="btn member-save-disabled" id="detailSave" disabled>변경 불가</button></div>`
       : protectedAccount ? ''
-        : '<div class="member-detail-actions"><button type="button" class="btn member-resend">안내메일 다시 보내기</button><button type="button" class="btn btn-primary" id="detailSave">변경 저장</button></div>';
-    detail.innerHTML = `<div class="member-detail-summary"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(member.email || '')}</span>${typeBadge(member)}${member.is_admin ? '' : membershipBadge(member)}${badge(STATUS_LABELS[member.account_status], member.account_status)}</div><div class="member-detail-groups">${basicInfoFields}${roleInfoFields}${regionAccessFields}</div><div class="member-save-feedback" id="detailSaveFeedback" role="status" aria-live="polite"></div>${actions}`;
+        : `<div class="member-detail-actions">${feedback}<button type="button" class="btn member-resend">안내메일 다시 보내기</button><button type="button" class="btn btn-primary" id="detailSave">변경 저장</button></div>`;
+    detail.innerHTML = `<div class="member-detail-summary"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(member.email || '')}</span>${typeBadge(member)}${member.is_admin ? '' : membershipBadge(member)}${badge(STATUS_LABELS[member.account_status], member.account_status)}</div><div class="member-detail-groups">${basicInfoFields}${roleInfoFields}${regionAccessFields}</div>${actions}`;
     const nameInput = detail.querySelector('#detailName');
     const nicknameInput = detail.querySelector('#detailNickname');
     const fullNameInput = detail.querySelector('#detailFullName');
@@ -497,14 +501,13 @@
     let partnerRegion = normalizePartnerRegion();
     const renderPartnerRegion = region => {
       partnerRegion = normalizePartnerRegion(region);
-      regionSummary.textContent = partnerRegionSummary(partnerRegion);
+      regionSummary.textContent = `지역: ${partnerRegionSummary(partnerRegion)}`;
       const detail = [
-        partnerRegion.service_area.length ? `서비스 지역: ${partnerRegion.service_area.join(' · ')}` : '',
         partnerRegion.city || partnerRegion.service_area.length ? '방문 가능' : '',
         partnerRegion.online_available ? '온라인 수업 가능' : '',
         partnerRegion.nationwide_available ? '미국 전역 가능' : ''
       ].filter(Boolean).join(' · ');
-      regionServices.textContent = detail;
+      regionServices.textContent = detail ? `수업 범위: ${detail}` : '';
       regionServices.hidden = !detail;
     };
     const readPartnerRegion = async () => {
@@ -630,15 +633,14 @@
     button.disabled = true;
     button.textContent = '메일 보내는 중…';
     button.classList.add('is-sending');
-    if (feedback) { feedback.textContent = ''; feedback.className = 'member-save-feedback'; }
+    if (feedback) { feedback.textContent = '안내메일 전송 중…'; feedback.className = 'member-save-feedback pending'; }
     setMessage(`${member.email} 회원에게 등급 안내메일을 보내고 있습니다.`);
     try {
       await sendRoleNotification(member);
       setMessage(`${member.email} 회원에게 안내메일을 보냈습니다.`);
       if (feedback) {
-        feedback.innerHTML = `<strong>안내메일을 성공적으로 보냈습니다.</strong><span>${escapeHtml(member.email)}</span>`;
+        feedback.textContent = '안내메일을 성공적으로 보냈습니다.';
         feedback.className = 'member-save-feedback success';
-        feedback.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       }
     } catch (error) {
       const errorText = '안내메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.';
@@ -647,7 +649,6 @@
       if (feedback) {
         feedback.textContent = errorText;
         feedback.className = 'member-save-feedback error';
-        feedback.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       }
     } finally {
       button.disabled = false;
