@@ -622,11 +622,24 @@ promotionModal.querySelector('.promotion-action').addEventListener('click', () =
 // The advertising carousel replaces the former automatic promotion popup.
 setLanguage(currentLanguage);
 
-const specialtyPrograms = [
-  {id:'digital',titleKo:'하이벨 디지털',titleEn:'Hibelle Digital',descriptionKo:'스마트폰과 AI를 일상에서 활용하는 실용 디지털 교육',descriptionEn:'Practical digital learning for smartphones and AI',operationKo:'직영',operationEn:'DIRECTLY OPERATED',image:'assets/specialty/hibelle-digital-20260718.jpg',teacherImage:'assets/teachers/noh-hyekyung.png',teacherKo:'노혜경',teacherEn:'Hyekyung Noh',teacherRoleKo:'디지털 교육 대표 강사',teacherRoleEn:'Lead Digital Instructor',form:'https://docs.google.com/forms/d/1DWtn1FQD86E4EHzABxeoEpHDuVeoFH_Smak4_C1RU7M/viewform',tone:'blue'},
-  {id:'english',titleKo:'하이벨 화상영어',titleEn:'Hibelle Online English',descriptionKo:'목표와 수준에 맞춘 1:1 실용 화상영어',descriptionEn:'Practical one-to-one online English for every level',operationKo:'직영',operationEn:'DIRECTLY OPERATED',image:'assets/specialty/hibelle-online-english-20260718.jpg',teacherImage:'assets/teachers/rachel.png',teacherKo:'하이벨 화상영어 강사진',teacherEn:'Hibelle Online English Team',teacherRoleKo:'1:1 화상영어 전문 강사',teacherRoleEn:'1:1 Online English Instructors',form:'https://docs.google.com/forms/d/1kN5-d09smqU_UO9rUO91SdQqco7ABYDzWTgpv74EUsc/viewform',tone:'orange'},
-  {id:'melody',titleKo:'미란멜로디',titleEn:'Meeran Melody',descriptionKo:'노래와 문화로 마음과 공동체를 잇는 음악 프로그램',descriptionEn:'Music programs connecting hearts and community',operationKo:'공동운영',operationEn:'CO-OPERATED',image:'assets/specialty/meeran-melody.png',teacherImage:'assets/teachers/kim-miran.jpg',teacherKo:'김미란',teacherEn:'Meeran Kim',teacherRoleKo:'합창·음악 교육 대표 강사',teacherRoleEn:'Lead Choir & Music Instructor',form:null,tone:'pink'}
-];
+// Teacher bio / application-form fields for the (currently unreachable --
+// no [data-specialty] trigger exists in index.html) specialty detail modal
+// below. Kept local to the website since shared/data/programs.js's canonical
+// schema only carries fields both the website and the app actually consume.
+const specialtyWebExtras = {
+  digital: {teacherImage:'assets/teachers/noh-hyekyung.png',teacherKo:'노혜경',teacherEn:'Hyekyung Noh',teacherRoleKo:'디지털 교육 대표 강사',teacherRoleEn:'Lead Digital Instructor',form:'https://docs.google.com/forms/d/1DWtn1FQD86E4EHzABxeoEpHDuVeoFH_Smak4_C1RU7M/viewform'},
+  english: {teacherImage:'assets/teachers/rachel.png',teacherKo:'하이벨 화상영어 강사진',teacherEn:'Hibelle Online English Team',teacherRoleKo:'1:1 화상영어 전문 강사',teacherRoleEn:'1:1 Online English Instructors',form:'https://docs.google.com/forms/d/1kN5-d09smqU_UO9rUO91SdQqco7ABYDzWTgpv74EUsc/viewform'},
+  melody: {teacherImage:'assets/teachers/kim-miran.jpg',teacherKo:'김미란',teacherEn:'Meeran Kim',teacherRoleKo:'합창·음악 교육 대표 강사',teacherRoleEn:'Lead Choir & Music Instructor',form:null}
+};
+// Adapts a canonical shared/data/programs.js entry into the {id,titleKo,...}
+// shape this file's specialty-banner renderer and detail modal already expect
+// (id here is the website's own short slug, e.g. 'digital', not the canonical
+// stable id 'hibelle-digital' -- it drives the existing specialty-${id} CSS
+// class and specialtyDetails[id] lookup unchanged).
+function programToWebModel(program){
+  return {id:program.slug,titleKo:program.titleKo,titleEn:program.titleEn,descriptionKo:program.descriptionKo,descriptionEn:program.descriptionEn,operationKo:program.statusKo,operationEn:program.statusEn,image:program.image,url:program.url,tone:program.tone,...specialtyWebExtras[program.slug]};
+}
+const specialtyPrograms = (window.HARMONY_LINK_PROGRAMS||[]).map(programToWebModel);
 
 const oldSpecialtyStart = document.getElementById('digital-why');
 if (oldSpecialtyStart) {
@@ -634,8 +647,7 @@ if (oldSpecialtyStart) {
   specialtySection.className = 'specialty-banners section';
   specialtySection.id = 'specialty-banners';
   specialtySection.innerHTML = `<div class="container"><div class="section-heading centered reveal"><p class="eyebrow">EDUCATION PROGRAMS</p><h2 data-ko="교육 프로그램" data-en="Education Programs">교육 프로그램</h2><p data-ko="Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요." data-en="Explore specialty programs operated directly or jointly by Harmony Link.">Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요.</p></div><div class="specialty-banner-grid">${specialtyPrograms.map((program,index)=>{
-    const programRoutes = {digital:'digital-classes/index.html',english:'online-english/',melody:'meeran-melody/'};
-    const actionHtml = `<a class="btn specialty-programs-link" href="${programRoutes[program.id]}"><span data-ko="프로그램 보기" data-en="View Program">프로그램 보기</span></a>`;
+    const actionHtml = `<a class="btn specialty-programs-link" href="${program.url}"><span data-ko="프로그램 보기" data-en="View Program">프로그램 보기</span></a>`;
     return `<article class="specialty-banner-card ${program.tone} specialty-${program.id} reveal delay-${Math.min(index,2)}"><a class="specialty-poster-preview" href="${program.image}" aria-label="${program.titleKo} 전단지 크게 보기"><img src="${program.image}" alt="${program.titleKo} 프로그램 전단지"><span data-ko="전단지 크게 보기" data-en="View Flyer">전단지 크게 보기</span></a><div class="specialty-banner-info"><span class="specialty-operation-badge" data-ko="${program.operationKo}" data-en="${program.operationEn}">${program.operationKo}</span><h3 data-ko="${program.titleKo}" data-en="${program.titleEn}">${program.titleKo}</h3><p class="specialty-card-description" data-ko="${program.descriptionKo}" data-en="${program.descriptionEn}">${program.descriptionKo}</p>${actionHtml}</div></article>`;
   }).join('')}</div></div>`;
   oldSpecialtyStart.before(specialtySection);

@@ -156,8 +156,9 @@ test('shared-content.js no longer hardcodes any of the 6 events or the inert pla
   assert.doesNotMatch(sharedContent, /events:\s*\[/);
   assert.doesNotMatch(sharedContent, /hole19-tournament/);
   assert.doesNotMatch(sharedContent, /seminars-coming/);
-  // featuredPrograms and the remaining benefit/program promotions are untouched.
-  assert.match(sharedContent, /featuredPrograms:\s*\[/);
+  // featuredPrograms moved to shared/data/programs.js in Phase 3 (see
+  // tests/shared-program-data.test.js); only the benefit promotion remains here.
+  assert.doesNotMatch(sharedContent, /featuredPrograms:\s*\[/);
   assert.match(sharedContent, /kind:"benefit"/);
 });
 
