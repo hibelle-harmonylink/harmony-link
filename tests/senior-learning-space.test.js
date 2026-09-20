@@ -50,9 +50,9 @@ test('smartphone materials use all fifteen Drive textbooks in their numbered ord
   assert.match(script, /const isLessonAvailable = lesson => \['ready', 'available'\]\.includes\(lesson\?\.status\);/);
 });
 
-test('senior learning keeps the original cognition card and provides an extensible mini-app page', () => {
+test('senior learning keeps a pending category card and provides an extensible mini-app page', () => {
   assert.match(home, /class="program-category-card is-coming-soon reveal" type="button" data-program-coming-soon/);
-  assert.match(home, /<strong data-ko="인지" data-en="Cognitive">인지<\/strong>/);
+  assert.match(home, /<strong data-ko="미술" data-en="Art">미술<\/strong>/);
   assert.doesNotMatch(home.match(/<nav class="primary-nav"[\s\S]*?<\/nav>/)?.[0] || '', />미니\s*앱</);
   assert.match(script, /const miniApps = \[/);
   assert.match(script, /title:'한자 변환기'/);
