@@ -76,8 +76,8 @@ test('member-number-pending (검정→빨강) status color rule is unchanged: bl
 
 test('detail dialog is a 3-group compact grid (기본 정보 / 회원·파트너 정보 / 지역·권한) instead of a read-only summary followed by a separately-scrolling edit form', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
-  assert.match(detail, /<h3>기본 정보<\/h3>/);
-  assert.match(detail, /<h3>회원·파트너 정보<\/h3>/);
+  assert.match(detail, /<h3>기본 정보 <small class="member-editable-note">관리자 수정 가능<\/small><\/h3>/);
+  assert.match(detail, /<h3>회원·파트너 정보 <small class="member-editable-note">관리자 수정 가능<\/small><\/h3>/);
   assert.match(detail, /<h3>지역·권한<\/h3>/);
   assert.match(detail, /class="member-detail-groups"/);
   assert.match(adminCss, /\.member-detail-groups\{display:grid;gap:14px\}/);
@@ -86,10 +86,10 @@ test('detail dialog is a 3-group compact grid (기본 정보 / 회원·파트너
   assert.match(adminCss, /\.member-detail-groups>\.member-group:nth-child\(3\)\{grid-column:1\/-1\}/);
 });
 
-test('활동 지역 and 기능 access sit side by side via flexbox, so a non-partner (활동 지역 hidden) still gets the full-width feature list instead of an empty fixed column', () => {
-  assert.match(adminCss, /\.member-region-access-row\{display:flex;gap:\d+px;align-items:flex-start\}/);
-  assert.match(adminCss, /\.member-region-access-row \.partner-region\{flex:0 0 300px;max-width:300px;margin:0\}/);
-  assert.match(adminCss, /#detailFeatures\{flex:1 1 auto;min-width:0\}/);
+test('활동 지역, allowed features, and denied features use equal desktop tracks', () => {
+  assert.match(adminCss, /\.member-region-access-row\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\);gap:10px;align-items:stretch\}/);
+  assert.match(adminCss, /#detailFeatures,\.feature-columns\{display:contents\}/);
+  assert.match(adminCss, /\.member-region-access-row \.partner-region\{display:grid;flex:none;min-width:0;max-width:100%;height:144px;padding:10px 7px;box-sizing:border-box\}/);
 });
 
 test('every grid/flex child and every group-grid input/select shrinks to fit instead of forcing the dialog to scroll horizontally', () => {

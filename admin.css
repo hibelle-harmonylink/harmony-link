@@ -538,3 +538,33 @@ body.admin-page{overflow-x:hidden}
   .admin-summary span{font-size:clamp(7px,2vw,10px)!important}
   .admin-summary strong{font-size:clamp(18px,5.4vw,22px)!important}
 }
+
+/* Member-detail feedback stays inside the action row. Its compact, fixed
+   desktop slot prevents resend states from adding a fourth layout block and
+   reintroducing an internal dialog scrollbar. */
+.member-save-feedback{margin:0;min-width:0;font-size:12px;font-weight:800;line-height:1.25}
+.member-save-feedback.success{color:#176944}.member-save-feedback.error{color:#a82d41}.member-save-feedback.pending{color:#175694}
+.member-editable-note{display:inline-block;margin-left:6px;border-radius:999px;background:#eaf2ff;color:#1a34ac;padding:2px 6px;font-size:9px;font-weight:850;letter-spacing:0;vertical-align:middle}
+.admin-editable-field>input,.admin-editable-field>select{border:2px solid #1a34ac!important;background:#f4f8ff!important}
+.member-system-field>span{display:flex;align-items:center;gap:5px}.member-system-field em{font-style:normal;color:#718198;font-size:9px;font-weight:750}
+
+@media(min-width:681px){
+  .member-dialog{max-height:none}
+  .member-detail{max-height:none;overflow-y:visible;position:relative}
+  .member-detail-actions{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:9px;min-height:36px}
+  .member-save-feedback{display:block;min-height:15px;max-height:15px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:left}
+  .member-save-feedback.success,.member-save-feedback.error,.member-save-feedback.pending{display:block;padding:0;border:0;background:transparent}
+  /* Region, allowed features, and denied features have equal desktop tracks. */
+  .member-region-access-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:stretch}
+  .member-region-access-row .partner-region{display:grid;flex:none;min-width:0;max-width:100%;height:144px;padding:10px 7px;box-sizing:border-box}
+  .member-region-access-row .partner-region-heading,.member-region-access-row .partner-region-heading>div,.member-region-access-row .partner-region-actions{min-width:0;max-width:100%;box-sizing:border-box}
+  .member-region-access-row .partner-region-heading{display:block;position:relative;width:100%}
+  .member-region-access-row .partner-region-heading>div,.member-region-access-row .partner-region-actions{width:100%}
+  .member-region-access-row .partner-region-note{position:absolute;top:0;right:0}
+  #detailFeatures,.feature-columns{display:contents}
+  .member-region-access-row .feature-box{min-width:0;max-width:100%;height:144px;padding:8px 14px;box-sizing:border-box}
+  .feature-box ul{min-width:0;max-width:100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 8px;font-size:10.5px}
+  .feature-box li{min-width:0;max-width:100%;white-space:nowrap}
+  .feature-box .feature-learning{grid-column:1/-1}
+  .partner-region-services{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10.5px!important}
+}
