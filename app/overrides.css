@@ -791,3 +791,69 @@ a.program-mini h3{color:inherit;text-decoration:none}
    card's other actions instead. */
 .event-card-actions{display:grid;grid-template-columns:1fr;margin-top:4px}
 .event-detail-link{display:flex!important;align-items:center;justify-content:center;width:100%;border:0;background:#1155d9;color:#fff;text-decoration:none;font-family:inherit;cursor:pointer}
+
+/* ============================================================
+   HOME dashboard, 2nd pass: Hero shrinks to an identity strip,
+   a 2x2 Quick Access grid takes over the primary navigation job,
+   and Programs/Events/Business sections become single-item
+   previews with an explicit "view all" link into their existing
+   full screens. Bottom nav, hamburger, and every screen other
+   than #home are untouched.
+   ============================================================ */
+.app-shell #home .hero.hero-dashboard{min-height:0!important;padding:18px 20px 14px!important}
+.hero-dashboard .hero-desc{margin:6px 0 12px!important}
+.hero-dashboard .hero-cta-row{gap:8px!important}
+.hero-visual.hero-visual-compact{margin-top:12px!important}
+.hero-visual.hero-visual-compact img{height:96px!important}
+.hero-visual.hero-visual-compact .hero-visual-badge{padding:7px 11px!important;font-size:11px!important;left:10px!important;bottom:10px!important}
+
+/* Tighter vertical rhythm between dashboard sections (Quick Access through
+   Community CTA) than the old long-scroll homepage-style spacing. */
+#home .home-programs{padding-top:20px!important}
+#home .app-partners-section{margin-top:16px!important}
+#home .community-card{margin-top:18px!important}
+
+/* Programs Preview on HOME reuses specialtyCards()/app-specialty-card unchanged
+   (same markup, same data, same full Programs screen at #programList), but renders
+   as compact horizontal rows here instead of full-size poster cards, so 3 programs
+   fit in a fraction of the space. Scoped to #recommendedPrograms only -- the
+   Programs screen's own #programList keeps its existing full-size cards untouched. */
+#recommendedPrograms.app-specialty-grid{grid-template-columns:1fr!important;gap:10px!important}
+#recommendedPrograms .app-specialty-card{flex-direction:row!important}
+#recommendedPrograms .app-specialty-poster{flex:0 0 84px!important;width:84px!important;height:84px!important}
+#recommendedPrograms .app-specialty-copy{flex:1;min-width:0;justify-content:center;padding:10px 14px!important}
+#recommendedPrograms .app-specialty-copy h3{margin:0 0 2px;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#recommendedPrograms .app-specialty-copy p{margin:0 0 6px;font-size:12px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+#recommendedPrograms .app-specialty-link{height:32px!important;min-height:32px!important;margin-top:0;font-size:12px!important}
+
+/* Business Preview on HOME reuses renderPartners()/app-partner-card unchanged (same
+   canonical businessPromotions data, same carousel prev/next), but now shows exactly
+   one card at a time (see renderPartners() in app.js) sized as a compact preview
+   instead of the old full-height 390px card, so it reads as one dashboard tile. */
+#partnerPrograms .app-partner-card{min-height:0!important}
+#partnerPrograms .app-partner-logo{height:120px!important;flex:0 0 120px!important}
+#partnerPrograms .app-partner-copy h3{min-height:0!important}
+#partnerPrograms .app-partner-copy p{display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical;overflow:hidden!important;margin-bottom:10px!important}
+#partnerPrograms .app-partner-copy a{height:38px!important;min-height:38px!important}
+
+.quick-access-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 20px 4px;padding:0}
+.quick-access-tile{display:flex;align-items:center;gap:12px;min-height:44px;padding:16px;border-radius:var(--card-radius,20px);border:var(--card-border,1px solid rgba(4,41,99,.12));box-shadow:var(--card-shadow,0 10px 26px rgba(4,41,99,.08));background:var(--card-bg,#fff);color:#061d45;text-decoration:none;font-family:inherit;cursor:pointer}
+.quick-access-icon{display:grid;place-items:center;flex-shrink:0;width:44px;height:44px;border-radius:14px;background:#dbeaff;font-size:22px}
+.quick-access-label{font-size:14px;font-weight:700;line-height:1.3}
+@media(hover:hover) and (pointer:fine){
+  .quick-access-tile{transition:transform .18s ease,box-shadow .18s ease}
+  .quick-access-tile:hover{transform:translateY(-3px);box-shadow:var(--shadow,0 16px 42px rgba(18,65,132,.13))}
+}
+@media(prefers-reduced-motion:reduce){.quick-access-tile{transition:none!important}}
+@media(min-width:900px){.quick-access-grid{margin:22px 54px 4px;max-width:560px}}
+@media(max-width:380px){.quick-access-label{font-size:13px}}
+
+/* "더보기" link in the Business Preview section-title reuses the same plain-text
+   style as the existing "행사 보기"/"전체 보기" <button>s in the other section-titles. */
+.section-title a{color:#65738a;font-weight:600;text-decoration:none}
+
+/* Featured Event / Business Preview now render exactly one card each (see
+   renderHomeEvents()/renderPartners() in app.js), so their containers cap to a
+   single-card width instead of the old multi-card grid/carousel sizing. */
+.app-home-event-grid{max-width:560px}
+@media(min-width:900px){.app-home-event-grid{grid-template-columns:minmax(0,1fr)!important}}
