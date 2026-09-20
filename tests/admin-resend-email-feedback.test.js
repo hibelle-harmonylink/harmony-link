@@ -43,8 +43,15 @@ test('admin asset versions advance together for the resend UX', () => {
 });
 
 test('detail feedback stays immediately above the action row on desktop and mobile', () => {
-  assert.match(adminCss, /\.member-save-feedback\{order:5;min-width:0\}/);
-  assert.match(adminCss, /\.member-detail-actions\{order:6\}/);
+  // The compact one-screen layout (2026-09) put the groups/feedback/actions in
+  // their final visual order directly in the DOM, so no CSS `order:` override
+  // is needed anymore to place feedback right before the action row.
+  const assemblyStart = adminJs.indexOf('detail.innerHTML = `');
+  const assembly = adminJs.slice(assemblyStart, adminJs.indexOf('`;', assemblyStart));
+  const feedbackIndex = assembly.indexOf('id="detailSaveFeedback"');
+  const actionsIndex = assembly.indexOf('${actions}');
+  assert.ok(feedbackIndex > -1 && actionsIndex > -1 && feedbackIndex < actionsIndex, 'detailSaveFeedback must render immediately before ${actions} in the DOM');
+  assert.doesNotMatch(adminCss, /\.member-save-feedback\{order:/);
   assert.match(adminCss, /\.member-save-feedback\.success,.member-save-feedback\.error\{display:grid/);
 });
 

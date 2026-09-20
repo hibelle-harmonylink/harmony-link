@@ -22,15 +22,19 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .member-dialog::backdrop{background:rgba(5,25,50,.62);backdrop-filter:blur(3px)}
 .member-dialog-head{display:flex;align-items:center;justify-content:space-between;padding:21px 24px;border-bottom:1px solid var(--admin-line)}
 .member-dialog-head h2{margin:3px 0 0;color:var(--admin-navy)}.member-dialog-head button{border:0;background:#edf4fb;border-radius:50%;width:36px;height:36px;font-size:24px;cursor:pointer}
-.member-detail{padding:23px;display:grid;gap:20px}.member-detail-summary{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.member-detail-summary strong{width:100%;font-size:20px;color:var(--admin-navy)}
-.member-edit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.member-edit-grid label{display:grid;gap:6px;font-size:11px;font-weight:800;color:#49627f}.member-edit-grid select{min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px}
+.member-detail{padding:23px;display:grid;gap:20px}.member-detail-summary{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.member-detail-summary strong{width:100%;font-size:20px;color:var(--admin-navy)}.member-detail-summary strong+span{max-width:100%;overflow-wrap:anywhere}
+.member-detail-groups{display:grid;gap:14px}
+.member-group{border:1px solid var(--admin-line);border-radius:14px;padding:16px;background:#fbfdff}
+.member-group h3{margin:0 0 12px;font-size:13px;font-weight:900;color:var(--admin-navy)}
+.member-group-grid{display:grid;grid-template-columns:1fr;gap:12px}.member-group-grid label{display:grid;gap:6px;font-size:11px;font-weight:800;color:#49627f}.member-group-grid label[hidden]{display:none!important}.member-group-grid select{min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px}
+.member-readonly{display:grid;gap:4px;min-width:0}.member-readonly span{font-size:11px;font-weight:800;color:#49627f}.member-readonly strong{font-size:13px;font-weight:700;color:var(--admin-ink);white-space:normal;overflow-wrap:anywhere}
+.member-readonly-truncate strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;min-width:0}
 .feature-columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}.feature-box{border:1px solid var(--admin-line);border-radius:14px;padding:15px}.feature-box h3{margin:0 0 10px;font-size:13px}.feature-box ul{list-style:none;padding:0;margin:0;display:grid;gap:7px;font-size:11px}.feature-box.allowed li::before{content:'✓';color:#168153;font-weight:900;margin-right:7px}.feature-box.denied li::before{content:'—';color:#a54755;font-weight:900;margin-right:7px}
 .member-detail-actions{display:flex;justify-content:flex-end;gap:9px}.member-detail-actions button{min-height:42px}.member-protected-copy{padding:12px;border-radius:10px;background:#e8f2ff;color:#175694;font-size:11px;font-weight:800}
-.member-edit-grid input{min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px;color:var(--admin-ink);font:inherit}.member-core-fields{grid-template-columns:repeat(4,1fr)}.member-core-fields dd{white-space:normal;overflow-wrap:anywhere}.member-save-feedback{min-height:0;font-size:13px;font-weight:800;text-align:center}.member-save-feedback.success{padding:11px;border:1px solid #9bd6b1;border-radius:10px;background:#eaf8ef;color:#176944}.member-save-feedback.error{padding:11px;border:1px solid #f0b5bf;border-radius:10px;background:#fff0f2;color:#a82d41}
+.member-group-grid input{min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px;color:var(--admin-ink);font:inherit}.member-save-feedback{min-height:0;font-size:13px;font-weight:800;text-align:center}.member-save-feedback.success{padding:11px;border:1px solid #9bd6b1;border-radius:10px;background:#eaf8ef;color:#176944}.member-save-feedback.error{padding:11px;border:1px solid #f0b5bf;border-radius:10px;background:#fff0f2;color:#a82d41}
 .partner-region{display:grid;gap:14px;padding:16px;border:1px solid #c8dff3;border-radius:14px;background:#f8fbff}.partner-region[hidden]{display:none}.partner-region-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.partner-region h3,.partner-region h4{margin:0;color:var(--admin-navy)}.partner-region h3{font-size:15px}.partner-region h4{font-size:12px}.partner-region-heading p,.partner-service-area p{margin:4px 0 0;color:#59718c;font-size:11px}.partner-region-note{flex:0 0 auto;border-radius:999px;background:#e8f2ff;color:#175694;padding:4px 7px;font-size:10px;font-weight:800}.partner-region-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.partner-region-grid label{display:grid;gap:6px;color:#49627f;font-size:11px;font-weight:800}.partner-region-grid input,.partner-region-grid select,.partner-service-area-controls input{box-sizing:border-box;min-width:0;min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px;color:var(--admin-ink);font:inherit}.partner-region-grid select:disabled{background:#edf3fa;color:#72849a}.partner-service-area{display:grid;gap:10px}.partner-service-area-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.member-region-add{border:1px solid #90b8df;border-radius:10px;background:#fff;color:#0c5eb7;padding:8px 11px;font:inherit;font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer}.partner-service-area-chips{display:flex;flex-wrap:wrap;gap:7px;min-height:0}.partner-service-area-chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:#e8f2ff;color:#175694;padding:5px 7px 5px 9px;font-size:11px;font-weight:800;max-width:100%;overflow-wrap:anywhere}.partner-service-area-chip button{width:18px;height:18px;border:0;border-radius:50%;background:#c8dff3;color:#174f91;font:inherit;font-size:15px;line-height:1;cursor:pointer}.partner-region-options{display:flex;flex-wrap:wrap;gap:10px}.partner-region-switch{display:inline-flex;align-items:center;gap:8px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:10px 12px;color:#365672;font-size:12px;font-weight:800;cursor:pointer}.partner-region-switch input{width:17px;height:17px;accent-color:#0b5fc2}.partner-region-save{display:flex;align-items:center;justify-content:flex-end;gap:12px;min-height:42px}.partner-region-save p{margin:0;color:#176944;font-size:12px;font-weight:800}.partner-region-save p.error{color:#a82d41}.partner-region-save p.success{color:#176944}.partner-region-save button{min-height:42px;white-space:nowrap}.partner-region-save button:disabled{cursor:not-allowed;opacity:.58}
 @media(max-width:1000px){.admin-toolbar{grid-template-columns:1fr 1fr}.admin-toolbar label:first-child{grid-column:1/3}}
-@media(max-width:680px){.admin-summary{grid-template-columns:1fr 1fr}.admin-toolbar,.member-edit-grid,.feature-columns,.partner-region-grid{grid-template-columns:1fr}.admin-toolbar label:first-child{grid-column:auto}.member-table-wrap{border-radius:13px}.member-table{min-width:0}.member-table thead{display:none}.member-table,.member-table tbody,.member-table tr,.member-table td{display:block}.member-table tr{padding:14px;border-top:1px solid var(--admin-line)}.member-table tr:first-child{border-top:0}.member-table td{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border:0;text-align:right}.member-table td::before{content:attr(data-label);font-weight:800;color:#73849a;text-align:left}.member-table td:last-child{padding-top:10px}.member-detail{padding:17px}.member-dialog-head{padding:17px}.member-detail-actions{flex-direction:column}.member-detail-actions button{width:100%}.partner-region{padding:14px}.partner-service-area-controls{grid-template-columns:1fr}.member-region-add{min-height:42px}.partner-region-options{display:grid;grid-template-columns:1fr}.partner-region-switch{min-width:0}.partner-region-save{display:grid;grid-template-columns:1fr}.partner-region-save p{min-height:0}.partner-region-save button{width:100%;min-height:46px}}
-@media(max-width:680px){.member-core-fields{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){.admin-summary{grid-template-columns:1fr 1fr}.admin-toolbar,.feature-columns,.partner-region-grid{grid-template-columns:1fr}.member-group-grid{grid-template-columns:minmax(0,1fr)}.admin-toolbar label:first-child{grid-column:auto}.member-table-wrap{border-radius:13px}.member-table{min-width:0}.member-table thead{display:none}.member-table,.member-table tbody,.member-table tr,.member-table td{display:block}.member-table tr{padding:14px;border-top:1px solid var(--admin-line)}.member-table tr:first-child{border-top:0}.member-table td{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border:0;text-align:right}.member-table td::before{content:attr(data-label);font-weight:800;color:#73849a;text-align:left}.member-table td:last-child{padding-top:10px}.member-detail{padding:17px}.member-dialog-head{padding:17px}.member-detail-actions{flex-direction:column}.member-detail-actions button{width:100%}.partner-region{padding:14px}.partner-service-area-controls{grid-template-columns:1fr}.member-region-add{min-height:42px}.partner-region-options{display:grid;grid-template-columns:1fr}.partner-region-switch{min-width:0}.partner-region-save{display:grid;grid-template-columns:1fr}.partner-region-save p{min-height:0}.partner-region-save button{width:100%;min-height:46px}}
 .admin-page main{padding-top:34px}.admin-title-row h1{font-size:36px}.admin-title-row>div>p:last-child{font-size:13px}.admin-summary{grid-template-columns:repeat(5,minmax(105px,138px));justify-content:start;gap:9px;margin:24px 0 18px}.admin-summary article{padding:12px 14px;border-radius:13px}.admin-summary span{font-size:12px;font-weight:700}.admin-summary strong{font-size:24px}.admin-toolbar label>span,.member-actions label>span{font-size:12px}.admin-toolbar input,.admin-toolbar select,.member-actions select{font-size:13px}.admin-message{font-size:13px}.member-email{font-size:17px}.member-id{font-size:10px}.member-role-badge{font-size:11px}.member-dates dt{font-size:10px;font-weight:700}.member-dates dd{font-size:12px}.member-actions .member-save,.member-status-button{font-size:12px}.member-protected-copy{font-size:12px}.admin-header nav a,.admin-header nav button{font-size:13px}@media(max-width:680px){.admin-title-row h1{font-size:27px}.admin-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.admin-summary article{padding:11px}.admin-summary span{font-size:11px}.admin-summary strong{font-size:22px}.member-email{font-size:16px}.member-dates dt{font-size:10px}.member-dates dd{font-size:12px}}
 
 .admin-shell{padding:0 18px 30px}
@@ -263,150 +267,102 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   .member-table td::before{flex:0 0 76px;white-space:nowrap;word-break:keep-all}
 }
 
-/* 2026-09: member detail dialog -- wider two-column layout on desktop so
-   the summary/edit fields/dates sit beside the feature-access panel
-   instead of stacking five sections full-height, which is what pushed
-   the dialog past typical PC viewport heights and forced an internal
-   scroll. .member-detail keeps a capped, scrollable max-height as a
-   fallback for unusually short viewports, but the two-column layout
-   means that fallback should rarely if ever engage on a normal PC. */
-.member-dialog{width:min(940px,calc(100% - 24px));overflow:hidden}
-.member-detail{max-height:calc(90vh - 56px);overflow-y:auto;gap:12px}
+/* 2026-09: member detail dialog -- a 2-column grid of labeled groups
+   (기본 정보 / 회원·파트너 정보, side by side) with 지역·권한 spanning full
+   width below, instead of a read-only summary list followed by a
+   separately-scrolling edit form that repeated most of the same fields.
+   This is short enough on a normal PC viewport (1366x768+) that the modal
+   fits without an internal scrollbar; .member-detail keeps a capped,
+   scrollable max-height purely as a fallback for unusually short viewports. */
+.member-dialog{width:min(900px,calc(100% - 24px));max-height:92vh;overflow:hidden}
+.member-detail{max-height:calc(92vh - 54px);overflow-y:auto;overflow-x:hidden;gap:10px}
 /* .eyebrow carries a 22px bottom margin sized for full-page hero
    sections site-wide -- inside this compact dialog header it was most
    of the "too much top padding" the header appeared to have. */
 .member-dialog-head{padding:12px 22px}
 .member-dialog-head .eyebrow{margin:0 0 2px}
-.member-dialog-head h2{font-size:20px;margin:0}
-.member-detail-summary .member-badge{font-size:12.5px;padding:7px 13px}
+.member-dialog-head h2{font-size:19px;margin:0}
+.member-detail-summary .member-badge{font-size:11px;padding:5px 10px}
 /* Keeps its own light-blue accent background (an info notice, not a
    plain field box) but matches the same border-radius/padding rhythm. */
-.member-protected-copy{border-radius:12px;padding:14px 18px;font-size:13px;line-height:1.5}
+.member-protected-copy{border-radius:12px;padding:12px 16px;font-size:12px;line-height:1.5}
 .member-resend{background:#fff;color:var(--admin-blue);border:1.5px solid var(--admin-blue)}
 .member-resend:disabled{cursor:wait;opacity:.6}
 .member-resend.is-sending{cursor:wait}
-/* The feedback node is in the DOM immediately before the action row.  Give
-   both explicit grid orders because desktop detail sections also set order,
-   otherwise a default order (0) can place feedback above the modal content. */
-.member-save-feedback{order:5;min-width:0}
-.member-detail-actions{order:6}
 .member-save-feedback.success,.member-save-feedback.error{display:grid;gap:3px;justify-items:center;margin:0;text-align:center}
 .member-save-feedback.success strong{font-size:13px;line-height:1.25}
 .member-save-feedback.success span{font-size:11px;font-weight:700;overflow-wrap:anywhere}
-@media(min-width:681px){
-  .member-detail{padding:14px 28px}
-  /* Visual order only (DOM order is unchanged): 날짜정보 sits right
-     after 기본정보, with 기능 access moved down below both instead of
-     between them. */
-  .member-detail-summary{order:1}
-  .member-edit-grid,.member-protected-copy{order:2}
-  .member-dates{order:3}
-  #detailFeatures{order:4}
-  .member-detail-actions{order:6}
-  /* Identity line: name (left, own natural width) -- email (center,
-     grows to fill the middle since it's the only flexible item, so
-     text-align:center lands it in the middle of that space) -- role/
-     membership/status badges (pushed to the right edge because the
-     email already absorbed the slack between them). */
-  .member-detail-summary{display:flex;align-items:center;flex-wrap:nowrap;gap:14px}
-  .member-detail-summary strong{width:auto;flex:0 1 auto;font-size:22px;font-weight:900;color:var(--admin-navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .member-detail-summary strong + span{flex:1 1 auto;min-width:0;text-align:center;font-size:17px;font-weight:700;color:var(--admin-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .member-detail-summary .member-badge{flex:0 0 auto}
-  /* 기본정보/날짜정보 as thin single-line strips (label and value share
-     one line) instead of tall boxed cards, each strip's fields sitting
-     in one row. */
-  .member-edit-grid,.member-dates{border:1px solid var(--admin-line);border-radius:12px;padding:10px 18px;background:#fbfdff}
-  .member-edit-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 16px;align-items:center}
-  .member-edit-grid label{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;color:#3c5876;white-space:nowrap}
-  .member-edit-grid .member-name-field{grid-column:auto}
-  .member-edit-grid select,.member-edit-grid input{font-size:13px;font-weight:600;min-height:34px;padding:5px 9px;flex:1;min-width:0}
-  /* Three zones -- 가입일 (left) / 파트너 승인일 (center) / 최근 로그인
-     + 마지막 변경일 stacked (right, flush against the box's right edge).
-     DOM order is unchanged (가입일, 최근 로그인, 파트너 승인일, 마지막
-     변경일) -- each item is re-placed into its zone via grid-column/
-     grid-row rather than reordering markup. */
-  .member-dates{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:auto auto;gap:7px 16px;align-items:center}
-  .member-dates div{display:flex;align-items:center;gap:8px;min-width:0}
-  .member-dates dt{font-size:12px;font-weight:800;color:#7c8ba0;letter-spacing:.02em;white-space:nowrap;margin:0}
-  .member-dates dd{font-size:13px;font-weight:700;color:#233a58;margin:0;white-space:nowrap}
-  .member-dates div{grid-column:auto!important;grid-row:auto!important;justify-self:auto!important;flex-direction:row!important;align-items:center!important;gap:8px!important;text-align:left!important}
-  /* Feature access set apart with a divider and larger, darker text;
-     each list wraps into two columns so a long denied list doesn't run
-     tall down the page. */
-  #detailFeatures{border-top:1px solid var(--admin-line);padding-top:10px}
-  .feature-box{padding:14px 18px}
-  .feature-box h3{font-size:16px;font-weight:800;color:var(--admin-navy);margin:0 0 8px}
-  .feature-box ul{display:grid;grid-template-columns:1fr 1fr;font-size:14px;font-weight:600;color:#233045;gap:7px 14px;line-height:1.4}
-  .member-detail-actions{border-top:1px solid var(--admin-line);padding-top:10px}
-  .member-detail-actions .btn{min-height:36px;padding:8px 16px;font-size:13px}
-}
-
-/* Keep the member detail comfortably compact while preserving a dedicated
-   scroll surface for lengthy member records.  The separate region dialog
-   intentionally retains its own sizing rules below. */
-.member-dialog{width:min(780px,calc(100% - 28px));max-height:90vh;overflow:hidden}
-.member-detail{overflow-x:hidden}
 .member-save-disabled,.member-detail-actions .member-save-disabled:disabled{background:#e5e7eb!important;border:1px solid #cbd5e1!important;color:#64748b!important;cursor:not-allowed!important;opacity:1!important}
 .partner-region{gap:9px;padding:12px 14px}
 .partner-region-heading{align-items:center}.partner-region-heading p{margin-top:3px;font-size:12px;font-weight:750}.partner-region-services{color:#59718c!important;font-size:11px!important;font-weight:650!important;line-height:1.45}
 .partner-region-actions{display:flex;justify-content:flex-end}.member-region-manage{min-height:34px;border:1px solid #90b8df;border-radius:9px;background:#fff;color:#0c5eb7;padding:7px 11px;font:inherit;font-size:11px;font-weight:850;white-space:nowrap;cursor:pointer}
 .partner-region-dialog{width:min(640px,calc(100vw - 32px));max-height:80vh;box-sizing:border-box;border:0;border-radius:16px;padding:0;color:var(--admin-ink);box-shadow:0 24px 80px rgba(3,25,57,.3);overflow:hidden}.partner-region-dialog::backdrop{background:rgba(5,25,50,.62);backdrop-filter:blur(3px)}.partner-region-dialog-shell{display:grid;max-height:80vh}.partner-region-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;border-bottom:1px solid var(--admin-line)}.partner-region-dialog-head .eyebrow{margin:0 0 3px}.partner-region-dialog-head h2{margin:0;color:var(--admin-navy);font-size:18px}.partner-region-dialog-head button{display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:50%;background:#edf4fb;color:var(--admin-navy);font-size:20px;line-height:1;cursor:pointer}.partner-region-dialog-body{display:grid;gap:12px;max-height:calc(80vh - 83px);overflow-y:auto;padding:15px 18px 17px}.partner-region-member{margin:0;color:var(--admin-navy);font-size:14px;font-weight:850}.partner-region-dialog-body .partner-region-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.partner-region-dialog-body .partner-region-city{grid-column:1/-1}.partner-region-dialog-body .partner-region-grid label{gap:5px}.partner-region-dialog-body .partner-region-grid input,.partner-region-dialog-body .partner-region-grid select,.partner-region-dialog-body .partner-service-area-controls input{min-height:38px;padding:7px 9px}.partner-region-dialog-body .partner-service-area{gap:8px}.partner-region-dialog-body .partner-service-area h3{margin:0;color:var(--admin-navy);font-size:12px}.partner-region-dialog-body .partner-region-options{gap:8px}.partner-region-dialog-body .partner-region-switch{padding:8px 10px}.partner-region-dialog-actions{display:flex;justify-content:flex-end;gap:8px;padding-top:2px}.partner-region-dialog-actions .btn{min-height:34px;padding:7px 13px;font-size:12px}.partner-region-feedback{min-height:0;margin:0;color:#a82d41;font-size:12px;font-weight:800}.admin-toast{position:fixed;left:50%;bottom:24px;z-index:60;max-width:calc(100vw - 32px);transform:translateX(-50%);border:1px solid #9bd6b1;border-radius:10px;background:#eaf8ef;color:#176944;padding:10px 14px;font-size:13px;font-weight:850;box-shadow:0 10px 26px rgba(3,25,57,.2)}.admin-toast.error{border-color:#f0b5bf;background:#fff0f2;color:#a82d41}
 @media(min-width:681px){
-  .member-dialog{max-height:90vh;overflow:hidden}
-  .member-dialog-head{padding:9px 18px}
-  .member-dialog-head h2{font-size:18px}
-  .member-dialog-head button{width:30px;height:30px;font-size:20px}
-  .member-detail{max-height:calc(90vh - 56px);overflow-y:auto;overflow-x:hidden;padding:8px 16px;gap:7px}
-  .member-detail-summary{gap:9px}
-  .member-detail-summary strong{font-size:18px}
-  .member-detail-summary strong + span{font-size:13px}
-  .member-detail-summary .member-badge{font-size:10px;padding:5px 9px}
-  .member-edit-grid,.member-dates{padding:7px 12px;border-radius:10px;gap:5px 10px}
-  .member-edit-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-  .member-edit-grid label{gap:5px;font-size:10.5px}
-  .member-edit-grid select,.member-edit-grid input{min-height:30px;padding:4px 7px;font-size:11px}
-  .member-dates{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px 10px}
-  .member-dates dt{font-size:10px}
-  .member-dates dd{font-size:11px}
-  #detailFeatures{padding-top:7px}
-  .feature-columns{gap:8px}
-  .feature-box{padding:8px 11px;border-radius:10px}
-  .feature-box h3{margin-bottom:4px;font-size:12px}
-  .feature-box ul{font-size:10.5px;gap:3px 10px;line-height:1.25}
-  .member-protected-copy{padding:8px 11px;border-radius:10px;font-size:11px;line-height:1.35}
-  .member-detail-actions{padding-top:7px}
-  .member-detail-actions .btn{min-height:32px;padding:6px 13px;font-size:11px}
+  .member-detail{padding:14px 26px 18px}
+  /* Identity line: name (left, own natural width) -- email (center,
+     grows to fill the middle since it's the only flexible item, so
+     text-align:center lands it in the middle of that space) -- role/
+     membership/status badges (pushed to the right edge because the
+     email already absorbed the slack between them). */
+  .member-detail-summary{display:flex;align-items:center;flex-wrap:nowrap;gap:14px}
+  .member-detail-summary strong{width:auto;flex:0 1 auto;font-size:20px;font-weight:900;color:var(--admin-navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .member-detail-summary strong + span{flex:1 1 auto;min-width:0;text-align:center;font-size:14px;font-weight:700;color:var(--admin-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .member-detail-summary .member-badge{flex:0 0 auto}
+  /* 기본 정보 and 회원·파트너 정보 sit side by side; 지역·권한 (which holds
+     both the partner region block and the feature-access lists, so it runs
+     longer) spans the full width beneath them. */
+  .member-detail-groups{grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+  .member-detail-groups>.member-group:nth-child(3){grid-column:1/-1}
+  .member-group{padding:10px 14px}
+  .member-group h3{font-size:12px;margin-bottom:8px}
+  .member-group-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px}
+  .member-group-grid label{font-size:11px;gap:4px}
+  .member-group-grid select,.member-group-grid input{font-size:12.5px;font-weight:600;min-height:32px;padding:5px 8px}
+  .member-readonly span{font-size:10px}
+  .member-readonly strong{font-size:12px}
+  /* 활동 지역 and 기능 access sit side by side (flexbox, not grid, so that
+     when 활동 지역 is [hidden] for a non-partner member #detailFeatures still
+     naturally fills the full row instead of leaving an empty fixed track). */
+  .member-region-access-row{display:flex;gap:14px;align-items:flex-start}
+  .member-region-access-row .partner-region{flex:0 0 300px;max-width:300px;margin:0}
+  #detailFeatures{flex:1 1 auto;min-width:0}
+  /* Feature access set apart with a divider; each allowed/denied list
+     wraps into two columns so a long list doesn't run tall down the page. */
+  .feature-box{padding:10px 14px}
+  .feature-box h3{font-size:13px;font-weight:800;color:var(--admin-navy);margin:0 0 6px}
+  .feature-box ul{display:grid;grid-template-columns:1fr 1fr;font-size:11.5px;font-weight:600;color:#233045;gap:5px 12px;line-height:1.35}
+  .member-detail-actions{border-top:1px solid var(--admin-line);padding-top:10px}
+  .member-detail-actions .btn{min-height:34px;padding:7px 15px;font-size:13px}
 }
 @media(max-width:680px){
-  .member-dialog{max-height:90vh}.partner-region-dialog{width:calc(100vw - 24px);max-height:calc(100vh - 24px)}.partner-region-dialog-shell{max-height:calc(100vh - 24px)}.partner-region-dialog-head{padding:13px 14px}.partner-region-dialog-body{max-height:calc(100vh - 80px);padding:14px}.partner-region-dialog-body .partner-region-grid{grid-template-columns:1fr}.partner-region-dialog-body .partner-region-city{grid-column:auto}.partner-region-dialog-body .partner-service-area-controls{grid-template-columns:1fr}.partner-region-dialog-actions .btn{min-height:42px;flex:1}.admin-toast{bottom:14px;width:calc(100vw - 28px);text-align:center}
-  .member-dialog{width:calc(100% - 18px);max-height:90vh;overflow:hidden}
-  .member-detail{overflow-x:hidden}
+  .member-dialog{width:calc(100% - 18px);max-height:92vh;overflow:hidden}
+  .member-detail{overflow-x:hidden;padding:17px}
   .member-detail input,.member-detail select{max-width:100%;box-sizing:border-box}
+  .member-dialog-head{padding:17px}
+  .member-detail-actions{flex-direction:column}
+  .member-detail-actions button{width:100%}
+  .partner-region{padding:14px}
+  .partner-region-dialog{width:calc(100vw - 24px);max-height:calc(100vh - 24px)}.partner-region-dialog-shell{max-height:calc(100vh - 24px)}.partner-region-dialog-head{padding:13px 14px}.partner-region-dialog-body{max-height:calc(100vh - 80px);padding:14px}.partner-region-dialog-body .partner-region-grid{grid-template-columns:1fr}.partner-region-dialog-body .partner-region-city{grid-column:auto}.partner-region-dialog-body .partner-service-area-controls{grid-template-columns:1fr}.partner-region-dialog-actions .btn{min-height:42px;flex:1}.admin-toast{bottom:14px;width:calc(100vw - 28px);text-align:center}
+  .partner-service-area-controls{grid-template-columns:1fr}
+  .member-region-add{min-height:42px}
+  .partner-region-options{display:grid;grid-template-columns:1fr}
+  .partner-region-switch{min-width:0}
+  .partner-region-save{display:grid;grid-template-columns:1fr}
+  .partner-region-save p{min-height:0}
+  .partner-region-save button{width:100%;min-height:46px}
 }
 
-/* The compact desktop pass originally retained four auto-sized core-field
-   tracks. A long email could therefore establish a track minimum larger than
-   the dialog, making #memberDetail scroll horizontally. Keep the dialog at
-   its intended width and make every grid/flex child shrink within it. */
+/* Every grid/flex child shrinks within the dialog instead of establishing a
+   track minimum wider than it (e.g. a long email), which previously made
+   .member-detail scroll horizontally. */
 @media(min-width:681px){
-  .member-detail{grid-template-columns:minmax(0,1fr)!important;overflow-x:hidden}
   .member-detail>*,
   .member-detail-summary>*,
-  .member-edit-grid>*,
-  .member-dates>*,
+  .member-detail-groups>*,
+  .member-group-grid>*,
   .feature-columns>*,
   .member-detail-actions>*{min-width:0;max-width:100%;box-sizing:border-box}
-  .member-core-fields{grid-template-columns:repeat(3,minmax(0,1fr))!important}
-  .member-core-fields>div:nth-child(3),
-  .member-core-fields>div:nth-child(4){grid-column:span 2}
-  .member-core-fields>div{min-width:0}
-  .member-dates dt{min-width:0;overflow:hidden;text-overflow:ellipsis}
-  .member-dates dd{min-width:0;white-space:normal;overflow-wrap:anywhere}
-  .member-edit-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-  .member-edit-grid label{min-width:0;white-space:normal}
-  .member-edit-grid input,.member-edit-grid select{width:100%;max-width:100%;box-sizing:border-box}
-  .feature-columns{grid-template-columns:repeat(2,minmax(0,1fr));max-width:100%}
-  .feature-box,.feature-box ul,.feature-box li{min-width:0;overflow-wrap:anywhere}
+  .member-group-grid input,.member-group-grid select{width:100%;max-width:100%;box-sizing:border-box}
 }
 
 /* Member-admin overview: the title, totals, and refresh action used to share

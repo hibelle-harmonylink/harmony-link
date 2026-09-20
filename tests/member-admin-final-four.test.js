@@ -9,12 +9,17 @@ const adminJs = fs.readFileSync(path.join(root, 'admin.js'), 'utf8');
 const adminCss = fs.readFileSync(path.join(root, 'admin.css'), 'utf8');
 const appsScript = fs.readFileSync(path.join(root, 'automation', 'member-signup.gs'), 'utf8');
 
-test('renders phone between email and member type in the roster and detail summary', () => {
+test('renders phone between email and member type in the roster, and keeps email/phone together in the 기본 정보 group', () => {
   assert.match(adminHtml, /<th>이메일<\/th><th>연락처<\/th><th>회원유형<\/th>/);
   const cells = adminJs.slice(adminJs.indexOf('const cells = ['), adminJs.indexOf('cells.forEach'));
-  const summary = adminJs.slice(adminJs.indexOf('const summary ='), adminJs.indexOf('const accessFields'));
   assert.ok(cells.indexOf("['이메일'") < cells.indexOf("['연락처'") && cells.indexOf("['연락처'") < cells.indexOf("['회원유형'"));
-  assert.ok(summary.indexOf('이메일') < summary.indexOf('연락처') && summary.indexOf('연락처') < summary.indexOf('회원유형'));
+  // The compact one-screen modal (2026-09) moved 회원유형 into its own
+  // 회원·파트너 정보 group, separate from 기본 정보's 이메일/연락처 -- both
+  // groups still keep email ahead of phone within 기본 정보 itself.
+  const basicInfoFields = adminJs.slice(adminJs.indexOf('const basicInfoFields ='), adminJs.indexOf('const protectedNotice'));
+  assert.ok(basicInfoFields.indexOf('이메일') < basicInfoFields.indexOf('연락처'));
+  const accessInputs = adminJs.slice(adminJs.indexOf('const accessInputs ='), adminJs.indexOf('const roleMetadataInputs'));
+  assert.match(accessInputs, /회원유형/);
 });
 
 test('preserves Korean, US, and international phone strings without regional reformatting', () => {
@@ -23,11 +28,14 @@ test('preserves Korean, US, and international phone strings without regional ref
   assert.match(adminCss, /nth-child\(5\).*?width:135px/);
 });
 
-test('prefills the editable contact input from the same member phone used by the detail summary', () => {
+test('prefills the editable contact input with the member phone -- there is only one 연락처 field now, not a duplicate read-only copy', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
   assert.match(detail, /id="detailPhone"[^>]*value="\$\{escapeHtml\(formatPhone\(member\.phone \?\? ''\)\)\}"/);
-  assert.match(detail, /const summary = [^;]*formatPhone\(member\.phone\)/);
   assert.doesNotMatch(detail, /phone\.value\s*=/);
+  // The old read-only summary <dl> (with its own separate formatPhone(member.phone)
+  // call) is gone -- 연락처 is now the #detailPhone input's own value, once.
+  assert.doesNotMatch(detail, /const summary = /);
+  assert.equal((detail.match(/formatPhone\(member\.phone/g) || []).length, 1);
 });
 
 test('withdrawn members are fully read-only and cannot submit a save action', () => {
@@ -53,9 +61,9 @@ test('reapplies Sheet G/H/I colors from the current display values', () => {
   assert.match(appsScript, /applyRosterDisplayStyles_\(sheet, 2, Math\.max\(sheet\.getLastRow\(\) - 1, 0\)\)/);
 });
 
-test('keeps the detail dialog compact with an internal vertical scroll at desktop and mobile breakpoints', () => {
-  assert.match(adminCss, /\.member-dialog\{width:min\(780px,calc\(100% - 28px\)\);max-height:90vh;overflow:hidden\}/);
-  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail\{max-height:calc\(90vh - 56px\);overflow-y:auto;overflow-x:hidden;padding:8px 16px;gap:7px\}/);
-  assert.match(adminCss, /@media\(max-width:680px\)\{[\s\S]*?overflow-x:hidden/);
+test('detail dialog uses a compact grouped grid designed to fit desktop viewports without an internal scroll, keeping a capped max-height only as a fallback', () => {
+  assert.match(adminCss, /\.member-dialog\{width:min\(900px,calc\(100% - 24px\)\);max-height:92vh;overflow:hidden\}/);
+  assert.match(adminCss, /\.member-detail\{max-height:calc\(92vh - 54px\);overflow-y:auto;overflow-x:hidden;gap:\d+px\}/);
+  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-groups\{grid-template-columns:1fr 1fr/);
   assert.match(adminCss, /\.partner-region-dialog\{width:min\(640px,calc\(100vw - 32px\)\);max-height:80vh/);
 });
