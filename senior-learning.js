@@ -3,10 +3,10 @@
 
   const SUPABASE_URL = 'https://ricndeoiomzjacmrsjtg.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_cGiclRJGjTqHBPVZqgTiQA_tvGKSQ60';
-  const slides = Array.from({ length: 10 }, (_, index) => `assets/digital-program/slide-${index + 1}.png`);
+  const legacySmartphoneSlides = Array.from({ length: 10 }, (_, index) => `assets/digital-program/slide-${index + 1}.png`);
   const sourceLearningData = [
     { id:'smartphone', icon:'📱', title:'스마트폰', description:'아이폰 · 갤럭시 · 전화 · 문자 · 카카오톡 · 사진', accessLevel:'free', lessons:[
-      { id:'smartphone-basics', title:'스마트폰 앱 기초', description:'앱을 찾고 사용하는 기본 방법을 그림으로 다시 봅니다.', status:'ready', accessLevel:'free', slides },
+      { id:'smartphone-basics', title:'스마트폰 앱 기초', description:'앱을 찾고 사용하는 기본 방법을 그림으로 다시 봅니다.', status:'ready', accessLevel:'free', slides:legacySmartphoneSlides },
       { id:'app-install', title:'앱 설치하기', description:'필요한 앱을 안전하게 설치하는 방법입니다.', status:'preparing', accessLevel:'free' },
       { id:'app-move', title:'앱 이동하기', description:'앱 위치를 옮기고 정리하는 방법입니다.', status:'preparing', accessLevel:'free' },
       { id:'app-folder', title:'폴더 만들기', description:'자주 쓰는 앱을 폴더에 모아봅니다.', status:'preparing', accessLevel:'free' },
@@ -36,14 +36,26 @@
       { id:'privacy', title:'개인정보 지키기', description:'비밀번호와 개인정보를 안전하게 관리합니다.', status:'preparing', accessLevel:'free' }
     ]}
   ];
-  // Keep the underlying source lessons and slides intact.  Only the current
-  // presentation state is preparing, so each lesson can be enabled later.
+  // Drive 교재의 번호가 곧 카드 순서입니다. 각 교재는 기존 viewer가 사용하는
+  // lesson schema와 slides 배열만으로 열리며, sourceLearningData의 기존 임시
+  // lesson 데이터는 다른 category 구성을 위해 그대로 유지합니다.
   const smartphoneLessons = [
-    ...sourceLearningData.find(category => category.id === 'smartphone').lessons,
-    ...sourceLearningData.find(category => category.id === 'settings').lessons,
-    ...sourceLearningData.find(category => category.id === 'daily-digital').lessons,
-    ...sourceLearningData.find(category => category.id === 'safety').lessons
-  ].map(lesson => ({ ...lesson, status:'preparing' }));
+    { id:'smartphone-01', title:'스마트폰 이해하기', description:'스마트폰의 기본 구성을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/01/slide-01.png'] },
+    { id:'smartphone-02', title:'스마트폰 홈화면 구성', description:'홈화면의 기본 구성을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/02/slide-01.png'] },
+    { id:'smartphone-03', title:'스마트폰 버튼과 충전 위치', description:'버튼과 충전 위치를 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/03/slide-01.png'] },
+    { id:'smartphone-04', title:'스마트폰 언어 변경', description:'언어를 변경하는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/04/slide-01.png'] },
+    { id:'smartphone-05', title:'스마트폰 터치하는 방법', description:'화면을 터치하는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/05/slide-01.png'] },
+    { id:'smartphone-06', title:'스마트폰 라이트모드,다크모드', description:'화면 모드를 바꾸는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/06/slide-01.png'] },
+    { id:'smartphone-07', title:'스마트폰 밝기 조절', description:'화면 밝기를 조절하는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/07/slide-01.png'] },
+    { id:'smartphone-08', title:'스마트폰 글자 크기', description:'글자 크기를 조절하는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/08/slide-01.png'] },
+    { id:'smartphone-09', title:'스마트폰 화면 크기', description:'화면 크기를 조절하는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/09/slide-01.png'] },
+    { id:'smartphone-10', title:'스마트폰 화면 자동 꺼짐 시간', description:'화면 자동 꺼짐 시간을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/10/slide-01.png'] },
+    { id:'smartphone-11', title:'스마트폰 최근앱,홈버튼,뒤로가기', description:'기본 탐색 버튼을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/11/slide-01.png'] },
+    { id:'smartphone-12', title:'스마트폰 접근성,손쉬운사용', description:'접근성 기능을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/12/slide-01.png'] },
+    { id:'smartphone-13', title:'스마트폰 위젯 사용', description:'위젯을 사용하는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/13/slide-01.png'] },
+    { id:'smartphone-14', title:'스마트폰 알람 설정', description:'알람을 설정하는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/14/slide-01.png'] },
+    { id:'smartphone-15', title:'스마트폰 홈화면,잠금화면 사진변경', description:'홈화면과 잠금화면 사진을 바꾸는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/15/slide-01.png'] }
+  ];
   const learningData = [
     {
       id:'smartphone',

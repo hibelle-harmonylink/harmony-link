@@ -22,18 +22,32 @@ test('senior learning space has a homepage entry and uses existing member authen
   assert.match(auth, /window\.location\.replace\(returnTarget\)/);
 });
 
-test('senior learning preserves six source categories while grouping their materials into three cards', () => {
+test('senior learning preserves source categories while grouping their materials into three cards', () => {
   for (const title of ['스마트폰', '설정과 화면', '생활 디지털', 'AI 배우기', '디지털 취미', '디지털 안전']) assert.match(script, new RegExp(`title:'${title}'`));
   for (const title of ['스마트폰', '컴퓨터', 'AI 도구']) assert.match(script, new RegExp(`title:'${title}'`));
   assert.match(script, /const sourceLearningData = \[/);
-  assert.match(script, /sourceLearningData\.find\(category => category\.id === 'settings'\)\.lessons/);
-  assert.match(script, /sourceLearningData\.find\(category => category\.id === 'daily-digital'\)\.lessons/);
-  assert.match(script, /sourceLearningData\.find\(category => category\.id === 'safety'\)\.lessons/);
   assert.match(script, /sourceLearningData\.find\(category => category\.id === 'digital-hobby'\)\.lessons/);
   assert.match(script, /accessLevel:'free'/);
   assert.match(script, /status:'ready'/);
   assert.match(script, /status:'preparing'/);
-  assert.match(script, /assets\/digital-program\/slide-\$\{index \+ 1\}\.png/);
+});
+
+test('smartphone materials use all fifteen Drive textbooks in their numbered order', () => {
+  const smartphoneBlock = script.match(/const smartphoneLessons = \[([\s\S]*?)\n  \];/);
+  assert.ok(smartphoneBlock, 'smartphone lesson data exists');
+  const lessons = [...smartphoneBlock[1].matchAll(/\{ id:'(smartphone-(\d{2}))', title:'([^']+)', description:'[^']+', status:'(ready|available)', accessLevel:'free', slides:\['([^']+)'\] \}/g)];
+  assert.equal(lessons.length, 15);
+  assert.deepEqual(lessons.map(([, , number]) => number), Array.from({ length:15 }, (_, index) => String(index + 1).padStart(2, '0')));
+  assert.equal(lessons.filter(([, , , , status]) => status === 'preparing').length, 0);
+  assert.equal(lessons.filter(([, , , , status]) => ['ready', 'available'].includes(status)).length, 15);
+  const paths = lessons.map(([, , number, , , assetPath]) => assetPath);
+  assert.equal(new Set(paths).size, 15);
+  paths.forEach((assetPath, index) => {
+    assert.equal(assetPath, `assets/senior-learning/smartphone/${String(index + 1).padStart(2, '0')}/slide-01.png`);
+    assert.equal(fs.existsSync(path.join(root, assetPath)), true, `${assetPath} exists`);
+  });
+  assert.doesNotMatch(smartphoneBlock[1], /\.map\(lesson => \(\{ \.\.\.lesson, status:'preparing' \}\)\)/);
+  assert.match(script, /const isLessonAvailable = lesson => \['ready', 'available'\]\.includes\(lesson\?\.status\);/);
 });
 
 test('senior learning keeps the original cognition card and provides an extensible mini-app page', () => {
