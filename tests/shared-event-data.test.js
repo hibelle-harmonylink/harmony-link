@@ -184,10 +184,10 @@ test('no representative event value is hardcoded a second time outside the canon
 test('root and app service workers precache the new canonical events file with a matching version', () => {
   const rootSw = read('service-worker.js');
   assert.match(rootSw, /'\/shared\/data\/events\.js\?v=1'/);
-  const appSw = read('app/service-worker-v100.js');
+  const appSw = read('app/service-worker-v101.js');
   assert.match(appSw, /"\.\.\/shared\/data\/events\.js\?v=1"/);
-  assert.match(appSw, /const CACHE="harmony-link-app-v100"/);
+  assert.match(appSw, /const CACHE="harmony-link-app-v101"/);
   // Old SW versions are kept on disk, not deleted.
+  assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v100.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v99.js')), true);
-  assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v98.js')), true);
 });

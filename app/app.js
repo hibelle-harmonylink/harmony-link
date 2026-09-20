@@ -102,7 +102,7 @@ function renderPartners(){
   const partners=businessPromotions;
   if(!partners.length){container.innerHTML="";return}
   partnerIndex=(partnerIndex+partners.length)%partners.length;
-  const visible=Array.from({length:Math.min(3,partners.length)},(_,offset)=>partners[(partnerIndex+offset)%partners.length]);
+  const visible=Array.from({length:Math.min(1,partners.length)},(_,offset)=>partners[(partnerIndex+offset)%partners.length]);
   container.innerHTML=visible.map(item=>{
     const title=language==="ko"?item.titleKo:item.titleEn;
     const details=language==="ko"?item.textKo:item.textEn;
@@ -142,7 +142,7 @@ function renderHomeEvents(){
   const container=$("#homeEvents");
   if(!container)return;
   const today=new Date().toISOString().slice(0,10);
-  container.innerHTML=events.filter(item=>(item.endDate||item.date)>=today).slice(0,3).map(eventCard).join("");
+  container.innerHTML=events.filter(item=>(item.endDate||item.date)>=today).slice(0,1).map(eventCard).join("");
 }
 function renderFilters(){
   if(!$("#categoryFilters"))return;
@@ -581,7 +581,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true;clos
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v100.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v101.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;

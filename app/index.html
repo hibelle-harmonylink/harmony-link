@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" href="icon-192-v71.png">
   <link rel="apple-touch-icon" href="icon-192-v71.png">
   <link rel="stylesheet" href="app.css?v=65">
-  <link rel="stylesheet" href="overrides.css?v=100">
+  <link rel="stylesheet" href="overrides.css?v=101">
 </head>
 <body>
   <div class="app-shell">
@@ -41,7 +41,7 @@
 
     <main>
       <section class="screen active" id="home" data-screen="home">
-        <div class="hero">
+        <div class="hero hero-dashboard">
           <div class="hero-semicircle" aria-hidden="true"></div>
           <div class="hero-sky-orbs" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
           <div class="hero-copy">
@@ -53,11 +53,30 @@
               <a class="app-hero-secondary-action" href="../#partner-application"><span data-ko="강사·업체로 참여하기" data-en="Join as an Instructor or Provider">강사·업체로 참여하기</span></a>
             </div>
           </div>
-          <div class="hero-visual">
+          <div class="hero-visual hero-visual-compact">
             <img src="../assets/home/harmony-community-learning.png?v=20260915-1" alt="함께 배우고 대화하는 Harmony Link 학습 공동체" data-ko-alt="함께 배우고 대화하는 Harmony Link 학습 공동체" data-en-alt="Harmony Link learning community studying and talking together">
             <div class="hero-visual-badge"><span aria-hidden="true">✓</span><b data-ko="전문 강사 연결" data-en="Expert instructor matching">전문 강사 연결</b></div>
           </div>
         </div>
+
+        <section class="quick-access-grid" id="quickAccess" aria-label="빠른 이동">
+          <button type="button" class="quick-access-tile" data-go="programs">
+            <span class="quick-access-icon" aria-hidden="true">📚</span>
+            <span class="quick-access-label" data-ko="프로그램" data-en="Programs">프로그램</span>
+          </button>
+          <a class="quick-access-tile" href="../senior-learning.html">
+            <span class="quick-access-icon" aria-hidden="true">🧓</span>
+            <span class="quick-access-label" data-ko="시니어 배움터" data-en="Senior Learning">시니어 배움터</span>
+          </a>
+          <button type="button" class="quick-access-tile" data-go="events">
+            <span class="quick-access-icon" aria-hidden="true">🗓️</span>
+            <span class="quick-access-label" data-ko="강좌·행사" data-en="Classes &amp; Events">강좌·행사</span>
+          </button>
+          <a class="quick-access-tile" href="../#partner-center">
+            <span class="quick-access-icon" aria-hidden="true">🤝</span>
+            <span class="quick-access-label" data-ko="파트너" data-en="Partners">파트너</span>
+          </a>
+        </section>
 
         <section class="app-pathways" id="appPathways" hidden aria-hidden="true">
           <div class="section-title"><div><p class="eyebrow">CHOOSE YOUR PATH</p><h2 data-ko="원하는 이용 경로를 선택하세요" data-en="Choose the Path That Fits You">원하는 이용 경로를 선택하세요</h2></div></div>
@@ -70,6 +89,7 @@
         <section class="home-programs">
           <div class="section-title">
             <div><p class="eyebrow" data-ko="프로그램" data-en="PROFESSIONAL PROGRAMS">PROFESSIONAL PROGRAMS</p><h2 data-ko="전문 교육 프로그램" data-en="Professional Programs">전문 교육 프로그램</h2></div>
+            <button type="button" data-go="programs" data-ko="전체 보기" data-en="View All">전체 보기</button>
           </div>
           <div class="app-specialty-grid" id="recommendedPrograms"></div>
         </section>
@@ -85,6 +105,7 @@
         <section class="home-programs app-partners-section" id="appPartners">
           <div class="section-title">
             <div><p class="eyebrow" data-ko="파트너" data-en="PARTNERS">PARTNERS</p><h2 data-ko="업체 광고 · 제휴 공간" data-en="Business Ads & Partnerships">업체 광고 · 제휴 공간</h2></div>
+            <a href="../#partner-center" data-ko="더보기" data-en="See More">더보기</a>
           </div>
           <div class="app-partner-carousel"><button class="app-partner-prev" type="button" aria-label="이전 협력 업체">‹</button><div class="partner-program-stage" id="partnerPrograms"></div><button class="app-partner-next" type="button" aria-label="다음 협력 업체">›</button></div>
         </section>
@@ -210,6 +231,6 @@
   <script src="../shared/data/events.js?v=1"></script>
   <script src="../shared-content.js?v=88"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="app.js?v=99"></script>
+  <script src="app.js?v=101"></script>
 </body>
 </html>

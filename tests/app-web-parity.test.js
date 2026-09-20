@@ -11,7 +11,7 @@ const sharedContent = read('shared-content.js');
 const businessesData = read('shared/data/businesses.js');
 const eventsData = read('shared/data/events.js');
 const webScript = read('script.js');
-const serviceWorker = read('app/service-worker-v100.js');
+const serviceWorker = read('app/service-worker-v101.js');
 
 test('app menu links to the existing Senior Learning web page instead of duplicating it', () => {
   assert.match(appPage, /<a href="\.\.\/senior-learning\.html" data-ko="시니어 배움터" data-en="Senior Learning">시니어 배움터<\/a>/);
@@ -83,23 +83,23 @@ test('app events include the current Production 3 upcoming + 3 past classes', ()
   assert.deepEqual(ids, ['messiah', 'hole19-tournament', 'free-music-class', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar']);
 });
 
-test('service worker v100 precaches the mobile design-system pass without changing the caching strategy', () => {
-  assert.match(serviceWorker, /const CACHE="harmony-link-app-v100"/);
+test('service worker v101 precaches the HOME dashboard redesign pass without changing the caching strategy', () => {
+  assert.match(serviceWorker, /const CACHE="harmony-link-app-v101"/);
   assert.match(serviceWorker, /"\.\.\/assets\/events\/ai-business-automation-free-class-20260911\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/images\/dms-care-logo\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/home\/harmony-community-learning\.png"/);
   assert.match(serviceWorker, /"\.\.\/shared\/data\/events\.js\?v=1"/);
   assert.match(serviceWorker, /"\.\/app\.css\?v=65"/);
-  assert.match(serviceWorker, /"\.\/overrides\.css\?v=100"/);
-  assert.match(serviceWorker, /"\.\/app\.js\?v=99"/);
-  // Same network-first, cache-as-fallback strategy as v99 -- not rewritten.
+  assert.match(serviceWorker, /"\.\/overrides\.css\?v=101"/);
+  assert.match(serviceWorker, /"\.\/app\.js\?v=101"/);
+  // Same network-first, cache-as-fallback strategy as v100 -- not rewritten.
   assert.match(serviceWorker, /fetch\(event\.request,\{cache:"no-store"\}\)/);
-  assert.match(appScript, /register\("service-worker-v100\.js",\{updateViaCache:"none"\}\)/);
+  assert.match(appScript, /register\("service-worker-v101\.js",\{updateViaCache:"none"\}\)/);
   // Older versions are kept on disk (asset safety), not deleted.
+  assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v100.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v99.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v98.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v97.js')), true);
-  assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v96.js')), true);
 });
 
 test('app header collapses the always-expanded top menu into a hamburger panel, matching the web pattern', () => {
