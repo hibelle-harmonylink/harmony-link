@@ -99,8 +99,8 @@ test('the resync is retry-safe: member-signup.gs never reissues or replaces an e
   assert.match(memberScript, /const memberNumber = row\s*\n\s*\? text_\(sheet\.getRange\(row, COLUMNS\.memberNumber\)\.getDisplayValue\(\)\)\s*\n\s*: nextMemberNumber_\(sheet, joinedAt\);/);
 });
 
-test('operators are told, in the setup doc, that step 9 (roster URL) is required for application data to reach the admin detail view', () => {
-  assert.match(setupDoc, /3\. 회원명단 연동 주소 저장/);
-  assert.match(setupDoc, /4\. 기존 신청 회원명단 다시 동기화/);
+test('operators are told, in the setup doc, that the roster URL is required for application data to reach the admin detail view', () => {
+  assert.match(setupDoc, /2\. 회원명단 연동 주소 저장/);
+  assert.match(setupDoc, /3\. 기존 신청 회원명단 다시 동기화/);
   assert.match(setupDoc, /이 단계를 건너뛰면 신청서의 연락처·전문분야·강의과목이 자동메일만 보내고 회원 상세관리에는 반영되지 않습니다\./);
 });

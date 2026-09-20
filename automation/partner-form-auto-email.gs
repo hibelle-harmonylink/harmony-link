@@ -6,7 +6,6 @@
 const CONFIG = {
   adminEmail: 'hibelle@hibelleconsulting.com',
   partnerCenterUrl: 'https://hibelleharmony.com/#partner-center',
-  propertyKey: 'PARTNER_ACCESS_CODE',
   // The 회원가입 명단 webapp's own /exec URL (same value as auth.js's
   // signupAutomationUrl). Without this, a partner's phone/specialty/강의과목
   // answers are only ever emailed to the admin -- they never reach the
@@ -20,10 +19,9 @@ const CONFIG = {
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('Harmony Link 자동화')
-    .addItem('1. 접근코드 저장', 'savePartnerAccessCode')
-    .addItem('2. 자동메일 시작', 'installPartnerEmailTrigger')
-    .addItem('3. 회원명단 연동 주소 저장', 'saveMemberRosterWebappUrl')
-    .addItem('4. 기존 신청 회원명단 다시 동기화', 'resyncExistingApplications')
+    .addItem('1. 자동메일 시작', 'installPartnerEmailTrigger')
+    .addItem('2. 회원명단 연동 주소 저장', 'saveMemberRosterWebappUrl')
+    .addItem('3. 기존 신청 회원명단 다시 동기화', 'resyncExistingApplications')
     .addItem('설정 상태 확인', 'showPartnerEmailStatus')
     .addToUi();
 }
@@ -42,25 +40,8 @@ function saveMemberRosterWebappUrl() {
   ui.alert('회원명단 연동 주소가 저장되었습니다.');
 }
 
-function savePartnerAccessCode() {
-  const ui = SpreadsheetApp.getUi();
-  const response = ui.prompt(
-    '파트너 자료실 접근코드',
-    '홈페이지에 설정된 접근코드를 입력하세요.',
-    ui.ButtonSet.OK_CANCEL
-  );
-  if (response.getSelectedButton() !== ui.Button.OK) return;
-  const code = response.getResponseText().trim();
-  if (!code) return ui.alert('접근코드를 입력해 주세요.');
-  PropertiesService.getScriptProperties().setProperty(CONFIG.propertyKey, code);
-  ui.alert('접근코드가 안전하게 저장되었습니다.');
-}
-
 function installPartnerEmailTrigger() {
   const ui = SpreadsheetApp.getUi();
-  if (!PropertiesService.getScriptProperties().getProperty(CONFIG.propertyKey)) {
-    return ui.alert('먼저 “접근코드 저장”을 실행해 주세요.');
-  }
   ScriptApp.getProjectTriggers()
     .filter(trigger => trigger.getHandlerFunction() === 'sendPartnerWelcomeEmail')
     .forEach(trigger => ScriptApp.deleteTrigger(trigger));
@@ -72,12 +53,11 @@ function installPartnerEmailTrigger() {
 }
 
 function showPartnerEmailStatus() {
-  const hasCode = Boolean(PropertiesService.getScriptProperties().getProperty(CONFIG.propertyKey));
   const hasTrigger = ScriptApp.getProjectTriggers()
     .some(trigger => trigger.getHandlerFunction() === 'sendPartnerWelcomeEmail');
   const hasRosterUrl = Boolean(PropertiesService.getScriptProperties().getProperty(CONFIG.rosterWebappUrlKey));
   SpreadsheetApp.getUi().alert(
-    `접근코드: ${hasCode ? '저장됨' : '미저장'}\n자동메일: ${hasTrigger ? '작동 중' : '중지됨'}\n회원명단 연동: ${hasRosterUrl ? '저장됨' : '미저장(신청 데이터가 회원 상세에 반영되지 않습니다)'}`
+    `자동메일: ${hasTrigger ? '작동 중' : '중지됨'}\n회원명단 연동: ${hasRosterUrl ? '저장됨' : '미저장(신청 데이터가 회원 상세에 반영되지 않습니다)'}`
   );
 }
 
@@ -98,7 +78,6 @@ function sendPartnerWelcomeEmail(event) {
   const email = findAnswer(values, ['이메일', 'email', 'e-mail', '메일']);
   const name = findAnswer(values, ['이름', '성명', '담당자', 'name']) || '파트너 신청자';
   const organization = findAnswer(values, ['업체명', '회사명', '기관명', '브랜드명', 'organization', 'company']) || '';
-  const accessCode = PropertiesService.getScriptProperties().getProperty(CONFIG.propertyKey);
 
   if (!email) {
     MailApp.sendEmail({
@@ -108,14 +87,12 @@ function sendPartnerWelcomeEmail(event) {
     });
     return;
   }
-  if (!accessCode) throw new Error('PARTNER_ACCESS_CODE is not configured.');
-
   MailApp.sendEmail({
     to: email,
     name: 'Harmony Link',
     replyTo: CONFIG.adminEmail,
     subject: '[Harmony Link] 입점 파트너 자료실 이용 안내',
-    htmlBody: buildWelcomeEmail(name, organization, accessCode)
+    htmlBody: buildWelcomeEmail(name, organization)
   });
 
   MailApp.sendEmail({
@@ -213,7 +190,7 @@ function findAnswer(namedValues, keywords) {
   return key ? String((namedValues[key] || [''])[0]).trim() : '';
 }
 
-function buildWelcomeEmail(name, organization, accessCode) {
+function buildWelcomeEmail(name, organization) {
   const displayName = escapeHtml(name);
   const displayOrg = organization ? ` (${escapeHtml(organization)})` : '';
   return `
@@ -226,16 +203,11 @@ function buildWelcomeEmail(name, organization, accessCode) {
         <p>${displayName}${displayOrg} 님, 입점 파트너 신청을 보내주셔서 감사합니다.</p>
         <p>아래 자료실에서 운영 정책과 파트너 매뉴얼을 확인해 주세요.</p>
         <p><a href="${CONFIG.partnerCenterUrl}" style="display:inline-block;padding:13px 20px;background:#0b55b7;color:#fff;text-decoration:none;border-radius:10px;font-weight:bold">파트너 자료실 열기</a></p>
-        <div style="margin:22px 0;padding:18px;background:#f1f6fc;border-radius:12px">
-          <small>자료실 접근코드</small><br>
-          <strong style="font-size:20px;letter-spacing:1px">${escapeHtml(accessCode)}</strong>
-        </div>
         <ol>
           <li>자료실 링크를 엽니다.</li>
-          <li>접근코드를 입력합니다.</li>
-          <li>운영 정책과 매뉴얼을 확인합니다.</li>
+          <li>HarmonyLink 계정으로 로그인합니다.</li>
+          <li>승인된 회원/파트너 권한으로 운영 정책과 매뉴얼을 이용합니다.</li>
         </ol>
-        <p style="font-size:12px;color:#64748b">이 코드는 파트너 전용입니다. 외부 공유를 삼가 주세요.</p>
       </div>
     </div>`;
 }
