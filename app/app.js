@@ -28,7 +28,30 @@ function businessToPromotion(business){
   return{kind:business.kind,titleKo:business.appTitleKo,titleEn:business.appTitleEn,textKo:business.appTextKo,textEn:business.appTextEn,badgeKo:business.appBadgeKo,badgeEn:business.appBadgeEn,image:business.appLogo,url:ctaUrl,actionKo:business.appCtaKo,actionEn:business.appCtaEn};
 }
 const businessPromotions=(window.HARMONY_LINK_BUSINESSES||[]).map(businessToPromotion);
-const programs=[...(sharedContent.featuredPrograms||[]),...basePrograms];
+if(!window.HARMONY_LINK_PROGRAMS){
+  console.warn("[programs] shared/data/programs.js did not load; Programs Preview/list will show no featured programs.");
+}
+// Adapts a canonical shared/data/programs.js entry into the {id,ko,en,tagsKo,...}
+// shape this file's program renderers (programCard, specialtyCards) already expect
+// -- the same {ko,en,tagsKo,tagsEn,color,image,url,category} shape basePrograms
+// below already uses. The app-specific tag copy/image/link (appTagsKo/appImage/
+// appUrl) are preserved byte-for-byte from the app's own previously-hardcoded
+// values instead of duplicated here; the website's own poster image/description
+// are read directly off the canonical entry only inside specialtyCards(), which
+// needs them for the Programs Preview's larger poster art.
+function programToAppModel(program){
+  return{id:program.id,ko:program.titleKo,en:program.titleEn,tagsKo:program.appTagsKo,tagsEn:program.appTagsEn,color:program.appColor,image:program.appImage,url:program.appUrl,category:program.category};
+}
+// Adapts a canonical shared/data/programs.js entry into the {kind,titleKo,...}
+// shape this file's promotion renderers (the home news popup) already expect,
+// mirroring businessToPromotion() above. badge/action copy is identical across
+// all 3 programs on Production, so it is not duplicated per-entry.
+function programToPromotion(program){
+  return{kind:"program",badgeKo:"전문 수업 안내",badgeEn:"SPECIALTY PROGRAM",titleKo:program.titleKo,titleEn:program.titleEn,textKo:program.appPromoTextKo,textEn:program.appPromoTextEn,image:program.appImage,url:program.appUrl,actionKo:"수업 보기",actionEn:"View Program"};
+}
+const featuredPrograms=(window.HARMONY_LINK_PROGRAMS||[]).map(programToAppModel);
+const programPromotions=(window.HARMONY_LINK_PROGRAMS||[]).map(programToPromotion);
+const programs=[...featuredPrograms,...basePrograms];
 const categoryNames={전체:"All",디지털:"Digital",언어:"Language",음악:"Music"};
 const currentBasePrograms=basePrograms.filter(program=>Object.hasOwn(categoryNames,program.category));
 const fallbackPopupNews=[
@@ -36,7 +59,7 @@ const fallbackPopupNews=[
   {badgeKo:"지역사회 봉사",badgeEn:"COMMUNITY SUPPORT",titleKo:"무료 방문 디지털 지원",titleEn:"Free in-home digital support",textKo:"스마트폰과 디지털 기기 사용이 어려운 이웃을<br>직접 찾아가 친절하게 도와드립니다.",textEn:"Friendly volunteers visit neighbors who need help<br>using smartphones and digital devices.",image:"../assets/volunteer/digital-volunteer.png",actionKo:"신청하기",actionEn:"Apply",screen:"contact"},
   {badgeKo:"파트너 모집",badgeEn:"PARTNER RECRUITMENT",titleKo:"입점 파트너 모집",titleEn:"Partner Recruitment",textKo:"전문 강사와 교육업체의 좋은 프로그램이 더 많은<br>사람과 만날 수 있도록 연결합니다.",textEn:"We connect trusted instructors and education providers<br>with more learners and organizations.",image:"../assets/partners/partner-recruitment.png",actionKo:"문의하기",actionEn:"Contact us",screen:"contact"}
 ];
-const popupNews=sharedContent.promotions?.length?[...sharedContent.promotions,...businessPromotions]:fallbackPopupNews;
+const popupNews=sharedContent.promotions?.length?[...sharedContent.promotions,...programPromotions,...businessPromotions]:fallbackPopupNews;
 if(!window.HARMONY_LINK_EVENTS){
   console.warn("[events] shared/data/events.js did not load; the events screen will be empty.");
 }
@@ -79,17 +102,17 @@ function programCard(program){
   </article>`;
 }
 function specialtyCards(){
-  const featured=sharedContent.featuredPrograms||[];
+  const featured=featuredPrograms;
   const viewLabel=language==="ko"?"프로그램 보기":"View Program";
-  const homepageFlyers={
-    "hibelle-digital":"../assets/specialty/hibelle-digital-20260718.jpg",
-    "hibelle-english":"../assets/specialty/hibelle-online-english-20260718.jpg",
-    "meeran-melody":"../assets/specialty/meeran-melody.png"
-  };
+  // The Programs Preview's poster art reuses the website's own banner image
+  // (shared/data/programs.js's canonical "image" field, "../"-prefixed) rather
+  // than the app's small square brand-mark (appImage/featured.image above),
+  // matching this card's larger poster-style layout.
+  const posterImages=Object.fromEntries((window.HARMONY_LINK_PROGRAMS||[]).map(p=>[p.id,`../${p.image}`]));
   return featured.map(p=>{
     const title=language==="ko"?p.ko:p.en;
     const description=language==="ko"?p.tagsKo:p.tagsEn;
-    const image=homepageFlyers[p.id]||p.image;
+    const image=posterImages[p.id]||p.image;
     return `<article class="app-specialty-card"><a class="app-specialty-poster" href="${p.url}" target="_blank" rel="noopener noreferrer" aria-label="${title} ${viewLabel}"><img src="${image}" alt="${title} 전단지"></a><div class="app-specialty-copy"><h3>${title}</h3><p>${description}</p><a class="app-specialty-link" href="${p.url}" target="_blank" rel="noopener noreferrer">${viewLabel}</a></div></article>`;
   }).join("");
 }
@@ -581,7 +604,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true;clos
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v103.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v104.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;

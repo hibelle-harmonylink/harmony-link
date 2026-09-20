@@ -116,9 +116,11 @@ test('app/app.js (app) reads Business Spotlight data from the canonical file ins
   assert.match(appScript, /function businessToPromotion\(business\)\{/);
   assert.match(appScript, /const businessPromotions\s*=\s*\(window\.HARMONY_LINK_BUSINESSES\s*\|\|\s*\[\]\)\.map\(businessToPromotion\);/);
   assert.match(appScript, /const partners\s*=\s*businessPromotions;/);
-  // The home news popup still rotates through all 10 original cards (4 non-business +
-  // 6 businesses), just recombined instead of read as one hardcoded array.
-  assert.match(appScript, /const popupNews\s*=\s*sharedContent\.promotions\?\.length\?\[\.\.\.sharedContent\.promotions,\.\.\.businessPromotions\]:fallbackPopupNews;/);
+  // The home news popup still rotates through all 10 original cards (1 benefit +
+  // 3 programs + 6 businesses), just recombined instead of read as one hardcoded
+  // array -- programPromotions (Phase 3) sits between the two, matching the
+  // original hand-authored order.
+  assert.match(appScript, /const popupNews\s*=\s*sharedContent\.promotions\?\.length\?\[\.\.\.sharedContent\.promotions,\.\.\.programPromotions,\.\.\.businessPromotions\]:fallbackPopupNews;/);
 });
 
 test('app/index.html loads ../shared/data/businesses.js before app.js', () => {
@@ -137,11 +139,12 @@ test('shared-content.js no longer hardcodes the 6 Business Spotlight companies a
   ['Yura Kim', 'OrganicOne', '올가닉 원', 'HOLE19 골프라운지', 'AALEAC', '장수 데이케어', 'DMS Care Training Center'].forEach(name => {
     assert.doesNotMatch(sharedContent, new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')), `shared-content.js should no longer contain "${name}"`);
   });
-  // The 4 non-business promotions (benefit CTA + 3 programs) must remain untouched.
+  // The benefit CTA promotion must remain untouched; the 3 program promotions moved
+  // to shared/data/programs.js in Phase 3 (see tests/shared-program-data.test.js).
   assert.match(sharedContent, /kind:"benefit"/);
-  assert.match(sharedContent, /titleKo:"하이벨 디지털"/);
-  assert.match(sharedContent, /titleKo:"하이벨 화상영어"/);
-  assert.match(sharedContent, /titleKo:"미란멜로디"/);
+  assert.doesNotMatch(sharedContent, /titleKo:"하이벨 디지털"/);
+  assert.doesNotMatch(sharedContent, /titleKo:"하이벨 화상영어"/);
+  assert.doesNotMatch(sharedContent, /titleKo:"미란멜로디"/);
 });
 
 test('no Business Spotlight phone/address/URL values are hardcoded a second time outside the canonical file and its known adapters', () => {

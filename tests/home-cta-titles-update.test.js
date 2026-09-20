@@ -63,13 +63,15 @@ test('Programs title is unified to "교육 프로그램"/"Education Programs" on
 
 test('Programs card data, images, buttons, and links are untouched -- only the section title changed', () => {
   assert.match(appScript, /function specialtyCards\(\)\{/);
-  assert.match(appScript, /const featured=sharedContent\.featuredPrograms\|\|\[\];/);
+  assert.match(appScript, /const featured=featuredPrograms;/);
   assert.match(appPage, /id="recommendedPrograms"/);
   assert.match(appPage, /id="programList"/);
-  const sharedContent = read('shared-content.js');
-  assert.match(sharedContent, /하이벨 디지털/);
-  assert.match(sharedContent, /하이벨 화상영어/);
-  assert.match(sharedContent, /미란멜로디/);
+  // The 3 named programs now live in shared/data/programs.js (Phase 3 canonical
+  // data), not hardcoded in shared-content.js -- see tests/shared-program-data.test.js.
+  const programsData = read('shared/data/programs.js');
+  assert.match(programsData, /하이벨 디지털/);
+  assert.match(programsData, /하이벨 화상영어/);
+  assert.match(programsData, /미란멜로디/);
 });
 
 test('Business section title is unified to "Business Spotlight" on HOME (both languages); "업체 광고 · 제휴 공간"/"Business Ads & Partnerships" is gone', () => {
