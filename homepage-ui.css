@@ -412,6 +412,12 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
 .program-category-card.is-linked:focus-visible,.program-category-card.is-coming-soon:focus-visible{border-color:rgba(26,52,172,.55);transform:translateY(-3px);box-shadow:0 12px 28px rgba(24,43,91,.1);outline:none}
 .program-category-icon{display:grid;place-items:center;width:64px;height:64px;border:1px solid rgba(111,159,212,.22);border-radius:17px;background:#d4efff;font-size:31px;line-height:1}
 .program-category-card strong{color:#101b35;font-size:18px;font-weight:900;letter-spacing:-.02em}
+.program-category-card{position:relative}
+.program-category-status{position:absolute;top:10px;right:10px;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800;line-height:1.2;letter-spacing:-.01em}
+.program-category-status.is-available{background:#e8f7ee;color:#16713a;border:1px solid #bfe5cd}
+.program-category-status.is-preparing{background:#f2f4f7;color:#667085;border:1px solid #d8dde5}
+.program-category-card.is-coming-soon{background:#fbfcfe}
+.program-category-card.is-coming-soon .program-category-icon{filter:saturate(.72);opacity:.88}
 
 @media(min-width:761px){
   .program-category-card:hover{border-color:rgba(26,52,172,.7);transform:translateY(-3px);box-shadow:0 11px 24px rgba(24,43,91,.13)}
