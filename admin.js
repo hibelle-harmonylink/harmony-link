@@ -471,9 +471,9 @@
     // renders exactly once, as its live input/select, which is what removed
     // the internal scrollbar on common desktop viewports (1366x768+).
     const readonlyField = (label, valueHtml, truncate = false) => `<div class="member-readonly member-system-field${truncate ? ' member-readonly-truncate' : ''}"><span>${label}<em>자동 관리</em></span><strong${truncate ? ` title="${escapeHtml(member.email || '')}"` : ''}>${valueHtml}</strong></div>`;
-    const basicInfoFields = `<section class="member-group"><h3>기본 정보 <small class="member-editable-note">관리자 수정 가능</small></h3><div class="member-group-grid">${readonlyField('회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>`)}${readonlyField('이메일', escapeHtml(member.email || ''), true)}${readonlyField('가입일', formatDate(member.created_at))}<label class="${editableClass.trim()}">닉네임/업체명<input id="detailNickname" type="text" maxlength="80" autocomplete="nickname"${editableDisabled}></label><label class="${editableClass.trim()}">이름<input id="detailFullName" type="text" maxlength="80" autocomplete="name"${editableDisabled}></label><label class="${editableClass.trim()}">연락처<input id="detailPhone" type="tel" maxlength="30" autocomplete="tel" value="${escapeHtml(formatPhone(member.phone ?? ''))}"${editableDisabled}></label></div></section>`;
+    const basicInfoFields = `<section class="member-group"><h3>기본 정보 <small class="member-editable-note">관리자 수정 가능</small></h3><div class="member-group-grid">${readonlyField('회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>`)}${readonlyField('이메일', escapeHtml(member.email || ''), true)}${readonlyField('가입일', formatDate(member.created_at))}<label class="${editableClass.trim()}" title="사업체명 또는 활동명">닉네임/업체명<input id="detailNickname" type="text" maxlength="80" autocomplete="nickname"${editableDisabled}></label><label class="${editableClass.trim()}" title="신청서 공식 이름 · 재동기화 시 갱신될 수 있음">영문 이름<input id="detailFullName" type="text" maxlength="80" autocomplete="name"${editableDisabled}></label><label class="${editableClass.trim()}">연락처<input id="detailPhone" type="tel" maxlength="30" autocomplete="tel" value="${escapeHtml(formatPhone(member.phone ?? ''))}"${editableDisabled}></label></div></section>`;
     const protectedNotice = withdrawn || protectedAccount ? `<div class="member-protected-copy">${withdrawn ? '탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다.' : '관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.'}</div>` : '';
-    const accessInputs = withdrawn || protectedAccount ? '' : `<label class="member-name-field${editableClass}">회원 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label class="${editableClass.trim()}">회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label class="${editableClass.trim()}">멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label class="${editableClass.trim()}">계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label>`;
+    const accessInputs = withdrawn || protectedAccount ? '' : `<label class="member-name-field${editableClass}" title="관리자 확인 이름 · 신청서 재동기화로 변경되지 않음">한글 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label class="${editableClass.trim()}">회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label class="${editableClass.trim()}">멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label class="${editableClass.trim()}">계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label>`;
     const roleMetadataInputs = `<label class="partner-metadata${editableClass}">전문분야<input id="detailSpecialty" type="text" maxlength="120"${editableDisabled}></label><label class="partner-metadata${editableClass}">강의과목<input id="detailTeachingSubjects" type="text" maxlength="240"${editableDisabled}></label><label class="student-metadata${editableClass}">수강과목<input id="detailEnrolledSubject" type="text" maxlength="120"${editableDisabled}></label><label class="student-metadata${editableClass}">담당강사<input id="detailAssignedInstructor" type="text" maxlength="120"${editableDisabled}></label>`;
     const roleInfoFields = `<section class="member-group"><h3>회원·파트너 정보 <small class="member-editable-note">관리자 수정 가능</small></h3>${protectedNotice}<div class="member-group-grid">${accessInputs}${roleMetadataInputs}</div></section>`;
     const partnerRegionFields = `<section class="partner-region partner-metadata" hidden aria-labelledby="detailPartnerRegionTitle"><div class="partner-region-heading"><div><h3 id="detailPartnerRegionTitle">활동 지역</h3><p id="detailPartnerRegionSummary">지역 정보를 불러오는 중…</p><p id="detailPartnerRegionServices" class="partner-region-services" hidden></p></div><span class="partner-region-note">파트너 전용</span></div><div class="partner-region-actions"><button id="detailManagePartnerRegion" type="button" class="member-region-manage">지역정보 관리</button></div></section>`;
@@ -676,11 +676,11 @@
       }
     }
     if (nameChanged && (nextName.length < 2 || nextName.length > 50)) {
-      setMessage('회원 이름은 2자 이상 50자 이하로 입력해 주세요.', true);
+      setMessage('한글 이름은 2자 이상 50자 이하로 입력해 주세요.', true);
       return;
     }
     const detailLines = [
-      nameChanged ? `회원 이름 → ${nextName}` : '',
+      nameChanged ? `한글 이름 → ${nextName}` : '',
       nextUserType !== member.user_type ? `회원유형: ${TYPE_LABELS[member.user_type]} → ${TYPE_LABELS[nextUserType]}` : '',
       nextMembership !== member.membership ? `멤버십: ${MEMBERSHIP_LABELS[member.membership]} → ${MEMBERSHIP_LABELS[nextMembership]}` : '',
       nextStatus !== member.account_status ? `계정 상태: ${STATUS_LABELS[member.account_status]} → ${STATUS_LABELS[nextStatus]}` : '',
@@ -728,7 +728,7 @@
       const results = [];
       if (nameChanged) {
         const { error } = await callRpc('admin_update_member_name', { p_member_id: member.id, p_display_name: nextName });
-        results.push({ field: 'name', label: '회원 이름', ok: !error, error });
+        results.push({ field: 'name', label: '한글 이름', ok: !error, error });
       }
       const accessChangedAt = new Date(Date.now() - 2000).toISOString();
       const roleChanged = deriveRole(nextUserType, nextMembership, member.is_admin) !== member.role;
