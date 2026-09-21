@@ -18,6 +18,9 @@ const PRE_IDENTITY_HEADERS = ['회원번호', '가입일', '이름', '이메일'
 // deployed script never shifts an existing row until an administrator runs
 // migrateRosterNameColumns() deliberately.
 const PRE_NAME_COLUMNS_HEADERS = ['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '시스템 ID'];
+// This is the actual Production roster backup layout. It has no 가입경로
+// column, so 시스템 ID is column 15 rather than column 16.
+const PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS = ['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '시스템 ID'];
 const COLUMNS = Object.freeze({
   memberNumber: 1,
   joinedAt: 2,
@@ -33,6 +36,14 @@ const PRE_NAME_COLUMNS = Object.freeze({
   memberType: 8, membership: 9, accountStatus: 10, specialty: 11,
   teachingSubjects: 12, enrolledSubject: 13, assignedInstructor: 14,
   signupPath: 15, systemId: 16
+});
+const PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH = Object.freeze({
+  memberNumber: 1,
+  joinedAt: 2,
+  nickname: 3, displayName: 0, fullName: 4, email: 5, phone: 6, signupMethod: 7,
+  memberType: 8, membership: 9, accountStatus: 10, specialty: 11,
+  teachingSubjects: 12, enrolledSubject: 13, assignedInstructor: 14,
+  signupPath: 0, systemId: 15
 });
 const TYPE_LABELS = ['수강생', '입점 파트너', '관리자'];
 const MEMBERSHIP_LABELS = ['FREE', 'BASIC $20', 'PREMIUM $50', '관리자'];
@@ -341,11 +352,12 @@ function ensureSchema_(sheet) {
   // migration preserves every existing name value before inserting the new
   // Korean-name column.
   else if (headersMatch_(current, PRE_NAME_COLUMNS_HEADERS)) columns = PRE_NAME_COLUMNS;
+  else if (headersMatch_(current, PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS)) columns = PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH;
   else if (!headersMatch_(current, HEADERS)) throw new Error('알 수 없는 회원가입 명단 헤더 구조입니다. 수동 migration 전에 중단했습니다.');
   if (!columns) columns = COLUMNS;
   sheet.setFrozenRows(1);
   const rows = Math.max(sheet.getMaxRows() - 1, 1);
-  const width = columns === PRE_NAME_COLUMNS ? PRE_NAME_COLUMNS_HEADERS.length : HEADERS.length;
+  const width = columnWidth_(columns);
   sheet.getRange(1, 1, 1, width).setBackground('#0d51aa').setFontColor('#ffffff').setFontWeight('bold');
   sheet.getRange(2, columns.memberType, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(TYPE_LABELS, true).setAllowInvalid(false).build());
   sheet.getRange(2, columns.membership, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(MEMBERSHIP_LABELS, true).setAllowInvalid(false).build());
@@ -369,40 +381,124 @@ function columnMap_(sheet) {
   const current = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), HEADERS.length)).getDisplayValues()[0];
   if (headersMatch_(current, HEADERS)) return COLUMNS;
   if (headersMatch_(current, PRE_NAME_COLUMNS_HEADERS)) return PRE_NAME_COLUMNS;
+  if (headersMatch_(current, PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS)) return PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH;
   throw new Error('알 수 없는 회원가입 명단 헤더 구조입니다.');
 }
 
-// Public, intentionally manual migration entry point. It only upgrades the
-// active 회원가입 명단 sheet from the known 16-column layout. It never reads
-// or changes backup sheets, does not infer Korean names, and is idempotent.
+function columnWidth_(columns) {
+  if (columns === PRE_NAME_COLUMNS) return PRE_NAME_COLUMNS_HEADERS.length;
+  if (columns === PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH) return PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS.length;
+  return HEADERS.length;
+}
+
+// Public, intentionally manual migration entry point. Its complete preflight
+// happens before any Sheet mutation, so an unexpected Production schema never
+// leaves a partially rewritten header or data range behind.
 function migrateRosterNameColumns() {
   const sheet = getSheet_();
-  const current = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), HEADERS.length)).getDisplayValues()[0];
-  if (headersMatch_(current, HEADERS)) return { migrated: false, rows: 0 };
-  if (!headersMatch_(current, PRE_NAME_COLUMNS_HEADERS)) {
-    throw new Error('현재 회원가입 명단이 예상한 16열 구조가 아니므로 migration을 중단했습니다.');
+  const plan = preflightRosterNameColumns_(sheet);
+  if (plan.noOp) return { migrated: false, rows: 0 };
+  writeRosterNameColumns_(sheet, plan);
+  applyFinalRosterSchemaFormatting_(sheet);
+  return { migrated: true, rows: plan.rows.length };
+}
+
+function preflightRosterNameColumns_(sheet) {
+  const lastRow = sheet.getLastRow();
+  const lastColumn = sheet.getLastColumn();
+  const headers = sheet.getRange(1, 1, 1, lastColumn).getDisplayValues()[0];
+  if (headersMatch_(headers, HEADERS)) return { noOp: true, rows: [] };
+  const schema = legacyRosterSchema_(headers);
+  if (!schema) throw new Error('회원가입 명단 헤더가 지원하는 legacy schema와 일치하지 않습니다.');
+  const rowCount = Math.max(lastRow - 1, 0);
+  const rows = rowCount ? sheet.getRange(2, 1, rowCount, lastColumn).getValues() : [];
+  validateLegacyRosterRows_(rows, schema.headers.length);
+  const memberNumbers = {};
+  rows.forEach(function (row) {
+    const memberNumber = text_(row[schema.columns.memberNumber - 1]);
+    if (memberNumber && memberNumbers[memberNumber]) throw new Error('중복 회원번호가 있어 migration을 중단했습니다.');
+    if (memberNumber) memberNumbers[memberNumber] = true;
+  });
+  return {
+    noOp: false,
+    schema: schema,
+    headers: headers,
+    rows: previewRosterNameColumns_(rows, schema.columns),
+    // One rectangular write keeps header and all data rows together.
+    matrix: [HEADERS].concat(previewRosterNameColumns_(rows, schema.columns))
+  };
+}
+
+function legacyRosterSchema_(headers) {
+  if (headersMatch_(headers, PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS)) {
+    return { headers: PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS, columns: PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH };
   }
-  const count = Math.max(sheet.getLastRow() - 1, 0);
-  const rows = count ? sheet.getRange(2, 1, count, PRE_NAME_COLUMNS_HEADERS.length).getValues() : [];
-  const migrated = previewRosterNameColumns_(rows);
+  if (headersMatch_(headers, PRE_NAME_COLUMNS_HEADERS)) {
+    return { headers: PRE_NAME_COLUMNS_HEADERS, columns: PRE_NAME_COLUMNS };
+  }
+  return null;
+}
+
+function validateLegacyRosterRows_(rows, expectedWidth) {
+  rows.forEach(function (row) {
+    if (!Array.isArray(row) || row.length !== expectedWidth) throw new Error('회원가입 명단 데이터 행 폭이 header와 일치하지 않습니다.');
+  });
+}
+
+function writeRosterNameColumns_(sheet, plan) {
+  // Preflight is complete before this first mutation. Apps Script has no
+  // transaction, so prefer one bulk setValues over clear/header/row phases.
+  if (sheet.getMaxColumns() < HEADERS.length) {
+    sheet.insertColumnsAfter(sheet.getMaxColumns(), HEADERS.length - sheet.getMaxColumns());
+  }
   if (sheet.getFilter()) sheet.getFilter().remove();
-  if (count) sheet.getRange(2, 1, count, Math.max(sheet.getLastColumn(), HEADERS.length)).clearContent();
-  sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
-  if (migrated.length) sheet.getRange(2, 1, migrated.length, HEADERS.length).setValues(migrated);
-  ensureSchema_(sheet);
-  return { migrated: true, rows: migrated.length };
+  sheet.getRange(1, 1, plan.matrix.length, HEADERS.length).setValues(plan.matrix);
+}
+
+function applyFinalRosterSchemaFormatting_(sheet) {
+  // Formatting is intentionally separate from preflight and only starts once
+  // the final 17-column matrix has been written successfully.
+  const rows = Math.max(sheet.getMaxRows() - 1, 1);
+  sheet.setFrozenRows(1);
+  sheet.getRange(1, 1, 1, HEADERS.length).setBackground('#0d51aa').setFontColor('#ffffff').setFontWeight('bold').setHorizontalAlignment('left');
+  sheet.getRange(1, COLUMNS.memberNumber, 1, 2).setHorizontalAlignment('center');
+  sheet.getRange(2, COLUMNS.memberNumber, rows, 1).setHorizontalAlignment('center').setFontWeight('bold');
+  sheet.getRange(2, COLUMNS.joinedAt, rows, 1).setNumberFormat('yyyy-mm-dd').setHorizontalAlignment('center');
+  sheet.getRange(2, COLUMNS.nickname, rows, HEADERS.length - COLUMNS.nickname + 1).setHorizontalAlignment('left');
+  sheet.getRange(2, COLUMNS.memberType, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(TYPE_LABELS, true).setAllowInvalid(false).build());
+  sheet.getRange(2, COLUMNS.membership, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(MEMBERSHIP_LABELS, true).setAllowInvalid(false).build());
+  sheet.getRange(2, COLUMNS.accountStatus, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUS_LABELS, true).setAllowInvalid(false).build());
+  applyRosterDisplayStyles_(sheet, 2, Math.max(sheet.getLastRow() - 1, 0), COLUMNS);
+  sheet.hideColumns(COLUMNS.systemId);
+  if (!sheet.getFilter()) sheet.getRange(1, 1, Math.max(sheet.getLastRow(), 1), HEADERS.length).createFilter();
 }
 
 // Pure transformation used by the one-time Sheet migration and regression
 // tests. It intentionally creates no display_name values from legacy rows.
-function previewRosterNameColumns_(rows) {
+function previewRosterNameColumns_(rows, columns) {
+  const sourceColumns = columns || PRE_NAME_COLUMNS;
   return rows.map(function (row) {
     // Existing "이름" is retained verbatim as full_name. The display-name
     // cell stays blank unless an authoritative value is supplied elsewhere.
-    return [
-      row[0], row[1], row[2], '', row[3], row[4], row[5], row[6], row[7],
-      row[8], row[9], row[10], row[11], row[12], row[13], row[14], row[15]
-    ];
+    return rosterRecord_(COLUMNS, {
+      memberNumber: row[sourceColumns.memberNumber - 1],
+      joinedAt: row[sourceColumns.joinedAt - 1],
+      nickname: row[sourceColumns.nickname - 1],
+      displayName: '',
+      fullName: row[sourceColumns.fullName - 1],
+      email: row[sourceColumns.email - 1],
+      phone: row[sourceColumns.phone - 1],
+      signupMethod: row[sourceColumns.signupMethod - 1],
+      memberType: row[sourceColumns.memberType - 1],
+      membership: row[sourceColumns.membership - 1],
+      accountStatus: row[sourceColumns.accountStatus - 1],
+      specialty: row[sourceColumns.specialty - 1],
+      teachingSubjects: row[sourceColumns.teachingSubjects - 1],
+      enrolledSubject: row[sourceColumns.enrolledSubject - 1],
+      assignedInstructor: row[sourceColumns.assignedInstructor - 1],
+      signupPath: sourceColumns.signupPath ? row[sourceColumns.signupPath - 1] : '',
+      systemId: row[sourceColumns.systemId - 1]
+    });
   });
 }
 
@@ -554,7 +650,7 @@ function legacyInfo_(value) {
 }
 
 function updateIdentityAndMembership_(sheet, row, record, columns) {
-  const width = columns === PRE_NAME_COLUMNS ? PRE_NAME_COLUMNS_HEADERS.length : HEADERS.length;
+  const width = columnWidth_(columns);
   const existing = sheet.getRange(row, 1, 1, width).getValues()[0];
   for (let column = 0; column < width; column += 1) {
     const immutable = [columns.memberNumber - 1, columns.joinedAt - 1, columns.systemId - 1].includes(column);
@@ -578,7 +674,7 @@ function updateExistingApplication_(sheet, row, record, columns) {
 function findMemberRow_(sheet, id, email, columns) {
   if (sheet.getLastRow() < 2) return 0;
   const map = columns || columnMap_(sheet);
-  const width = map === PRE_NAME_COLUMNS ? PRE_NAME_COLUMNS_HEADERS.length : HEADERS.length;
+  const width = columnWidth_(map);
   const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, width).getDisplayValues();
   const index = rows.findIndex(function (row) { return (id && text_(row[map.systemId - 1]) === id) || (email && text_(row[map.email - 1]).toLowerCase() === email.toLowerCase()); });
   return index < 0 ? 0 : index + 2;
@@ -692,7 +788,7 @@ function runPhoneFormatBackfill() {
 }
 
 function rosterRecord_(columns, values) {
-  const width = columns === PRE_NAME_COLUMNS ? PRE_NAME_COLUMNS_HEADERS.length : HEADERS.length;
+  const width = columnWidth_(columns);
   const record = Array(width).fill('');
   Object.keys(values).forEach(function (key) {
     const column = columns[key];

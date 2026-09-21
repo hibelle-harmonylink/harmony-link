@@ -7,9 +7,28 @@ const source = fs.readFileSync(path.join(__dirname, '..', 'automation', 'member-
 const auth = fs.readFileSync(path.join(__dirname, '..', 'auth.js'), 'utf8');
 const preview = new Function(`${source}\nreturn previewRosterNameColumns_;`)();
 const formatPhone = new Function(`${source}\nreturn formatPhone_;`)();
+const migrationRuntime = new Function(`${source}\nreturn { preflight: preflightRosterNameColumns_, migrate: migrateRosterNameColumns, setSheet: sheet => { getSheet_ = () => sheet; } };`)();
 
 const oldHeaders = ['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '시스템 ID'];
+const productionHeaders = ['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '시스템 ID'];
 const newHeaders = ['회원번호', '가입일', '닉네임/업체명', '한글 이름', '영문 이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '시스템 ID'];
+
+function readonlySheet(headers, rows) {
+  let writes = 0;
+  return {
+    getLastRow: () => rows.length + 1,
+    getLastColumn: () => headers.length,
+    getRange(row) {
+      return {
+        getDisplayValues: () => row === 1 ? [headers] : rows,
+        getValues: () => row === 1 ? [headers] : rows,
+        setValues: () => { writes += 1; },
+        setValue: () => { writes += 1; }
+      };
+    },
+    getWriteCount: () => writes
+  };
+}
 
 test('roster name columns have canonical display-name, full-name, and nickname labels', () => {
   assert.match(source, new RegExp(`const HEADERS = \\['${newHeaders.join("', '")}'\\]`));
@@ -17,16 +36,17 @@ test('roster name columns have canonical display-name, full-name, and nickname l
   assert.match(source, /const PRE_NAME_COLUMNS_HEADERS = \['회원번호', '가입일', '닉네임', '이름'/);
 });
 
-test('23-row migration preview preserves every old value while leaving Korean-name cells blank', () => {
+test('actual 15-column Production legacy preview preserves 23 rows while leaving Korean-name cells blank', () => {
   const legacyRows = Array.from({ length: 23 }, (_, index) => [
     `HL-26-${String(index + 1).padStart(3, '0')}`,
     `2026-09-${String((index % 20) + 1).padStart(2, '0')}`,
     index === 22 ? 'DMS Care' : `nickname-${index + 1}`,
     index === 0 ? '김미란' : `Full Name ${index + 1}`,
     `member${index + 1}@example.com`, index === 1 ? '817 905 3468' : '010-9773-0052',
-    'google', '수강생', 'FREE', '활성', 'specialty', 'teaching', 'student', 'instructor', 'Harmony Link', `uuid-${index + 1}`
+    'google', '수강생', 'FREE', '활성', 'specialty', 'teaching', 'student', 'instructor', `uuid-${index + 1}`
   ]);
-  const migrated = preview(legacyRows);
+  const plan = migrationRuntime.preflight(readonlySheet(productionHeaders, legacyRows));
+  const migrated = plan.rows;
   assert.equal(migrated.length, 23);
   migrated.forEach((row, index) => {
     assert.equal(row.length, 17);
@@ -35,18 +55,50 @@ test('23-row migration preview preserves every old value while leaving Korean-na
     assert.equal(row[2], legacyRows[index][2]);
     assert.equal(row[3], '');
     assert.equal(row[4], legacyRows[index][3]);
-    assert.deepEqual(row.slice(5), legacyRows[index].slice(4));
+    assert.deepEqual(row.slice(5, 15), legacyRows[index].slice(4, 14));
+    assert.equal(row[15], '');
+    assert.equal(row[16], legacyRows[index][14]);
   });
 });
 
-test('manual migration is opt-in, idempotent, and only targets the active roster sheet', () => {
-  const migration = source.slice(source.indexOf('function migrateRosterNameColumns'), source.indexOf('function previewRosterNameColumns_'));
+test('manual migration is preflight-first, idempotent, and only targets the active roster sheet', () => {
+  const migration = source.slice(source.indexOf('function migrateRosterNameColumns'), source.indexOf('function migrateLegacySchema_'));
   assert.match(migration, /function migrateRosterNameColumns\(\)/);
   assert.match(migration, /const sheet = getSheet_\(\);/);
-  assert.match(migration, /if \(headersMatch_\(current, HEADERS\)\) return \{ migrated: false, rows: 0 \};/);
+  assert.match(migration, /const plan = preflightRosterNameColumns_\(sheet\);/);
+  assert.match(migration, /if \(plan\.noOp\) return \{ migrated: false, rows: 0 \};/);
+  assert.ok(migration.indexOf('preflightRosterNameColumns_') < migration.indexOf('writeRosterNameColumns_'));
+  const preflight = source.slice(source.indexOf('function preflightRosterNameColumns_'), source.indexOf('function legacyRosterSchema_'));
+  assert.doesNotMatch(preflight, /ensureSchema_\(/);
   const doPost = source.slice(source.indexOf('function doPost'), source.indexOf('function registerMember_'));
   assert.doesNotMatch(doPost, /migrateRosterNameColumns\(/);
   assert.doesNotMatch(migration, /getSheets\(/);
+});
+
+test('final 17-column schema is a write-free migration no-op', () => {
+  const finalSheet = readonlySheet(newHeaders, [Array.from({ length: 17 }, (_, index) => `value-${index + 1}`)]);
+  migrationRuntime.setSheet(finalSheet);
+
+  assert.deepEqual(migrationRuntime.migrate(), { migrated: false, rows: 0 });
+  assert.equal(finalSheet.getWriteCount(), 0);
+});
+
+test('unknown, width-mismatched, and duplicate legacy data fail before any write', () => {
+  const row = ['HL-26-001', '2026-09-01', 'nick', 'Full Name', 'a@example.com', '817-905-3468', 'google', '수강생', 'FREE', '활성', '', '', '', '', 'uuid-a'];
+  const unknown = readonlySheet(['잘못된 헤더'], [row]);
+  migrationRuntime.setSheet(unknown);
+  assert.throws(() => migrationRuntime.migrate(), /지원하는 legacy schema/);
+  assert.equal(unknown.getWriteCount(), 0);
+
+  const duplicate = readonlySheet(productionHeaders, [row, row.slice()]);
+  migrationRuntime.setSheet(duplicate);
+  assert.throws(() => migrationRuntime.migrate(), /중복 회원번호/);
+  assert.equal(duplicate.getWriteCount(), 0);
+
+  const badWidth = readonlySheet(productionHeaders, [row.slice(0, 14)]);
+  migrationRuntime.setSheet(badWidth);
+  assert.throws(() => migrationRuntime.migrate(), /행 폭/);
+  assert.equal(badWidth.getWriteCount(), 0);
 });
 
 test('new signup accepts explicit display_name without treating provider display text as Korean-name data', () => {
@@ -73,4 +125,5 @@ test('existing headers are preserved until the administrator invokes the manual 
   assert.equal(oldHeaders.length, 16);
   assert.match(source, /else if \(headersMatch_\(current, PRE_NAME_COLUMNS_HEADERS\)\) columns = PRE_NAME_COLUMNS/);
   assert.match(source, /else if \(!headersMatch_\(current, HEADERS\)\) throw new Error/);
+  assert.match(source, /PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS/);
 });
