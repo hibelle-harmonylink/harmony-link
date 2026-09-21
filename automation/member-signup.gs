@@ -653,6 +653,14 @@ function writeRosterNameColumns_(sheet, plan) {
     sheet.insertColumnsAfter(sheet.getMaxColumns(), HEADERS.length - sheet.getMaxColumns());
   }
   if (sheet.getFilter()) sheet.getFilter().remove();
+
+  // Legacy dropdown rules stay attached to physical columns when the schema
+  // shifts. Clear them before writing the final matrix so, for example, the
+  // old H=회원유형 rule cannot reject the new H=가입방식 value. Final rules
+  // are recreated on I/J/K by applyFinalRosterSchemaFormatting_().
+  const validationRows = Math.max(sheet.getMaxRows() - 1, 1);
+  sheet.getRange(2, 1, validationRows, HEADERS.length).clearDataValidations();
+
   sheet.getRange(1, 1, plan.matrix.length, HEADERS.length).setValues(plan.matrix);
 }
 
