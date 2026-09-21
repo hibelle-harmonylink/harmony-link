@@ -40,6 +40,21 @@ test('existing roster phone cleanup is opt-in and only writes safely normalized 
   assert.doesNotMatch(memberSignup.slice(0, memberSignup.indexOf('function backfillPhoneFormats_')), /backfillPhoneFormats_\(/);
 });
 
+test('public phone-backfill runner only delegates to the private opt-in helper', () => {
+  const wrapper = memberSignup.match(/function runPhoneFormatBackfill\(\) \{([\s\S]*?)\n\}/)?.[1] || '';
+  assert.ok(wrapper);
+  assert.match(wrapper, /^\s*return backfillPhoneFormats_\(\);\s*$/);
+  const automaticPaths = memberSignup.slice(0, memberSignup.indexOf('function runPhoneFormatBackfill'));
+  ['function doPost', 'function ensureSchema_', 'function onOpen'].forEach(marker => {
+    const start = automaticPaths.indexOf(marker);
+    if (start >= 0) {
+      const next = automaticPaths.indexOf('\nfunction ', start + marker.length);
+      assert.doesNotMatch(automaticPaths.slice(start, next >= 0 ? next : undefined), /runPhoneFormatBackfill\(/);
+    }
+  });
+  assert.doesNotMatch(automaticPaths, /newTrigger\([^)]*runPhoneFormatBackfill/);
+});
+
 test('admin form keeps synchronized application fields display-only while retaining direct and settings controls', () => {
   const detail = admin.slice(admin.indexOf('const openDetail = raw =>'), admin.indexOf('const resendNotification ='));
   ['영문 이름', '연락처', '전문분야', '강의과목', '수강과목', '담당강사'].forEach(label => assert.match(detail, new RegExp(`syncedReadonlyField\\('${label}'`)));

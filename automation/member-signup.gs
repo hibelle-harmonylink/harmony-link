@@ -600,5 +600,12 @@ function backfillPhoneFormats_() {
   if (updated) SpreadsheetApp.flush();
   return { updated: updated };
 }
+
+// Public, intentionally manual Apps Script entry point. The function picker
+// exposes names without a trailing underscore, while the implementation stays
+// private so no registration or webhook path can invoke it accidentally.
+function runPhoneFormatBackfill() {
+  return backfillPhoneFormats_();
+}
 function escapeHtml_(value) { return text_(value).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
 function authorizeRoleChangeMail() { return MailApp.getRemainingDailyQuota(); }
