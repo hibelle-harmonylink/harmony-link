@@ -105,14 +105,9 @@ test('actual 15-column schema tolerates only blank physical trailing columns lef
   assert.equal(sheet.getWriteCount(), 0);
 });
 
-test('recoverable duplicate 가입경로 schema merges only blank, one-sided, or identical values while preserving 23 rows', () => {
+test('recoverable duplicate 가입경로 schema requires both columns empty while preserving 23 rows', () => {
   const rows = Array.from({ length: 23 }, (_, offset) => {
-    const index = offset + 1;
-    if (index === 1) return duplicateSignupPathRow(index, '', '');
-    if (index === 2) return duplicateSignupPathRow(index, '사이트 가입', '');
-    if (index === 3) return duplicateSignupPathRow(index, '', 'Google Form');
-    if (index === 4) return duplicateSignupPathRow(index, '소개', '소개');
-    return duplicateSignupPathRow(index, index % 2 ? '추천' : '', index % 2 ? '' : '온라인');
+    return duplicateSignupPathRow(offset + 1, '', '');
   });
   const sheet = readonlySheet(duplicateSignupPathHeaders, rows);
   const plan = migrationRuntime.preflight(sheet);
@@ -130,20 +125,21 @@ test('recoverable duplicate 가입경로 schema merges only blank, one-sided, or
     assert.equal(row[16], rows[offset][16]);
   });
   assert.equal(plan.rows[0][15], '');
-  assert.equal(plan.rows[1][15], '사이트 가입');
-  assert.equal(plan.rows[2][15], 'Google Form');
-  assert.equal(plan.rows[3][15], '소개');
   assert.equal(sheet.getWriteCount(), 0);
 });
 
-test('duplicate 가입경로 values that conflict stop before any mutation', () => {
-  const sheet = readonlySheet(duplicateSignupPathHeaders, [
+test('any nonblank duplicate 가입경로 value stops before any mutation', () => {
+  [
+    duplicateSignupPathRow(1, '사이트 가입', ''),
+    duplicateSignupPathRow(1, '', 'Google Form'),
+    duplicateSignupPathRow(1, '소개', '소개'),
     duplicateSignupPathRow(1, '사이트 가입', 'Google Form')
-  ]);
-  migrationRuntime.setSheet(sheet);
-
-  assert.throws(() => migrationRuntime.migrate(), /중복 가입경로 값이 충돌/);
-  assert.equal(sheet.getWriteCount(), 0);
+  ].forEach((row) => {
+    const sheet = readonlySheet(duplicateSignupPathHeaders, [row]);
+    migrationRuntime.setSheet(sheet);
+    assert.throws(() => migrationRuntime.migrate(), /중복 가입경로 열에 값/);
+    assert.equal(sheet.getWriteCount(), 0);
+  });
 });
 
 test('inspectRosterSchema is read-only and reports exact live header diagnostics', () => {
