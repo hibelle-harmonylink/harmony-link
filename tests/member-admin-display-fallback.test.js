@@ -9,11 +9,12 @@ const adminHtml = fs.readFileSync(path.join(root, 'admin.html'), 'utf8');
 const migration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '202609130005_backfill_hong_hyunsook_full_name.sql'), 'utf8');
 const version = JSON.parse(fs.readFileSync(path.join(root, 'version.json'), 'utf8'));
 
-test('member detail public-name display prioritizes display_name over application metadata', () => {
+test('member detail public-name display prioritizes display_name and then application metadata', () => {
   assert.match(adminJs, /const fallbackMemberName = member => \{/);
   assert.match(adminJs, /const memberNickname = member => String\(member\.nickname \|\| ''\)\.trim\(\) \|\| fallbackMemberName\(member\)/);
   assert.match(adminJs, /const memberFullName = member => String\(member\.full_name \|\| ''\)\.trim\(\) \|\| fallbackMemberName\(member\)/);
-  assert.match(adminJs, /const resolveDisplayName = member => fallbackMemberName\(member\)/);
+  assert.match(adminJs, /const memberPersonName = member => String\(member\.display_name \|\| ''\)\.trim\(\) \|\| String\(member\.full_name \|\| ''\)\.trim\(\) \|\| fallbackMemberName\(member\)/);
+  assert.match(adminJs, /const resolveDisplayName = member => memberPersonName\(member\)/);
   assert.match(adminJs, /nicknameInput\.value = memberNickname\(member\)/);
   assert.match(adminJs, /fullNameInput\.value = memberFullName\(member\)/);
 });

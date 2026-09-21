@@ -169,11 +169,15 @@
   // anonymous in the admin UI: use the existing display name, then email.
   const memberNickname = member => String(member.nickname || '').trim() || fallbackMemberName(member);
   const memberFullName = member => String(member.full_name || '').trim() || fallbackMemberName(member);
+  // A person's public/admin-facing name is not a business nickname.  Keep
+  // the administrator-confirmed profile name first, then the application
+  // name for legacy rows that have no display_name yet.
+  const memberPersonName = member => String(member.display_name || '').trim() || String(member.full_name || '').trim() || fallbackMemberName(member);
   // The detail header and the administrator-confirmed Korean-name input are
   // both the public profile name.  Keep the application-provided full name
   // separate for its own field; otherwise a successful display_name save is
   // hidden again as soon as the detail dialog is reopened.
-  const resolveDisplayName = member => fallbackMemberName(member);
+  const resolveDisplayName = member => memberPersonName(member);
   const memberNumberClass = member => member.member_number && member.application_completed === false
     ? 'member-number member-number-pending'
     : 'member-number';
@@ -298,7 +302,7 @@
       const cells = [
         ['회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(memberNumber)}</span>`],
         ['닉네임', escapeHtml(memberNickname(member))],
-        ['이름', escapeHtml(memberFullName(member)) + (member.access_migration_review ? '<span class="member-review">검토 필요</span>' : '')],
+        ['이름', escapeHtml(memberPersonName(member)) + (member.access_migration_review ? '<span class="member-review">검토 필요</span>' : '')],
         ['이메일', escapeHtml(member.email || '이메일 없음')],
         ['연락처', escapeHtml(formatPhone(member.phone))],
         ['회원유형', typeBadge(member)],

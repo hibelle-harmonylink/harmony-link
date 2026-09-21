@@ -29,7 +29,7 @@ test('Korean public name and English application name save through their separat
 test('a verified Korean-name save remains the detail header and input value after reload', () => {
   assert.match(admin, /const name = resolveDisplayName\(member\)/);
   assert.match(admin, /nameInput\.value = name/);
-  assert.match(admin, /const resolveDisplayName = member => fallbackMemberName\(member\)/);
+  assert.match(admin, /const resolveDisplayName = member => memberPersonName\(member\)/);
   assert.match(admin, /if \(nameChanged && freshMember\.display_name !== nextName\)/);
   assert.match(admin, /if \(failed\.length === 0\) \{\s*resultMessage = '저장되었습니다\. \(DB 재조회로 확인함\)'/);
   assert.match(applicationMigration, /full_name = coalesce/);
