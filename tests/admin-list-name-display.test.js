@@ -30,3 +30,8 @@ test('partner application resync still cannot modify member_profiles.display_nam
   const end = applicationSync.indexOf('revoke all on function public.internal_sync_member_application_metadata', start);
   assert.doesNotMatch(applicationSync.slice(start, end), /member_profiles|display_name/);
 });
+
+
+test('admin placeholder display name renders as 하이벨 in the list person-name helper', () => {
+  assert.match(source, /const memberPersonName = member => \{[\s\S]*member\.is_admin && raw === 'Harmony Link'\) return '하이벨'/);
+});
