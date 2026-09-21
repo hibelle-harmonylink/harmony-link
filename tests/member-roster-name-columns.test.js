@@ -12,6 +12,7 @@ const inspectionRuntime = new Function(`const Logger = { entries: [], log: value
 
 const oldHeaders = ['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '시스템 ID'];
 const productionHeaders = ['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '시스템 ID'];
+const duplicateSignupPathHeaders = ['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '가입경로', '시스템 ID'];
 const newHeaders = ['회원번호', '가입일', '닉네임/업체명', '한글 이름', '영문 이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '시스템 ID'];
 
 function readonlySheet(headers, rows) {
@@ -43,6 +44,16 @@ function inspectionSheet(headers) {
     }),
     getWriteCount: () => writes
   };
+}
+
+function duplicateSignupPathRow(index, firstPath, secondPath) {
+  return [
+    `HL-26-${String(index).padStart(3, '0')}`,
+    `2026-09-${String(index).padStart(2, '0')}`,
+    `nickname-${index}`, `Full Name ${index}`, `member${index}@example.com`,
+    index === 2 ? '817-905-3468' : '010-9773-0052', 'google', '수강생', 'FREE', '활성',
+    'specialty', 'teaching', 'student', 'instructor', firstPath, secondPath, `uuid-${index}`
+  ];
 }
 
 test('roster name columns have canonical display-name, full-name, and nickname labels', () => {
@@ -93,6 +104,47 @@ test('actual 15-column schema tolerates only blank physical trailing columns lef
   assert.equal(sheet.getWriteCount(), 0);
 });
 
+test('recoverable duplicate 가입경로 schema merges only blank, one-sided, or identical values while preserving 23 rows', () => {
+  const rows = Array.from({ length: 23 }, (_, offset) => {
+    const index = offset + 1;
+    if (index === 1) return duplicateSignupPathRow(index, '', '');
+    if (index === 2) return duplicateSignupPathRow(index, '사이트 가입', '');
+    if (index === 3) return duplicateSignupPathRow(index, '', 'Google Form');
+    if (index === 4) return duplicateSignupPathRow(index, '소개', '소개');
+    return duplicateSignupPathRow(index, index % 2 ? '추천' : '', index % 2 ? '' : '온라인');
+  });
+  const sheet = readonlySheet(duplicateSignupPathHeaders, rows);
+  const plan = migrationRuntime.preflight(sheet);
+
+  assert.equal(plan.rows.length, 23);
+  assert.deepEqual(plan.matrix[0], newHeaders);
+  plan.rows.forEach((row, offset) => {
+    assert.equal(row[0], rows[offset][0]);
+    assert.equal(row[1], rows[offset][1]);
+    assert.equal(row[2], rows[offset][2]);
+    assert.equal(row[3], '');
+    assert.equal(row[4], rows[offset][3]);
+    assert.equal(row[5], rows[offset][4]);
+    assert.equal(row[6], rows[offset][5]);
+    assert.equal(row[16], rows[offset][16]);
+  });
+  assert.equal(plan.rows[0][15], '');
+  assert.equal(plan.rows[1][15], '사이트 가입');
+  assert.equal(plan.rows[2][15], 'Google Form');
+  assert.equal(plan.rows[3][15], '소개');
+  assert.equal(sheet.getWriteCount(), 0);
+});
+
+test('duplicate 가입경로 values that conflict stop before any mutation', () => {
+  const sheet = readonlySheet(duplicateSignupPathHeaders, [
+    duplicateSignupPathRow(1, '사이트 가입', 'Google Form')
+  ]);
+  migrationRuntime.setSheet(sheet);
+
+  assert.throws(() => migrationRuntime.migrate(), /중복 가입경로 값이 충돌/);
+  assert.equal(sheet.getWriteCount(), 0);
+});
+
 test('inspectRosterSchema is read-only and reports exact live header diagnostics', () => {
   const sheet = inspectionSheet(productionHeaders.concat(['', '']));
   inspectionRuntime.setSheet(sheet);
@@ -104,12 +156,21 @@ test('inspectRosterSchema is read-only and reports exact live header diagnostics
   assert.equal(report.detectedSchema, 'legacy-15-without-signup-path');
   assert.deepEqual(report.headers[2], { index: 3, value: '닉네임', trimmed: '닉네임' });
   assert.equal(report.firstDifference, null);
-  assert.equal(report.supportedSchemas.length, 3);
+  assert.equal(report.supportedSchemas.length, 4);
   assert.equal(sheet.getWriteCount(), 0);
 
   const inspection = source.slice(source.indexOf('function inspectRosterSchema'), source.indexOf('function ensureSchema_'));
   assert.match(inspection, /getExistingRosterSheet_\(\)/);
   assert.doesNotMatch(inspection, /getSheet_\(\)|ensureSchema_\(|migrateRosterNameColumns\(|setValue|setValues|insert|delete|setBackground|setFont|setDataValidation/);
+});
+
+test('inspectRosterSchema reports the duplicate 가입경로 schema as recoverable without writing', () => {
+  const sheet = inspectionSheet(duplicateSignupPathHeaders);
+  inspectionRuntime.setSheet(sheet);
+  const report = inspectionRuntime.inspect();
+
+  assert.equal(report.detectedSchema, 'recoverable-17-duplicate-signup-path');
+  assert.equal(sheet.getWriteCount(), 0);
 });
 
 test('inspectRosterSchema identifies the first nonmatching legacy header without writing', () => {

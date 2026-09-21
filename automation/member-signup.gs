@@ -21,6 +21,10 @@ const PRE_NAME_COLUMNS_HEADERS = ['회원번호', '가입일', '닉네임', '이
 // This is the actual Production roster backup layout. It has no 가입경로
 // column, so 시스템 ID is column 15 rather than column 16.
 const PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS = ['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '시스템 ID'];
+// A failed historical migration can leave this exact recoverable 17-column
+// shape: the legacy 가입경로 header is present twice and 시스템 ID is last.
+// It is only accepted by the explicit manual migration preflight.
+const PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH_HEADERS = ['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '가입경로', '시스템 ID'];
 const COLUMNS = Object.freeze({
   memberNumber: 1,
   joinedAt: 2,
@@ -44,6 +48,14 @@ const PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH = Object.freeze({
   memberType: 8, membership: 9, accountStatus: 10, specialty: 11,
   teachingSubjects: 12, enrolledSubject: 13, assignedInstructor: 14,
   signupPath: 0, systemId: 15
+});
+const PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH = Object.freeze({
+  memberNumber: 1,
+  joinedAt: 2,
+  nickname: 3, displayName: 0, fullName: 4, email: 5, phone: 6, signupMethod: 7,
+  memberType: 8, membership: 9, accountStatus: 10, specialty: 11,
+  teachingSubjects: 12, enrolledSubject: 13, assignedInstructor: 14,
+  signupPath: 15, duplicateSignupPath: 16, systemId: 17
 });
 const TYPE_LABELS = ['수강생', '입점 파트너', '관리자'];
 const MEMBERSHIP_LABELS = ['FREE', 'BASIC $20', 'PREMIUM $50', '관리자'];
@@ -391,6 +403,7 @@ function rosterSchemaCandidates_() {
   return [
     { id: 'legacy-15-without-signup-path', headers: PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS },
     { id: 'legacy-16-with-signup-path', headers: PRE_NAME_COLUMNS_HEADERS },
+    { id: 'recoverable-17-duplicate-signup-path', headers: PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH_HEADERS },
     { id: 'final-17', headers: HEADERS }
   ];
 }
@@ -501,7 +514,7 @@ function preflightRosterNameColumns_(sheet) {
   // inserted, even if their header and every cell are blank.  Those empty
   // trailing columns are not part of the named legacy schema.  Read and
   // validate them first, then use only the verified logical roster width.
-  const rows = rawRows.map(function (row) { return row.slice(0, schema.headers.length); });
+  const rows = normalizeLegacyRosterRows_(rawRows, schema);
   const memberNumbers = {};
   rows.forEach(function (row) {
     const memberNumber = text_(row[schema.columns.memberNumber - 1]);
@@ -519,13 +532,39 @@ function preflightRosterNameColumns_(sheet) {
 }
 
 function legacyRosterSchema_(headers) {
+  if (headersMatch_(headers, PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH_HEADERS)) {
+    return {
+      headers: PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH_HEADERS,
+      columns: PRE_NAME_COLUMNS,
+      sourceColumns: PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH
+    };
+  }
   if (headersMatch_(headers, PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS)) {
-    return { headers: PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS, columns: PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH };
+    return { headers: PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS, columns: PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH, sourceColumns: PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH };
   }
   if (headersMatch_(headers, PRE_NAME_COLUMNS_HEADERS)) {
-    return { headers: PRE_NAME_COLUMNS_HEADERS, columns: PRE_NAME_COLUMNS };
+    return { headers: PRE_NAME_COLUMNS_HEADERS, columns: PRE_NAME_COLUMNS, sourceColumns: PRE_NAME_COLUMNS };
   }
   return null;
+}
+
+function normalizeLegacyRosterRows_(rows, schema) {
+  if (schema.sourceColumns !== PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH) {
+    return rows.map(function (row) { return row.slice(0, schema.headers.length); });
+  }
+  return rows.map(function (row, index) {
+    const first = row[PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH.signupPath - 1];
+    const second = row[PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH.duplicateSignupPath - 1];
+    const firstValue = text_(first);
+    const secondValue = text_(second);
+    if (firstValue && secondValue && firstValue !== secondValue) {
+      throw new Error(`중복 가입경로 값이 충돌하여 migration을 중단했습니다 (행 ${index + 2}).`);
+    }
+    // Preserve the source value as-is.  Only blankness and equality are
+    // normalized for the conflict check; no path text is translated or guessed.
+    const signupPath = firstValue ? first : second;
+    return row.slice(0, 14).concat([signupPath, row[PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH.systemId - 1]]);
+  });
 }
 
 function validateLegacyRosterRows_(rows, expectedWidth) {
