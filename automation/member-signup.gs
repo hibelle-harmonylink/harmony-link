@@ -23,7 +23,7 @@ const PRE_NAME_COLUMNS_HEADERS = ['회원번호', '가입일', '닉네임', '이
 const PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS = ['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '시스템 ID'];
 // A failed historical migration can leave this exact recoverable 17-column
 // shape: the legacy 가입경로 header is present twice and 시스템 ID is last.
-// It is only accepted by the explicit manual migration preflight.
+// It is only accepted when both duplicate columns are empty for every row.
 const PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH_HEADERS = ['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '가입경로', '시스템 ID'];
 const COLUMNS = Object.freeze({
   memberNumber: 1,
@@ -623,15 +623,10 @@ function normalizeLegacyRosterRows_(rows, schema) {
   return rows.map(function (row, index) {
     const first = row[PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH.signupPath - 1];
     const second = row[PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH.duplicateSignupPath - 1];
-    const firstValue = text_(first);
-    const secondValue = text_(second);
-    if (firstValue && secondValue && firstValue !== secondValue) {
-      throw new Error(`중복 가입경로 값이 충돌하여 migration을 중단했습니다 (행 ${index + 2}).`);
+    if (text_(first) || text_(second)) {
+      throw new Error(`중복 가입경로 열에 값이 있어 migration을 중단했습니다 (행 ${index + 2}).`);
     }
-    // Preserve the source value as-is.  Only blankness and equality are
-    // normalized for the conflict check; no path text is translated or guessed.
-    const signupPath = firstValue ? first : second;
-    return row.slice(0, 14).concat([signupPath, row[PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH.systemId - 1]]);
+    return row.slice(0, 14).concat(['', row[PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH.systemId - 1]]);
   });
 }
 
