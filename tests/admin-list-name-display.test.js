@@ -2,13 +2,18 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
+const { createAdminHarness } = require('./helpers/admin-harness');
 
 const root = path.resolve(__dirname, '..');
 const admin = fs.readFileSync(path.join(root, 'admin.js'), 'utf8');
 const applicationSync = fs.readFileSync(path.join(root, 'supabase/migrations/202609130004_member_application_completion.sql'), 'utf8');
 
 test('member-list person name prioritizes display_name, then full_name, without treating nickname as a name fallback', () => {
-  assert.match(admin, /const memberPersonName = member => String\(member\.display_name \|\| ''\)\.trim\(\) \|\| String\(member\.full_name \|\| ''\)\.trim\(\) \|\| fallbackMemberName\(member\)/);
+  const { memberPersonName } = createAdminHarness();
+  const member = { display_name: ' 한글 이름 ', full_name: 'English Name', nickname: 'Business', email: 'email@example.test' };
+  assert.equal(memberPersonName(member), '한글 이름');
+  assert.equal(memberPersonName({ ...member, display_name: '' }), 'English Name');
+  assert.equal(memberPersonName({ ...member, display_name: '', full_name: '' }), 'email');
   assert.match(admin, /\['이름', escapeHtml\(memberPersonName\(member\)\)/);
   const fallback = admin.slice(admin.indexOf('const fallbackMemberName'), admin.indexOf('const memberNickname'));
   assert.doesNotMatch(fallback, /nickname/);
@@ -33,5 +38,7 @@ test('partner application resync still cannot modify member_profiles.display_nam
 
 
 test('admin placeholder display name renders as 하이벨 in the list person-name helper', () => {
-  assert.match(source, /const memberPersonName = member => \{[\s\S]*member\.is_admin && raw === 'Harmony Link'\) return '하이벨'/);
+  const { memberPersonName } = createAdminHarness();
+  assert.equal(memberPersonName({ display_name: 'Harmony Link', is_admin: true }), '하이벨');
+  assert.equal(memberPersonName({ display_name: 'Harmony Link', is_admin: false }), 'Harmony Link');
 });

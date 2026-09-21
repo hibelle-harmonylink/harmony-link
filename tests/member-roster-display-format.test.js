@@ -2,6 +2,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const test = require('node:test');
+const { createAdminHarness } = require('./helpers/admin-harness');
 
 const root = path.join(__dirname, '..');
 const memberSignup = fs.readFileSync(path.join(root, 'automation', 'member-signup.gs'), 'utf8');
@@ -81,7 +82,11 @@ test('roster schema makes member numbers bold and aligns roster columns consiste
 });
 
 test('admin name list policy remains display name then full name then email prefix, never nickname', () => {
-  assert.match(admin, /const memberPersonName = member => String\(member\.display_name \|\| ''\)\.trim\(\) \|\| String\(member\.full_name \|\| ''\)\.trim\(\) \|\| fallbackMemberName\(member\)/);
+  const { memberPersonName } = createAdminHarness();
+  const member = { display_name: '한글 이름', full_name: 'English Name', nickname: 'Business', email: 'email@example.test' };
+  assert.equal(memberPersonName(member), '한글 이름');
+  assert.equal(memberPersonName({ ...member, display_name: null }), 'English Name');
+  assert.equal(memberPersonName({ ...member, display_name: null, full_name: null }), 'email');
   assert.match(admin, /\['이름', escapeHtml\(memberPersonName\(member\)\)/);
   assert.match(admin, /member\.nickname \|\| ''\} \$\{member\.full_name \|\| ''\} \$\{member\.display_name \|\| ''\} \$\{member\.email \|\| ''\}/);
 });

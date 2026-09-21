@@ -8,10 +8,12 @@ const adminJs = fs.readFileSync(path.join(root, 'admin.js'), 'utf8');
 const adminCss = fs.readFileSync(path.join(root, 'admin.css'), 'utf8');
 const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
 
-test('1366×768, 1440×900, and 1920×1080 desktop member dialogs use the no-scroll detail rule while mobile retains its fallback', () => {
-  [1366, 1440, 1920].forEach(width => assert.ok(width >= 681));
-  assert.match(adminCss, /@media\(min-width:681px\)\{\s*\.member-dialog\{max-height:none\}\s*\.member-detail\{max-height:none;overflow-y:visible;position:relative\}/);
-  assert.match(adminCss, /@media\(max-width:680px\)\{\s*\.member-dialog\{width:calc\(100% - 18px\);max-height:92vh;overflow:hidden\}/);
+test('CSS contract: dialog reserves actual header height and scrolls only its shrinkable body (not a pixel test)', () => {
+  assert.match(adminCss, /\.member-dialog\[open\]\{display:flex;flex-direction:column\}/);
+  assert.match(adminCss, /\.member-dialog-head\{flex:0 0 auto;min-width:0\}/);
+  assert.match(adminCss, /\.member-detail\{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overflow-x:hidden/);
+  assert.doesNotMatch(adminCss, /\.member-detail\{[^}]*max-height:calc\(90vh -/);
+  assert.match(adminCss, /@media\(max-width:680px\)\{\s*\.member-dialog\{width:calc\(100% - 18px\);max-height:90vh;overflow:hidden\}/);
 });
 
 test('sending, success, and error feedback share one fixed-height desktop action slot', () => {
@@ -31,7 +33,7 @@ test('editable and system-managed member fields are visually distinct without ma
   assert.match(detail, /readonlyField\('가입일'/);
   assert.match(detail, /admin-editable-field/);
   assert.match(adminCss, /\.admin-editable-field\.field-source-direct>input\{border:2px solid #1a34ac!important;background:#f4f8ff!important\}/);
-  assert.match(adminCss, /\.member-system-field em\{font-style:normal;color:#718198/);
+  assert.match(adminCss, /\.member-system-field \.member-field-heading em\{color:#718198/);
   assert.doesNotMatch(detail, /id="detailMemberNumber"/);
 });
 
@@ -53,6 +55,39 @@ test('equal desktop lower boxes cannot expand from flex or grid min-content widt
 
 test('partner/student metadata exclusivity preserves the synchronized display path', () => {
   assert.match(detail, /showRoleMetadata\(withdrawn \? 'student' : \(member\.is_admin \? 'admin' : member\.user_type\)\);/);
-  assert.match(detail, /syncedReadonlyField\('전문분야', member\.specialty\)/);
-  assert.match(detail, /syncedReadonlyField\('강의과목', member\.teaching_subjects\)/);
+  assert.match(detail, /syncedReadonlyField\('전문분야', member\.specialty,/);
+  assert.match(detail, /syncedReadonlyField\('강의과목', member\.teaching_subjects,/);
+});
+
+test('CSS contract: mobile field placement resets legacy spans without overriding desktop widths', () => {
+  const mobile = adminCss.slice(adminCss.lastIndexOf('@media(max-width:680px)'));
+  assert.match(mobile, /\.member-dialog \.member-group-grid\{grid-template-columns:minmax\(0,1fr\)\}/);
+  assert.match(mobile, /\.member-dialog \.member-group-grid>\*\{grid-column:auto\}/);
+  assert.match(adminCss, /\.member-role-group \.member-field-korean-name\{grid-column:span 5\}/);
+});
+
+test('CSS contract: partner-region hidden wins over desktop display without important', () => {
+  assert.match(adminCss, /\.member-region-access-row \.partner-region\[hidden\]\{display:none\}/);
+});
+
+test('CSS contract: sticky actions stay inside the scrollport instead of using negative offsets', () => {
+  assert.match(adminCss, /\.member-detail-actions\{position:sticky;bottom:0;/);
+  assert.doesNotMatch(adminCss, /\.member-detail-actions\{[^}]*bottom:-/);
+});
+
+test('field labels and source badges use non-breaking headings while single values ellipsize and long descriptions scroll internally', () => {
+  assert.match(adminCss, /\.member-field-heading>span\{min-width:0;white-space:nowrap;word-break:keep-all\}/);
+  assert.match(adminCss, /\.member-field-heading em\{[^}]*white-space:nowrap;word-break:keep-all\}/);
+  assert.match(adminCss, /\.member-single-value>strong\{white-space:nowrap;text-overflow:ellipsis\}/);
+  assert.match(adminCss, /\.member-long-value>strong\{height:auto;min-height:52px;max-height:74px;overflow-y:auto;white-space:normal/);
+  assert.match(detail, /member-field-full-name/);
+  assert.match(detail, /member-field-phone/);
+});
+
+test('desktop field grids allocate wider tracks to email, names, courses, and instructors', () => {
+  assert.match(adminCss, /\.member-group-grid\{grid-template-columns:repeat\(12,minmax\(0,1fr\)\);gap:8px 10px\}/);
+  assert.match(adminCss, /\.member-basic-group \.member-field-email\{grid-column:span 6\}/);
+  assert.match(adminCss, /\.member-basic-group \.member-field-full-name\{grid-column:span 7\}/);
+  assert.match(adminCss, /\.member-basic-group \.member-field-phone\{grid-column:1\/-1\}/);
+  assert.match(adminCss, /\.member-role-group \.member-field-status,\.member-role-group \.member-field-course,\.member-role-group \.member-field-instructor\{grid-column:span 4\}/);
 });
