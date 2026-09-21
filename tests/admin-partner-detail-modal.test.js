@@ -76,8 +76,8 @@ test('member-number-pending (검정→빨강) status color rule is unchanged: bl
 
 test('detail dialog is a 3-group compact grid (기본 정보 / 회원·파트너 정보 / 지역·권한) instead of a read-only summary followed by a separately-scrolling edit form', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
-  assert.match(detail, /<h3>기본 정보 <small class="member-editable-note">관리자 수정 가능<\/small><\/h3>/);
-  assert.match(detail, /<h3>회원·파트너 정보 <small class="member-editable-note">관리자 수정 가능<\/small><\/h3>/);
+  assert.match(detail, /<h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시<\/small><\/h3>/);
+  assert.match(detail, /<h3>회원·파트너 정보 <small class="member-editable-note">관리 설정 · 자동연동 정보<\/small><\/h3>/);
   assert.match(detail, /<h3>지역·권한<\/h3>/);
   assert.match(detail, /class="member-detail-groups"/);
   assert.match(adminCss, /\.member-detail-groups\{display:grid;gap:14px\}/);
