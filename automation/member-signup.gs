@@ -360,32 +360,51 @@ function getSheet_() {
 function inspectRosterSchema() {
   const sheet = getExistingRosterSheet_();
   const lastColumn = sheet.getLastColumn();
+  const lastRow = sheet.getLastRow();
   const headers = lastColumn ? sheet.getRange(1, 1, 1, lastColumn).getDisplayValues()[0] : [];
+  const rows = lastRow > 1 && lastColumn ? sheet.getRange(2, 1, lastRow - 1, lastColumn).getDisplayValues() : [];
   const candidates = rosterSchemaCandidates_();
-  const matches = candidates.filter(function (candidate) {
-    return headersMatch_(headers, candidate.headers) && trailingHeadersAreBlank_(headers, candidate.headers.length);
-  });
-  const differences = candidates.map(function (candidate) {
+  const diagnostics = candidates.map(function (candidate) {
+    const trailingColumns = rosterTrailingColumnDiagnostics_(headers, rows, candidate.headers.length);
+    const headerMatches = schemaHeadersMatch_(headers, candidate.headers);
+    const trailingBlank = trailingColumns.every(function (column) {
+      return !column.headerTrimmed && column.nonEmptyRowCount === 0;
+    });
     return {
       id: candidate.id,
-      firstDifference: firstRosterHeaderDifference_(headers, candidate.headers)
+      logicalLastColumn: candidate.headers.length,
+      headerMatches: headerMatches,
+      trailingColumns: trailingColumns,
+      eligible: headerMatches && trailingBlank,
+      firstDifference: headerMatches ? firstTrailingColumnDifference_(trailingColumns) : firstRosterHeaderDifference_(headers, candidate.headers)
     };
   });
+  const matches = diagnostics.filter(function (diagnostic) { return diagnostic.eligible; });
+  const closest = matches.length ? matches[0] : diagnostics.slice().sort(function (left, right) {
+    if (left.headerMatches !== right.headerMatches) return left.headerMatches ? -1 : 1;
+    return firstDifferenceIndex_(left.firstDifference) - firstDifferenceIndex_(right.firstDifference);
+  })[0];
+  const ignoredTrailingColumns = matches.length ? closest.trailingColumns.map(function (column) {
+    return column.index;
+  }) : [];
   const report = {
     sheetName: sheet.getName(),
+    physicalLastColumn: lastColumn,
+    logicalLastColumn: matches.length ? closest.logicalLastColumn : null,
+    // Keep the earlier field for scripts that already consume this diagnostic.
     lastColumn: lastColumn,
+    rowCount: rows.length,
     headers: headers.map(function (value, index) {
-      return { index: index + 1, value: value, trimmed: String(value).trim() };
+      return { index: index + 1, value: value, trimmed: String(value).trim(), codePoints: headerCodePoints_(value) };
     }),
     trailingBlankColumns: trailingBlankColumnCount_(headers),
-    detectedSchema: matches.length ? matches[0].id : 'unsupported',
+    ignoredTrailingColumns: ignoredTrailingColumns,
+    detectedSchema: matches.length ? closest.id : 'unsupported',
     supportedSchemas: candidates.map(function (candidate) {
       return { id: candidate.id, headers: candidate.headers.slice() };
     }),
-    firstDifference: matches.length ? null : differences.slice().sort(function (left, right) {
-      return firstDifferenceIndex_(left.firstDifference) - firstDifferenceIndex_(right.firstDifference);
-    })[0].firstDifference,
-    schemaDifferences: differences
+    firstDifference: matches.length ? null : closest.firstDifference,
+    schemaDifferences: diagnostics
   };
   Logger.log(JSON.stringify(report));
   return report;
@@ -412,6 +431,24 @@ function trailingHeadersAreBlank_(headers, logicalWidth) {
   return headers.slice(logicalWidth).every(function (value) { return !text_(value); });
 }
 
+function rosterTrailingColumnDiagnostics_(headers, rows, logicalWidth) {
+  return headers.slice(logicalWidth).map(function (header, offset) {
+    const index = logicalWidth + offset;
+    const nonEmptyRows = rows.reduce(function (matches, row, rowOffset) {
+      const value = row[index] || '';
+      if (text_(value)) matches.push({ row: rowOffset + 2, value: value, trimmed: String(value).trim() });
+      return matches;
+    }, []);
+    return {
+      index: index + 1,
+      header: header,
+      headerTrimmed: String(header).trim(),
+      nonEmptyRowCount: nonEmptyRows.length,
+      nonEmptyRows: nonEmptyRows
+    };
+  });
+}
+
 function trailingBlankColumnCount_(headers) {
   let count = 0;
   for (let index = headers.length - 1; index >= 0 && !text_(headers[index]); index -= 1) count += 1;
@@ -428,6 +465,27 @@ function firstRosterHeaderDifference_(headers, expected) {
     }
   }
   return null;
+}
+
+function firstTrailingColumnDifference_(columns) {
+  const column = columns.find(function (entry) {
+    return entry.headerTrimmed || entry.nonEmptyRowCount;
+  });
+  if (!column) return null;
+  return {
+    column: column.index,
+    expected: '',
+    actual: column.header,
+    actualTrimmed: column.headerTrimmed,
+    nonEmptyRowCount: column.nonEmptyRowCount,
+    nonEmptyRows: column.nonEmptyRows
+  };
+}
+
+function headerCodePoints_(value) {
+  return Array.from(String(value)).map(function (character) {
+    return `U+${character.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')}`;
+  });
 }
 
 function firstDifferenceIndex_(difference) {
@@ -470,6 +528,16 @@ function headersMatch_(current, expected) {
   return expected.every(function (header, index) { return current[index] === header; });
 }
 
+// The manual migration may accept ordinary leading/trailing header whitespace
+// without editing the source header first.  This intentionally does not erase
+// or normalize zero-width characters; inspectRosterSchema() reports them via
+// the raw value and Unicode code points for an explicit administrator decision.
+function schemaHeadersMatch_(current, expected) {
+  return expected.every(function (header, index) {
+    return text_(current[index]) === text_(header);
+  });
+}
+
 function columnMap_(sheet) {
   const current = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), HEADERS.length)).getDisplayValues()[0];
   if (headersMatch_(current, HEADERS)) return COLUMNS;
@@ -500,7 +568,7 @@ function preflightRosterNameColumns_(sheet) {
   const lastRow = sheet.getLastRow();
   const lastColumn = sheet.getLastColumn();
   const headers = sheet.getRange(1, 1, 1, lastColumn).getDisplayValues()[0];
-  if (headersMatch_(headers, HEADERS)) {
+  if (schemaHeadersMatch_(headers, HEADERS)) {
     validateRosterTrailingColumns_(headers, HEADERS.length);
     return { noOp: true, rows: [] };
   }
@@ -532,17 +600,17 @@ function preflightRosterNameColumns_(sheet) {
 }
 
 function legacyRosterSchema_(headers) {
-  if (headersMatch_(headers, PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH_HEADERS)) {
+  if (schemaHeadersMatch_(headers, PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH_HEADERS)) {
     return {
       headers: PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH_HEADERS,
       columns: PRE_NAME_COLUMNS,
       sourceColumns: PRE_NAME_COLUMNS_WITH_DUPLICATE_SIGNUP_PATH
     };
   }
-  if (headersMatch_(headers, PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS)) {
+  if (schemaHeadersMatch_(headers, PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS)) {
     return { headers: PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS, columns: PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH, sourceColumns: PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH };
   }
-  if (headersMatch_(headers, PRE_NAME_COLUMNS_HEADERS)) {
+  if (schemaHeadersMatch_(headers, PRE_NAME_COLUMNS_HEADERS)) {
     return { headers: PRE_NAME_COLUMNS_HEADERS, columns: PRE_NAME_COLUMNS, sourceColumns: PRE_NAME_COLUMNS };
   }
   return null;

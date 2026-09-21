@@ -32,13 +32,14 @@ function readonlySheet(headers, rows) {
   };
 }
 
-function inspectionSheet(headers) {
+function inspectionSheet(headers, rows = []) {
   let writes = 0;
   return {
     getName: () => '회원가입 명단',
+    getLastRow: () => rows.length + 1,
     getLastColumn: () => headers.length,
-    getRange: () => ({
-      getDisplayValues: () => [headers],
+    getRange: (row) => ({
+      getDisplayValues: () => row === 1 ? [headers] : rows,
       setValue: () => { writes += 1; },
       setValues: () => { writes += 1; }
     }),
@@ -146,15 +147,25 @@ test('duplicate 가입경로 values that conflict stop before any mutation', () 
 });
 
 test('inspectRosterSchema is read-only and reports exact live header diagnostics', () => {
-  const sheet = inspectionSheet(productionHeaders.concat(['', '']));
+  const rows = Array.from({ length: 23 }, (_, index) => Array.from({ length: 17 }, (__, column) => {
+    if (column === 0) return `HL-26-${String(index + 1).padStart(3, '0')}`;
+    return '';
+  }));
+  const sheet = inspectionSheet(productionHeaders.concat(['', '']), rows);
   inspectionRuntime.setSheet(sheet);
   const report = inspectionRuntime.inspect();
 
   assert.equal(report.sheetName, '회원가입 명단');
   assert.equal(report.lastColumn, 17);
+  assert.equal(report.physicalLastColumn, 17);
+  assert.equal(report.logicalLastColumn, 15);
+  assert.deepEqual(report.ignoredTrailingColumns, [16, 17]);
+  assert.equal(report.rowCount, 23);
   assert.equal(report.trailingBlankColumns, 2);
   assert.equal(report.detectedSchema, 'legacy-15-without-signup-path');
-  assert.deepEqual(report.headers[2], { index: 3, value: '닉네임', trimmed: '닉네임' });
+  assert.equal(report.headers[2].index, 3);
+  assert.equal(report.headers[2].value, '닉네임');
+  assert.equal(report.headers[2].trimmed, '닉네임');
   assert.equal(report.firstDifference, null);
   assert.equal(report.supportedSchemas.length, 4);
   assert.equal(sheet.getWriteCount(), 0);
@@ -173,16 +184,61 @@ test('inspectRosterSchema reports the duplicate 가입경로 schema as recoverab
   assert.equal(sheet.getWriteCount(), 0);
 });
 
-test('inspectRosterSchema identifies the first nonmatching legacy header without writing', () => {
+test('schema comparison accepts ordinary header whitespace without writing or changing the header', () => {
   const sheet = inspectionSheet(productionHeaders.map((header, index) => index === 2 ? '닉네임 ' : header));
   inspectionRuntime.setSheet(sheet);
   const report = inspectionRuntime.inspect();
 
-  assert.equal(report.detectedSchema, 'unsupported');
-  assert.deepEqual(report.firstDifference, {
-    column: 3, expected: '닉네임', actual: '닉네임 ', actualTrimmed: '닉네임'
-  });
+  assert.equal(report.detectedSchema, 'legacy-15-without-signup-path');
+  assert.equal(report.firstDifference, null);
+  assert.equal(report.headers[2].value, '닉네임 ');
+  assert.equal(report.headers[2].trimmed, '닉네임');
   assert.equal(sheet.getWriteCount(), 0);
+});
+
+test('migration preflight accepts a trimmed logical 15-column header without altering it', () => {
+  const headers = productionHeaders.map((header, index) => index === 2 ? ' 닉네임 ' : header).concat(['', '']);
+  const rows = Array.from({ length: 23 }, (_, index) => [
+    `HL-26-${String(index + 1).padStart(3, '0')}`,
+    `2026-09-${String(index + 1).padStart(2, '0')}`,
+    `nickname-${index + 1}`, `Full Name ${index + 1}`, `member${index + 1}@example.com`,
+    '817-905-3468', 'google', '수강생', 'FREE', '활성', 'specialty', 'teaching', 'student', 'instructor', `uuid-${index + 1}`, '', ''
+  ]);
+  const sheet = readonlySheet(headers, rows);
+  const plan = migrationRuntime.preflight(sheet);
+
+  assert.equal(plan.rows.length, 23);
+  assert.equal(plan.rows[0][4], 'Full Name 1');
+  assert.equal(plan.rows[22][16], 'uuid-23');
+  assert.equal(sheet.getWriteCount(), 0);
+});
+
+test('inspectRosterSchema reports a trailing data mismatch and an invisible header without writing', () => {
+  const trailingDataSheet = inspectionSheet(productionHeaders.concat(['', '']), [
+    Array.from({ length: 17 }, (_, index) => index === 15 ? 'unexpected value' : '')
+  ]);
+  inspectionRuntime.setSheet(trailingDataSheet);
+  const trailingData = inspectionRuntime.inspect();
+  assert.equal(trailingData.detectedSchema, 'unsupported');
+  assert.deepEqual(trailingData.firstDifference, {
+    column: 16,
+    expected: '',
+    actual: '',
+    actualTrimmed: '',
+    nonEmptyRowCount: 1,
+    nonEmptyRows: [{ row: 2, value: 'unexpected value', trimmed: 'unexpected value' }]
+  });
+  assert.equal(trailingDataSheet.getWriteCount(), 0);
+
+  const invisibleHeaderSheet = inspectionSheet(productionHeaders.map((header, index) => index === 2 ? '닉네임\u200B' : header));
+  inspectionRuntime.setSheet(invisibleHeaderSheet);
+  const invisible = inspectionRuntime.inspect();
+  assert.equal(invisible.detectedSchema, 'unsupported');
+  assert.deepEqual(invisible.firstDifference, {
+    column: 3, expected: '닉네임', actual: '닉네임\u200B', actualTrimmed: '닉네임\u200B'
+  });
+  assert.match(invisible.headers[2].codePoints.join(' '), /U\+200B/);
+  assert.equal(invisibleHeaderSheet.getWriteCount(), 0);
 });
 
 test('manual migration is preflight-first, idempotent, and only targets the active roster sheet', () => {
