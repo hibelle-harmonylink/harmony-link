@@ -26,7 +26,7 @@ test('roster phone formatter preserves non-US or uncertain values', () => {
 test('new, application, and profile roster paths use the shared phone formatter', () => {
   assert.match(memberSignup, /formatPhone_\(applicationValue_\(values, 'phone', '연락처'\)\)/);
   assert.match(memberSignup, /setValues\(\[\[formatPhone_\(values\.phone\)\]\]\)/);
-  assert.match(memberSignup, /text_\(values\.full_name\), email, formatPhone_\(values\.phone\), text_\(values\.member_signup_method\)/);
+  assert.match(memberSignup, /phone: formatPhone_\(values\.phone\), signupMethod: values\.member_signup_method/);
   assert.match(admin, /const formatPhone = value => \{/);
   assert.match(admin, /escapeHtml\(formatPhone\(member\.phone\)\)/);
 });
@@ -74,10 +74,10 @@ test('provider full name is stored separately from nickname without identity-spe
 });
 
 test('roster schema makes member numbers bold and aligns roster columns consistently', () => {
-  assert.match(memberSignup, /COLUMNS\.memberNumber, rows, 1\)\.setHorizontalAlignment\('center'\)\.setFontWeight\('bold'\)/);
-  assert.match(memberSignup, /COLUMNS\.joinedAt, rows, 1\)\.setNumberFormat\('yyyy-mm-dd'\)\.setHorizontalAlignment\('center'\)/);
-  assert.match(memberSignup, /COLUMNS\.nickname, rows, HEADERS\.length - COLUMNS\.nickname \+ 1\)\.setHorizontalAlignment\('left'\)/);
-  assert.match(memberSignup, /COLUMNS\.memberNumber, 1, 2\)\.setHorizontalAlignment\('center'\)/);
+  assert.match(memberSignup, /columns\.memberNumber, rows, 1\)\.setHorizontalAlignment\('center'\)\.setFontWeight\('bold'\)/);
+  assert.match(memberSignup, /columns\.joinedAt, rows, 1\)\.setNumberFormat\('yyyy-mm-dd'\)\.setHorizontalAlignment\('center'\)/);
+  assert.match(memberSignup, /columns\.nickname, rows, width - columns\.nickname \+ 1\)\.setHorizontalAlignment\('left'\)/);
+  assert.match(memberSignup, /columns\.memberNumber, 1, 2\)\.setHorizontalAlignment\('center'\)/);
 });
 
 test('admin name list policy remains display name then full name then email prefix, never nickname', () => {

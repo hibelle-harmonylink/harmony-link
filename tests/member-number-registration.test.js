@@ -102,7 +102,7 @@ test('metadata registration failures are returned and log identifiers without lo
   assert.match(appsScript, /JSON\.stringify\(\{ memberId: memberId, memberNumber: memberNumber, status: metadataResult\.status \|\| 0 \}\)/);
   const retryLog = appsScript.slice(appsScript.indexOf('Member metadata registration needs retry:'), appsScript.indexOf('Member metadata registration needs retry:') + 240);
   assert.doesNotMatch(retryLog, /secret/i);
-  assert.match(appsScript, /if \(isNewRow && email\) sendSignupConfirmation_\(record\)/);
+  assert.match(appsScript, /if \(isNewRow && email\) sendSignupConfirmation_\(record, columns\)/);
 });
 
 test('sequential lock releases for two new members issue HL-26-008 then HL-26-009 with no duplicate', () => {

@@ -96,7 +96,7 @@ test('re-syncing already-submitted responses reuses forwardApplicationToRoster_ 
 });
 
 test('the resync is retry-safe: member-signup.gs never reissues or replaces an existing 회원번호 on a repeat sync', () => {
-  assert.match(memberScript, /const memberNumber = row\s*\n\s*\? text_\(sheet\.getRange\(row, COLUMNS\.memberNumber\)\.getDisplayValue\(\)\)\s*\n\s*: nextMemberNumber_\(sheet, joinedAt\);/);
+  assert.match(memberScript, /const memberNumber = row\s*\n\s*\? text_\(sheet\.getRange\(row, columns\.memberNumber\)\.getDisplayValue\(\)\)\s*\n\s*: nextMemberNumber_\(sheet, joinedAt, columns\);/);
 });
 
 test('operators are told, in the setup doc, that the roster URL is required for application data to reach the admin detail view', () => {

@@ -483,6 +483,9 @@
     const nickname = providerMetadata.nickname || '';
     signupRecord.set('닉네임', nickname);
     signupRecord.set('이름', fullName);
+    // Only a previously verified profile display name is a Korean-name
+    // source. OAuth provider names remain full_name data.
+    signupRecord.set('display_name', activeMemberName || '');
     signupRecord.set('표시 이름', profile.name);
     signupRecord.set('이메일', profile.email);
     signupRecord.set('가입 방식', user.app_metadata?.provider || 'social');
@@ -532,6 +535,7 @@
     record.set('가입 시각', user.created_at || new Date().toISOString());
     record.set('닉네임', providerMetadata.nickname || '');
     record.set('이름', signupProvider === 'google' ? (providerMetadata.full_name || providerMetadata.name || '') : '');
+    record.set('display_name', activeMemberName || '');
     record.set('표시 이름', profile.name);
     record.set('이메일', profile.email);
     record.set('가입 방식', signupProvider || 'social');

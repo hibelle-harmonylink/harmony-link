@@ -10,14 +10,26 @@ const MEMBER_SIGNUP = {
   roleEmailSecretProperty: 'ROLE_EMAIL_WEBHOOK_SECRET'
 };
 
-const HEADERS = ['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '시스템 ID'];
+const HEADERS = ['회원번호', '가입일', '닉네임/업체명', '한글 이름', '영문 이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '시스템 ID'];
 const LEGACY_HEADERS = ['회원 ID', '가입시각', '이름', '이메일', '가입방식', '회원유형', '파트너등급', '가입경로'];
 const PRE_METADATA_HEADERS = ['회원번호', '가입일', '이름', '이메일', '가입방식', '회원유형', '멤버십', '계정상태', '가입경로', '시스템 ID'];
 const PRE_IDENTITY_HEADERS = ['회원번호', '가입일', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '시스템 ID'];
+// The live roster before this migration.  Keep this explicit map so a newly
+// deployed script never shifts an existing row until an administrator runs
+// migrateRosterNameColumns() deliberately.
+const PRE_NAME_COLUMNS_HEADERS = ['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '시스템 ID'];
 const COLUMNS = Object.freeze({
   memberNumber: 1,
   joinedAt: 2,
-  nickname: 3, name: 4, email: 5, phone: 6, signupMethod: 7,
+  nickname: 3, displayName: 4, fullName: 5, email: 6, phone: 7, signupMethod: 8,
+  memberType: 9, membership: 10, accountStatus: 11, specialty: 12,
+  teachingSubjects: 13, enrolledSubject: 14, assignedInstructor: 15,
+  signupPath: 16, systemId: 17
+});
+const PRE_NAME_COLUMNS = Object.freeze({
+  memberNumber: 1,
+  joinedAt: 2,
+  nickname: 3, displayName: 0, fullName: 4, email: 5, phone: 6, signupMethod: 7,
   memberType: 8, membership: 9, accountStatus: 10, specialty: 11,
   teachingSubjects: 12, enrolledSubject: 13, assignedInstructor: 14,
   signupPath: 15, systemId: 16
@@ -78,40 +90,43 @@ function registerMember_(values) {
   lock.waitLock(30000);
   try {
     const sheet = getSheet_();
-    ensureSchema_(sheet);
+    const columns = ensureSchema_(sheet);
     let memberId = text_(values['회원 ID']);
     const email = text_(values['이메일'] || values.email);
     const memberType = normalizeType_(values['회원 유형'] || values['회원 구분']);
     const membership = membershipLabel_(memberType, values['멤버십'] || values['파트너 등급']);
-    let row = findMemberRow_(sheet, memberId, email);
+    let row = findMemberRow_(sheet, memberId, email, columns);
     const isSupplementalApplication = isSupplementalApplication_(values);
-    if (row && !memberId) memberId = text_(sheet.getRange(row, COLUMNS.systemId).getDisplayValue());
+    if (row && !memberId) memberId = text_(sheet.getRange(row, columns.systemId).getDisplayValue());
     if (!memberId) throw new Error('회원 ID가 없는 신청서는 기존 이메일 회원과만 연결할 수 있습니다.');
     if (!row && isSupplementalApplication) throw new Error('신청서 이메일과 일치하는 기존 회원을 찾지 못했습니다.');
     const joinedAt = dateValue_(values['가입 시각'] || new Date().toISOString());
     const memberNumber = row
-      ? text_(sheet.getRange(row, COLUMNS.memberNumber).getDisplayValue())
-      : nextMemberNumber_(sheet, joinedAt);
-    const record = [
-      memberNumber,
-      joinedAt,
-      text_(values.nickname || values['닉네임']),
-      text_(values.full_name || values['이름']),
-      email,
-      formatPhone_(applicationValue_(values, 'phone', '연락처')),
-      text_(values['가입 방식']),
-      memberType,
-      membership,
-      '활성',
-      applicationValue_(values, 'specialty', '전문분야'),
-      applicationValue_(values, 'teaching_subjects', '강의과목'),
-      applicationValue_(values, 'enrolled_subject', '수강과목'),
-      applicationValue_(values, 'assigned_instructor', '담당강사'),
-      text_(values['가입 경로']),
-      memberId
-    ];
+      ? text_(sheet.getRange(row, columns.memberNumber).getDisplayValue())
+      : nextMemberNumber_(sheet, joinedAt, columns);
+    const record = rosterRecord_(columns, {
+      memberNumber: memberNumber,
+      joinedAt: joinedAt,
+      nickname: values.nickname || values['닉네임'],
+      // Only an explicit canonical/administrator Korean-name value is a
+      // display-name source. Provider/OAuth "표시 이름" is not guessed.
+      displayName: values.display_name || values['한글 이름'],
+      fullName: values.full_name || values['이름'],
+      email: email,
+      phone: formatPhone_(applicationValue_(values, 'phone', '연락처')),
+      signupMethod: values['가입 방식'],
+      memberType: memberType,
+      membership: membership,
+      accountStatus: '활성',
+      specialty: applicationValue_(values, 'specialty', '전문분야'),
+      teachingSubjects: applicationValue_(values, 'teaching_subjects', '강의과목'),
+      enrolledSubject: applicationValue_(values, 'enrolled_subject', '수강과목'),
+      assignedInstructor: applicationValue_(values, 'assigned_instructor', '담당강사'),
+      signupPath: values['가입 경로'],
+      systemId: memberId
+    });
     const isNewRow = !row;
-    if (row && isSupplementalApplication) updateExistingApplication_(sheet, row, record);
+    if (row && isSupplementalApplication) updateExistingApplication_(sheet, row, record, columns);
     // A repeated site login is a registration retry only.  It must not reset
     // type, membership, account status, or any archived member record.
     else if (!row) sheet.appendRow(record);
@@ -129,10 +144,10 @@ function registerMember_(values) {
     }
     if (metadataResult.memberNumber !== memberNumber) throw new Error('회원번호 충돌이 감지되어 등록을 중단했습니다.');
     if (isSupplementalApplication) {
-      const applicationResult = syncApplicationMetadata_(memberId, record);
+      const applicationResult = syncApplicationMetadata_(memberId, record, columns);
       if (!applicationResult.ok) throw new Error(applicationResult.error || '신청서 메타데이터 동기화에 실패했습니다.');
     }
-    if (isNewRow && email) sendSignupConfirmation_(record);
+    if (isNewRow && email) sendSignupConfirmation_(record, columns);
     return json_({ ok: true, memberId: memberId, memberNumber: memberNumber, duplicate: Boolean(row) });
   } finally {
     lock.releaseLock();
@@ -163,10 +178,10 @@ function applicationValue_(values, canonical, korean) {
   return '';
 }
 
-function sendSignupConfirmation_(record) {
-  const name = record[3] || record[2] || '회원';
-  const email = record[4];
-  const memberType = record[7];
+function sendSignupConfirmation_(record, columns) {
+  const name = record[columns.displayName - 1] || record[columns.fullName - 1] || record[columns.nickname - 1] || '회원';
+  const email = record[columns.email - 1];
+  const memberType = record[columns.memberType - 1];
   const guidance = memberType === '수강생'
     ? '수강생으로 등록되었습니다. 교육 프로그램을 살펴보고 원하는 수업을 신청하실 수 있습니다.'
     : '일반회원으로 등록되었습니다. Harmony Link의 프로그램과 새로운 소식을 확인하실 수 있습니다.';
@@ -227,10 +242,10 @@ function markMemberWithdrawn_(values) {
 function syncProfile_(values) {
   requireWebhookSecret_(values);
   const sheet = getSheet_();
-  ensureSchema_(sheet);
+  const columns = ensureSchema_(sheet);
   const id = text_(values.member_id);
   const email = text_(values.member_email);
-  const row = findMemberRow_(sheet, id, email);
+  const row = findMemberRow_(sheet, id, email, columns);
   if (!row) {
     return json_({ ok: false, error: '회원 명단 시트에서 해당 회원 행을 찾지 못해 업데이트하지 못했습니다.' });
   }
@@ -243,55 +258,65 @@ function syncProfile_(values) {
   const statusLabel = statusLabel_(values.account_status);
   // Older profile-sync callers do not yet send the identity fields. Preserve
   // their existing roster values until the identity-aware caller is deployed.
-  if (Object.prototype.hasOwnProperty.call(values, 'nickname') || Object.prototype.hasOwnProperty.call(values, 'full_name')) {
-    sheet.getRange(row, COLUMNS.nickname, 1, 2).setValues([[
-      text_(values.nickname), text_(values.full_name)
-    ]]);
+  if (Object.prototype.hasOwnProperty.call(values, 'nickname')) {
+    sheet.getRange(row, columns.nickname, 1, 1).setValue(text_(values.nickname));
   }
-  sheet.getRange(row, COLUMNS.memberType, 1, 3).setValues([[memberType, membership, statusLabel]]);
-  sheet.getRange(row, COLUMNS.phone, 1, 1).setValues([[formatPhone_(values.phone)]]);
-  sheet.getRange(row, COLUMNS.specialty, 1, 4).setValues([[
+  if (Object.prototype.hasOwnProperty.call(values, 'full_name')) {
+    sheet.getRange(row, columns.fullName, 1, 1).setValue(text_(values.full_name));
+  }
+  sheet.getRange(row, columns.memberType, 1, 3).setValues([[memberType, membership, statusLabel]]);
+  sheet.getRange(row, columns.phone, 1, 1).setValues([[formatPhone_(values.phone)]]);
+  sheet.getRange(row, columns.specialty, 1, 4).setValues([[
     text_(values.specialty), text_(values.teaching_subjects),
     text_(values.enrolled_subject), text_(values.assigned_instructor)
   ]]);
-  applyRosterDisplayStyles_(sheet, row, 1);
+  applyRosterDisplayStyles_(sheet, row, 1, columns);
   SpreadsheetApp.flush();
   return json_({ ok: true });
 }
 
 function updateMember_(values, memberType, partnerTier, withdrawal) {
   const sheet = getSheet_();
-  ensureSchema_(sheet);
+  const columns = ensureSchema_(sheet);
   const id = text_(values.member_id);
   const email = text_(values.member_email);
-  let row = findMemberRow_(sheet, id, email);
+  let row = findMemberRow_(sheet, id, email, columns);
   const joinedAt = dateValue_(values.member_joined_at || new Date().toISOString());
   const memberNumber = row
-    ? text_(sheet.getRange(row, COLUMNS.memberNumber).getDisplayValue())
-    : nextMemberNumber_(sheet, joinedAt);
+    ? text_(sheet.getRange(row, columns.memberNumber).getDisplayValue())
+      : nextMemberNumber_(sheet, joinedAt, columns);
   const displayType = withdrawal ? normalizeType_(memberType) : normalizeType_(memberType);
   const membership = membershipLabel_(displayType, partnerTier);
-  const record = [memberNumber, joinedAt, text_(values.nickname), text_(values.full_name), email, formatPhone_(values.phone), text_(values.member_signup_method), displayType, membership, withdrawal ? '탈퇴' : '활성', text_(values.specialty), text_(values.teaching_subjects), text_(values.enrolled_subject), text_(values.assigned_instructor), text_(values.member_signup_path) || (withdrawal ? '회원탈퇴 시 자동 기록' : '회원정보 변경 시 자동 반영'), id];
+  const record = rosterRecord_(columns, {
+    memberNumber: memberNumber, joinedAt: joinedAt, nickname: values.nickname,
+    displayName: values.display_name, fullName: values.full_name, email: email,
+    phone: formatPhone_(values.phone), signupMethod: values.member_signup_method,
+    memberType: displayType, membership: membership, accountStatus: withdrawal ? '탈퇴' : '활성',
+    specialty: values.specialty, teachingSubjects: values.teaching_subjects,
+    enrolledSubject: values.enrolled_subject, assignedInstructor: values.assigned_instructor,
+    signupPath: values.member_signup_path || (withdrawal ? '회원탈퇴 시 자동 기록' : '회원정보 변경 시 자동 반영'), systemId: id
+  });
   if (!row) {
     sheet.appendRow(record);
     row = sheet.getLastRow();
-  } else updateIdentityAndMembership_(sheet, row, record);
-  sheet.getRange(row, COLUMNS.memberType, 1, 3).setValues([[displayType, membership, withdrawal ? '탈퇴' : '활성']]);
-  applyRosterDisplayStyles_(sheet, row, 1);
+  } else updateIdentityAndMembership_(sheet, row, record, columns);
+  sheet.getRange(row, columns.memberType, 1, 3).setValues([[displayType, membership, withdrawal ? '탈퇴' : '활성']]);
+  applyRosterDisplayStyles_(sheet, row, 1, columns);
   SpreadsheetApp.flush();
 }
 
 // Reapply all three display styles from the values that are now in the row.
 // This deliberately replaces the previous fill/font color so an old
 // student/partner/membership/status color cannot linger after a change.
-function applyRosterDisplayStyles_(sheet, startRow, rowCount) {
+function applyRosterDisplayStyles_(sheet, startRow, rowCount, columns) {
   if (!rowCount) return;
-  const values = sheet.getRange(startRow, COLUMNS.memberType, rowCount, 3).getDisplayValues();
+  const map = columns || columnMap_(sheet);
+  const values = sheet.getRange(startRow, map.memberType, rowCount, 3).getDisplayValues();
   ['type', 'membership', 'status'].forEach(function (category, index) {
     const styles = values.map(function (row) {
       return DISPLAY_STYLES[category][text_(row[index])] || DISPLAY_STYLES.fallback;
     });
-    const target = sheet.getRange(startRow, COLUMNS.memberType + index, rowCount, 1);
+    const target = sheet.getRange(startRow, map.memberType + index, rowCount, 1);
     target.setBackgrounds(styles.map(function (style) { return [style.background]; }));
     target.setFontColors(styles.map(function (style) { return [style.foreground]; }));
     target.setFontWeights(styles.map(function () { return ['bold']; }));
@@ -308,24 +333,77 @@ function getSheet_() {
 function ensureSchema_(sheet) {
   if (sheet.getLastRow() === 0) sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
   const current = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), HEADERS.length)).getDisplayValues()[0];
+  let columns;
   if (current[0] === LEGACY_HEADERS[0]) migrateLegacySchema_(sheet);
   else if (PRE_METADATA_HEADERS.every(function (header, index) { return current[index] === header; })) migratePreMetadataSchema_(sheet);
   else if (PRE_IDENTITY_HEADERS.every(function (header, index) { return current[index] === header; })) migratePreIdentitySchema_(sheet);
-  else sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+  // Do not convert the live 16-column roster implicitly.  A manual, public
+  // migration preserves every existing name value before inserting the new
+  // Korean-name column.
+  else if (headersMatch_(current, PRE_NAME_COLUMNS_HEADERS)) columns = PRE_NAME_COLUMNS;
+  else if (!headersMatch_(current, HEADERS)) throw new Error('알 수 없는 회원가입 명단 헤더 구조입니다. 수동 migration 전에 중단했습니다.');
+  if (!columns) columns = COLUMNS;
   sheet.setFrozenRows(1);
-  sheet.getRange(1, 1, 1, HEADERS.length).setBackground('#0d51aa').setFontColor('#ffffff').setFontWeight('bold');
   const rows = Math.max(sheet.getMaxRows() - 1, 1);
-  sheet.getRange(2, COLUMNS.memberType, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(TYPE_LABELS, true).setAllowInvalid(false).build());
-  sheet.getRange(2, COLUMNS.membership, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(MEMBERSHIP_LABELS, true).setAllowInvalid(false).build());
-  sheet.getRange(2, COLUMNS.accountStatus, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUS_LABELS, true).setAllowInvalid(false).build());
-  sheet.getRange(1, 1, 1, HEADERS.length).setHorizontalAlignment('left');
-  sheet.getRange(1, COLUMNS.memberNumber, 1, 2).setHorizontalAlignment('center');
-  sheet.getRange(2, COLUMNS.memberNumber, rows, 1).setHorizontalAlignment('center').setFontWeight('bold');
-  sheet.getRange(2, COLUMNS.joinedAt, rows, 1).setNumberFormat('yyyy-mm-dd').setHorizontalAlignment('center');
-  sheet.getRange(2, COLUMNS.nickname, rows, HEADERS.length - COLUMNS.nickname + 1).setHorizontalAlignment('left');
-  applyRosterDisplayStyles_(sheet, 2, Math.max(sheet.getLastRow() - 1, 0));
-  sheet.hideColumns(COLUMNS.systemId);
-  if (!sheet.getFilter()) sheet.getRange(1, 1, Math.max(sheet.getLastRow(), 1), HEADERS.length).createFilter();
+  const width = columns === PRE_NAME_COLUMNS ? PRE_NAME_COLUMNS_HEADERS.length : HEADERS.length;
+  sheet.getRange(1, 1, 1, width).setBackground('#0d51aa').setFontColor('#ffffff').setFontWeight('bold');
+  sheet.getRange(2, columns.memberType, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(TYPE_LABELS, true).setAllowInvalid(false).build());
+  sheet.getRange(2, columns.membership, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(MEMBERSHIP_LABELS, true).setAllowInvalid(false).build());
+  sheet.getRange(2, columns.accountStatus, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUS_LABELS, true).setAllowInvalid(false).build());
+  sheet.getRange(1, 1, 1, width).setHorizontalAlignment('left');
+  sheet.getRange(1, columns.memberNumber, 1, 2).setHorizontalAlignment('center');
+  sheet.getRange(2, columns.memberNumber, rows, 1).setHorizontalAlignment('center').setFontWeight('bold');
+  sheet.getRange(2, columns.joinedAt, rows, 1).setNumberFormat('yyyy-mm-dd').setHorizontalAlignment('center');
+  sheet.getRange(2, columns.nickname, rows, width - columns.nickname + 1).setHorizontalAlignment('left');
+  applyRosterDisplayStyles_(sheet, 2, Math.max(sheet.getLastRow() - 1, 0), columns);
+  sheet.hideColumns(columns.systemId);
+  if (!sheet.getFilter()) sheet.getRange(1, 1, Math.max(sheet.getLastRow(), 1), width).createFilter();
+  return columns;
+}
+
+function headersMatch_(current, expected) {
+  return expected.every(function (header, index) { return current[index] === header; });
+}
+
+function columnMap_(sheet) {
+  const current = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), HEADERS.length)).getDisplayValues()[0];
+  if (headersMatch_(current, HEADERS)) return COLUMNS;
+  if (headersMatch_(current, PRE_NAME_COLUMNS_HEADERS)) return PRE_NAME_COLUMNS;
+  throw new Error('알 수 없는 회원가입 명단 헤더 구조입니다.');
+}
+
+// Public, intentionally manual migration entry point. It only upgrades the
+// active 회원가입 명단 sheet from the known 16-column layout. It never reads
+// or changes backup sheets, does not infer Korean names, and is idempotent.
+function migrateRosterNameColumns() {
+  const sheet = getSheet_();
+  const current = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), HEADERS.length)).getDisplayValues()[0];
+  if (headersMatch_(current, HEADERS)) return { migrated: false, rows: 0 };
+  if (!headersMatch_(current, PRE_NAME_COLUMNS_HEADERS)) {
+    throw new Error('현재 회원가입 명단이 예상한 16열 구조가 아니므로 migration을 중단했습니다.');
+  }
+  const count = Math.max(sheet.getLastRow() - 1, 0);
+  const rows = count ? sheet.getRange(2, 1, count, PRE_NAME_COLUMNS_HEADERS.length).getValues() : [];
+  const migrated = previewRosterNameColumns_(rows);
+  if (sheet.getFilter()) sheet.getFilter().remove();
+  if (count) sheet.getRange(2, 1, count, Math.max(sheet.getLastColumn(), HEADERS.length)).clearContent();
+  sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
+  if (migrated.length) sheet.getRange(2, 1, migrated.length, HEADERS.length).setValues(migrated);
+  ensureSchema_(sheet);
+  return { migrated: true, rows: migrated.length };
+}
+
+// Pure transformation used by the one-time Sheet migration and regression
+// tests. It intentionally creates no display_name values from legacy rows.
+function previewRosterNameColumns_(rows) {
+  return rows.map(function (row) {
+    // Existing "이름" is retained verbatim as full_name. The display-name
+    // cell stays blank unless an authoritative value is supplied elsewhere.
+    return [
+      row[0], row[1], row[2], '', row[3], row[4], row[5], row[6], row[7],
+      row[8], row[9], row[10], row[11], row[12], row[13], row[14], row[15]
+    ];
+  });
 }
 
 function migrateLegacySchema_(sheet) {
@@ -360,18 +438,18 @@ function registerMemberMetadata_(memberId, memberNumber, joinedAt) {
   return { ok: true, memberNumber: text_(body.memberNumber) };
 }
 
-function syncApplicationMetadata_(memberId, record) {
+function syncApplicationMetadata_(memberId, record, columns) {
   const secret = PropertiesService.getScriptProperties().getProperty(MEMBER_SIGNUP.roleEmailSecretProperty);
   if (!secret) throw new Error('ROLE_EMAIL_WEBHOOK_SECRET이 설정되지 않았습니다.');
   const response = UrlFetchApp.fetch(MEMBER_SIGNUP.metadataWebhookUrl, {
     method: 'post', contentType: 'application/json', muteHttpExceptions: true,
     payload: JSON.stringify({
       action: 'member_application_sync', webhookSecret: secret, memberId: memberId,
-      nickname: record[COLUMNS.nickname - 1], fullName: record[COLUMNS.name - 1],
-      phone: record[COLUMNS.phone - 1], specialty: record[COLUMNS.specialty - 1],
-      teachingSubjects: record[COLUMNS.teachingSubjects - 1],
-      enrolledSubject: record[COLUMNS.enrolledSubject - 1],
-      assignedInstructor: record[COLUMNS.assignedInstructor - 1]
+      nickname: record[columns.nickname - 1], fullName: record[columns.fullName - 1],
+      phone: record[columns.phone - 1], specialty: record[columns.specialty - 1],
+      teachingSubjects: record[columns.teachingSubjects - 1],
+      enrolledSubject: record[columns.enrolledSubject - 1],
+      assignedInstructor: record[columns.assignedInstructor - 1]
     })
   });
   const status = response.getResponseCode();
@@ -395,7 +473,7 @@ function migratePreMetadataSchema_(sheet) {
     // changes presentation without discarding the timestamp moment.
     const joinedAt = text_(row[1]) ? dateValue_(row[1]) : row[1];
     const identity = migratedIdentity_(row[0], row[2]);
-    return [row[0], joinedAt, identity.nickname, identity.fullName, row[3], '', row[4], row[5], row[6], row[7], '', '', '', '', row[8], row[9]];
+    return [row[0], joinedAt, identity.nickname, '', identity.fullName, row[3], '', row[4], row[5], row[6], row[7], '', '', '', '', row[8], row[9]];
   });
   if (sheet.getFilter()) sheet.getFilter().remove();
   if (count) sheet.getRange(2, 1, count, Math.max(sheet.getLastColumn(), HEADERS.length)).clearContent();
@@ -408,7 +486,7 @@ function migratePreIdentitySchema_(sheet) {
   const rows = count ? sheet.getRange(2, 1, count, PRE_IDENTITY_HEADERS.length).getValues() : [];
   const expanded = rows.map(function (row) {
     const identity = migratedIdentity_(row[0], row[2]);
-    return [row[0], row[1], identity.nickname, identity.fullName, row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14]];
+    return [row[0], row[1], identity.nickname, '', identity.fullName, row[3], row[4], row[5], row[6], row[7], row[8], row[9], row[10], row[11], row[12], row[13], row[14]];
   });
   if (sheet.getFilter()) sheet.getFilter().remove();
   if (count) sheet.getRange(2, 1, count, Math.max(sheet.getLastColumn(), HEADERS.length)).clearContent();
@@ -442,6 +520,7 @@ function buildMigratedRows_(legacyRows) {
       memberNumber,
       joinedAt,
       identity.nickname,
+      '',
       identity.fullName,
       text_(row[3]),
       '',
@@ -474,20 +553,21 @@ function legacyInfo_(value) {
   return ROLE_INFO.member;
 }
 
-function updateIdentityAndMembership_(sheet, row, record) {
-  const existing = sheet.getRange(row, 1, 1, HEADERS.length).getValues()[0];
-  for (let column = 0; column < HEADERS.length; column += 1) {
-    const immutable = [COLUMNS.memberNumber - 1, COLUMNS.joinedAt - 1, COLUMNS.systemId - 1].includes(column);
-    if (!immutable && ([COLUMNS.memberType - 1, COLUMNS.membership - 1, COLUMNS.accountStatus - 1].includes(column) || !existing[column])) {
+function updateIdentityAndMembership_(sheet, row, record, columns) {
+  const width = columns === PRE_NAME_COLUMNS ? PRE_NAME_COLUMNS_HEADERS.length : HEADERS.length;
+  const existing = sheet.getRange(row, 1, 1, width).getValues()[0];
+  for (let column = 0; column < width; column += 1) {
+    const immutable = [columns.memberNumber - 1, columns.joinedAt - 1, columns.systemId - 1].includes(column);
+    if (!immutable && ([columns.memberType - 1, columns.membership - 1, columns.accountStatus - 1].includes(column) || !existing[column])) {
       sheet.getRange(row, column + 1).setValue(record[column]);
     }
   }
 }
 
-function updateExistingApplication_(sheet, row, record) {
+function updateExistingApplication_(sheet, row, record, columns) {
   const mutableColumns = [
-    COLUMNS.nickname, COLUMNS.name, COLUMNS.phone, COLUMNS.specialty,
-    COLUMNS.teachingSubjects, COLUMNS.enrolledSubject, COLUMNS.assignedInstructor
+    columns.nickname, columns.fullName, columns.phone, columns.specialty,
+    columns.teachingSubjects, columns.enrolledSubject, columns.assignedInstructor
   ];
   mutableColumns.forEach(function (column) {
     const value = text_(record[column - 1]);
@@ -495,10 +575,12 @@ function updateExistingApplication_(sheet, row, record) {
   });
 }
 
-function findMemberRow_(sheet, id, email) {
+function findMemberRow_(sheet, id, email, columns) {
   if (sheet.getLastRow() < 2) return 0;
-  const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, HEADERS.length).getDisplayValues();
-  const index = rows.findIndex(function (row) { return (id && text_(row[COLUMNS.systemId - 1]) === id) || (email && text_(row[COLUMNS.email - 1]).toLowerCase() === email.toLowerCase()); });
+  const map = columns || columnMap_(sheet);
+  const width = map === PRE_NAME_COLUMNS ? PRE_NAME_COLUMNS_HEADERS.length : HEADERS.length;
+  const rows = sheet.getRange(2, 1, sheet.getLastRow() - 1, width).getDisplayValues();
+  const index = rows.findIndex(function (row) { return (id && text_(row[map.systemId - 1]) === id) || (email && text_(row[map.email - 1]).toLowerCase() === email.toLowerCase()); });
   return index < 0 ? 0 : index + 2;
 }
 
@@ -533,10 +615,11 @@ function missingRegistrationField_(values) {
   return '';
 }
 
-function nextMemberNumber_(sheet, joinedAt) {
+function nextMemberNumber_(sheet, joinedAt, columns) {
   const year = String(dateValue_(joinedAt).getFullYear()).slice(-2);
   if (sheet.getLastRow() < 2) return formatMemberNumber_(year, 1);
-  const values = sheet.getRange(2, COLUMNS.memberNumber, sheet.getLastRow() - 1, 1).getDisplayValues();
+  const map = columns || COLUMNS;
+  const values = sheet.getRange(2, map.memberNumber, sheet.getLastRow() - 1, 1).getDisplayValues();
   const prefix = `HL-${year}-`;
   const max = values.reduce(function (highest, row) {
     const value = text_(row[0]);
@@ -584,10 +667,10 @@ function formatPhone_(value) {
 // preserved verbatim.
 function backfillPhoneFormats_() {
   const sheet = getSheet_();
-  ensureSchema_(sheet);
+  const columns = ensureSchema_(sheet);
   const rowCount = Math.max(sheet.getLastRow() - 1, 0);
   if (!rowCount) return { updated: 0 };
-  const range = sheet.getRange(2, COLUMNS.phone, rowCount, 1);
+  const range = sheet.getRange(2, columns.phone, rowCount, 1);
   const current = range.getDisplayValues();
   let updated = 0;
   current.forEach(function (row, index) {
@@ -606,6 +689,16 @@ function backfillPhoneFormats_() {
 // private so no registration or webhook path can invoke it accidentally.
 function runPhoneFormatBackfill() {
   return backfillPhoneFormats_();
+}
+
+function rosterRecord_(columns, values) {
+  const width = columns === PRE_NAME_COLUMNS ? PRE_NAME_COLUMNS_HEADERS.length : HEADERS.length;
+  const record = Array(width).fill('');
+  Object.keys(values).forEach(function (key) {
+    const column = columns[key];
+    if (column) record[column - 1] = values[key] instanceof Date ? values[key] : text_(values[key]);
+  });
+  return record;
 }
 function escapeHtml_(value) { return text_(value).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
 function authorizeRoleChangeMail() { return MailApp.getRemainingDailyQuota(); }
