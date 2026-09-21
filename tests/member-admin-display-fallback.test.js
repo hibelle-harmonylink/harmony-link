@@ -16,7 +16,7 @@ test('member detail public-name display prioritizes display_name and then applic
   assert.match(adminJs, /const memberPersonName = member => String\(member\.display_name \|\| ''\)\.trim\(\) \|\| String\(member\.full_name \|\| ''\)\.trim\(\) \|\| fallbackMemberName\(member\)/);
   assert.match(adminJs, /const resolveDisplayName = member => memberPersonName\(member\)/);
   assert.match(adminJs, /nicknameInput\.value = memberNickname\(member\)/);
-  assert.match(adminJs, /fullNameInput\.value = memberFullName\(member\)/);
+  assert.match(adminJs, /syncedReadonlyField\('영문 이름', memberFullName\(member\)\)/);
 });
 
 test('HL-26-009 full name backfill changes only the intended metadata field', () => {

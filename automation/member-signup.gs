@@ -98,7 +98,7 @@ function registerMember_(values) {
       text_(values.nickname || values['닉네임']),
       text_(values.full_name || values['이름']),
       email,
-      applicationValue_(values, 'phone', '연락처'),
+      formatPhone_(applicationValue_(values, 'phone', '연락처')),
       text_(values['가입 방식']),
       memberType,
       membership,
@@ -249,7 +249,7 @@ function syncProfile_(values) {
     ]]);
   }
   sheet.getRange(row, COLUMNS.memberType, 1, 3).setValues([[memberType, membership, statusLabel]]);
-  sheet.getRange(row, COLUMNS.phone, 1, 1).setValues([[text_(values.phone)]]);
+  sheet.getRange(row, COLUMNS.phone, 1, 1).setValues([[formatPhone_(values.phone)]]);
   sheet.getRange(row, COLUMNS.specialty, 1, 4).setValues([[
     text_(values.specialty), text_(values.teaching_subjects),
     text_(values.enrolled_subject), text_(values.assigned_instructor)
@@ -271,7 +271,7 @@ function updateMember_(values, memberType, partnerTier, withdrawal) {
     : nextMemberNumber_(sheet, joinedAt);
   const displayType = withdrawal ? normalizeType_(memberType) : normalizeType_(memberType);
   const membership = membershipLabel_(displayType, partnerTier);
-  const record = [memberNumber, joinedAt, text_(values.nickname), text_(values.full_name), email, text_(values.phone), text_(values.member_signup_method), displayType, membership, withdrawal ? '탈퇴' : '활성', text_(values.specialty), text_(values.teaching_subjects), text_(values.enrolled_subject), text_(values.assigned_instructor), text_(values.member_signup_path) || (withdrawal ? '회원탈퇴 시 자동 기록' : '회원정보 변경 시 자동 반영'), id];
+  const record = [memberNumber, joinedAt, text_(values.nickname), text_(values.full_name), email, formatPhone_(values.phone), text_(values.member_signup_method), displayType, membership, withdrawal ? '탈퇴' : '활성', text_(values.specialty), text_(values.teaching_subjects), text_(values.enrolled_subject), text_(values.assigned_instructor), text_(values.member_signup_path) || (withdrawal ? '회원탈퇴 시 자동 기록' : '회원정보 변경 시 자동 반영'), id];
   if (!row) {
     sheet.appendRow(record);
     row = sheet.getLastRow();
@@ -318,9 +318,11 @@ function ensureSchema_(sheet) {
   sheet.getRange(2, COLUMNS.memberType, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(TYPE_LABELS, true).setAllowInvalid(false).build());
   sheet.getRange(2, COLUMNS.membership, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(MEMBERSHIP_LABELS, true).setAllowInvalid(false).build());
   sheet.getRange(2, COLUMNS.accountStatus, rows, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUS_LABELS, true).setAllowInvalid(false).build());
-  sheet.getRange(2, COLUMNS.joinedAt, rows, 1).setNumberFormat('yyyy-mm-dd');
-  sheet.getRange(2, COLUMNS.memberNumber, rows, 1).setHorizontalAlignment('center');
-  sheet.getRange(2, COLUMNS.email, rows, 1).setHorizontalAlignment('left');
+  sheet.getRange(1, 1, 1, HEADERS.length).setHorizontalAlignment('left');
+  sheet.getRange(1, COLUMNS.memberNumber, 1, 2).setHorizontalAlignment('center');
+  sheet.getRange(2, COLUMNS.memberNumber, rows, 1).setHorizontalAlignment('center').setFontWeight('bold');
+  sheet.getRange(2, COLUMNS.joinedAt, rows, 1).setNumberFormat('yyyy-mm-dd').setHorizontalAlignment('center');
+  sheet.getRange(2, COLUMNS.nickname, rows, HEADERS.length - COLUMNS.nickname + 1).setHorizontalAlignment('left');
   applyRosterDisplayStyles_(sheet, 2, Math.max(sheet.getLastRow() - 1, 0));
   sheet.hideColumns(COLUMNS.systemId);
   if (!sheet.getFilter()) sheet.getRange(1, 1, Math.max(sheet.getLastRow(), 1), HEADERS.length).createFilter();
@@ -562,5 +564,41 @@ function requireWebhookSecret_(values) {
 
 function json_(payload) { return ContentService.createTextOutput(JSON.stringify(payload)).setMimeType(ContentService.MimeType.JSON); }
 function text_(value) { return String(value || '').trim(); }
+// Normalize only unambiguous North American 10-digit input.  International
+// and incomplete values are intentionally preserved rather than guessed.
+function formatPhone_(value) {
+  const original = text_(value);
+  const digits = original.replace(/\D/g, '');
+  const usDigits = digits.length === 11 && digits.charAt(0) === '1'
+    ? digits.slice(1)
+    : digits;
+  return usDigits.length === 10
+    ? `${usDigits.slice(0, 3)}-${usDigits.slice(3, 6)}-${usDigits.slice(6)}`
+    : original;
+}
+
+// Opt-in maintenance helper for existing roster rows. It is intentionally
+// not called by onOpen, registration, or any sync path: an administrator must
+// explicitly run it after reviewing the target spreadsheet. Only values that
+// safely normalize to a US ten-digit number are changed; every other value is
+// preserved verbatim.
+function backfillPhoneFormats_() {
+  const sheet = getSheet_();
+  ensureSchema_(sheet);
+  const rowCount = Math.max(sheet.getLastRow() - 1, 0);
+  if (!rowCount) return { updated: 0 };
+  const range = sheet.getRange(2, COLUMNS.phone, rowCount, 1);
+  const current = range.getDisplayValues();
+  let updated = 0;
+  current.forEach(function (row, index) {
+    const formatted = formatPhone_(row[0]);
+    if (formatted !== row[0]) {
+      range.getCell(index + 1, 1).setValue(formatted);
+      updated += 1;
+    }
+  });
+  if (updated) SpreadsheetApp.flush();
+  return { updated: updated };
+}
 function escapeHtml_(value) { return text_(value).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
 function authorizeRoleChangeMail() { return MailApp.getRemainingDailyQuota(); }

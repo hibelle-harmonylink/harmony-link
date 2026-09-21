@@ -546,10 +546,10 @@ body.admin-page{overflow-x:hidden}
 .member-save-feedback.success{color:#176944}.member-save-feedback.error{color:#a82d41}.member-save-feedback.pending{color:#175694}
 .member-editable-note{display:inline-block;margin-left:6px;border-radius:999px;background:#eaf2ff;color:#1a34ac;padding:2px 6px;font-size:9px;font-weight:850;letter-spacing:0;vertical-align:middle}
 .admin-editable-field.field-source-direct>input{border:2px solid #1a34ac!important;background:#f4f8ff!important}
-.field-source-sync>input,.field-source-sync>select{border:1px solid #c8d8ea!important;background:#fff!important}
 .field-source-manual>input{border:1px solid #c8d8ea!important;background:#f8fafc!important}
 .field-source-setting>select{border:1px solid #a9bfd6!important;background:#f8fbff!important}
 .member-system-field>span{display:flex;align-items:center;gap:5px}.member-system-field em{font-style:normal;color:#718198;font-size:9px;font-weight:750}
+.member-synced-field{min-width:0;border:1px solid #d5e0ea;border-radius:10px;background:#f4f7fa;padding:9px;box-sizing:border-box}.member-synced-field>span{display:flex;align-items:center;gap:5px;color:#61758b;font-size:11px;font-weight:800}.member-synced-field em{font-style:normal;color:#657b91;font-size:9px;font-weight:750}.member-synced-field strong{display:block;min-width:0;margin-top:5px;color:#42586f;font-size:13px;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
 
 @media(min-width:681px){
   .member-dialog{max-height:none}

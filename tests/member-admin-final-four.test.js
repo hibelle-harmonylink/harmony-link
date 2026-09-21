@@ -22,18 +22,17 @@ test('renders phone between email and member type in the roster, and keeps email
   assert.match(accessInputs, /회원유형/);
 });
 
-test('preserves Korean, US, and international phone strings without regional reformatting', () => {
-  assert.match(adminJs, /const formatPhone = value => String\(value \|\| ''\)\.trim\(\);/);
-  assert.doesNotMatch(adminJs, /digits\.length === 10/);
+test('normalizes only unambiguous US phone strings and preserves Korean or international values', () => {
+  assert.match(adminJs, /const formatPhone = value => \{/);
+  assert.match(adminJs, /digits\.length === 11 && digits\.startsWith\('1'\)/);
+  assert.match(adminJs, /usDigits\.length === 10/);
   assert.match(adminCss, /nth-child\(5\).*?width:135px/);
 });
 
-test('prefills the editable contact input with the member phone -- there is only one 연락처 field now, not a duplicate read-only copy', () => {
+test('renders contact as a single synchronized read-only value, not an editable input', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
-  assert.match(detail, /id="detailPhone"[^>]*value="\$\{escapeHtml\(formatPhone\(member\.phone \?\? ''\)\)\}"/);
-  assert.doesNotMatch(detail, /phone\.value\s*=/);
-  // The old read-only summary <dl> (with its own separate formatPhone(member.phone)
-  // call) is gone -- 연락처 is now the #detailPhone input's own value, once.
+  assert.match(detail, /syncedReadonlyField\('연락처', formatPhone\(member\.phone \?\? ''\)\)/);
+  assert.doesNotMatch(detail, /id="detailPhone"/);
   assert.doesNotMatch(detail, /const summary = /);
   assert.equal((detail.match(/formatPhone\(member\.phone/g) || []).length, 1);
 });
@@ -41,15 +40,15 @@ test('prefills the editable contact input with the member phone -- there is only
 test('withdrawn members are fully read-only and cannot submit a save action', () => {
   assert.match(adminJs, /탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다/);
   assert.match(adminJs, /member-save-disabled[^]*?disabled>변경 불가/);
-  assert.match(adminJs, /if \(withdrawn\) \[nicknameInput, fullNameInput, phone, specialty, teachingSubjects, enrolledSubject, assignedInstructor\][^]*?input\.disabled = true/);
+  assert.match(adminJs, /if \(withdrawn && nicknameInput\) nicknameInput\.disabled = true/);
   assert.match(adminJs, /else if \(!protectedAccount && !withdrawn\)/);
   assert.match(adminCss, /cursor:not-allowed/);
 });
 
-test('metadata edits remain outside the role-notification email trigger', () => {
-  assert.match(adminJs, /const metadataChanged = metadata\.nickname[^]*?metadata\.fullName[^]*?metadata\.phone/);
+test('only nickname remains editable metadata outside the role-notification email trigger', () => {
+  assert.match(adminJs, /const metadataChanged = metadata\.nickname !== memberNickname\(member\)/);
   assert.match(adminJs, /p_nickname: metadata\.nickname/);
-  assert.match(adminJs, /p_full_name: metadata\.fullName/);
+  assert.match(adminJs, /p_full_name: memberFullName\(member\)/);
   assert.match(adminJs, /if \(roleChanged && accessSaved\) void \(async \(\) =>/);
 });
 

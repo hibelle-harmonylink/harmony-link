@@ -34,10 +34,12 @@ test('saving unchanged values performs no update request', () => {
   assert.match(adminSource.slice(unchangedGuard, firstRpc), /return;/);
 });
 
-test('administrative metadata uses its own RPC and is not an email trigger', () => {
+test('nickname uses the existing metadata RPC without making synchronized fields editable', () => {
   const metadataCall = adminSource.match(/admin_update_member_metadata', \{([\s\S]*?)\n        \}\);/)?.[1] || '';
-  assert.match(metadataCall, /p_phone: metadata\.phone/);
-  assert.match(metadataCall, /p_specialty: metadata\.specialty/);
+  assert.match(metadataCall, /p_nickname: metadata\.nickname/);
+  assert.match(metadataCall, /p_phone: member\.phone \|\| ''/);
+  assert.match(metadataCall, /p_specialty: member\.specialty \|\| ''/);
+  assert.doesNotMatch(metadataCall, /nextMetadata\.(?:fullName|phone|specialty|teachingSubjects|enrolledSubject|assignedInstructor)/);
   assert.match(adminSource, /if \(roleChanged && accessSaved\) void \(async \(\) =>/);
   assert.doesNotMatch(metadataCall, /role|membership|account_status/);
 });

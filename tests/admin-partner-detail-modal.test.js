@@ -34,16 +34,13 @@ test('existing member numbers are preserved on repeat registration, never reissu
   assert.match(migration, /on conflict \(member_id\) do update set\s*\n\s*member_number = public\.member_admin_metadata\.member_number,/);
 });
 
-test('detail modal reads specialty/teaching_subjects (partner) and enrolled_subject/assigned_instructor (student) straight from the canonical RPC row', () => {
+test('detail modal reads synchronized metadata from the canonical RPC row without editable controls', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
-  assert.match(detail, /전문분야<input id="detailSpecialty"/);
-  assert.match(detail, /강의과목<input id="detailTeachingSubjects"/);
-  assert.match(detail, /수강과목<input id="detailEnrolledSubject"/);
-  assert.match(detail, /담당강사<input id="detailAssignedInstructor"/);
-  assert.match(detail, /if \(specialty\) specialty\.value = member\.specialty \|\| '';/);
-  assert.match(detail, /if \(teachingSubjects\) teachingSubjects\.value = member\.teaching_subjects \|\| '';/);
-  assert.match(detail, /if \(enrolledSubject\) enrolledSubject\.value = member\.enrolled_subject \|\| '';/);
-  assert.match(detail, /if \(assignedInstructor\) assignedInstructor\.value = member\.assigned_instructor \|\| '';/);
+  assert.match(detail, /syncedReadonlyField\('전문분야', member\.specialty\)/);
+  assert.match(detail, /syncedReadonlyField\('강의과목', member\.teaching_subjects\)/);
+  assert.match(detail, /syncedReadonlyField\('수강과목', member\.enrolled_subject\)/);
+  assert.match(detail, /syncedReadonlyField\('담당강사', member\.assigned_instructor\)/);
+  assert.doesNotMatch(detail, /id="detailSpecialty"|id="detailTeachingSubjects"|id="detailEnrolledSubject"|id="detailAssignedInstructor"/);
 });
 
 test('partner-only and student-only metadata fields respect [hidden] instead of an author display rule silently overriding it', () => {

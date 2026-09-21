@@ -25,7 +25,8 @@ test('admin roster keeps the nickname column separate while rendering the public
   assert.match(admin, /\['이름', escapeHtml\(memberPersonName\(member\)\)/);
   assert.match(admin, /member\.nickname \|\| ''} \$\{member\.full_name/);
   assert.match(admin, /id="detailNickname"/);
-  assert.match(admin, /id="detailFullName"/);
+  assert.match(admin, /syncedReadonlyField\('영문 이름', memberFullName\(member\)\)/);
+  assert.doesNotMatch(admin, /id="detailFullName"/);
 });
 
 test('new signup and profile sync carry separate provider-backed fields', () => {
