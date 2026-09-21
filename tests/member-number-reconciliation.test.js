@@ -50,10 +50,10 @@ test('new site-only rows are explicitly pending while historic rows remain uncha
 });
 
 test('a matched supplemental application uses UUID first, email fallback, and changes only mutable metadata', () => {
-  assert.match(appsScript, /findMemberRow_\(sheet, memberId, email\)/);
-  assert.match(appsScript, /if \(row && !memberId\) memberId = text_\(sheet\.getRange\(row, COLUMNS\.systemId\)\.getDisplayValue\(\)\)/);
+  assert.match(appsScript, /findMemberRow_\(sheet, memberId, email, columns\)/);
+  assert.match(appsScript, /if \(row && !memberId\) memberId = text_\(sheet\.getRange\(row, columns\.systemId\)\.getDisplayValue\(\)\)/);
   assert.match(appsScript, /if \(row && isSupplementalApplication\) updateExistingApplication_/);
-  assert.match(appsScript, /const immutable = \[COLUMNS\.memberNumber - 1, COLUMNS\.joinedAt - 1, COLUMNS\.systemId - 1\]/);
+  assert.match(appsScript, /const immutable = \[columns\.memberNumber - 1, columns\.joinedAt - 1, columns\.systemId - 1\]/);
   assert.match(appsScript, /action: 'member_application_sync'/);
   assert.match(edge, /requestBody\.action === 'member_application_sync'/);
   assert.match(edge, /internal_sync_member_application_metadata/);

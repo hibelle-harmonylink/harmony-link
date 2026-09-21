@@ -25,7 +25,7 @@ test('application-synced metadata fields are display-only and retain their canon
   assert.match(partnerForm, /'연락처': phone/);
   assert.match(partnerForm, /'전문분야': specialty/);
   assert.match(partnerForm, /'강의과목': teachingSubjects/);
-  assert.match(signup, /fullName: record\[COLUMNS\.name - 1\]/);
+  assert.match(signup, /fullName: record\[columns\.fullName - 1\]/);
   assert.match(applicationSync, /full_name = coalesce/);
 });
 

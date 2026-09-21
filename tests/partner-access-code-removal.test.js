@@ -25,7 +25,7 @@ test('roster forwarding and retry-safe member-number path remain intact', () => 
   assert.match(partnerScript, /rosterWebappUrlKey: 'MEMBER_ROSTER_WEBAPP_URL'/);
   assert.match(partnerScript, /function forwardApplicationToRoster_\(email, name, namedValues\)/);
   assert.match(partnerScript, /function resyncExistingApplications\(\)/);
-  assert.match(memberScript, /const memberNumber = row\s*\n\s*\? text_\(sheet\.getRange\(row, COLUMNS\.memberNumber\)\.getDisplayValue\(\)\)\s*\n\s*: nextMemberNumber_\(sheet, joinedAt\);/);
+  assert.match(memberScript, /const memberNumber = row\s*\n\s*\? text_\(sheet\.getRange\(row, columns\.memberNumber\)\.getDisplayValue\(\)\)\s*\n\s*: nextMemberNumber_\(sheet, joinedAt, columns\);/);
 });
 
 test('welcome email keeps Partner Center and signed-in approved-member guidance without an access code', () => {

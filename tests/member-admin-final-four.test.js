@@ -54,10 +54,10 @@ test('only nickname remains editable metadata outside the role-notification emai
 
 test('reapplies Sheet G/H/I colors from the current display values', () => {
   assert.match(appsScript, /const DISPLAY_STYLES = Object\.freeze/);
-  assert.match(appsScript, /function applyRosterDisplayStyles_\(sheet, startRow, rowCount\)/);
-  assert.match(appsScript, /COLUMNS\.memberType, rowCount, 3/);
-  assert.match(appsScript, /applyRosterDisplayStyles_\(sheet, row, 1\)/);
-  assert.match(appsScript, /applyRosterDisplayStyles_\(sheet, 2, Math\.max\(sheet\.getLastRow\(\) - 1, 0\)\)/);
+  assert.match(appsScript, /function applyRosterDisplayStyles_\(sheet, startRow, rowCount, columns\)/);
+  assert.match(appsScript, /map\.memberType, rowCount, 3/);
+  assert.match(appsScript, /applyRosterDisplayStyles_\(sheet, row, 1, columns\)/);
+  assert.match(appsScript, /applyRosterDisplayStyles_\(sheet, 2, Math\.max\(sheet\.getLastRow\(\) - 1, 0\), columns\)/);
 });
 
 test('detail dialog uses a compact grouped grid with desktop no-scroll and mobile fallback scrolling', () => {
