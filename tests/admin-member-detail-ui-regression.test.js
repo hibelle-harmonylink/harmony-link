@@ -51,8 +51,8 @@ test('equal desktop lower boxes cannot expand from flex or grid min-content widt
   assert.match(adminJs, /<li class="feature-\$\{item\.feature\}">\$\{item\.label\}<\/li>/);
 });
 
-test('partner/student metadata exclusivity and synced partner metadata render path remain unchanged', () => {
+test('partner/student metadata exclusivity preserves the synchronized display path', () => {
   assert.match(detail, /showRoleMetadata\(withdrawn \? 'student' : \(member\.is_admin \? 'admin' : member\.user_type\)\);/);
-  assert.match(detail, /if \(specialty\) specialty\.value = member\.specialty \|\| '';/);
-  assert.match(detail, /if \(teachingSubjects\) teachingSubjects\.value = member\.teaching_subjects \|\| '';/);
+  assert.match(detail, /syncedReadonlyField\('전문분야', member\.specialty\)/);
+  assert.match(detail, /syncedReadonlyField\('강의과목', member\.teaching_subjects\)/);
 });

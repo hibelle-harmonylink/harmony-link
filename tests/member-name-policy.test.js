@@ -14,15 +14,15 @@ const metadataMigration = read('supabase/migrations/202609130002_member_identity
 
 test('admin member detail labels make the three independent name sources explicit', () => {
   assert.match(admin, /title="일반 수정 · 사업체명 또는 활동명">닉네임\/업체명<input id="detailNickname"/);
-  assert.match(admin, /title="신청서 자동연동 · 파트너 신청서 재동기화 시 갱신될 수 있음">영문 이름<input id="detailFullName"/);
+  assert.match(admin, /syncedReadonlyField\('영문 이름', memberFullName\(member\)\)/);
   assert.match(admin, /title="관리자 직접 관리 · 신청서 재동기화로 변경되지 않음">한글 이름<input id="detailName"/);
 });
 
-test('Korean public name and English application name save through their separate RPC fields', () => {
+test('Korean public name saves directly while the application name remains synchronized', () => {
   assert.match(admin, /admin_update_member_name', \{ p_member_id: member\.id, p_display_name: nextName \}/);
   const metadataCall = admin.match(/admin_update_member_metadata', \{([\s\S]*?)\n        \}\);/)?.[1] || '';
   assert.match(metadataCall, /p_nickname: metadata\.nickname/);
-  assert.match(metadataCall, /p_full_name: metadata\.fullName/);
+  assert.match(metadataCall, /p_full_name: memberFullName\(member\)/);
   assert.match(admin, /한글 이름은 2자 이상 50자 이하/);
 });
 

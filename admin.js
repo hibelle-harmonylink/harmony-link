@@ -151,9 +151,16 @@
     overlay.querySelector('.admin-confirm-ok').focus();
   });
   const formatDate = value => value ? new Intl.DateTimeFormat('ko-KR', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(value)) : '없음';
-  // Phone numbers may be Korean, US, or international. Preserve the
-  // administrator-entered string rather than imposing a regional format.
-  const formatPhone = value => String(value || '').trim();
+  // Normalize only an unambiguous US 10-digit number (with an optional +1).
+  // Korean and other international numbers remain exactly as supplied.
+  const formatPhone = value => {
+    const original = String(value || '').trim();
+    const digits = original.replace(/\D/g, '');
+    const usDigits = digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits;
+    return usDigits.length === 10
+      ? `${usDigits.slice(0, 3)}-${usDigits.slice(3, 6)}-${usDigits.slice(6)}`
+      : original;
+  };
   const deny = text => { loading.hidden = true; app.hidden = true; denied.hidden = false; deniedMessage.textContent = text; };
   const normalize = member => access.normalizeUser({ ...member, is_admin: member.is_admin || member.role === 'admin' });
   // The admin account's stored display_name is a leftover site-brand
@@ -470,7 +477,6 @@
     const editable = !withdrawn && !protectedAccount;
     const editableClass = editable ? ' admin-editable-field' : '';
     const directFieldClass = `field-source-direct${editableClass}`;
-    const syncedFieldClass = `field-source-sync${editableClass}`;
     const manualFieldClass = `field-source-manual${editableClass}`;
     const settingFieldClass = `field-source-setting${editableClass}`;
     const editableDisabled = editable ? '' : ' disabled aria-disabled="true"';
@@ -483,10 +489,11 @@
     // renders exactly once, as its live input/select, which is what removed
     // the internal scrollbar on common desktop viewports (1366x768+).
     const readonlyField = (label, valueHtml, truncate = false) => `<div class="member-readonly member-system-field${truncate ? ' member-readonly-truncate' : ''}"><span>${label}<em>자동 관리</em></span><strong${truncate ? ` title="${escapeHtml(member.email || '')}"` : ''}>${valueHtml}</strong></div>`;
-    const basicInfoFields = `<section class="member-group"><h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시</small></h3><div class="member-group-grid">${readonlyField('회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>`)}${readonlyField('이메일', escapeHtml(member.email || ''), true)}${readonlyField('가입일', formatDate(member.created_at))}<label class="${manualFieldClass}" title="일반 수정 · 사업체명 또는 활동명">닉네임/업체명<input id="detailNickname" type="text" maxlength="80" autocomplete="nickname"${editableDisabled}></label><label class="${syncedFieldClass}" title="신청서 자동연동 · 파트너 신청서 재동기화 시 갱신될 수 있음">영문 이름<input id="detailFullName" type="text" maxlength="80" autocomplete="name"${editableDisabled}></label><label class="${syncedFieldClass}" title="신청서 자동연동 · 관리자 수정 가능">연락처<input id="detailPhone" type="tel" maxlength="30" autocomplete="tel" value="${escapeHtml(formatPhone(member.phone ?? ''))}"${editableDisabled}></label></div></section>`;
+    const syncedReadonlyField = (label, value) => `<div class="member-readonly member-synced-field" title="신청서 자동연동 · 신청서 재동기화로 갱신됩니다"><span>${label}<em>신청서 자동연동</em></span><strong>${escapeHtml(value || '—')}</strong></div>`;
+    const basicInfoFields = `<section class="member-group"><h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시</small></h3><div class="member-group-grid">${readonlyField('회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>`)}${readonlyField('이메일', escapeHtml(member.email || ''), true)}${readonlyField('가입일', formatDate(member.created_at))}<label class="${manualFieldClass}" title="일반 수정 · 사업체명 또는 활동명">닉네임/업체명<input id="detailNickname" type="text" maxlength="80" autocomplete="nickname"${editableDisabled}></label>${syncedReadonlyField('영문 이름', memberFullName(member))}${syncedReadonlyField('연락처', formatPhone(member.phone ?? ''))}</div></section>`;
     const protectedNotice = withdrawn || protectedAccount ? `<div class="member-protected-copy">${withdrawn ? '탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다.' : '관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.'}</div>` : '';
     const accessInputs = withdrawn || protectedAccount ? '' : `<label class="member-name-field ${directFieldClass}" title="관리자 직접 관리 · 신청서 재동기화로 변경되지 않음">한글 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label>`;
-    const roleMetadataInputs = `<label class="partner-metadata ${syncedFieldClass}" title="신청서 자동연동 · 관리자 수정 가능">전문분야<input id="detailSpecialty" type="text" maxlength="120"${editableDisabled}></label><label class="partner-metadata ${syncedFieldClass}" title="신청서 자동연동 · 관리자 수정 가능">강의과목<input id="detailTeachingSubjects" type="text" maxlength="240"${editableDisabled}></label><label class="student-metadata ${syncedFieldClass}" title="신청서 자동연동 · 관리자 수정 가능">수강과목<input id="detailEnrolledSubject" type="text" maxlength="120"${editableDisabled}></label><label class="student-metadata ${syncedFieldClass}" title="신청서 자동연동 · 관리자 수정 가능">담당강사<input id="detailAssignedInstructor" type="text" maxlength="120"${editableDisabled}></label>`;
+    const roleMetadataInputs = `<div class="partner-metadata">${syncedReadonlyField('전문분야', member.specialty)}</div><div class="partner-metadata">${syncedReadonlyField('강의과목', member.teaching_subjects)}</div><div class="student-metadata">${syncedReadonlyField('수강과목', member.enrolled_subject)}</div><div class="student-metadata">${syncedReadonlyField('담당강사', member.assigned_instructor)}</div>`;
     const roleInfoFields = `<section class="member-group"><h3>회원·파트너 정보 <small class="member-editable-note">관리 설정 · 자동연동 정보</small></h3>${protectedNotice}<div class="member-group-grid">${accessInputs}${roleMetadataInputs}</div></section>`;
     const partnerRegionFields = `<section class="partner-region partner-metadata" hidden aria-labelledby="detailPartnerRegionTitle"><div class="partner-region-heading"><div><h3 id="detailPartnerRegionTitle">활동 지역</h3><p id="detailPartnerRegionSummary">지역 정보를 불러오는 중…</p><p id="detailPartnerRegionServices" class="partner-region-services" hidden></p></div><span class="partner-region-note">파트너 전용</span></div><div class="partner-region-actions"><button id="detailManagePartnerRegion" type="button" class="member-region-manage">지역정보 관리</button></div></section>`;
     const regionAccessFields = `<section class="member-group"><h3>지역·권한</h3><div class="member-region-access-row">${partnerRegionFields}<div id="detailFeatures">${withdrawn ? '' : featureHtml(member)}</div></div></section>`;
@@ -498,15 +505,9 @@
     detail.innerHTML = `<div class="member-detail-summary"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(member.email || '')}</span>${typeBadge(member)}${member.is_admin ? '' : membershipBadge(member)}${badge(STATUS_LABELS[member.account_status], member.account_status)}</div><div class="member-detail-groups">${basicInfoFields}${roleInfoFields}${regionAccessFields}</div>${actions}`;
     const nameInput = detail.querySelector('#detailName');
     const nicknameInput = detail.querySelector('#detailNickname');
-    const fullNameInput = detail.querySelector('#detailFullName');
     const type = detail.querySelector('#detailType');
     const membership = detail.querySelector('#detailMembership');
     const status = detail.querySelector('#detailStatus');
-    const phone = detail.querySelector('#detailPhone');
-    const specialty = detail.querySelector('#detailSpecialty');
-    const teachingSubjects = detail.querySelector('#detailTeachingSubjects');
-    const enrolledSubject = detail.querySelector('#detailEnrolledSubject');
-    const assignedInstructor = detail.querySelector('#detailAssignedInstructor');
     const regionSummary = detail.querySelector('#detailPartnerRegionSummary');
     const regionServices = detail.querySelector('#detailPartnerRegionServices');
     const manageRegionButton = detail.querySelector('#detailManagePartnerRegion');
@@ -609,12 +610,7 @@
     };
     manageRegionButton.addEventListener('click', openRegionManager);
     if (nicknameInput) nicknameInput.value = memberNickname(member);
-    if (fullNameInput) fullNameInput.value = memberFullName(member);
-    if (specialty) specialty.value = member.specialty || '';
-    if (teachingSubjects) teachingSubjects.value = member.teaching_subjects || '';
-    if (enrolledSubject) enrolledSubject.value = member.enrolled_subject || '';
-    if (assignedInstructor) assignedInstructor.value = member.assigned_instructor || '';
-    if (withdrawn) [nicknameInput, fullNameInput, phone, specialty, teachingSubjects, enrolledSubject, assignedInstructor].forEach(input => { if (input) input.disabled = true; });
+    if (withdrawn && nicknameInput) nicknameInput.disabled = true;
     const showRoleMetadata = selectedType => {
       detail.querySelectorAll('.partner-metadata').forEach(field => { field.hidden = selectedType !== 'partner'; });
       detail.querySelectorAll('.student-metadata').forEach(field => { field.hidden = selectedType !== 'student'; });
@@ -626,10 +622,10 @@
       const preview = () => { detail.querySelector('#detailFeatures').innerHTML = featureHtml({ ...member, user_type: type.value, membership: membership.value, account_status: status.value }); };
       [type, membership, status].forEach(select => select.addEventListener('change', preview));
       type.addEventListener('change', () => showRoleMetadata(type.value));
-      detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, nameInput.value, type.value, membership.value, status.value, { nickname: nicknameInput.value, fullName: fullNameInput.value, phone: phone.value, specialty: specialty.value, teachingSubjects: teachingSubjects.value, enrolledSubject: enrolledSubject.value, assignedInstructor: assignedInstructor.value }, partnerRegion, partnerRegion));
+      detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, nameInput.value, type.value, membership.value, status.value, { nickname: nicknameInput.value }, partnerRegion, partnerRegion));
       detail.querySelector('.member-resend').addEventListener('click', event => resendNotification(raw, event.currentTarget));
     } else if (!protectedAccount && !withdrawn) {
-      detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, name, member.user_type, member.membership, member.account_status, { nickname: nicknameInput.value, fullName: fullNameInput.value, phone: phone.value, specialty: specialty.value, teachingSubjects: teachingSubjects.value, enrolledSubject: enrolledSubject.value, assignedInstructor: assignedInstructor.value }, partnerRegion, partnerRegion));
+      detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, name, member.user_type, member.membership, member.account_status, { nickname: nicknameInput.value }, partnerRegion, partnerRegion));
     }
     if (!withdrawn && member.user_type === 'partner') {
       readPartnerRegion().then(renderPartnerRegion).catch(() => { regionSummary.textContent = '지역 정보를 불러오지 못했습니다.'; });
@@ -674,8 +670,12 @@
     const nextName = requestedName.trim();
     const nameChanged = nextName !== (member.display_name || '');
     const accessChanged = nextUserType !== member.user_type || nextMembership !== member.membership || nextStatus !== member.account_status;
-    const metadata = { nickname: String(nextMetadata.nickname || '').trim(), fullName: String(nextMetadata.fullName || '').trim(), phone: formatPhone(nextMetadata.phone), specialty: String(nextMetadata.specialty || '').trim(), teachingSubjects: String(nextMetadata.teachingSubjects || '').trim(), enrolledSubject: String(nextMetadata.enrolledSubject || '').trim(), assignedInstructor: String(nextMetadata.assignedInstructor || '').trim() };
-    const metadataChanged = metadata.nickname !== memberNickname(member) || metadata.fullName !== memberFullName(member) || metadata.phone !== (member.phone || '') || metadata.specialty !== (member.specialty || '') || metadata.teachingSubjects !== (member.teaching_subjects || '') || metadata.enrolledSubject !== (member.enrolled_subject || '') || metadata.assignedInstructor !== (member.assigned_instructor || '');
+    // Nickname/업체명 is operationally distinct from application data and
+    // remains the one general metadata field an administrator may edit here.
+    // The synchronized fields are display-only and are deliberately sourced
+    // from the loaded member rather than from editable controls.
+    const metadata = { nickname: String(nextMetadata.nickname || '').trim() };
+    const metadataChanged = metadata.nickname !== memberNickname(member);
     // Region metadata is independent from the normal member metadata. Only
     // save it when the member is (or is becoming) a partner; changing a
     // partner back to another type deliberately leaves the stored region
@@ -754,12 +754,15 @@
         const { error } = await callRpc('admin_update_member_metadata', {
           p_member_id: member.id,
           p_nickname: metadata.nickname,
-          p_full_name: metadata.fullName,
-          p_phone: metadata.phone,
-          p_specialty: metadata.specialty,
-          p_teaching_subjects: metadata.teachingSubjects,
-          p_enrolled_subject: metadata.enrolledSubject,
-          p_assigned_instructor: metadata.assignedInstructor
+          // The deployed RPC has an eight-argument signature. Preserve the
+          // authoritative synchronized values verbatim; none are read from
+          // or editable through this Admin form.
+          p_full_name: memberFullName(member),
+          p_phone: member.phone || '',
+          p_specialty: member.specialty || '',
+          p_teaching_subjects: member.teaching_subjects || '',
+          p_enrolled_subject: member.enrolled_subject || '',
+          p_assigned_instructor: member.assigned_instructor || ''
         });
         results.push({ field: 'metadata', label: '관리 정보', ok: !error, error });
       }
@@ -817,13 +820,7 @@
           }
         }
         if (metadataChanged && (
-          memberNickname(freshMember) !== metadata.nickname ||
-          memberFullName(freshMember) !== metadata.fullName ||
-          (freshMember.phone || '') !== metadata.phone ||
-          (freshMember.specialty || '') !== metadata.specialty ||
-          (freshMember.teaching_subjects || '') !== metadata.teachingSubjects ||
-          (freshMember.enrolled_subject || '') !== metadata.enrolledSubject ||
-          (freshMember.assigned_instructor || '') !== metadata.assignedInstructor
+          memberNickname(freshMember) !== metadata.nickname
         )) {
           markUnverified('metadata', '관리 정보가 DB에 실제로 반영되지 않았습니다.');
         }
