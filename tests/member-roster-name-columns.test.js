@@ -61,6 +61,23 @@ test('actual 15-column Production legacy preview preserves 23 rows while leaving
   });
 });
 
+test('actual 15-column schema tolerates only blank physical trailing columns left by an earlier attempt', () => {
+  const legacyRows = Array.from({ length: 23 }, (_, index) => [
+    `HL-26-${String(index + 1).padStart(3, '0')}`,
+    `2026-09-${String((index % 20) + 1).padStart(2, '0')}`,
+    `nickname-${index + 1}`, `Full Name ${index + 1}`, `member${index + 1}@example.com`,
+    index === 1 ? '817-905-3468' : '010-9773-0052', 'google', '수강생', 'FREE', '활성',
+    'specialty', 'teaching', 'student', 'instructor', `uuid-${index + 1}`, '', ''
+  ]);
+  const sheet = readonlySheet(productionHeaders.concat(['', '']), legacyRows);
+  const plan = migrationRuntime.preflight(sheet);
+
+  assert.equal(plan.rows.length, 23);
+  assert.equal(plan.rows[1][6], '817-905-3468');
+  assert.equal(plan.rows[22][16], 'uuid-23');
+  assert.equal(sheet.getWriteCount(), 0);
+});
+
 test('manual migration is preflight-first, idempotent, and only targets the active roster sheet', () => {
   const migration = source.slice(source.indexOf('function migrateRosterNameColumns'), source.indexOf('function migrateLegacySchema_'));
   assert.match(migration, /function migrateRosterNameColumns\(\)/);
@@ -99,6 +116,16 @@ test('unknown, width-mismatched, and duplicate legacy data fail before any write
   migrationRuntime.setSheet(badWidth);
   assert.throws(() => migrationRuntime.migrate(), /행 폭/);
   assert.equal(badWidth.getWriteCount(), 0);
+
+  const unexpectedTrailingHeader = readonlySheet(productionHeaders.concat(['가입경로']), [row.concat(['unexpected'])]);
+  migrationRuntime.setSheet(unexpectedTrailingHeader);
+  assert.throws(() => migrationRuntime.migrate(), /지원 schema 밖의 값/);
+  assert.equal(unexpectedTrailingHeader.getWriteCount(), 0);
+
+  const unexpectedTrailingValue = readonlySheet(productionHeaders.concat(['']), [row.concat(['unexpected'])]);
+  migrationRuntime.setSheet(unexpectedTrailingValue);
+  assert.throws(() => migrationRuntime.migrate(), /legacy schema 밖의 데이터/);
+  assert.equal(unexpectedTrailingValue.getWriteCount(), 0);
 });
 
 test('new signup accepts explicit display_name without treating provider display text as Korean-name data', () => {
