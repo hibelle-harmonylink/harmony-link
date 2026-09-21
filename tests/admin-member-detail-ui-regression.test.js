@@ -30,7 +30,7 @@ test('editable and system-managed member fields are visually distinct without ma
   assert.match(detail, /readonlyField\('이메일'/);
   assert.match(detail, /readonlyField\('가입일'/);
   assert.match(detail, /admin-editable-field/);
-  assert.match(adminCss, /\.admin-editable-field>input,\.admin-editable-field>select\{border:2px solid #1a34ac!important;background:#f4f8ff!important\}/);
+  assert.match(adminCss, /\.admin-editable-field\.field-source-direct>input\{border:2px solid #1a34ac!important;background:#f4f8ff!important\}/);
   assert.match(adminCss, /\.member-system-field em\{font-style:normal;color:#718198/);
   assert.doesNotMatch(detail, /id="detailMemberNumber"/);
 });

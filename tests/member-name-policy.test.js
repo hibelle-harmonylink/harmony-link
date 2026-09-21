@@ -13,9 +13,9 @@ const applicationMigration = read('supabase/migrations/202609130004_member_appli
 const metadataMigration = read('supabase/migrations/202609130002_member_identity_metadata.sql');
 
 test('admin member detail labels make the three independent name sources explicit', () => {
-  assert.match(admin, /title="사업체명 또는 활동명">닉네임\/업체명<input id="detailNickname"/);
-  assert.match(admin, /title="신청서 공식 이름 · 재동기화 시 갱신될 수 있음">영문 이름<input id="detailFullName"/);
-  assert.match(admin, /title="관리자 확인 이름 · 신청서 재동기화로 변경되지 않음">한글 이름<input id="detailName"/);
+  assert.match(admin, /title="일반 수정 · 사업체명 또는 활동명">닉네임\/업체명<input id="detailNickname"/);
+  assert.match(admin, /title="신청서 자동연동 · 파트너 신청서 재동기화 시 갱신될 수 있음">영문 이름<input id="detailFullName"/);
+  assert.match(admin, /title="관리자 직접 관리 · 신청서 재동기화로 변경되지 않음">한글 이름<input id="detailName"/);
 });
 
 test('Korean public name and English application name save through their separate RPC fields', () => {
