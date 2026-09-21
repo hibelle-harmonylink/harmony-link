@@ -32,21 +32,18 @@ test('senior learning preserves source categories while grouping their materials
   assert.match(script, /status:'preparing'/);
 });
 
-test('smartphone materials use all fifteen Drive textbooks in their numbered order', () => {
-  const smartphoneBlock = script.match(/const smartphoneLessons = \[([\s\S]*?)\n  \];/);
-  assert.ok(smartphoneBlock, 'smartphone lesson data exists');
-  const lessons = [...smartphoneBlock[1].matchAll(/\{ id:'(smartphone-(\d{2}))', title:'([^']+)', description:'[^']+', status:'(ready|available)', accessLevel:'free', slides:\['([^']+)'\] \}/g)];
+test('smartphone materials retain the fifteen delivered assets and bookmark IDs in order', () => {
+  const lessons = require('../senior-smartphone-lessons')[0].lessons.slice(0, 15);
   assert.equal(lessons.length, 15);
-  assert.deepEqual(lessons.map(([, , number]) => number), Array.from({ length:15 }, (_, index) => String(index + 1).padStart(2, '0')));
-  assert.equal(lessons.filter(([, , , , status]) => status === 'preparing').length, 0);
-  assert.equal(lessons.filter(([, , , , status]) => ['ready', 'available'].includes(status)).length, 15);
-  const paths = lessons.map(([, , number, , , assetPath]) => assetPath);
+  assert.deepEqual(lessons.map(lesson => lesson.id), Array.from({ length:15 }, (_, index) => `smartphone-${String(index + 1).padStart(2, '0')}`));
+  assert.ok(lessons.every(lesson => lesson.status === 'ready'));
+  const paths = lessons.map(lesson => lesson.slides[0]);
   assert.equal(new Set(paths).size, 15);
   paths.forEach((assetPath, index) => {
     assert.equal(assetPath, `assets/senior-learning/smartphone/${String(index + 1).padStart(2, '0')}/slide-01.png`);
     assert.equal(fs.existsSync(path.join(root, assetPath)), true, `${assetPath} exists`);
   });
-  assert.doesNotMatch(smartphoneBlock[1], /\.map\(lesson => \(\{ \.\.\.lesson, status:'preparing' \}\)\)/);
+  assert.match(script, /smartphoneFolders\.flatMap\(folder => folder.lessons\)/);
   assert.match(script, /const isLessonAvailable = lesson => \['ready', 'available'\]\.includes\(lesson\?\.status\);/);
 });
 

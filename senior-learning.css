@@ -1,4 +1,65 @@
 :root { --senior-blue:#0b5fc2; --senior-deep:#082f68; --senior-pale:#edf6ff; --senior-line:#c7d9ec; --senior-text:#182a40; --senior-muted:#61758c; }
+/* Only the materials content header is compacted; site header/home/mini apps stay unchanged. */
+body[data-senior-page="materials"] .senior-learning-main { padding-top:80px; }
+body[data-senior-page="materials"] .senior-learning-subhero { margin-bottom:8px; }
+body[data-senior-page="materials"] .senior-page-back { margin-bottom:0; min-height:44px; }
+body[data-senior-page="materials"] .senior-learning-subhero h1 { font-size:32px; letter-spacing:-1px; }
+body[data-senior-page="materials"] #seniorMaterialsIntro[hidden] { display:none; }
+body[data-senior-page="materials"] #seniorMaterialsIntro>span { margin-top:4px; color:#334b63; font-size:18px; line-height:1.5; }
+body[data-senior-page="materials"] .senior-breadcrumb { flex-wrap:wrap; gap:5px; margin-bottom:10px; font-size:17px; color:#334b63; }
+body[data-senior-page="materials"] .senior-breadcrumb button { min-height:44px; padding:8px 10px; border-radius:8px; background:#e7f0fa; }
+body[data-senior-page="materials"] .senior-breadcrumb strong { min-width:0; overflow-wrap:anywhere; }
+.smartphone-folders h2,.smartphone-folder h2,.smartphone-detail h2 { margin:0; color:var(--senior-deep); font-size:clamp(26px,3vw,32px); line-height:1.4; }
+.smartphone-folders>p,.smartphone-folder header>p { margin:8px 0 16px; color:#334b63; font-size:18px; line-height:1.6; }
+.smartphone-folder-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
+.smartphone-folder-card { min-width:0; min-height:260px; display:flex; flex-direction:column; align-items:flex-start; gap:12px; padding:26px; border:2px solid #c7d9ec; border-radius:18px; background:white; color:var(--senior-deep); font:inherit; text-align:left; cursor:pointer; }
+.smartphone-folder-card>span { font-size:34px; }
+.smartphone-folder-card strong { font-size:25px; overflow-wrap:anywhere; }
+.smartphone-folder-card small { color:#334b63; font-size:18px; line-height:1.6; }
+.smartphone-folder-card b { margin-top:auto; padding-top:14px; font-size:18px; color:var(--senior-blue); }
+.smartphone-folder-card:hover { border-color:var(--senior-blue); background:#f0f7ff; }
+.smartphone-folder header { margin:0 0 16px; }
+.smartphone-folder>.senior-secondary-button { margin-top:20px; }
+.smartphone-lesson-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); grid-auto-rows:1fr; gap:16px; align-items:stretch; }
+.smartphone-lesson-card { min-width:0; display:flex; flex-direction:column; padding:20px; border:1px solid var(--senior-line); border-radius:14px; background:#fff; }
+.smartphone-number { color:var(--senior-blue); font-size:17px; font-weight:800; }
+.smartphone-lesson-card h3 { margin:10px 0 8px; font-size:21px; line-height:1.5; word-break:keep-all; overflow-wrap:anywhere; }
+.smartphone-lesson-card p { margin:0 0 18px; color:#334b63; font-size:18px; line-height:1.65; }
+.smartphone-lesson-card .senior-primary-button { width:100%; margin-top:auto; min-height:48px; }
+.smartphone-detail { max-width:860px; margin:0 auto; overflow-wrap:anywhere; }
+.smartphone-detail header { margin:0 0 18px; }
+.smartphone-detail header>p:not(.smartphone-number) { color:#334b63; font-size:19px; line-height:1.7; }
+.smartphone-detail .smartphone-number { margin-bottom:8px; }
+.smartphone-detail .smartphone-version-note { margin-top:14px; color:#334b63; }
+.smartphone-detail section { min-width:0; margin:20px 0; padding:24px; border:1px solid var(--senior-line); border-radius:14px; background:white; }
+.smartphone-detail h3 { margin:0 0 14px; color:var(--senior-deep); font-size:23px; line-height:1.5; }
+.smartphone-detail section p,.smartphone-detail li { font-size:19px; line-height:1.85; }
+.smartphone-detail section p { margin:0; }
+.smartphone-detail ol,.smartphone-detail ul { padding-left:28px; margin:0; }
+.smartphone-detail li+li { margin-top:14px; }
+.smartphone-detail li::marker { color:var(--senior-blue); font-weight:800; }
+.smartphone-detail .smartphone-remember { background:#eef7ef; border-color:#b4d7ba; }
+.smartphone-detail .smartphone-picture { font-size:18px; line-height:1.7; color:#334b63; }
+.smartphone-detail .senior-viewer img { aspect-ratio:auto; max-width:100%; height:auto; }
+.smartphone-detail .senior-viewer figure:fullscreen { display:flex; flex-direction:column; justify-content:center; background:#102034; }
+.smartphone-detail .senior-viewer figure:fullscreen img { height:calc(100vh - 54px); object-fit:contain; }
+.smartphone-folder-card:focus-visible,.smartphone-detail button:focus-visible,.smartphone-lesson-card button:focus-visible { outline:3px solid #d98c00; outline-offset:4px; }
+@media (max-width:1200px) { .smartphone-lesson-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media (max-width:800px) { .smartphone-lesson-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .smartphone-folder-grid { grid-template-columns:1fr; } .smartphone-folder-card { min-height:190px; } }
+@media (max-width:620px) {
+  body[data-senior-page="materials"] .senior-learning-main { padding-top:70px; }
+  body[data-senior-page="materials"] .senior-learning-subhero h1 { font-size:28px; }
+  .smartphone-lesson-grid { grid-template-columns:1fr; gap:12px; }
+  .smartphone-folder-card { padding:22px; }
+  .smartphone-lesson-card { padding:18px; }
+  .smartphone-detail section { padding:18px; }
+  .smartphone-detail section p,.smartphone-detail li { font-size:18px; }
+  .smartphone-detail h3 { font-size:22px; }
+  .smartphone-detail ol,.smartphone-detail ul { padding-left:24px; }
+  .smartphone-detail .senior-viewer-actions { grid-template-columns:1fr 1fr; }
+  .smartphone-detail [data-senior-fullscreen] { grid-column:1 / -1; grid-row:1; }
+  .smartphone-detail .senior-viewer-actions button { padding:8px; }
+}
 * { box-sizing:border-box; }
 body { margin:0; color:var(--senior-text); background:#f6faff; }
 .tool-site-header { min-height:68px; background:#eef8f1!important; border-bottom-color:#cfe3d6!important; }
