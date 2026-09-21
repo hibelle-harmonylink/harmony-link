@@ -407,12 +407,21 @@ function preflightRosterNameColumns_(sheet) {
   const lastRow = sheet.getLastRow();
   const lastColumn = sheet.getLastColumn();
   const headers = sheet.getRange(1, 1, 1, lastColumn).getDisplayValues()[0];
-  if (headersMatch_(headers, HEADERS)) return { noOp: true, rows: [] };
+  if (headersMatch_(headers, HEADERS)) {
+    validateRosterTrailingColumns_(headers, HEADERS.length);
+    return { noOp: true, rows: [] };
+  }
   const schema = legacyRosterSchema_(headers);
   if (!schema) throw new Error('회원가입 명단 헤더가 지원하는 legacy schema와 일치하지 않습니다.');
+  validateRosterTrailingColumns_(headers, schema.headers.length);
   const rowCount = Math.max(lastRow - 1, 0);
-  const rows = rowCount ? sheet.getRange(2, 1, rowCount, lastColumn).getValues() : [];
-  validateLegacyRosterRows_(rows, schema.headers.length);
+  const rawRows = rowCount ? sheet.getRange(2, 1, rowCount, lastColumn).getValues() : [];
+  validateLegacyRosterRows_(rawRows, schema.headers.length);
+  // getLastColumn() includes columns that were previously formatted or
+  // inserted, even if their header and every cell are blank.  Those empty
+  // trailing columns are not part of the named legacy schema.  Read and
+  // validate them first, then use only the verified logical roster width.
+  const rows = rawRows.map(function (row) { return row.slice(0, schema.headers.length); });
   const memberNumbers = {};
   rows.forEach(function (row) {
     const memberNumber = text_(row[schema.columns.memberNumber - 1]);
@@ -441,8 +450,17 @@ function legacyRosterSchema_(headers) {
 
 function validateLegacyRosterRows_(rows, expectedWidth) {
   rows.forEach(function (row) {
-    if (!Array.isArray(row) || row.length !== expectedWidth) throw new Error('회원가입 명단 데이터 행 폭이 header와 일치하지 않습니다.');
+    if (!Array.isArray(row) || row.length < expectedWidth) throw new Error('회원가입 명단 데이터 행 폭이 header와 일치하지 않습니다.');
+    if (row.slice(expectedWidth).some(function (value) { return text_(value); })) {
+      throw new Error('회원가입 명단에 legacy schema 밖의 데이터가 있어 migration을 중단했습니다.');
+    }
   });
+}
+
+function validateRosterTrailingColumns_(headers, expectedWidth) {
+  if (headers.slice(expectedWidth).some(function (header) { return text_(header); })) {
+    throw new Error('회원가입 명단 header에 지원 schema 밖의 값이 있어 migration을 중단했습니다.');
+  }
 }
 
 function writeRosterNameColumns_(sheet, plan) {
