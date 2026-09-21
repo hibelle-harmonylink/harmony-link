@@ -341,6 +341,86 @@ function getSheet_() {
   return book.getSheetByName(MEMBER_SIGNUP.sheetName) || book.insertSheet(MEMBER_SIGNUP.sheetName);
 }
 
+// Public, read-only diagnostic for the manual migration.  Unlike getSheet_(),
+// this never creates a missing sheet, applies schema formatting, or invokes a
+// migration.  Run it from the Apps Script function picker to capture the
+// exact live header values before changing any Production data.
+function inspectRosterSchema() {
+  const sheet = getExistingRosterSheet_();
+  const lastColumn = sheet.getLastColumn();
+  const headers = lastColumn ? sheet.getRange(1, 1, 1, lastColumn).getDisplayValues()[0] : [];
+  const candidates = rosterSchemaCandidates_();
+  const matches = candidates.filter(function (candidate) {
+    return headersMatch_(headers, candidate.headers) && trailingHeadersAreBlank_(headers, candidate.headers.length);
+  });
+  const differences = candidates.map(function (candidate) {
+    return {
+      id: candidate.id,
+      firstDifference: firstRosterHeaderDifference_(headers, candidate.headers)
+    };
+  });
+  const report = {
+    sheetName: sheet.getName(),
+    lastColumn: lastColumn,
+    headers: headers.map(function (value, index) {
+      return { index: index + 1, value: value, trimmed: String(value).trim() };
+    }),
+    trailingBlankColumns: trailingBlankColumnCount_(headers),
+    detectedSchema: matches.length ? matches[0].id : 'unsupported',
+    supportedSchemas: candidates.map(function (candidate) {
+      return { id: candidate.id, headers: candidate.headers.slice() };
+    }),
+    firstDifference: matches.length ? null : differences.slice().sort(function (left, right) {
+      return firstDifferenceIndex_(left.firstDifference) - firstDifferenceIndex_(right.firstDifference);
+    })[0].firstDifference,
+    schemaDifferences: differences
+  };
+  Logger.log(JSON.stringify(report));
+  return report;
+}
+
+function getExistingRosterSheet_() {
+  const id = PropertiesService.getScriptProperties().getProperty(MEMBER_SIGNUP.propertySpreadsheetId);
+  if (!id) throw new Error('MEMBER_SPREADSHEET_ID가 설정되지 않았습니다.');
+  const sheet = SpreadsheetApp.openById(id).getSheetByName(MEMBER_SIGNUP.sheetName);
+  if (!sheet) throw new Error('회원가입 명단 Sheet를 찾지 못했습니다.');
+  return sheet;
+}
+
+function rosterSchemaCandidates_() {
+  return [
+    { id: 'legacy-15-without-signup-path', headers: PRE_NAME_COLUMNS_WITHOUT_SIGNUP_PATH_HEADERS },
+    { id: 'legacy-16-with-signup-path', headers: PRE_NAME_COLUMNS_HEADERS },
+    { id: 'final-17', headers: HEADERS }
+  ];
+}
+
+function trailingHeadersAreBlank_(headers, logicalWidth) {
+  return headers.slice(logicalWidth).every(function (value) { return !text_(value); });
+}
+
+function trailingBlankColumnCount_(headers) {
+  let count = 0;
+  for (let index = headers.length - 1; index >= 0 && !text_(headers[index]); index -= 1) count += 1;
+  return count;
+}
+
+function firstRosterHeaderDifference_(headers, expected) {
+  const width = Math.max(headers.length, expected.length);
+  for (let index = 0; index < width; index += 1) {
+    const actual = index < headers.length ? headers[index] : '';
+    const wanted = index < expected.length ? expected[index] : '';
+    if (actual !== wanted) {
+      return { column: index + 1, expected: wanted, actual: actual, actualTrimmed: String(actual).trim() };
+    }
+  }
+  return null;
+}
+
+function firstDifferenceIndex_(difference) {
+  return difference ? difference.column : Number.MAX_SAFE_INTEGER;
+}
+
 function ensureSchema_(sheet) {
   if (sheet.getLastRow() === 0) sheet.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
   const current = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), HEADERS.length)).getDisplayValues()[0];

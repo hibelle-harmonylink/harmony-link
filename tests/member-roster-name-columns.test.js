@@ -8,6 +8,7 @@ const auth = fs.readFileSync(path.join(__dirname, '..', 'auth.js'), 'utf8');
 const preview = new Function(`${source}\nreturn previewRosterNameColumns_;`)();
 const formatPhone = new Function(`${source}\nreturn formatPhone_;`)();
 const migrationRuntime = new Function(`${source}\nreturn { preflight: preflightRosterNameColumns_, migrate: migrateRosterNameColumns, setSheet: sheet => { getSheet_ = () => sheet; } };`)();
+const inspectionRuntime = new Function(`const Logger = { entries: [], log: value => Logger.entries.push(value) };\n${source}\nreturn { inspect: inspectRosterSchema, setSheet: sheet => { getExistingRosterSheet_ = () => sheet; }, logs: Logger.entries };`)();
 
 const oldHeaders = ['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '시스템 ID'];
 const productionHeaders = ['회원번호', '가입일', '닉네임', '이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '시스템 ID'];
@@ -26,6 +27,20 @@ function readonlySheet(headers, rows) {
         setValue: () => { writes += 1; }
       };
     },
+    getWriteCount: () => writes
+  };
+}
+
+function inspectionSheet(headers) {
+  let writes = 0;
+  return {
+    getName: () => '회원가입 명단',
+    getLastColumn: () => headers.length,
+    getRange: () => ({
+      getDisplayValues: () => [headers],
+      setValue: () => { writes += 1; },
+      setValues: () => { writes += 1; }
+    }),
     getWriteCount: () => writes
   };
 }
@@ -75,6 +90,37 @@ test('actual 15-column schema tolerates only blank physical trailing columns lef
   assert.equal(plan.rows.length, 23);
   assert.equal(plan.rows[1][6], '817-905-3468');
   assert.equal(plan.rows[22][16], 'uuid-23');
+  assert.equal(sheet.getWriteCount(), 0);
+});
+
+test('inspectRosterSchema is read-only and reports exact live header diagnostics', () => {
+  const sheet = inspectionSheet(productionHeaders.concat(['', '']));
+  inspectionRuntime.setSheet(sheet);
+  const report = inspectionRuntime.inspect();
+
+  assert.equal(report.sheetName, '회원가입 명단');
+  assert.equal(report.lastColumn, 17);
+  assert.equal(report.trailingBlankColumns, 2);
+  assert.equal(report.detectedSchema, 'legacy-15-without-signup-path');
+  assert.deepEqual(report.headers[2], { index: 3, value: '닉네임', trimmed: '닉네임' });
+  assert.equal(report.firstDifference, null);
+  assert.equal(report.supportedSchemas.length, 3);
+  assert.equal(sheet.getWriteCount(), 0);
+
+  const inspection = source.slice(source.indexOf('function inspectRosterSchema'), source.indexOf('function ensureSchema_'));
+  assert.match(inspection, /getExistingRosterSheet_\(\)/);
+  assert.doesNotMatch(inspection, /getSheet_\(\)|ensureSchema_\(|migrateRosterNameColumns\(|setValue|setValues|insert|delete|setBackground|setFont|setDataValidation/);
+});
+
+test('inspectRosterSchema identifies the first nonmatching legacy header without writing', () => {
+  const sheet = inspectionSheet(productionHeaders.map((header, index) => index === 2 ? '닉네임 ' : header));
+  inspectionRuntime.setSheet(sheet);
+  const report = inspectionRuntime.inspect();
+
+  assert.equal(report.detectedSchema, 'unsupported');
+  assert.deepEqual(report.firstDifference, {
+    column: 3, expected: '닉네임', actual: '닉네임 ', actualTrimmed: '닉네임'
+  });
   assert.equal(sheet.getWriteCount(), 0);
 });
 
