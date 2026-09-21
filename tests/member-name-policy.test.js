@@ -26,6 +26,28 @@ test('Korean public name and English application name save through their separat
   assert.match(admin, /한글 이름은 2자 이상 50자 이하/);
 });
 
+test('a verified Korean-name save remains the detail header and input value after reload', () => {
+  assert.match(admin, /const name = resolveDisplayName\(member\)/);
+  assert.match(admin, /nameInput\.value = name/);
+  assert.match(admin, /const resolveDisplayName = member => fallbackMemberName\(member\)/);
+  assert.match(admin, /if \(nameChanged && freshMember\.display_name !== nextName\)/);
+  assert.match(admin, /if \(failed\.length === 0\) \{\s*resultMessage = '저장되었습니다\. \(DB 재조회로 확인함\)'/);
+  assert.match(applicationMigration, /full_name = coalesce/);
+  const syncStart = applicationMigration.indexOf('create or replace function public.internal_sync_member_application_metadata');
+  const syncEnd = applicationMigration.indexOf('revoke all on function public.internal_sync_member_application_metadata', syncStart);
+  assert.doesNotMatch(applicationMigration.slice(syncStart, syncEnd), /member_profiles|display_name/);
+});
+
+test('a failed Korean-name RPC or failed post-save read cannot show the success save state', () => {
+  const updateStart = admin.indexOf('const updateMember = async');
+  const updateEnd = admin.indexOf("filters.addEventListener", updateStart);
+  const update = admin.slice(updateStart, updateEnd);
+  assert.match(update, /results\.push\(\{ field: 'name', label: '한글 이름', ok: !error, error \}\)/);
+  assert.match(update, /if \(nameChanged && freshMember\.display_name !== nextName\) \{\s*markUnverified\('name'/);
+  assert.match(update, /if \(failed\.length > 0\) \{\s*setMessage\(resultMessage, true\)/);
+  assert.match(update, /if \(failed\.length > 0\)[\s\S]*?return;[\s\S]*?setMessage\('변경사항이 저장되었습니다\.'/);
+});
+
 test('partner application resync preserves display_name while refreshing nonempty full_name and nickname metadata', () => {
   const syncStart = applicationMigration.indexOf('create or replace function public.internal_sync_member_application_metadata');
   const syncEnd = applicationMigration.indexOf('revoke all on function public.internal_sync_member_application_metadata', syncStart);

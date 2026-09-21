@@ -169,7 +169,11 @@
   // anonymous in the admin UI: use the existing display name, then email.
   const memberNickname = member => String(member.nickname || '').trim() || fallbackMemberName(member);
   const memberFullName = member => String(member.full_name || '').trim() || fallbackMemberName(member);
-  const resolveDisplayName = member => memberFullName(member);
+  // The detail header and the administrator-confirmed Korean-name input are
+  // both the public profile name.  Keep the application-provided full name
+  // separate for its own field; otherwise a successful display_name save is
+  // hidden again as soon as the detail dialog is reopened.
+  const resolveDisplayName = member => fallbackMemberName(member);
   const memberNumberClass = member => member.member_number && member.application_completed === false
     ? 'member-number member-number-pending'
     : 'member-number';
