@@ -20,9 +20,9 @@ test('preserves existing display identities as nicknames and backfills only the 
   assert.doesNotMatch(migration, /update public\.member_profiles/);
 });
 
-test('admin roster searches and renders separate nickname and full-name fields', () => {
+test('admin roster keeps the nickname column separate while rendering the public person-name policy', () => {
   assert.match(admin, /\['닉네임', escapeHtml\(memberNickname\(member\)\)\]/);
-  assert.match(admin, /\['이름', escapeHtml\(memberFullName\(member\)\)/);
+  assert.match(admin, /\['이름', escapeHtml\(memberPersonName\(member\)\)/);
   assert.match(admin, /member\.nickname \|\| ''} \$\{member\.full_name/);
   assert.match(admin, /id="detailNickname"/);
   assert.match(admin, /id="detailFullName"/);
