@@ -179,7 +179,11 @@
   // A person's public/admin-facing name is not a business nickname.  Keep
   // the administrator-confirmed profile name first, then the application
   // name for legacy rows that have no display_name yet.
-  const memberPersonName = member => String(member.display_name || '').trim() || String(member.full_name || '').trim() || fallbackMemberName(member);
+  const memberPersonName = member => {
+    const raw = String(member.display_name || '').trim();
+    if (member.is_admin && raw === 'Harmony Link') return '하이벨';
+    return raw || String(member.full_name || '').trim() || fallbackMemberName(member);
+  };
   // The detail header and the administrator-confirmed Korean-name input are
   // both the public profile name.  Keep the application-provided full name
   // separate for its own field; otherwise a successful display_name save is
