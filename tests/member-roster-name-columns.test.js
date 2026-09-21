@@ -251,6 +251,16 @@ test('manual migration is preflight-first, idempotent, and only targets the acti
   assert.doesNotMatch(migration, /getSheets\(/);
 });
 
+test('migration clears legacy data validations before writing the shifted final matrix', () => {
+  const write = source.slice(source.indexOf('function writeRosterNameColumns_'), source.indexOf('function applyFinalRosterSchemaFormatting_'));
+  const format = source.slice(source.indexOf('function applyFinalRosterSchemaFormatting_'), source.indexOf('function previewRosterNameColumns_'));
+  assert.match(write, /clearDataValidations\(\)/);
+  assert.ok(write.indexOf('clearDataValidations()') < write.indexOf('setValues(plan.matrix)'));
+  assert.match(format, /COLUMNS\.memberType[\s\S]*setDataValidation/);
+  assert.match(format, /COLUMNS\.membership[\s\S]*setDataValidation/);
+  assert.match(format, /COLUMNS\.accountStatus[\s\S]*setDataValidation/);
+});
+
 test('final 17-column schema is a write-free migration no-op', () => {
   const finalSheet = readonlySheet(newHeaders, [Array.from({ length: 17 }, (_, index) => `value-${index + 1}`)]);
   migrationRuntime.setSheet(finalSheet);
