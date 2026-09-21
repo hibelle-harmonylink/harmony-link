@@ -105,9 +105,9 @@ test('actual 15-column schema tolerates only blank physical trailing columns lef
   assert.equal(sheet.getWriteCount(), 0);
 });
 
-test('recoverable duplicate 가입경로 schema requires both columns empty while preserving 23 rows', () => {
+test('recoverable duplicate 가입경로 schema preserves the first 가입경로 while the second column is empty', () => {
   const rows = Array.from({ length: 23 }, (_, offset) => {
-    return duplicateSignupPathRow(offset + 1, '', '');
+    return duplicateSignupPathRow(offset + 1, offset === 0 ? 'Harmony Link 홈페이지' : '', '');
   });
   const sheet = readonlySheet(duplicateSignupPathHeaders, rows);
   const plan = migrationRuntime.preflight(sheet);
@@ -122,15 +122,15 @@ test('recoverable duplicate 가입경로 schema requires both columns empty whil
     assert.equal(row[4], rows[offset][3]);
     assert.equal(row[5], rows[offset][4]);
     assert.equal(row[6], rows[offset][5]);
+    assert.equal(row[15], rows[offset][14]);
     assert.equal(row[16], rows[offset][16]);
   });
-  assert.equal(plan.rows[0][15], '');
+  assert.equal(plan.rows[0][15], 'Harmony Link 홈페이지');
   assert.equal(sheet.getWriteCount(), 0);
 });
 
-test('any nonblank duplicate 가입경로 value stops before any mutation', () => {
+test('only a nonblank second duplicate 가입경로 value stops before any mutation', () => {
   [
-    duplicateSignupPathRow(1, '사이트 가입', ''),
     duplicateSignupPathRow(1, '', 'Google Form'),
     duplicateSignupPathRow(1, '소개', '소개'),
     duplicateSignupPathRow(1, '사이트 가입', 'Google Form')
