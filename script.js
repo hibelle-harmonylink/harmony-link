@@ -641,6 +641,13 @@ function programToWebModel(program){
 }
 const specialtyPrograms = (window.HARMONY_LINK_PROGRAMS||[]).map(programToWebModel);
 
+// DMS Care Training Center is an outside 입점 파트너 program, not one of the 3
+// canonical specialty programs above -- kept out of shared/data/programs.js
+// (whose schema/semantics are 직영/공동운영 + teacher-bio only) and hand-appended
+// here so it reuses the same card visuals via career/partner.html?partner=dms,
+// the existing Production DMS partner page (see career/data.js).
+const dmsPartnerCard = `<article class="specialty-banner-card specialty-dms reveal delay-2"><div class="specialty-partner-logo"><img src="assets/images/dms-care-logo.webp" alt="DMS Care Training Center 로고"></div><div class="specialty-banner-info"><span class="specialty-operation-badge" data-ko="입점 파트너" data-en="PARTNER">입점 파트너</span><div class="specialty-dms-heading"><span class="specialty-dms-category" data-ko="직업교육 · Healthcare" data-en="Career Training · Healthcare">직업교육 · Healthcare</span><h3 data-ko="DMS Care Training Center" data-en="DMS Care Training Center">DMS Care Training Center</h3></div><p class="specialty-card-description" data-ko="미국 Healthcare 분야의 실무와 자격시험을 준비하는 직업교육 프로그램" data-en="Career training that prepares students for hands-on Healthcare work and certification exams in the U.S.">미국 Healthcare 분야의 실무와 자격시험을 준비하는 직업교육 프로그램</p><a class="btn specialty-programs-link" href="career/partner.html?partner=dms"><span data-ko="프로그램 보기" data-en="View Program">프로그램 보기</span></a></div></article>`;
+
 const oldSpecialtyStart = document.getElementById('digital-why');
 if (oldSpecialtyStart) {
   const specialtySection = document.createElement('section');
@@ -649,7 +656,7 @@ if (oldSpecialtyStart) {
   specialtySection.innerHTML = `<div class="container"><div class="section-heading centered reveal"><p class="eyebrow">EDUCATION PROGRAMS</p><h2 data-ko="교육 프로그램" data-en="Education Programs">교육 프로그램</h2><p data-ko="Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요." data-en="Explore specialty programs operated directly or jointly by Harmony Link.">Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요.</p></div><div class="specialty-banner-grid">${specialtyPrograms.map((program,index)=>{
     const actionHtml = `<a class="btn specialty-programs-link" href="${program.url}"><span data-ko="프로그램 보기" data-en="View Program">프로그램 보기</span></a>`;
     return `<article class="specialty-banner-card ${program.tone} specialty-${program.id} reveal delay-${Math.min(index,2)}"><a class="specialty-poster-preview" href="${program.image}" aria-label="${program.titleKo} 전단지 크게 보기"><img src="${program.image}" alt="${program.titleKo} 프로그램 전단지"><span data-ko="전단지 크게 보기" data-en="View Flyer">전단지 크게 보기</span></a><div class="specialty-banner-info"><span class="specialty-operation-badge" data-ko="${program.operationKo}" data-en="${program.operationEn}">${program.operationKo}</span><h3 data-ko="${program.titleKo}" data-en="${program.titleEn}">${program.titleKo}</h3><p class="specialty-card-description" data-ko="${program.descriptionKo}" data-en="${program.descriptionEn}">${program.descriptionKo}</p>${actionHtml}</div></article>`;
-  }).join('')}</div></div>`;
+  }).join('')}${dmsPartnerCard}</div></div>`;
   oldSpecialtyStart.before(specialtySection);
   specialtySection.querySelectorAll('.reveal').forEach(item=>item.classList.add('visible'));
   document.querySelectorAll('#digital-why, .english-feature, .choir-feature').forEach(section=>section.remove());

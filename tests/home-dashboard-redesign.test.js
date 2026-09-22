@@ -97,7 +97,7 @@ test('Business/Events canonical schemas are untouched by the HOME redesign', () 
   const businessCount = (businessesData.match(/id:"[a-z0-9-]+"/g) || []).length;
   assert.equal(businessCount, 6);
   const eventIds = [...eventsData.matchAll(/id:"([a-z0-9-]+)"/g)].map(m => m[1]);
-  assert.deepEqual(eventIds, ['messiah', 'hole19-tournament', 'free-music-class', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar']);
+  assert.deepEqual(eventIds, ['messiah', 'hole19-tournament', 'free-music-class', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
 });
 
 test('Auth/Contact/Senior Learning/Community are not touched by the HOME redesign', () => {
