@@ -80,7 +80,7 @@ test('app events include the current Production 3 upcoming + 3 past classes', ()
   // shared-content.js no longer carries any of the 6 events.
   assert.doesNotMatch(sharedContent, /events:\s*\[/);
   const ids = [...eventsData.matchAll(/id:"([a-z0-9-]+)"/g)].map(m => m[1]);
-  assert.deepEqual(ids, ['messiah', 'hole19-tournament', 'free-music-class', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar']);
+  assert.deepEqual(ids, ['messiah', 'hole19-tournament', 'free-music-class', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
 });
 
 test('service worker v104 precaches the Phase 3 Programs canonical file without changing the caching strategy', () => {

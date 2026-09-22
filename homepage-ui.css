@@ -47,6 +47,9 @@ body>footer .footer-top .logo-name,body>footer .footer-top .logo-name b,body>foo
 #specialty-banners .specialty-operation-badge{background:#e7f1ff!important;color:#042963!important;box-shadow:0 8px 20px rgba(4,41,99,.12)!important}
 #specialty-banners .specialty-english .specialty-operation-badge{background:#ffeadb!important;color:#a84a16!important;box-shadow:0 8px 20px rgba(168,74,22,.12)!important}
 #specialty-banners .specialty-melody .specialty-operation-badge{background:#fde7f1!important;color:#9d2f67!important;box-shadow:0 8px 20px rgba(157,47,103,.12)!important}
+#specialty-banners .specialty-dms .specialty-operation-badge{background:#e3f6ea!important;color:#0f6b3c!important;box-shadow:0 8px 20px rgba(15,107,60,.12)!important}
+#specialty-banners .specialty-dms-heading{margin:0}
+#specialty-banners .specialty-dms-category{display:block;margin:0 0 3px!important;color:#0f6b3c!important;font-size:11px!important;font-weight:800!important;letter-spacing:.02em!important}
 
 /* Homepage section palette (2026-09-08): approved Harmony Link colors. */
 body main>section.hero{background:#fffcf0!important}
@@ -1241,6 +1244,11 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
 #specialty-banners .specialty-card-description{min-height:42px!important;margin:0!important;font-size:14px!important;line-height:1.5!important}
 #specialty-banners .specialty-open,#specialty-banners .specialty-programs-link{align-self:end!important;width:100%!important;height:46px!important;min-height:46px!important;margin:0!important;padding:0 16px!important;border-radius:12px!important;background:var(--hl-primary)!important;color:#fff!important;box-shadow:none!important;transition:transform .2s ease,background-color .2s ease,box-shadow .2s ease!important}
 #specialty-banners .specialty-open:hover,#specialty-banners .specialty-programs-link:hover{background:#142b98!important;transform:translateY(-2px)!important;box-shadow:0 7px 15px rgba(26,52,172,.16)!important}
+#specialty-banners .specialty-partner-logo{flex:0 0 154px!important;height:154px!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#f6faff!important;padding:20px!important}
+#specialty-banners .specialty-partner-logo img{max-width:65%!important;max-height:65%!important;object-fit:contain!important}
+@media(min-width:901px){
+  #specialty-banners .specialty-banner-card:nth-child(4):last-child{grid-column:1/-1!important;max-width:calc(33.333% - 15px)!important;justify-self:center!important}
+}
 
 /* Specialty-program poster lightbox; card actions remain independent. */
 .specialty-flyer-lightbox[hidden]{display:none!important}
@@ -1279,11 +1287,12 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
 @media(max-width:900px) and (min-width:621px){
   #specialty-banners .specialty-banner-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   #specialty-banners .specialty-banner-card:last-child{grid-column:1/-1!important;width:calc(50% - 11px)!important;max-width:none!important;justify-self:center!important}
+  #specialty-banners .specialty-banner-card.specialty-dms{height:auto!important;min-height:316px!important}
 }
 @media(max-width:620px){
   #specialty-banners .specialty-banner-grid{grid-template-columns:1fr!important;gap:18px!important}
   #specialty-banners .specialty-banner-card,#specialty-banners .specialty-banner-card:last-child{grid-column:auto!important;width:100%!important;max-width:none!important;height:312px!important;min-height:312px!important}
-  #specialty-banners .specialty-poster-preview,#specialty-banners .specialty-melody .specialty-poster-preview{height:146px!important;flex-basis:146px!important}
+  #specialty-banners .specialty-poster-preview,#specialty-banners .specialty-melody .specialty-poster-preview,#specialty-banners .specialty-partner-logo{height:146px!important;flex-basis:146px!important}
   #specialty-banners .specialty-banner-info,#specialty-banners .specialty-melody .specialty-banner-info{padding:13px 18px 14px!important}
   .specialty-flyer-lightbox{padding:10px}
   .specialty-flyer-panel{width:fit-content;max-width:calc(100vw - 20px);max-height:calc(100svh - 20px);border-radius:16px}

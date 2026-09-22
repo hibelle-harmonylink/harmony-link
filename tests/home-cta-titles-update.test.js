@@ -102,7 +102,7 @@ test('Business/Events canonical data are untouched by the title/CTA edits', () =
   const businessCount = (businessesData.match(/id:"[a-z0-9-]+"/g) || []).length;
   assert.equal(businessCount, 6);
   const eventIds = [...eventsData.matchAll(/id:"([a-z0-9-]+)"/g)].map(m => m[1]);
-  assert.deepEqual(eventIds, ['messiah', 'hole19-tournament', 'free-music-class', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar']);
+  assert.deepEqual(eventIds, ['messiah', 'hole19-tournament', 'free-music-class', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
 });
 
 test('Bottom nav (5 items), hamburger, Quick Access (2x2, 4 tiles) are untouched by this round\'s edits', () => {

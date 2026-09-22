@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <link rel="icon" type="image/png" href="/app/icon-512.png?v=2">
+  <link rel="shortcut icon" href="/app/icon-512.png?v=2">
+  <link rel="apple-touch-icon" href="/app/icon-512.png?v=2">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0a5137">
+  <meta name="description" content="DMS 실무자를 위한 AI 업무 자동화 특강 안내">
+  <title data-ko="DMS 실무자를 위한 AI 업무 자동화 특강 | Harmony Link" data-en="AI Business Automation Workshop for DMS Staff | Harmony Link">DMS 실무자를 위한 AI 업무 자동화 특강 | Harmony Link</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=20260909-7">
+</head>
+<body class="messiah-detail-page">
+  <header class="messiah-detail-header"><div class="container"><a class="logo" href="./" aria-label="Harmony Link 홈페이지"><span class="logo-mark brand-image"><img src="assets/harmony-logo.png" alt=""></span><span class="logo-name">Harmony <b>Link</b><small>이음문화센터</small></span></a><div class="messiah-header-actions"><button class="lang-toggle" type="button" aria-label="Switch to English"><span class="active">KO</span><i></i><span>EN</span></button><a class="messiah-back-link" href="./#events" data-ko="← 홈페이지로 돌아가기" data-en="← Back to Home">← 홈페이지로 돌아가기</a></div></div></header>
+  <main class="messiah-detail-main">
+    <div class="container">
+      <div class="messiah-detail-hero"><p class="eyebrow" data-ko="DMS 특강" data-en="DMS WORKSHOP">DMS 특강</p><h1 data-ko="DMS 실무자를 위한<br>AI 업무 자동화 특강" data-en="AI Business Automation<br>Workshop for DMS Staff">DMS 실무자를 위한<br>AI 업무 자동화 특강</h1><p data-ko="반복되는 업무는 AI에게, 더 중요한 일에 집중하세요." data-en="Let AI handle the repetitive work so you can focus on what matters most.">반복되는 업무는 AI에게, 더 중요한 일에 집중하세요.</p></div>
+      <div class="messiah-detail-layout">
+        <figure class="messiah-full-poster"><a href="assets/events/dms-ai-automation-workshop-20260923.jpg" target="_blank" aria-label="전단지 크게 보기"><img src="assets/events/dms-ai-automation-workshop-20260923.jpg" alt="DMS 실무자를 위한 AI 업무 자동화 특강 전체 전단지"></a></figure>
+        <aside class="messiah-detail-panel"><span class="special-event-badge" data-ko="DMS 특강" data-en="DMS WORKSHOP">DMS 특강</span><h2 data-ko="강의 내용" data-en="Workshop Content">강의 내용</h2><ul class="messiah-support-list"><li data-ko="학생관리 앱 자동화" data-en="Student management app automation">학생관리 앱 자동화</li><li data-ko="SNS 혹은 블로그 자동화" data-en="Social media / blog automation">SNS 혹은 블로그 자동화</li><li data-ko="광고 자동화" data-en="Ad campaign automation">광고 자동화</li><li data-ko="문의고객 문자/이메일 자동화" data-en="Inquiry text/email automation">문의고객 문자/이메일 자동화</li><li data-ko="Subscriber 이메일 자동화" data-en="Subscriber email automation">Subscriber 이메일 자동화</li></ul><dl class="messiah-detail-meta"><div><dt data-ko="일시" data-en="DATE">일시</dt><dd data-ko="2026년 9월 23일 수요일" data-en="Wednesday, September 23, 2026">2026년 9월 23일 수요일</dd></div><div><dt data-ko="시간" data-en="TIME">시간</dt><dd data-ko="뉴욕 오전 9:30 / 텍사스 오전 8:30" data-en="9:30 AM NY / 8:30 AM TX">뉴욕 오전 9:30 / 텍사스 오전 8:30</dd></div><div><dt data-ko="장소" data-en="LOCATION">장소</dt><dd data-ko="온라인 (Google Meet)" data-en="Online (Google Meet)">온라인 (Google Meet)</dd></div><div><dt data-ko="대상" data-en="AUDIENCE">대상</dt><dd data-ko="DMS 실무자 (전 직원)" data-en="DMS staff (all employees)">DMS 실무자 (전 직원)</dd></div></dl><a class="btn messiah-inquiry-button" href="https://meet.google.com/tka-fouc-fbe" target="_blank" rel="noopener noreferrer"><span data-ko="Google Meet 참여" data-en="Join on Google Meet">Google Meet 참여</span><b>↗</b></a></aside>
+      </div>
+    </div>
+  </main>
+  <script>
+    (function () {
+      var currentLanguage = localStorage.getItem('harmonyLanguage') || 'ko';
+      var langButton = document.querySelector('.lang-toggle');
+      function setLanguage(language) {
+        currentLanguage = language;
+        document.documentElement.lang = language;
+        document.querySelectorAll('[data-ko][data-en]').forEach(function (el) {
+          el.innerHTML = el.dataset[language];
+        });
+        document.querySelectorAll('[data-ko-src]').forEach(function (el) {
+          el.src = el.dataset.koSrc;
+        });
+        document.querySelectorAll('[data-ko-href]').forEach(function (el) {
+          el.href = el.dataset.koHref;
+        });
+        if (langButton) {
+          langButton.querySelectorAll('span').forEach(function (item, index) {
+            item.classList.toggle('active', (language === 'ko' && index === 0) || (language === 'en' && index === 1));
+          });
+          langButton.setAttribute('aria-label', language === 'ko' ? 'Switch to English' : '한국어로 전환');
+        }
+        localStorage.setItem('harmonyLanguage', language);
+      }
+      if (langButton) {
+        langButton.addEventListener('click', function () {
+          setLanguage(currentLanguage === 'ko' ? 'en' : 'ko');
+        });
+      }
+      setLanguage(currentLanguage);
+    })();
+  </script>
+</body>
+</html>
