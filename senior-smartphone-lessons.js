@@ -279,15 +279,26 @@
       '이름, 번호, 내용을 확인한 뒤 누르는 습관이 가장 중요합니다.|모르는 링크·송금·인증번호 요구에는 멈추고 확인하세요.', '잘 안 된 동작은 해당 번호의 학습으로 돌아가 한 단계씩 다시 보세요.')
   ];
   settings[0].learn = '스마트폰 앞면의 화면과 뒷면의 카메라, 옆면의 버튼과 아래쪽 충전 위치를 천천히 살펴봅니다. 화면의 작은 그림인 앱을 한 번 눌러 열고, 다시 처음 화면으로 돌아오는 방법도 연습합니다. 오늘은 설정을 바꾸거나 앱을 지우지 않습니다.';
+  // Compact card labels only; full titles and all detail copy stay unchanged.
+  const cardTitles = {
+    settings:['이해하기','홈화면 구성','버튼·충전 위치','언어 변경','터치 방법','라이트·다크 모드','밝기 조절','글자 크기','화면 크기','화면 자동 꺼짐','최근 앱·홈·뒤로가기','접근성·손쉬운 사용','위젯 사용','알람 설정','홈·잠금화면 배경','소리 크기 조절','벨소리·진동·무음','화면 자동 회전','배터리·절전모드','알림·방해금지'],
+    'internet-connectivity':['Wi-Fi란?','Wi-Fi 켜기·끄기','Wi-Fi 연결','Wi-Fi 암호 확인·공유','QR로 Wi-Fi 연결','Wi-Fi 연결 문제','모바일 데이터란?','데이터 켜기·끄기','Wi-Fi·데이터 차이','데이터 사용량','블루투스란?','블루투스 켜기·끄기','블루투스 기기 연결','블루투스 해제·삭제','핫스팟이란?','핫스팟 켜기·연결','비행기 모드','인터넷 연결 확인','인터넷 문제 해결','인터넷·연결 총정리'],
+    'calls-messages-contacts':['전화 걸기','전화 받기·거절','통화 중 화면','최근 통화·다시 걸기','부재중 전화 확인','연락처 저장','전화 온 번호 저장','연락처 찾기·전화','연락처 수정·삭제','연락처 즐겨찾기','문자 보내기','문자 확인·답장','사진 문자 보내기','문자 속 사진 저장','여러 명에게 문자','스팸 전화·문자 차단','차단 번호 확인·해제','통화 중 전화 받기','긴급전화 걸기','전화·문자 총정리']
+  };
+  const cardDescriptions = {
+    settings:'화면·소리·배터리 등 기본 설정',
+    'internet-connectivity':'Wi-Fi·데이터·블루투스',
+    'calls-messages-contacts':'전화·문자·연락처 사용'
+  };
   return [
     { id:'settings', title:'설정', icon:'⚙️', description:'스마트폰 기본 설정과 화면 사용법', introduction:'스마트폰 화면과 기본 설정을 천천히 배워보세요.', lessons:settings },
     { id:'internet-connectivity', title:'인터넷·연결', icon:'📶', description:'Wi-Fi · 모바일 데이터 · 블루투스 · 핫스팟', introduction:'인터넷과 다른 기기를 연결하는 방법을 하나씩 배워보세요.', lessons:internet },
     { id:'calls-messages-contacts', title:'전화·문자·연락처', icon:'☎️', description:'전화 · 문자 · 연락처 사용법', introduction:'소중한 사람과 안전하게 연락하는 방법을 배워보세요.', lessons:calls }
-  ].map(folder => ({ ...folder, lessons:folder.lessons.map((item, index) => {
+  ].map(folder => ({ ...folder, cardDescription:cardDescriptions[folder.id], lessons:folder.lessons.map((item, index) => {
     const number = String(index + 1).padStart(2, '0');
     const existing = folder.id === 'settings' && index < 15;
     return { ...item, id:folder.id === 'settings' ? `smartphone-${number}` : `smartphone-${folder.id}-${number}`,
-      folderId:folder.id, number, status:'ready', accessLevel:'free',
+      folderId:folder.id, number, cardTitle:cardTitles[folder.id][index], status:'ready', accessLevel:'free',
       slides:[`assets/senior-learning/smartphone/${existing ? number : `${folder.id}/${number}`}/slide-01.png`] };
   }) }));
 });

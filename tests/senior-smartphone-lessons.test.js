@@ -171,7 +171,12 @@ test('materials-only compact header and responsive grids preserve readable sizes
   const css = fs.readFileSync(path.join(root, 'senior-learning.css'), 'utf8');
   assert.ok(html.indexOf('src="senior-smartphone-lessons.js') < html.indexOf('src="senior-learning.js'));
   assert.match(css, /body\[data-senior-page="materials"\] \.senior-learning-main \{ padding-top:80px/);
-  assert.match(css, /\.smartphone-folder-grid \{ display:grid; grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(css, /\.smartphone-folder-grid \{ display:grid; grid-template-columns:repeat\(4,minmax\(0,1fr\)\)/);
+  assert.match(css, /\.smartphone-folder-card \{[^}]*max-width:280px/);
+  assert.match(css, /\.smartphone-folder-card strong \{[^}]*white-space:nowrap/);
+  assert.match(css, /\.smartphone-lesson-card h3 \{[^}]*font-size:20px[^}]*white-space:nowrap[^}]*text-overflow:ellipsis/);
+  assert.match(css, /\.smartphone-lesson-card p \{[^}]*-webkit-line-clamp:2/);
+  assert.match(css, /\.senior-breadcrumb\[hidden\] \{ display:none/);
   assert.match(css, /@media \(max-width:620px\)[\s\S]*?\.smartphone-lesson-grid \{ grid-template-columns:1fr/);
   assert.match(css, /\.smartphone-detail section p,\.smartphone-detail li \{ font-size:18px/);
   assert.match(css, /\.smartphone-lesson-card \.senior-primary-button \{[^}]*min-height:48px/);
@@ -201,4 +206,38 @@ test('materials to folders to grid to text detail uses one content title and rev
     assert.ok(html.includes(query.includes('folder') ? 'smartphone-lesson-grid' : query ? 'smartphone-folder-grid' : 'senior-category-grid'));
   }
   assert.equal(h.node('seniorMaterialsIntro').hidden, false);
+});
+
+test('materials landing removes duplicate tabs and their space but nested breadcrumb still works', async () => {
+  const h = await harness('');
+  assert.equal(h.node('seniorBreadcrumb').hidden, true);
+  assert.equal(h.node('seniorBreadcrumb').innerHTML, '');
+  assert.equal((h.node('seniorLearningContent').innerHTML.match(/class="senior-category-card"/g) || []).length, 3);
+  h.click('data-senior-category', 'smartphone');
+  assert.equal(h.node('seniorBreadcrumb').hidden, false);
+  assert.match(h.node('seniorBreadcrumb').innerHTML, />교재<.*>스마트폰</);
+  h.click('data-senior-home', '', 'seniorBreadcrumb');
+  assert.equal(h.node('seniorBreadcrumb').hidden, true);
+  assert.equal(h.node('seniorBreadcrumb').innerHTML, '');
+});
+
+test('all sixty compact card labels are separate from full detail titles and accessible button labels', async () => {
+  const h = await harness();
+  for (const folder of folders) {
+    assert.ok(folder.cardDescription && folder.cardDescription.length <= 20);
+    h.click('data-senior-category', 'smartphone');
+    assert.ok(h.node('seniorLearningContent').innerHTML.includes(folder.cardDescription));
+    h.click('data-senior-folder', folder.id);
+    const cards = h.node('seniorLearningContent').innerHTML;
+    for (const item of folder.lessons) {
+      assert.ok(item.cardTitle && item.cardTitle.length <= 16, item.id);
+      assert.doesNotMatch(item.cardTitle, /스마트폰/);
+      assert.ok(cards.includes(`<h3 title="${item.title}">${item.cardTitle}</h3>`), item.id);
+      assert.ok(cards.includes(`aria-label="${item.title} 배우기"`), item.id);
+      h.click('data-senior-lesson', item.id);
+      assert.ok(h.node('seniorLearningContent').innerHTML.includes(`<h2 tabindex="-1">${item.title}</h2>`));
+    }
+  }
+  assert.deepEqual(folders[0].lessons.filter(l => ['03','06','10','12'].includes(l.number)).map(l => l.cardTitle),
+    ['버튼·충전 위치','라이트·다크 모드','화면 자동 꺼짐','접근성·손쉬운 사용']);
 });

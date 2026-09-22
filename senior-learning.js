@@ -108,10 +108,11 @@
   const renderBreadcrumb = () => {
     if (pageMode !== 'materials') { breadcrumb.innerHTML = ''; return; }
     const category = findCategory(state.categoryId);
+    breadcrumb.hidden = !category;
+    if (!category) { breadcrumb.innerHTML = ''; return; }
     const lesson = state.lessonId && findLesson(state.categoryId, state.lessonId);
     const folder = category?.id === 'smartphone' && smartphoneFolders.find(item => item.id === (lesson?.folderId || state.folderId));
-    const parts = ['<button type="button" data-senior-home' + (!category ? ' aria-current="page"' : '') + '>' + (category ? '교재' : '전체') + '</button>'];
-    if (!category) parts.push('<button type="button" data-senior-category="smartphone">스마트폰</button>');
+    const parts = ['<button type="button" data-senior-home>교재</button>'];
     if (category) parts.push(`<span>›</span><button type="button" data-senior-category="${category.id}">${escapeHtml(category.title)}</button>`);
     if (folder) parts.push(`<span>›</span><button type="button" data-senior-folder="${folder.id}">${escapeHtml(folder.title)}</button>`);
     if (lesson) parts.push(`<span>›</span><strong>${escapeHtml(lesson.title)}</strong>`);
@@ -133,10 +134,10 @@
   const renderSmartphone = () => {
     const folder = smartphoneFolders.find(item => item.id === state.folderId);
     if (!folder) {
-      content.innerHTML = `<section class="smartphone-folders"><h2 tabindex="-1">스마트폰</h2><p>배우고 싶은 폴더를 고르세요. 그림 없이도 모든 설명을 읽을 수 있어요.</p><div class="smartphone-folder-grid">${smartphoneFolders.map(item => `<button type="button" class="smartphone-folder-card" data-senior-folder="${item.id}"><span aria-hidden="true">${item.icon}</span><strong>${item.title}</strong><small>${escapeHtml(item.description)}</small><b>${item.lessons.length}개 학습 · 폴더 열기 →</b></button>`).join('')}</div></section>`;
+      content.innerHTML = `<section class="smartphone-folders"><h2 tabindex="-1">스마트폰</h2><p>배우고 싶은 폴더를 고르세요. 그림 없이도 모든 설명을 읽을 수 있어요.</p><div class="smartphone-folder-grid">${smartphoneFolders.map(item => `<button type="button" class="smartphone-folder-card" data-senior-folder="${item.id}"><span aria-hidden="true">${item.icon}</span><strong>${item.title}</strong><small>${escapeHtml(item.cardDescription || item.description)}</small><b>${item.lessons.length}개 학습</b></button>`).join('')}</div></section>`;
       return;
     }
-    content.innerHTML = `<section class="smartphone-folder"><header><h2 tabindex="-1">${folder.title}</h2><p>${escapeHtml(folder.introduction)}<br>20개 학습 · 필요한 내용부터 골라 배우세요.</p></header><div class="smartphone-lesson-grid">${folder.lessons.map(lesson => `<article class="smartphone-lesson-card"><span class="smartphone-number">${lesson.number}</span><h3>${escapeHtml(lesson.title)}</h3><p>${escapeHtml(lesson.description)}</p><button type="button" class="senior-primary-button" data-senior-lesson="${lesson.id}" aria-label="${escapeHtml(lesson.title)} 배우기">배우기 →</button></article>`).join('')}</div><button type="button" class="senior-secondary-button" data-senior-category="smartphone">← 스마트폰 폴더</button></section>`;
+    content.innerHTML = `<section class="smartphone-folder"><header><h2 tabindex="-1">${folder.title}</h2><p>${escapeHtml(folder.introduction)}<br>20개 학습 · 필요한 내용부터 골라 배우세요.</p></header><div class="smartphone-lesson-grid">${folder.lessons.map(lesson => `<article class="smartphone-lesson-card"><span class="smartphone-number">${lesson.number}</span><h3 title="${escapeHtml(lesson.title)}">${escapeHtml(lesson.cardTitle || lesson.title)}</h3><p title="${escapeHtml(lesson.description)}">${escapeHtml(lesson.description)}</p><button type="button" class="senior-primary-button" data-senior-lesson="${lesson.id}" aria-label="${escapeHtml(lesson.title)} 배우기">배우기 →</button></article>`).join('')}</div><button type="button" class="senior-secondary-button" data-senior-category="smartphone">← 스마트폰 폴더</button></section>`;
   };
   // Never attach an img until its local file has loaded successfully. A missing
   // PNG does not gate the text, and adding the file later needs no HTML changes.
