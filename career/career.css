@@ -1,0 +1,123 @@
+/* HarmonyLink 직업(Career) 카테고리 - shared styles.
+   Namespaced with .career- and reuses the exact same palette/header pattern
+   already established for us-admissions.css and digital-classes/style.css,
+   so this reads as one HarmonyLink design system rather than a new style. */
+:root{--career-blue:#1155d9;--career-navy:#061d45;--career-text:#14213d;--career-muted:#5d6b82;--career-sky:#dcf2ff;--career-line:#cbd9e8;--career-green:#16713a;--career-amber-bg:#fff6e5;--career-amber:#8a5a00}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:"DM Sans","Noto Sans KR",sans-serif;color:var(--career-text);background:#fff;word-break:keep-all;overflow-wrap:break-word}
+.career-shell{width:min(1180px,calc(100% - 40px));margin:auto}
+
+/* header: identical canonical logo markup used by community.html/us-admissions.html */
+.career-header{border-bottom:1px solid #e1e8f0;background:#fff;position:sticky;top:0;z-index:20}
+.career-header .career-shell{height:78px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--career-navy);font-size:20px;font-weight:600;letter-spacing:-.7px}
+.logo b{color:var(--career-blue)}
+.logo-mark{width:33px;height:33px;display:flex;align-items:center;justify-content:center}
+.logo-name{display:flex;flex-direction:column;line-height:1.05}
+.logo-name small{font-size:8px;letter-spacing:.7px;color:#7d8b9e;font-weight:500;margin-top:4px}
+.brand-image{width:40px;height:40px;padding:4px;border-radius:11px;background:linear-gradient(145deg,#bcd5fb,#6f9fe6);box-shadow:0 5px 16px rgba(12,64,140,.16);overflow:hidden}
+.brand-image img{display:block;width:100%;height:100%;object-fit:contain}
+.career-home-link{color:var(--career-blue);font-weight:700;text-decoration:none;font-size:14px;white-space:nowrap;min-width:0;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;text-align:right}
+.logo{flex:0 0 auto}
+
+/* breadcrumb (뒤로가기: every ancestor level is a clickable link) */
+.career-breadcrumb-bar{padding:16px 0 0}
+.career-breadcrumb{font-size:14px;color:var(--career-muted);margin:0}
+.career-breadcrumb a{color:var(--career-blue);font-weight:600;text-decoration:none}
+.career-breadcrumb a:hover{text-decoration:underline}
+
+/* hero (kept compact per instructions -- no oversized banner) */
+.career-hero{padding:36px 0 32px;background:linear-gradient(135deg,#f7fbff,var(--career-sky))}
+.career-eyebrow{font-size:12px;letter-spacing:1.8px;font-weight:800;color:var(--career-blue);margin:0 0 10px}
+.career-hero h1{font-size:clamp(28px,4.4vw,42px);margin:0 0 12px;letter-spacing:-.03em;line-height:1.25}
+.career-hero p.lead{font-size:17px;color:var(--career-muted);margin:0;max-width:680px}
+.career-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;background:#e8f7ee;color:var(--career-green);font-size:12px;font-weight:800}
+.career-partner-logo{width:64px;height:64px;margin-bottom:14px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 6px 18px rgba(24,43,91,.12);display:flex;align-items:center;justify-content:center}
+.career-partner-logo img{width:100%;height:100%;object-fit:contain}
+.career-hero-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:16px}
+.career-partner-website{color:var(--career-blue);font-weight:700;font-size:14px;text-decoration:none}
+
+/* sections */
+.career-section{padding:48px 0}
+.career-section-title{margin-bottom:24px}
+.career-section-title span{font-size:12px;letter-spacing:1.8px;font-weight:800;color:var(--career-blue)}
+.career-section-title h2{font-size:clamp(22px,3vw,28px);margin:8px 0 6px;letter-spacing:-.02em}
+.career-section-title p{color:var(--career-muted);margin:0;font-size:15px}
+
+/* partner grid (직업 hub) */
+.career-partner-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.career-partner-card{display:flex;flex-direction:column;border:1px solid var(--career-line);border-radius:20px;background:linear-gradient(180deg,#fff,#f7fbff);padding:26px;text-decoration:none;color:inherit;box-shadow:0 8px 24px rgba(24,43,91,.07);transition:.2s}
+.career-partner-card:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(24,43,91,.13)}
+.career-partner-badge{display:inline-block;align-self:flex-start;padding:5px 11px;border-radius:999px;background:#e8f7ee;color:var(--career-green);font-size:11px;font-weight:800;margin-bottom:14px}
+.career-partner-card h3{font-size:21px;margin:0 0 8px}
+.career-partner-card p{color:var(--career-muted);font-size:14px;line-height:1.65;margin:0 0 16px;flex:1}
+.career-partner-cta{margin-top:auto;color:var(--career-blue);font-weight:800;font-size:14px}
+
+/* program grid (partner page): PC 3x2, 1180px 3-col, 390px 1-col, card height fixed */
+.career-program-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.career-program-card{display:flex;flex-direction:column;height:100%;border:1px solid var(--career-line);border-radius:18px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;box-shadow:0 8px 22px rgba(24,43,91,.06);transition:.2s}
+.career-program-card:hover{transform:translateY(-3px);box-shadow:0 16px 32px rgba(24,43,91,.12)}
+.career-program-image{position:relative;width:100%;height:220px;background:var(--career-sky);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.career-program-image .placeholder-icon{font-size:40px;filter:saturate(.85)}
+.career-program-image img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:10px}
+.career-program-body{display:flex;flex-direction:column;flex:1;padding:18px 20px 20px}
+.career-program-body h3{font-size:18px;line-height:1.35;margin:0 0 3px;min-height:48px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.career-program-name-en{font-size:12px;color:var(--career-muted);font-weight:600;margin:0 0 10px}
+.career-program-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.career-program-meta span{padding:4px 9px;border-radius:999px;background:var(--career-sky);color:var(--career-blue);font-size:11px;font-weight:700}
+.career-program-body p.desc{color:var(--career-muted);font-size:13px;line-height:1.6;margin:0 0 14px;min-height:42px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.career-program-btn{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 16px;border-radius:12px;background:var(--career-blue);color:#fff;font-weight:800;font-size:14px}
+
+/* program detail page */
+.career-detail-head{padding:28px 0 8px}
+.career-detail-head .career-program-meta{margin-bottom:14px}
+.career-detail-head h1{font-size:clamp(24px,3.6vw,34px);margin:0 0 6px;letter-spacing:-.02em}
+.career-detail-head p.name-en{color:var(--career-muted);font-size:15px;font-weight:600;margin:0}
+.career-detail-flyer{width:100%;max-width:480px;aspect-ratio:1145/1374;margin:20px auto 0;border:1px solid var(--career-line);border-radius:18px;background:var(--career-sky);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.career-detail-flyer .placeholder-icon{font-size:56px}
+.career-detail-flyer img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:8px}
+
+.career-detail-section{padding:26px 0;border-top:1px solid #edf1f6}
+.career-detail-section:first-of-type{border-top:0}
+.career-detail-section h2{font-size:20px;margin:0 0 14px}
+.career-bullet-list{display:grid;grid-template-columns:1fr 1fr;gap:8px 24px;margin:0;padding:0;list-style:none}
+.career-bullet-list li{position:relative;padding-left:18px;font-size:15px;line-height:1.6;color:var(--career-text)}
+.career-bullet-list li::before{content:"";position:absolute;left:0;top:10px;width:6px;height:6px;border-radius:50%;background:var(--career-blue)}
+.career-format-list{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+.career-format-list li{position:relative;padding-left:20px;font-size:15px;line-height:1.6;color:var(--career-text)}
+.career-format-list li::before{content:"✓";position:absolute;left:0;top:0;color:var(--career-green);font-weight:800}
+.career-cert-card{display:inline-flex;flex-direction:column;gap:4px;padding:16px 20px;border-radius:14px;background:var(--career-sky);border:1px solid #b9d3f2}
+.career-cert-card b{font-size:18px;color:var(--career-navy)}
+.career-cert-card span{font-size:13px;color:var(--career-muted)}
+.career-remote-note{margin-top:12px;font-size:13px;color:var(--career-muted);background:#f4f6f9;border-radius:10px;padding:10px 14px}
+.career-disclaimer{font-size:13px;color:var(--career-amber);background:var(--career-amber-bg);border:1px solid #f0dfae;border-radius:12px;padding:14px 16px;margin:0;line-height:1.65}
+.career-cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.career-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;padding:14px 22px;font-weight:800;font-size:15px;border:0;cursor:pointer;text-decoration:none;min-height:48px}
+.career-btn-primary{background:var(--career-blue);color:#fff}
+.career-btn-primary:hover{background:#0c3fa0}
+.career-btn-outline{background:#fff;color:var(--career-navy);border:2px solid var(--career-line)}
+
+/* footer */
+.career-footer{padding:32px 0 44px;color:var(--career-muted);font-size:13px;text-align:center}
+.career-footer a{color:var(--career-blue);font-weight:700;text-decoration:none}
+
+@media (max-width:900px){
+  .career-partner-grid{grid-template-columns:repeat(2,1fr)}
+  .career-program-grid{grid-template-columns:repeat(2,1fr)}
+  .career-bullet-list{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .career-shell{width:calc(100% - 28px)}
+  .career-header .career-shell{height:64px}
+  .logo{font-size:16px}
+  .logo-mark{width:29px;height:29px}
+  .brand-image{width:34px;height:34px}
+  .career-hero{padding:26px 0 24px}
+  .career-section{padding:36px 0}
+  .career-partner-grid{grid-template-columns:1fr}
+  .career-program-grid{grid-template-columns:1fr}
+  .career-bullet-list{grid-template-columns:1fr}
+  .career-cta-row{flex-direction:column}
+  .career-cta-row .career-btn{width:100%}
+}
