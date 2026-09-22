@@ -97,14 +97,12 @@ test('the learning and services heading is updated while business phone display 
   }
 });
 
-test('smartphone category stays available while its fifteen delivered materials are ready', () => {
+test('smartphone category stays available with sixty text lessons and fifteen delivered pictures', () => {
   assert.match(senior, /id:'smartphone'[\s\S]*?status:'ready'/);
-  assert.match(senior, /const smartphoneLessons = \[/);
-  const smartphoneBlock = senior.match(/const smartphoneLessons = \[([\s\S]*?)\n  \];/);
-  assert.ok(smartphoneBlock);
-  const deliveredLessons = [...smartphoneBlock[1].matchAll(/id:'smartphone-(\d{2})',[\s\S]*?status:'(ready|available)',[\s\S]*?slides:\['(assets\/senior-learning\/smartphone\/\1\/slide-01\.png)'\]/g)];
-  assert.equal(deliveredLessons.length, 15);
-  assert.doesNotMatch(smartphoneBlock[1], /status:'preparing'/);
+  const lessons = require('../senior-smartphone-lessons').flatMap(folder => folder.lessons);
+  assert.equal(lessons.length, 60);
+  assert.ok(lessons.every(lesson => lesson.status === 'ready'));
+  assert.ok(lessons.slice(0, 15).every(lesson => fs.existsSync(path.join(root, lesson.slides[0]))));
   assert.match(senior, /id:'smartphone',[\s\S]*?lessons:smartphoneLessons/);
   assert.match(senior, /const isLessonAvailable = lesson => \['ready', 'available'\]\.includes/);
   assert.match(senior, /data-senior-category="\$\{category\.id\}"/);

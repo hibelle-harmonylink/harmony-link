@@ -36,26 +36,9 @@
       { id:'privacy', title:'개인정보 지키기', description:'비밀번호와 개인정보를 안전하게 관리합니다.', status:'preparing', accessLevel:'free' }
     ]}
   ];
-  // Drive 교재의 번호가 곧 카드 순서입니다. 각 교재는 기존 viewer가 사용하는
-  // lesson schema와 slides 배열만으로 열리며, sourceLearningData의 기존 임시
-  // lesson 데이터는 다른 category 구성을 위해 그대로 유지합니다.
-  const smartphoneLessons = [
-    { id:'smartphone-01', title:'스마트폰 이해하기', description:'스마트폰의 기본 구성을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/01/slide-01.png'] },
-    { id:'smartphone-02', title:'스마트폰 홈화면 구성', description:'홈화면의 기본 구성을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/02/slide-01.png'] },
-    { id:'smartphone-03', title:'스마트폰 버튼과 충전 위치', description:'버튼과 충전 위치를 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/03/slide-01.png'] },
-    { id:'smartphone-04', title:'스마트폰 언어 변경', description:'언어를 변경하는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/04/slide-01.png'] },
-    { id:'smartphone-05', title:'스마트폰 터치하는 방법', description:'화면을 터치하는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/05/slide-01.png'] },
-    { id:'smartphone-06', title:'스마트폰 라이트모드,다크모드', description:'화면 모드를 바꾸는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/06/slide-01.png'] },
-    { id:'smartphone-07', title:'스마트폰 밝기 조절', description:'화면 밝기를 조절하는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/07/slide-01.png'] },
-    { id:'smartphone-08', title:'스마트폰 글자 크기', description:'글자 크기를 조절하는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/08/slide-01.png'] },
-    { id:'smartphone-09', title:'스마트폰 화면 크기', description:'화면 크기를 조절하는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/09/slide-01.png'] },
-    { id:'smartphone-10', title:'스마트폰 화면 자동 꺼짐 시간', description:'화면 자동 꺼짐 시간을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/10/slide-01.png'] },
-    { id:'smartphone-11', title:'스마트폰 최근앱,홈버튼,뒤로가기', description:'기본 탐색 버튼을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/11/slide-01.png'] },
-    { id:'smartphone-12', title:'스마트폰 접근성,손쉬운사용', description:'접근성 기능을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/12/slide-01.png'] },
-    { id:'smartphone-13', title:'스마트폰 위젯 사용', description:'위젯을 사용하는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/13/slide-01.png'] },
-    { id:'smartphone-14', title:'스마트폰 알람 설정', description:'알람을 설정하는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/14/slide-01.png'] },
-    { id:'smartphone-15', title:'스마트폰 홈화면,잠금화면 사진변경', description:'홈화면과 잠금화면 사진을 바꾸는 방법을 그림으로 확인합니다.', status:'ready', accessLevel:'free', slides:['assets/senior-learning/smartphone/15/slide-01.png'] }
-  ];
+  // Text lessons are ready independently of optional picture delivery.
+  const smartphoneFolders = window.HarmonySmartphoneLessons || [];
+  const smartphoneLessons = smartphoneFolders.flatMap(folder => folder.lessons);
   const learningData = [
     {
       id:'smartphone',
@@ -98,7 +81,7 @@
   const pageMode = document.body.dataset.seniorPage || 'home';
   const pagePath = pageMode === 'materials' ? 'senior-learning-materials.html' : pageMode === 'mini-apps' ? 'senior-mini-apps.html' : 'senior-learning.html';
   const client = window.supabase?.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, { auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true } });
-  let state = { categoryId:null, lessonId:null, slideIndex:0 };
+  let state = { categoryId:null, folderId:null, lessonId:null, slideIndex:0 };
   let memberCheckId = 0;
 
   const findCategory = id => learningData.find(category => category.id === id);
@@ -111,17 +94,27 @@
   const updateHistory = () => {
     const params = new URLSearchParams();
     if (state.categoryId) params.set('category', state.categoryId);
+    if (state.folderId) params.set('folder', state.folderId);
     if (state.lessonId) params.set('lesson', state.lessonId);
     if (state.lessonId) params.set('page', String(state.slideIndex + 1));
     const query = params.toString();
     history.pushState(state, '', `${pagePath}${query ? `?${query}` : ''}`);
   };
-  const setState = next => { state = { ...state, ...next }; updateHistory(); render(); };
+  const setState = next => {
+    state = { ...state, ...next }; updateHistory(); render();
+    content.querySelector('h2')?.focus({ preventScroll:true });
+    document.getElementById('seniorLearningMain').scrollIntoView({ block:'start' });
+  };
   const renderBreadcrumb = () => {
+    if (pageMode !== 'materials') { breadcrumb.innerHTML = ''; return; }
     const category = findCategory(state.categoryId);
+    breadcrumb.hidden = !category;
+    if (!category) { breadcrumb.innerHTML = ''; return; }
     const lesson = state.lessonId && findLesson(state.categoryId, state.lessonId);
-    const parts = state.categoryId ? ['<button type="button" data-senior-home>교재</button>'] : [];
+    const folder = category?.id === 'smartphone' && smartphoneFolders.find(item => item.id === (lesson?.folderId || state.folderId));
+    const parts = ['<button type="button" data-senior-home>교재</button>'];
     if (category) parts.push(`<span>›</span><button type="button" data-senior-category="${category.id}">${escapeHtml(category.title)}</button>`);
+    if (folder) parts.push(`<span>›</span><button type="button" data-senior-folder="${folder.id}">${escapeHtml(folder.title)}</button>`);
     if (lesson) parts.push(`<span>›</span><strong>${escapeHtml(lesson.title)}</strong>`);
     breadcrumb.innerHTML = parts.join('');
   };
@@ -133,9 +126,40 @@
   };
   const renderMiniApps = () => `<section class="senior-mini-apps"><div class="senior-mini-app-grid">${miniApps.map(app => `<a class="senior-mini-app-card" data-mini-app-card href="${app.href}" aria-label="${app.title} 사용하기"><img src="${app.image}" alt=""><div><h3>${app.title}</h3><p>${app.description}</p></div><span class="senior-primary-button" aria-hidden="true">사용하기</span></a>`).join('')}</div></section>`;
   const renderLessons = category => {
+    if (category.id === 'smartphone') { renderSmartphone(); return; }
     content.innerHTML = `<section class="senior-lesson-view"><div class="senior-view-heading"><span aria-hidden="true">${category.icon}</span><div><h2>${category.title}</h2><p>${category.description}</p></div></div><div class="senior-lesson-list">${category.lessons.map(lesson => { const available = isLessonAvailable(lesson); return `<article class="senior-lesson-card ${available ? 'is-ready' : 'is-preparing'}"${available ? '' : ' aria-disabled="true"'}><div><h3>${lesson.title}</h3><p>${lesson.description}</p></div>${available ? `<button class="senior-primary-button" type="button" data-senior-lesson="${lesson.id}">교재 보기</button>` : '<span class="senior-preparing">자료 준비중</span>'}</article>`; }).join('')}</div></section>`;
   };
+  const formatCopy = text => escapeHtml(text).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  const listCopy = (items, ordered = false) => `<${ordered ? 'ol' : 'ul'}>${items.map(item => `<li>${formatCopy(item)}</li>`).join('')}</${ordered ? 'ol' : 'ul'}>`;
+  const renderSmartphone = () => {
+    const folder = smartphoneFolders.find(item => item.id === state.folderId);
+    if (!folder) {
+      content.innerHTML = `<section class="smartphone-folders"><h2 tabindex="-1">스마트폰</h2><p>배우고 싶은 폴더를 고르세요. 그림 없이도 모든 설명을 읽을 수 있어요.</p><div class="smartphone-folder-grid">${smartphoneFolders.map(item => `<button type="button" class="smartphone-folder-card" data-senior-folder="${item.id}"><span aria-hidden="true">${item.icon}</span><strong>${item.title}</strong><small>${escapeHtml(item.cardDescription || item.description)}</small><b>${item.lessons.length}개 학습</b></button>`).join('')}</div></section>`;
+      return;
+    }
+    content.innerHTML = `<section class="smartphone-folder"><header><h2 tabindex="-1">${folder.title}</h2><p>${escapeHtml(folder.introduction)}<br>20개 학습 · 필요한 내용부터 골라 배우세요.</p></header><div class="smartphone-lesson-grid">${folder.lessons.map(lesson => `<article class="smartphone-lesson-card"><span class="smartphone-number">${lesson.number}</span><h3 title="${escapeHtml(lesson.title)}">${escapeHtml(lesson.cardTitle || lesson.title)}</h3><p title="${escapeHtml(lesson.description)}">${escapeHtml(lesson.description)}</p><button type="button" class="senior-primary-button" data-senior-lesson="${lesson.id}" aria-label="${escapeHtml(lesson.title)} 배우기">배우기 →</button></article>`).join('')}</div><button type="button" class="senior-secondary-button" data-senior-category="smartphone">← 스마트폰 폴더</button></section>`;
+  };
+  // Never attach an img until its local file has loaded successfully. A missing
+  // PNG does not gate the text, and adding the file later needs no HTML changes.
+  const loadLessonPicture = lesson => {
+    const slot = content.querySelector('[data-lesson-picture]');
+    if (!slot) return;
+    const picture = new Image();
+    picture.alt = `${lesson.title} 그림 교재`;
+    picture.onload = () => {
+      if (!slot.isConnected || !picture.naturalWidth) return;
+      slot.innerHTML = '<h3>그림으로 확인하기</h3><p>글로 배운 내용을 그림으로 다시 확인해 보세요.</p><div class="senior-viewer"><figure><figcaption>1 / 1</figcaption></figure><div class="senior-viewer-actions"><button class="senior-secondary-button" type="button" data-senior-previous disabled>◀ 이전</button><button class="senior-secondary-button" type="button" data-senior-fullscreen>그림 크게 보기</button><button class="senior-secondary-button" type="button" data-senior-next disabled>다음 ▶</button></div></div>';
+      slot.querySelector('figure').prepend(picture);
+    };
+    picture.onerror = () => { if (slot.isConnected) slot.innerHTML = '<h3>그림으로 확인하기</h3><p><strong>그림 교재 준비 중</strong><br>위의 글 설명으로 먼저 배워보세요.</p>'; };
+    picture.src = lesson.slides[0];
+  };
+  const renderSmartphoneLesson = lesson => {
+    content.innerHTML = `<article class="smartphone-detail"><header><p class="smartphone-number">학습 ${lesson.number}</p><h2 tabindex="-1">${escapeHtml(lesson.title)}</h2><p>${formatCopy(lesson.description)}</p></header><section><h3>오늘 배울 내용</h3><p>${formatCopy(lesson.learn || lesson.description)}</p></section><section><h3>언제 사용하나요?</h3><p>${formatCopy(lesson.when)}</p></section><section class="smartphone-device"><h3>갤럭시에서 알아보기</h3>${listCopy(lesson.galaxy, true)}<p class="smartphone-version-note">기종·OS 버전에 따라 메뉴 이름과 위치가 조금 다를 수 있어요. 찾기 어려우면 설정의 검색을 이용하세요.</p></section><section class="smartphone-device"><h3>아이폰에서 알아보기</h3>${listCopy(lesson.iphone, true)}</section><section class="smartphone-picture" data-lesson-picture aria-live="polite"><h3>그림으로 확인하기</h3><p>그림 교재를 확인하고 있어요. 글 설명은 바로 이용할 수 있어요.</p></section><section class="smartphone-remember"><h3>기억하세요</h3>${listCopy(lesson.remember)}</section>${lesson.trouble.length ? `<section><h3>잘 안 될 때</h3>${listCopy(lesson.trouble)}</section>` : ''}<button class="senior-secondary-button" type="button" data-senior-folder="${lesson.folderId}">← 학습 목록으로 돌아가기</button></article>`;
+    loadLessonPicture(lesson);
+  };
   const renderViewer = (category, lesson) => {
+    if (lesson.folderId) { renderSmartphoneLesson(lesson); return; }
     const total = lesson.slides.length;
     const index = Math.max(0, Math.min(state.slideIndex, total - 1));
     state.slideIndex = index;
@@ -147,6 +171,8 @@
     if (pageMode === 'mini-apps') { content.innerHTML = renderMiniApps(); return; }
     const category = findCategory(state.categoryId);
     const lesson = state.lessonId && findLesson(state.categoryId, state.lessonId);
+    const materialsIntro = document.getElementById('seniorMaterialsIntro');
+    if (materialsIntro) materialsIntro.hidden = category?.id === 'smartphone';
     if (category && isLessonAvailable(lesson)) renderViewer(category, lesson);
     else if (category) renderLessons(category);
     else renderCategories();
@@ -178,9 +204,14 @@
     const home = event.target.closest('[data-senior-home]');
     const categoryButton = event.target.closest('[data-senior-category]');
     const lessonButton = event.target.closest('[data-senior-lesson]');
-    if (home) setState({ categoryId:null, lessonId:null, slideIndex:0 });
-    else if (categoryButton) setState({ categoryId:categoryButton.dataset.seniorCategory, lessonId:null, slideIndex:0 });
-    else if (lessonButton) setState({ lessonId:lessonButton.dataset.seniorLesson, slideIndex:0 });
+    const folderButton = event.target.closest('[data-senior-folder]');
+    if (home) setState({ categoryId:null, folderId:null, lessonId:null, slideIndex:0 });
+    else if (categoryButton) setState({ categoryId:categoryButton.dataset.seniorCategory, folderId:null, lessonId:null, slideIndex:0 });
+    else if (folderButton) setState({ categoryId:'smartphone', folderId:folderButton.dataset.seniorFolder, lessonId:null, slideIndex:0 });
+    else if (lessonButton) {
+      const lesson = findLesson(state.categoryId, lessonButton.dataset.seniorLesson);
+      if (isLessonAvailable(lesson)) setState({ folderId:lesson.folderId || null, lessonId:lesson.id, slideIndex:0 });
+    }
     else if (event.target.closest('[data-senior-previous]')) setState({ slideIndex:state.slideIndex - 1 });
     else if (event.target.closest('[data-senior-next]')) setState({ slideIndex:state.slideIndex + 1 });
     else if (event.target.closest('[data-senior-fullscreen]')) content.querySelector('.senior-viewer figure')?.requestFullscreen?.();
@@ -188,21 +219,24 @@
   breadcrumb.addEventListener('click', event => {
     const home = event.target.closest('[data-senior-home]');
     const categoryButton = event.target.closest('[data-senior-category]');
-    if (home) setState({ categoryId:null, lessonId:null, slideIndex:0 });
-    if (categoryButton) setState({ categoryId:categoryButton.dataset.seniorCategory, lessonId:null, slideIndex:0 });
+    const folderButton = event.target.closest('[data-senior-folder]');
+    if (home) setState({ categoryId:null, folderId:null, lessonId:null, slideIndex:0 });
+    if (categoryButton) setState({ categoryId:categoryButton.dataset.seniorCategory, folderId:null, lessonId:null, slideIndex:0 });
+    if (folderButton) setState({ categoryId:'smartphone', folderId:folderButton.dataset.seniorFolder, lessonId:null, slideIndex:0 });
   });
   document.addEventListener('keydown', event => {
     const miniAppCard = event.target.closest?.('[data-mini-app-card]');
     if (miniAppCard && event.key === ' ') { event.preventDefault(); miniAppCard.click(); return; }
     if (!state.lessonId || event.target.matches('input, textarea')) return;
     const lesson = findLesson(state.categoryId, state.lessonId);
+    if (!isLessonAvailable(lesson) || !lesson.slides?.length) return;
     if (event.key === 'ArrowLeft' && state.slideIndex > 0) setState({ slideIndex:state.slideIndex - 1 });
     if (event.key === 'ArrowRight' && state.slideIndex < lesson.slides.length - 1) setState({ slideIndex:state.slideIndex + 1 });
   });
   signoutButton.addEventListener('click', async () => { await client?.auth.signOut(); });
-  window.addEventListener('popstate', () => { const params = new URLSearchParams(location.search); state = { categoryId:params.get('category'), lessonId:params.get('lesson'), slideIndex:Math.max(0, Number(params.get('page') || 1) - 1) }; render(); });
+  window.addEventListener('popstate', () => { const params = new URLSearchParams(location.search); state = { categoryId:params.get('category'), folderId:params.get('folder'), lessonId:params.get('lesson'), slideIndex:Math.max(0, Number(params.get('page') || 1) - 1) }; render(); });
   const params = new URLSearchParams(location.search);
-  state = { categoryId:params.get('category'), lessonId:params.get('lesson'), slideIndex:Math.max(0, Number(params.get('page') || 1) - 1) };
+  state = { categoryId:params.get('category'), folderId:params.get('folder'), lessonId:params.get('lesson'), slideIndex:Math.max(0, Number(params.get('page') || 1) - 1) };
   client?.auth.onAuthStateChange((event, session) => { if (event !== 'INITIAL_SESSION') void checkMember(session); });
   void checkMember();
 })();
