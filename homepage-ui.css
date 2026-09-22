@@ -48,8 +48,6 @@ body>footer .footer-top .logo-name,body>footer .footer-top .logo-name b,body>foo
 #specialty-banners .specialty-english .specialty-operation-badge{background:#ffeadb!important;color:#a84a16!important;box-shadow:0 8px 20px rgba(168,74,22,.12)!important}
 #specialty-banners .specialty-melody .specialty-operation-badge{background:#fde7f1!important;color:#9d2f67!important;box-shadow:0 8px 20px rgba(157,47,103,.12)!important}
 #specialty-banners .specialty-dms .specialty-operation-badge{background:#e3f6ea!important;color:#0f6b3c!important;box-shadow:0 8px 20px rgba(15,107,60,.12)!important}
-#specialty-banners .specialty-dms-heading{margin:0}
-#specialty-banners .specialty-dms-category{display:block;margin:0 0 3px!important;color:#0f6b3c!important;font-size:11px!important;font-weight:800!important;letter-spacing:.02em!important}
 
 /* Homepage section palette (2026-09-08): approved Harmony Link colors. */
 body main>section.hero{background:#fffcf0!important}
@@ -1242,13 +1240,17 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
 #specialty-banners .specialty-banner-info{display:grid!important;grid-template-rows:auto minmax(42px,1fr) 46px!important;flex:1 1 auto!important;min-height:0!important;padding:13px 18px 14px!important}
 #specialty-banners .specialty-banner-info h3{margin:0 0 5px!important;font-size:21px!important;line-height:1.25!important}
 #specialty-banners .specialty-card-description{min-height:42px!important;margin:0!important;font-size:14px!important;line-height:1.5!important}
+@media(min-width:901px){
+  /* Fits the DMS card's single-sentence description on one line, matching
+     the other 3 cards' rhythm, only at the 3-col desktop width this was
+     measured against -- narrower breakpoints keep the shared 14px style
+     and wrap normally instead of overflowing the card. */
+  #specialty-banners .specialty-dms .specialty-card-description{font-size:10px!important;line-height:1.6!important;letter-spacing:-.01em!important;white-space:nowrap!important}
+}
 #specialty-banners .specialty-open,#specialty-banners .specialty-programs-link{align-self:end!important;width:100%!important;height:46px!important;min-height:46px!important;margin:0!important;padding:0 16px!important;border-radius:12px!important;background:var(--hl-primary)!important;color:#fff!important;box-shadow:none!important;transition:transform .2s ease,background-color .2s ease,box-shadow .2s ease!important}
 #specialty-banners .specialty-open:hover,#specialty-banners .specialty-programs-link:hover{background:#142b98!important;transform:translateY(-2px)!important;box-shadow:0 7px 15px rgba(26,52,172,.16)!important}
 #specialty-banners .specialty-partner-logo{flex:0 0 154px!important;height:154px!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#f6faff!important;padding:20px!important}
 #specialty-banners .specialty-partner-logo img{max-width:65%!important;max-height:65%!important;object-fit:contain!important}
-@media(min-width:901px){
-  #specialty-banners .specialty-banner-card:nth-child(4):last-child{grid-column:1/-1!important;max-width:calc(33.333% - 15px)!important;justify-self:center!important}
-}
 
 /* Specialty-program poster lightbox; card actions remain independent. */
 .specialty-flyer-lightbox[hidden]{display:none!important}
@@ -1287,7 +1289,12 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
 @media(max-width:900px) and (min-width:621px){
   #specialty-banners .specialty-banner-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
   #specialty-banners .specialty-banner-card:last-child{grid-column:1/-1!important;width:calc(50% - 11px)!important;max-width:none!important;justify-self:center!important}
-  #specialty-banners .specialty-banner-card.specialty-dms{height:auto!important;min-height:316px!important}
+  /* With exactly 4 cards the grid already fills a clean 2x2 -- the generic
+     :last-child centering above (meant for an odd leftover 3rd card) would
+     otherwise still grab the 4th card and force it back into a single
+     centered row, so cancel it here and let natural grid flow place DMS
+     in row 2, column 1. */
+  #specialty-banners .specialty-banner-card:nth-child(4):last-child{grid-column:auto!important;width:auto!important;max-width:none!important;justify-self:stretch!important}
 }
 @media(max-width:620px){
   #specialty-banners .specialty-banner-grid{grid-template-columns:1fr!important;gap:18px!important}
@@ -1327,6 +1334,15 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
 #events .event-grid>.event-card:not([hidden]) .event-info dl div{margin:2px 0!important;line-height:1.35!important}
 #events .event-grid>.event-card:not([hidden]) .event-detail-button{width:100%!important;height:42px!important;min-height:42px!important;margin-top:auto!important;padding:8px 12px!important;border-radius:11px!important}
 #events .event-grid>.event-card:not([hidden]) .event-detail-button b{display:none!important}
+/* The DMS workshop card's 일정/시간/장소 rows are each a single line (unlike
+   sibling cards' 2-line address rows), which left a much bigger auto-margin
+   gap above the button. Widening the dt/dd columns and row rhythm both
+   gives the value column (esp. the NY/TX time string) more breathing room
+   and closes that gap to match sibling cards' spacing. */
+#events .dms-workshop-card .event-info dl{display:flex!important;flex-direction:column!important;gap:14px!important}
+#events .dms-workshop-card .event-info dl div{grid-template-columns:42px 1fr!important;margin:0!important;line-height:1.6!important}
+#events .dms-workshop-card .event-info dt{font-size:10px!important}
+#events .dms-workshop-card .event-info dd{font-size:13px!important}
 #events .past-events{margin-top:18px!important}
 #events .past-events-head{margin-bottom:0!important}
 #events .past-events-disclosure>.past-events-toggle{margin:-38px 0 12px auto!important}
