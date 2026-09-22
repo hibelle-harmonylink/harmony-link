@@ -19,7 +19,12 @@ window.CAREER_PARTNERS = [
     // "dms-care") -- the same real, already-published asset and URL, not a
     // new or invented one.
     logo: '../assets/images/dms-care-logo.webp',
-    websiteUrl: 'https://dmscare.org/ko',
+    websiteUrl: 'https://www.dmscare.org/ko',
+    // DMS's own consultation/application form and Korean-language phone
+    // line, both confirmed from DMS's own submitted 링크 (1).pdf -- not
+    // HarmonyLink's general class-request form.
+    inquiryUrl: 'https://forms.gle/5yQ9HL6BkZADfJzL9',
+    phone: '469-605-6035',
     programs: [
       {
         id: 'ma',
@@ -27,6 +32,7 @@ window.CAREER_PARTNERS = [
         nameEn: 'Medical Assistant (MA)',
         image: '../assets/career/dms/ma.png',
         icon: '🩺',
+        officialUrl: 'https://dmscare.org/ko/pages/medical-assistant',
         duration: '6개월 과정',
         certPrepKo: 'NHA CCMA 자격증 준비',
         format: ['온라인 학습 + Live Zoom', '한국인 간호사의 한국어 설명', '영어 본수업 및 자격시험 준비', '학교 대면 실습 2일', '병원/임상 현장실습 5~10일'],
@@ -42,6 +48,7 @@ window.CAREER_PARTNERS = [
         nameEn: 'Patient Care Technician (PCT)',
         image: '../assets/career/dms/pct.png',
         icon: '🏥',
+        officialUrl: 'https://dmscare.org/ko/pages/patient-care-technician-assistant-pct-pca-program',
         duration: '4개월 과정',
         certPrepKo: 'NHA CPCT/A 자격증 준비',
         format: ['Online Learning + Live Zoom', '한국인 간호사의 한국어 설명', '학교 Hands-on 실습 4일', '병원/임상 현장실습 5일'],
@@ -57,6 +64,7 @@ window.CAREER_PARTNERS = [
         nameEn: 'Phlebotomy Technician',
         image: '../assets/career/dms/phlebotomy.png',
         icon: '💉',
+        officialUrl: 'https://dmscare.org/ko/pages/phlebotomy-technician-cpt-program',
         duration: '3개월 과정',
         certPrepKo: 'NHA CPT 자격증 준비',
         format: ['Online Learning + Live Zoom', '한국인 간호사의 한국어 설명', '학교 Hands-on 실습 1일', '다양한 채혈용품 실습', '40회 이상 직접 채혈 실습'],
@@ -72,6 +80,7 @@ window.CAREER_PARTNERS = [
         nameEn: 'EKG Technician',
         image: '../assets/career/dms/ekg.png',
         icon: '💓',
+        officialUrl: 'https://dmscare.org/ko/pages/ekg-technician-cet-program',
         duration: '2개월 과정',
         certPrepKo: 'NHA CET 자격증 준비',
         format: ['Online Learning', '학교 Hands-on 실습 1일', '실제 EKG 장비 사용', '12-Lead Electrode Placement 실습'],
@@ -87,6 +96,7 @@ window.CAREER_PARTNERS = [
         nameEn: 'Pharmacy Technician',
         image: '../assets/career/dms/pharmacy.png',
         icon: '💊',
+        officialUrl: 'https://dmscare.org/ko/pages/pharmacy-technician-cpht-program',
         duration: '3개월 과정',
         certPrepKo: 'NHA ExCPT 자격증 준비',
         format: ['온라인 수업 + 동영상 강의', 'Live Zoom', '한국인 강사의 한국어 설명', '별도의 학교 대면 실습 없음'],
@@ -102,6 +112,7 @@ window.CAREER_PARTNERS = [
         nameEn: 'Medical Billing & Coding Specialist',
         image: '../assets/career/dms/billing-coding.png',
         icon: '🧾',
+        officialUrl: 'https://dmscare.org/ko/pages/medical-billing-amp-coding-specialist-cbcs',
         duration: '2개월 과정',
         certPrepKo: 'NHA CBCS 자격증 준비',
         format: ['100% Online Self-Paced', '학교 출석 및 대면 실습 없음'],

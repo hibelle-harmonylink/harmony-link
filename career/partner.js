@@ -9,7 +9,6 @@
   }
 
   document.title = partner.nameKo + ' | Harmony Link 직업교육';
-  document.getElementById('breadcrumbCurrent').textContent = partner.nameKo;
 
   var logoHtml = partner.logo
     ? '<div class="career-partner-logo"><img src="' + partner.logo + '" alt="' + partner.nameKo + ' 로고" onerror="this.closest(\'.career-partner-logo\').remove()"></div>'
@@ -20,7 +19,6 @@
 
   document.getElementById('partnerHero').innerHTML =
     '<div class="career-shell">' +
-    '<p class="career-eyebrow">CAREER PARTNER</p>' +
     logoHtml +
     '<h1>' + partner.nameKo + '</h1>' +
     '<p class="lead">' + partner.taglineKo + '</p>' +
