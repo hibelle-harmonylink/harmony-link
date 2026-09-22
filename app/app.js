@@ -101,6 +101,18 @@ function programCard(program){
     <div><h3>${title}</h3><p>${tags}</p></div>
   </article>`;
 }
+// DMS Care Training Center is an outside 입점 파트너 program, not one of the 3
+// canonical specialty programs above -- kept out of shared/data/programs.js and
+// hand-appended here (mirroring script.js's dmsPartnerCard on the website) so it
+// reuses the same app-specialty-card visuals via ../career/partner.html?partner=dms,
+// the existing Production DMS partner page (see career/data.js). Its logo uses a
+// dedicated non-cover container (app-specialty-logo) instead of app-specialty-poster
+// since it is a small square brand mark, not a landscape program banner.
+function dmsAppCard(){
+  const viewLabel=language==="ko"?"프로그램 보기":"View Program";
+  const url="../career/partner.html?partner=dms";
+  return `<article class="app-specialty-card app-specialty-dms"><a class="app-specialty-logo" href="${url}" aria-label="DMS Care Training Center ${viewLabel}"><img src="../assets/images/dms-care-logo.webp" alt="DMS Care Training Center 로고"></a><div class="app-specialty-copy"><span class="app-specialty-badge" data-ko="입점 파트너" data-en="Partner">${language==="ko"?"입점 파트너":"Partner"}</span><h3>DMS Care Training Center</h3><p>${language==="ko"?"미국 Healthcare 분야의 실무와 자격시험을 준비하는 직업교육 프로그램":"Career training that prepares students for hands-on Healthcare work and certification exams in the U.S."}</p><a class="app-specialty-link" href="${url}">${viewLabel}</a></div></article>`;
+}
 function specialtyCards(){
   const featured=featuredPrograms;
   const viewLabel=language==="ko"?"프로그램 보기":"View Program";
@@ -114,10 +126,27 @@ function specialtyCards(){
     const description=language==="ko"?p.tagsKo:p.tagsEn;
     const image=posterImages[p.id]||p.image;
     return `<article class="app-specialty-card"><a class="app-specialty-poster" href="${p.url}" target="_blank" rel="noopener noreferrer" aria-label="${title} ${viewLabel}"><img src="${image}" alt="${title} 전단지"></a><div class="app-specialty-copy"><h3>${title}</h3><p>${description}</p><a class="app-specialty-link" href="${p.url}" target="_blank" rel="noopener noreferrer">${viewLabel}</a></div></article>`;
-  }).join("");
+  }).join("")+dmsAppCard();
 }
 function renderRecommended(){
   $("#recommendedPrograms").innerHTML=specialtyCards();
+}
+// 배움과 서비스: reuses shared/data/categories.js, the same 12-category data
+// (icon, Korean/English title, 운영중/준비중 status, link) index.html's existing
+// static #program-categories section already renders on the website -- no second,
+// separately hardcoded 12-item list. "../" prefixes each relative web URL since
+// this app lives one directory below the site root.
+function categoryCard(category){
+  const title=language==="ko"?category.titleKo:category.titleEn;
+  if(category.status==="available"&&category.url){
+    return `<a class="app-category-card is-linked" href="../${category.url}"><span class="app-category-status is-available" data-ko="운영중" data-en="Available">${language==="ko"?"운영중":"Available"}</span><span class="app-category-icon" aria-hidden="true">${category.icon}</span><strong data-ko="${category.titleKo}" data-en="${category.titleEn}">${title}</strong></a>`;
+  }
+  return `<button type="button" class="app-category-card is-preparing" data-category-coming-soon><span class="app-category-status is-preparing" data-ko="준비중" data-en="Coming soon">${language==="ko"?"준비중":"Coming soon"}</span><span class="app-category-icon" aria-hidden="true">${category.icon}</span><strong data-ko="${category.titleKo}" data-en="${category.titleEn}">${title}</strong></button>`;
+}
+function renderCategories(){
+  const container=$("#appCategoryGrid");
+  if(!container)return;
+  container.innerHTML=(window.HARMONY_LINK_CATEGORIES||[]).map(categoryCard).join("");
 }
 function renderPartners(){
   const container=$("#partnerPrograms");
@@ -262,7 +291,7 @@ function applyLanguage(){
     button.setAttribute('aria-pressed',String(selected));
   });
   localStorage.setItem("hl-language",language);
-  renderRecommended();renderPartners();renderFilters();renderPrograms();renderSaved();renderEvents();renderHomeEvents();renderPopup();
+  renderCategories();renderRecommended();renderPartners();renderFilters();renderPrograms();renderSaved();renderEvents();renderHomeEvents();renderPopup();
   renderAppAuthCopy();
 }
 function navigate(screen,contactMode="general",historyAction="push"){
@@ -292,6 +321,27 @@ document.addEventListener("click",event=>{
   const eventImage=event.target.closest("[data-event-image]");
   if(eventImage){
     openImageLightbox(eventImage.dataset.eventImage,eventImage.dataset.eventAlt||"");
+    return;
+  }
+  const scrollTile=event.target.closest("[data-scroll]");
+  if(scrollTile){
+    $(`#${scrollTile.dataset.scroll}`)?.scrollIntoView({behavior:"smooth",block:"start"});
+    return;
+  }
+  const actionTile=event.target.closest("[data-action]");
+  if(actionTile){
+    if(actionTile.dataset.action==="install") $("#installButton").click();
+    if(actionTile.dataset.action==="account") $("#appAuthButton").click();
+    return;
+  }
+  if(event.target.closest("[data-category-coming-soon]")){
+    $("#categoryComingSoonModal").hidden=false;
+    document.body.style.overflow="hidden";
+    return;
+  }
+  if(event.target.closest("[data-category-coming-soon-close]")){
+    $("#categoryComingSoonModal").hidden=true;
+    document.body.style.overflow="";
     return;
   }
   const go=event.target.closest("[data-go]");
@@ -582,6 +632,7 @@ function closeInstallHelp(){
 }
 $("#installHelpModal").querySelectorAll("[data-install-help-close]").forEach(button=>button.addEventListener("click",closeInstallHelp));
 document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!$("#installHelpModal").hidden)closeInstallHelp();});
+document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!$("#categoryComingSoonModal").hidden){$("#categoryComingSoonModal").hidden=true;document.body.style.overflow=""}});
 window.addEventListener("beforeinstallprompt",event=>{
   event.preventDefault();
   installPrompt=event;

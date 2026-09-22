@@ -28,6 +28,9 @@ body{margin:0;font-family:"DM Sans","Noto Sans KR",sans-serif;color:var(--career
 .career-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;background:#e8f7ee;color:var(--career-green);font-size:12px;font-weight:800}
 .career-partner-logo{width:56px;height:56px;margin-bottom:12px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 6px 18px rgba(24,43,91,.12);display:flex;align-items:center;justify-content:center}
 .career-partner-logo img{width:100%;height:100%;object-fit:contain}
+.career-partner-hero-head{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:10px}
+.career-partner-hero-head .career-partner-logo{width:76px;height:76px;margin-bottom:0;flex:0 0 auto}
+.career-partner-hero-head h1{margin:0}
 .career-hero-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:14px}
 .career-partner-website{color:var(--career-blue);font-weight:700;font-size:14px;text-decoration:none}
 
@@ -44,8 +47,9 @@ body{margin:0;font-family:"DM Sans","Noto Sans KR",sans-serif;color:var(--career
 .career-partner-card{display:flex;flex-direction:column;border:1px solid var(--career-line);border-radius:20px;background:linear-gradient(180deg,#fff,#f7fbff);padding:28px;text-decoration:none;color:inherit;box-shadow:0 8px 24px rgba(24,43,91,.07);transition:.2s}
 .career-partner-card:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(24,43,91,.13)}
 .career-partner-badge{display:inline-block;align-self:flex-start;padding:5px 11px;border-radius:999px;background:#e8f7ee;color:var(--career-green);font-size:11px;font-weight:800;margin-bottom:14px}
-.career-partner-card .career-partner-logo{width:52px;height:52px;margin-bottom:12px}
-.career-partner-card h3{font-size:21px;margin:0 0 8px}
+.career-partner-head{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.career-partner-card .career-partner-logo{width:64px;height:64px;margin-bottom:0;flex:0 0 auto}
+.career-partner-card h3{font-size:21px;margin:0}
 .career-partner-card p{color:var(--career-muted);font-size:14px;line-height:1.65;margin:0 0 16px;flex:1}
 .career-partner-cta{margin-top:auto;color:var(--career-blue);font-weight:800;font-size:14px}
 

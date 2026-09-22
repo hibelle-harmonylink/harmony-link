@@ -8,8 +8,7 @@
     return '' +
       '<a class="career-partner-card" href="career/partner.html?partner=' + encodeURIComponent(partner.id) + '">' +
       '<span class="career-partner-badge">' + partner.badgeKo + '</span>' +
-      logoHtml +
-      '<h3>' + partner.nameKo + '</h3>' +
+      '<div class="career-partner-head">' + logoHtml + '<h3>' + partner.nameKo + '</h3></div>' +
       '<p>' + partner.taglineKo + '</p>' +
       '<span class="career-partner-cta">프로그램 보기 →</span>' +
       '</a>';

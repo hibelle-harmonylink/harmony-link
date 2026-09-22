@@ -13,7 +13,7 @@ const webScript = read('script.js');
 const webStyles = read('styles.css');
 const homepageUiCss = read('homepage-ui.css');
 
-test('HOME gets a 2x2 Quick Access grid reusing the existing data-go/anchor navigation, right after the Hero', () => {
+test('HOME gets a 10-tile Quick Access grid (grown from the original 4) reusing the existing data-go/anchor navigation plus a small data-scroll/data-action delegate, right after the Hero', () => {
   const home = appPage.match(/<section class="screen active home-dashboard"[\s\S]*?<\/section>|<section class="screen active" id="home"[\s\S]*$/)?.[0] || appPage;
   const heroIndex = home.indexOf('class="hero hero-dashboard"');
   const quickIndex = home.indexOf('id="quickAccess"');
@@ -25,10 +25,16 @@ test('HOME gets a 2x2 Quick Access grid reusing the existing data-go/anchor navi
   assert.match(quickBlock, /href="\.\.\/senior-learning\.html"/);
   assert.match(quickBlock, /data-go="events"/);
   assert.match(quickBlock, /href="\.\.\/#partner-center"/);
-  assert.equal((quickBlock.match(/class="quick-access-tile"/g) || []).length, 4);
-  // No new JS wiring: programs/events reuse the existing document-level [data-go] click
-  // delegation, and the other two are plain links identical in pattern to the desktop nav.
+  assert.equal((quickBlock.match(/class="quick-access-tile"/g) || []).length, 10);
+  // Still no ID-specific JS wiring: programs/events/about/contact reuse the existing
+  // document-level [data-go] click delegation; 시니어 배움터/파트너/직업 are plain links
+  // identical in pattern to the desktop nav; only the 2 truly new interactions
+  // (business-spotlight scroll, install/account actions) needed a few lines of new
+  // generic [data-scroll]/[data-action] delegation, scoped by attribute, not by this
+  // grid's id or class.
   assert.doesNotMatch(appScript, /quickAccess|quick-access/);
+  assert.match(appScript, /data-scroll/);
+  assert.match(appScript, /data-action/);
 });
 
 test('Hero keeps its exact web-sourced copy, CTAs, and image; only a compacting modifier class and CSS were added', () => {
@@ -71,9 +77,12 @@ test('Business Preview shows exactly one canonical business via renderPartners()
   assert.match(overridesCss, /#partnerPrograms \.app-partner-card\{min-height:0!important\}/);
 });
 
-test('Community CTA, bottom nav, and hamburger nav markup are byte-identical to before the redesign', () => {
-  assert.match(appPage, /<section class="community-card">/);
-  assert.match(appPage, /<a class="community-card-link" href="\.\.\/community\.html"><span data-ko="커뮤니티 보기"/);
+test('Bottom nav and hamburger nav markup are byte-identical to before the redesign; the home-screen community promo card was intentionally removed (later round)', () => {
+  // The promotional "커뮤니티" card that used to sit at the bottom of the home screen
+  // was removed once the Quick Access grid grew to cover navigation -- the Community
+  // feature, its page, and its bottom-nav/desktop-nav links are unaffected.
+  assert.doesNotMatch(appPage, /<section class="community-card">/);
+  assert.doesNotMatch(appPage, /class="community-card-link"/);
   const bottomNav = appPage.match(/<nav class="bottom-nav"[\s\S]*?<\/nav>/)?.[0] || '';
   assert.equal((bottomNav.match(/data-go=|<a /g) || []).length, 5);
   assert.match(appPage, /<nav class="desktop-app-nav" id="appPrimaryNav" aria-label="주요 메뉴">/);

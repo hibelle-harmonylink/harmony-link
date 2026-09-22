@@ -77,7 +77,11 @@ test('Programs card data, images, buttons, and links are untouched -- only the s
 test('Business section title is unified to "Business Spotlight" on HOME (both languages); "업체 광고 · 제휴 공간"/"Business Ads & Partnerships" is gone', () => {
   assert.doesNotMatch(appPage, /업체 광고 · 제휴 공간|Business Ads & Partnerships/);
   assert.match(appPage, /<p class="eyebrow" data-ko="BUSINESS SPOTLIGHT" data-en="BUSINESS SPOTLIGHT">BUSINESS SPOTLIGHT<\/p>/);
-  assert.match(appPage, /<h2 data-ko="Business Spotlight" data-en="Business Spotlight">Business Spotlight<\/h2>/);
+  // The h2 now shows a real Korean translation ("비즈니스 스포트라이트") instead of the
+  // literal English string in Korean mode -- matching the website's own established
+  // eyebrow(English)/h2(translated) convention for this exact section (see below).
+  assert.match(appPage, /<h2 data-ko="비즈니스 스포트라이트" data-en="Business Spotlight">비즈니스 스포트라이트<\/h2>/);
+  assert.doesNotMatch(appPage, /<h2 data-ko="Business Spotlight"/);
   // Matches the real website's own eyebrow/title for the same feature (script.js's dynamically
   // inserted #advertising section and the business flyer modal header).
   assert.match(webScript, /<p class="eyebrow">BUSINESS SPOTLIGHT<\/p><h2 data-ko="비즈니스 스포트라이트" data-en="Business Spotlight">/);
@@ -105,16 +109,23 @@ test('Business/Events canonical data are untouched by the title/CTA edits', () =
   assert.deepEqual(eventIds, ['messiah', 'hole19-tournament', 'free-music-class', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
 });
 
-test('Bottom nav (5 items), hamburger, Quick Access (2x2, 4 tiles) are untouched by this round\'s edits', () => {
+test('Bottom nav (5 items) and hamburger are untouched; Quick Access grew from 4 to 10 tiles reusing the existing data-go/anchor/action-delegate pattern', () => {
   const bottomNav = appPage.match(/<nav class="bottom-nav"[\s\S]*?<\/nav>/)?.[0] || '';
   assert.equal((bottomNav.match(/data-go=|<a /g) || []).length, 5);
   assert.match(appPage, /<nav class="desktop-app-nav" id="appPrimaryNav" aria-label="주요 메뉴">/);
   const quickBlock = appPage.match(/<section class="quick-access-grid" id="quickAccess"[\s\S]*?<\/section>/)?.[0] || '';
-  assert.equal((quickBlock.match(/class="quick-access-tile"/g) || []).length, 4);
+  assert.equal((quickBlock.match(/class="quick-access-tile"/g) || []).length, 10);
   assert.match(quickBlock, /data-go="programs"/);
   assert.match(quickBlock, /href="\.\.\/senior-learning\.html"/);
   assert.match(quickBlock, /data-go="events"/);
   assert.match(quickBlock, /href="\.\.\/#partner-center"/);
+  // The 6 new tiles added this round.
+  assert.match(quickBlock, /data-scroll="appPartners"/);
+  assert.match(quickBlock, /href="\.\.\/career\.html"/);
+  assert.match(quickBlock, /data-action="install"/);
+  assert.match(quickBlock, /data-action="account"/);
+  assert.match(quickBlock, /data-go="about"/);
+  assert.match(quickBlock, /data-go="contact"/);
 });
 
 test('the general website files are unaffected by this app-only round', () => {
