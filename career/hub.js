@@ -11,7 +11,7 @@
       logoHtml +
       '<h3>' + partner.nameKo + '</h3>' +
       '<p>' + partner.taglineKo + '</p>' +
-      '<span class="career-partner-cta">' + partner.programs.length + '개 프로그램 보기 →</span>' +
+      '<span class="career-partner-cta">프로그램 보기 →</span>' +
       '</a>';
   }).join('');
 })();
