@@ -603,6 +603,9 @@ a.program-mini h3{color:inherit;text-decoration:none}
 .app-specialty-copy{display:flex;flex:1;min-width:0;flex-direction:column;padding:20px}
 .app-specialty-copy h3{margin:0 0 7px;color:#042963;font-size:20px;line-height:1.3}
 .app-specialty-copy p{margin:0 0 18px;color:#526681;font-size:14px;line-height:1.55}
+.app-specialty-logo{display:flex;align-items:center;justify-content:center;height:220px;padding:24px;background:#f6faff}
+.app-specialty-logo img{max-width:60%;max-height:60%;object-fit:contain}
+.app-specialty-badge{display:inline-block;align-self:flex-start;padding:5px 11px;border-radius:999px;background:#e8f7ee;color:#16713a;font-size:11px;font-weight:800;margin-bottom:8px}
 .app-specialty-link{display:flex;align-items:center;justify-content:center;width:100%;height:46px;margin-top:auto;border-radius:12px;background:#0b54c2;color:#fff;text-decoration:none;font-size:14px;font-weight:800}
 .app-specialty-screen-grid{padding:0 54px 54px}
 .app-partner-carousel{grid-template-columns:34px minmax(0,1fr) 34px!important;gap:12px!important}
@@ -636,6 +639,7 @@ a.program-mini h3{color:inherit;text-decoration:none}
   .app-specialty-grid{grid-template-columns:1fr;gap:14px}
   .app-specialty-card{display:flex;flex-direction:column}
   .app-specialty-poster{height:180px}
+  .app-specialty-logo{height:180px}
   .app-specialty-copy{padding:16px}
   .app-specialty-copy h3{font-size:17px}
   .app-specialty-copy p{font-size:13px}
@@ -653,6 +657,7 @@ a.program-mini h3{color:inherit;text-decoration:none}
   .app-mobile-summary-break{display:block}
   .app-shell #home .hero-summary{font-size:14px!important;line-height:1.6!important;white-space:nowrap!important;letter-spacing:-.035em}
   .app-specialty-poster{height:160px}
+  .app-specialty-logo{height:160px}
   .app-specialty-copy{padding:14px}
   .app-specialty-copy p{margin-bottom:12px}
   .app-partner-carousel{grid-template-columns:24px minmax(0,1fr) 24px!important;gap:5px!important}
@@ -861,6 +866,8 @@ html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-si
 #recommendedPrograms.app-specialty-grid{grid-template-columns:1fr!important;gap:10px!important}
 #recommendedPrograms .app-specialty-card{flex-direction:row!important}
 #recommendedPrograms .app-specialty-poster{flex:0 0 84px!important;width:84px!important;height:84px!important}
+#recommendedPrograms .app-specialty-logo{flex:0 0 84px!important;width:84px!important;height:84px!important;padding:12px}
+#recommendedPrograms .app-specialty-badge{display:none}
 #recommendedPrograms .app-specialty-copy{flex:1;min-width:0;justify-content:center;padding:10px 14px!important}
 #recommendedPrograms .app-specialty-copy h3{margin:0 0 2px;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #recommendedPrograms .app-specialty-copy p{margin:0 0 6px;font-size:12px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
@@ -885,8 +892,35 @@ html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-si
   .quick-access-tile:hover{transform:translateY(-3px);box-shadow:var(--shadow,0 16px 42px rgba(18,65,132,.13))}
 }
 @media(prefers-reduced-motion:reduce){.quick-access-tile{transition:none!important}}
-@media(min-width:900px){.quick-access-grid{margin:22px 54px 4px;max-width:560px}}
+@media(min-width:640px) and (max-width:899px){.quick-access-grid{grid-template-columns:repeat(3,1fr);margin:20px 32px 4px;max-width:640px}}
+@media(min-width:900px){.quick-access-grid{grid-template-columns:repeat(5,1fr);margin:22px 54px 4px;max-width:980px}}
 @media(max-width:380px){.quick-access-label{font-size:13px}}
+
+/* 배움과 서비스: mirrors index.html's #program-categories grid (12 cards, 6x2 on
+   desktop) at app scale, driven by the same shared/data/categories.js this
+   section's script reads -- not a separately hardcoded card set. */
+.app-category-section{margin:28px 20px 4px}
+.app-category-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}
+.app-category-card{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:130px;padding:20px 10px;border-radius:var(--card-radius,20px);border:var(--card-border,1px solid rgba(4,41,99,.12));box-shadow:var(--card-shadow,0 10px 26px rgba(4,41,99,.08));background:var(--card-bg,#fff);color:#061d45;text-decoration:none;font-family:inherit;cursor:pointer;text-align:center}
+.app-category-status{position:absolute;top:8px;right:8px;padding:3px 7px;border-radius:999px;font-size:10px;font-weight:800;line-height:1.2}
+.app-category-status.is-available{background:#e8f7ee;color:#16713a}
+.app-category-status.is-preparing{background:#f2f4f7;color:#667085}
+.app-category-icon{display:grid;place-items:center;width:54px;height:54px;border-radius:14px;background:#dbeaff;font-size:26px;line-height:1}
+.app-category-card strong{font-size:15px;font-weight:900;letter-spacing:-.01em;color:#061d45}
+.app-category-card.is-preparing .app-category-icon{filter:saturate(.72);opacity:.88}
+@media(hover:hover) and (pointer:fine){
+  .app-category-card{transition:transform .18s ease,box-shadow .18s ease}
+  .app-category-card:hover{transform:translateY(-3px);box-shadow:var(--shadow,0 16px 42px rgba(18,65,132,.13))}
+}
+@media(prefers-reduced-motion:reduce){.app-category-card{transition:none!important}}
+@media(min-width:640px) and (max-width:899px){.app-category-grid{grid-template-columns:repeat(4,1fr)}.app-category-section{margin:28px 32px 4px}}
+@media(min-width:900px){
+  .app-category-grid{grid-template-columns:repeat(6,1fr)}
+  .app-category-section{margin:28px 54px 4px}
+  .app-category-card{min-height:150px}
+  .app-category-icon{width:64px;height:64px;font-size:31px}
+  .app-category-card strong{font-size:18px}
+}
 
 /* "더보기" link in the Business Preview section-title reuses the same plain-text
    style as the existing "행사 보기"/"전체 보기" <button>s in the other section-titles. */

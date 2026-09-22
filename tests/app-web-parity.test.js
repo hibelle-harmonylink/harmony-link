@@ -24,11 +24,17 @@ test('app menu links to the existing Senior Learning web page instead of duplica
   assert.equal((bottomNav.match(/data-go=|<a /g) || []).length, 5);
 });
 
-test('app community links all use same-window navigation so the back gesture returns to the app', () => {
-  assert.match(appPage, /<a class="community-card-link" href="\.\.\/community\.html"><span data-ko="커뮤니티 보기"/);
-  assert.doesNotMatch(appPage, /class="community-card-link" href="\.\.\/community\.html" target="_blank"/);
+test('app community links (desktop nav + bottom nav) use same-window navigation; the promotional home-screen community box was intentionally removed', () => {
+  // The standalone "커뮤니티" promo card (community-card/community-card-link) that used
+  // to sit at the bottom of the home screen was removed as part of folding navigation
+  // into the Quick Access tile grid -- the Community feature, its page, and its other
+  // entry points (desktop nav, bottom nav) are untouched.
+  assert.doesNotMatch(appPage, /class="community-card"/);
+  assert.doesNotMatch(appPage, /class="community-card-link"/);
+  assert.match(appPage, /<a href="\.\.\/community\.html" data-ko="커뮤니티" data-en="Community">커뮤니티<\/a>/);
   assert.match(appPage, /<a href="\.\.\/community\.html"><span class="bn-icon-wrap">/);
   assert.match(appPage, /data-ko="커뮤니티" data-en="Community">커뮤니티<\/a>/);
+  assert.doesNotMatch(appPage, /href="\.\.\/community\.html" target="_blank"/);
 });
 
 test('shared-content.js accurately describes its own scope', () => {

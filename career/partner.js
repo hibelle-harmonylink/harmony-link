@@ -19,8 +19,7 @@
 
   document.getElementById('partnerHero').innerHTML =
     '<div class="career-shell">' +
-    logoHtml +
-    '<h1>' + partner.nameKo + '</h1>' +
+    '<div class="career-partner-hero-head">' + logoHtml + '<h1>' + partner.nameKo + '</h1></div>' +
     '<p class="lead">' + partner.taglineKo + '</p>' +
     '<div class="career-hero-meta"><span class="career-badge">' + partner.badgeKo + '</span>' + websiteHtml + '</div>' +
     '</div>';
