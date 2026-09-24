@@ -45,11 +45,11 @@ test('Hero CTA grid columns use minmax(0,1fr) with min-width:0 on both buttons -
   assert.match(overridesCss, /@media\(min-width:520px\)\{\n  html\[lang="en"\][\s\S]*?font-size:13px!important/);
 });
 
-test('Hero headline, description, image, and badge are untouched by the CTA edit', () => {
+test('Hero headline, description, and image are untouched by the CTA edit; the "전문 강사 연결" badge was later removed by the app-home-reference-polish round', () => {
   assert.match(appPage, /data-ko="배우고 싶은 사람과<br><em>가르치는 사람을 연결합니다\.<\/em>" data-en="Connecting people who want to learn <em>with people ready to teach\.<\/em>"/);
   assert.match(appPage, /class="hero-desc" data-ko="디지털 · 음악 · 언어 · 건강 · 문화 · 생활교육까지<br>필요한 교육을 찾고 전문 강사와 연결하세요\./);
   assert.match(appPage, /<img src="\.\.\/assets\/home\/harmony-community-learning\.png\?v=20260915-1"/);
-  assert.match(appPage, /data-ko="전문 강사 연결" data-en="Expert instructor matching">전문 강사 연결<\/b>/);
+  assert.doesNotMatch(appPage, /hero-visual-badge/);
 });
 
 test('Programs title is unified to "교육 프로그램"/"Education Programs" on both HOME preview and the Programs detail screen; "전문 교육 프로그램" is gone', () => {
