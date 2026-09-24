@@ -37,15 +37,18 @@ test('upcoming/past split is date-driven (dateEnd vs today), not a static field,
     assert.ok(e.dateEnd, `${e.id} missing dateEnd`);
     assert.doesNotMatch(JSON.stringify(e), /"status":/, `${e.id} should not carry a static status field`);
   });
+  // Deliberately computed relative to real "today" (not a fixed snapshot date) so
+  // this test keeps working as events naturally roll from upcoming to past --
+  // dms-ai-automation-workshop (dateEnd 2026-09-23) has already rolled to past.
   const today = todayKey();
   const upcoming = events.filter(e => e.dateEnd >= today);
   const past = events.filter(e => e.dateEnd < today);
-  assert.equal(upcoming.length, 4);
-  assert.equal(past.length, 3);
-  assert.deepEqual(upcoming.map(e => e.id), ['messiah', 'hole19-tournament', 'free-music-class', 'dms-ai-automation-workshop']);
+  assert.equal(upcoming.length, 3);
+  assert.equal(past.length, 4);
+  assert.deepEqual(upcoming.map(e => e.id), ['messiah', 'hole19-tournament', 'free-music-class']);
   // Past events sort most-recently-ended first, matching script.js's existing sort.
   const pastSorted = [...past].sort((a, b) => b.dateEnd.localeCompare(a.dateEnd)).map(e => e.id);
-  assert.deepEqual(pastSorted, ['ai-business-automation', 'one-day-class', 'finance-ai-seminar']);
+  assert.deepEqual(pastSorted, ['dms-ai-automation-workshop', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar']);
 });
 
 test('Korean/English fields exist for every event (title/description/badge)', () => {

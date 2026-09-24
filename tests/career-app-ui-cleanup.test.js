@@ -50,8 +50,8 @@ test('DMS link, 6-program data, and career/data.js are untouched by this layout 
   assert.doesNotMatch(careerData, /직업교육 파트너/);
 });
 
-test('app Quick Access includes a 직업(Careers) tile linking to the existing career.html, not a new in-app screen', () => {
-  assert.match(appPage, /href="\.\.\/career\.html"/);
+test('career.html remains a real, standalone page (not an in-app screen) even after the 직업 tile was removed from the HOME Quick Access grid in the mobile-home-polish round', () => {
+  assert.ok(fs.existsSync(path.join(root, 'career.html')), 'career.html must still exist, untouched');
   assert.doesNotMatch(appScript, /data-screen="career"/);
   assert.doesNotMatch(appPage, /data-screen="career"/);
 });
@@ -66,11 +66,19 @@ test('app 교육 프로그램 (Programs) gains one DMS card without touching the
 test('the hand-appended DMS app-specialty-card reuses career/data.js\'s real DMS partner page, shows 입점 파트너, and is appended (not replacing) the 3 canonical program cards', () => {
   assert.match(appScript, /function dmsAppCard\(\)/);
   assert.match(appScript, /career\/partner\.html\?partner=dms/);
-  assert.match(appScript, /app-specialty-dms/);
   assert.match(appScript, /입점 파트너/);
-  assert.match(appScript, /assets\/images\/dms-care-logo\.webp/);
   assert.match(appScript, /\}\)\.join\(""\)\+dmsAppCard\(\)/);
-  assert.match(overridesCss, /\.app-specialty-logo\{/);
+});
+
+// mobile-home-polish round: the DMS card switched from its small square logo
+// (app-specialty-logo) to the same app-specialty-poster format the other 3
+// program cards use, showing DMS's own existing program flyer instead of its
+// brand mark, so the 4 "교육 프로그램" cards read as one consistent set.
+test('DMS "교육 프로그램" card shows a real existing DMS flyer image via app-specialty-poster, matching the other 3 cards\' format instead of a small logo', () => {
+  assert.match(appScript, /class="app-specialty-poster" href="\$\{url\}"[\s\S]*?dms-care-flyer-en\.png/);
+  assert.doesNotMatch(appScript, /app-specialty-logo/);
+  assert.doesNotMatch(appScript, /dms-care-logo\.webp/);
+  assert.ok(fs.existsSync(path.join(root, 'assets/images/dms-care-flyer-en.png')), 'the flyer image dmsAppCard() references must actually exist in the repo');
 });
 
 test('app home Business Spotlight shows the Korean label in Korean mode instead of the literal English string', () => {
@@ -85,12 +93,15 @@ test('app home no longer shows the promotional community card, but Community its
   assert.ok(fs.existsSync(path.join(root, 'community.html')), 'community.html must still exist, untouched');
 });
 
-test('app home Quick Access has exactly 10 tiles covering the requested real features, with no fabricated new screens', () => {
+test('app home Quick Access has exactly 6 tiles, in the fixed new order, with 비즈니스 스포트라이트 shortened to 비즈니스', () => {
   const quickBlock = appPage.match(/<section class="quick-access-grid" id="quickAccess"[\s\S]*?<\/section>/)?.[0] || '';
   const labels = [...quickBlock.matchAll(/data-ko="([^"]+)" data-en="[^"]*">[^<]*<\/span>\s*<\/(?:button|a)>/g)].map(m => m[1]);
-  assert.deepEqual(labels, ['프로그램', '시니어 배움터', '강좌·행사', '파트너', '비즈니스 스포트라이트', '직업', '미니앱', '마이페이지', '소개', '문의']);
-  // 미니앱/마이페이지 reuse the existing install button and auth button flows --
-  // no new screen, no new auth logic.
+  assert.deepEqual(labels, ['소개', '프로그램', '강좌·행사', '비즈니스', '시니어 배움터', '파트너']);
+  assert.doesNotMatch(quickBlock, /직업|미니앱|마이페이지|문의/);
+  assert.match(quickBlock, /data-scroll="appPartners"/);
+  assert.match(appPage, /id="appPartners"/);
+  // 미니앱/마이페이지's underlying handlers are untouched even with no Quick Access
+  // tile left to trigger them (career.html itself is asserted separately above).
   assert.match(appScript, /actionTile\.dataset\.action==="install"\) \$\("#installButton"\)\.click\(\)/);
   assert.match(appScript, /actionTile\.dataset\.action==="account"\) \$\("#appAuthButton"\)\.click\(\)/);
 });
@@ -165,9 +176,9 @@ test('app home gets a separate "배움과 서비스" 12-card section (distinct f
   assert.match(appScript, /function renderCategories\(\)\{/);
   assert.match(appScript, /window\.HARMONY_LINK_CATEGORIES/);
   assert.doesNotMatch(appScript, /HARMONY_LINK_APP_CATEGORIES|appCategoriesData\s*=\s*\[/);
-  // Quick Access (10 tiles) was NOT force-expanded to 12 to fake this requirement.
+  // Quick Access (6 tiles) was NOT force-expanded to 12 to fake this requirement.
   const quickBlock = appPage.match(/<section class="quick-access-grid" id="quickAccess"[\s\S]*?<\/section>/)?.[0] || '';
-  assert.equal((quickBlock.match(/class="quick-access-tile"/g) || []).length, 10);
+  assert.equal((quickBlock.match(/class="quick-access-tile"/g) || []).length, 6);
 });
 
 test('app "배움과 서비스" renders exactly 12 cards in the fixed Production order, with 직업 pointing at the existing career.html and no fabricated new pages', () => {
