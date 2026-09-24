@@ -105,13 +105,16 @@ function programCard(program){
 // canonical specialty programs above -- kept out of shared/data/programs.js and
 // hand-appended here (mirroring script.js's dmsPartnerCard on the website) so it
 // reuses the same app-specialty-card visuals via ../career/partner.html?partner=dms,
-// the existing Production DMS partner page (see career/data.js). Its logo uses a
-// dedicated non-cover container (app-specialty-logo) instead of app-specialty-poster
-// since it is a small square brand mark, not a landscape program banner.
+// the existing Production DMS partner page (see career/data.js). It reuses
+// app-specialty-poster (the same poster container the other 3 cards use) with
+// DMS's own existing program flyer (shared/data/businesses.js's flyers[0] for
+// dms-care, already Production's DMS representative image) instead of the small
+// square brand-mark logo, so the card reads the same as the other 3 instead of
+// standing out with a different image format.
 function dmsAppCard(){
   const viewLabel=language==="ko"?"프로그램 보기":"View Program";
   const url="../career/partner.html?partner=dms";
-  return `<article class="app-specialty-card app-specialty-dms"><a class="app-specialty-logo" href="${url}" aria-label="DMS Care Training Center ${viewLabel}"><img src="../assets/images/dms-care-logo.webp" alt="DMS Care Training Center 로고"></a><div class="app-specialty-copy"><span class="app-specialty-badge" data-ko="입점 파트너" data-en="Partner">${language==="ko"?"입점 파트너":"Partner"}</span><h3>DMS Care Training Center</h3><p>${language==="ko"?"미국 Healthcare 분야의 실무와 자격시험을 준비하는 직업교육 프로그램":"Career training that prepares students for hands-on Healthcare work and certification exams in the U.S."}</p><a class="app-specialty-link" href="${url}">${viewLabel}</a></div></article>`;
+  return `<article class="app-specialty-card"><a class="app-specialty-poster" href="${url}" aria-label="DMS Care Training Center ${viewLabel}"><img src="../assets/images/dms-care-flyer-en.png" alt="DMS Care Training Center 전단지"></a><div class="app-specialty-copy"><span class="app-specialty-badge" data-ko="입점 파트너" data-en="Partner">${language==="ko"?"입점 파트너":"Partner"}</span><h3>DMS Care Training Center</h3><p>${language==="ko"?"미국 Healthcare 분야의 실무와 자격시험을 준비하는 직업교육 프로그램":"Career training that prepares students for hands-on Healthcare work and certification exams in the U.S."}</p><a class="app-specialty-link" href="${url}">${viewLabel}</a></div></article>`;
 }
 function specialtyCards(){
   const featured=featuredPrograms;
@@ -190,11 +193,25 @@ function renderEvents(){
   $("#pastEventsList").innerHTML=past.map(eventCard).join("");
   $("#pastEventsList").hidden=!pastEventsOpen;
 }
+// Compact flyer-first card for the HOME "강좌·행사" gallery: poster + a short
+// title only, no badge/description paragraph (those stay on the full #events
+// screen's eventCard()). Reuses eventCard()'s own data-event-image lightbox
+// button and detail-page URL resolution so zoom and "자세히 보기" behavior
+// (including DMS AI 특강's dedicated detail page) is unchanged, just restyled.
+function homeEventCard(item){
+  const title=language==="ko"?item.titleKo:item.titleEn;
+  const zoomLabel=language==="ko"?"이미지 크게 보기":"View larger image";
+  const detailLabel=language==="ko"?"자세히 보기":"View Details";
+  const media=item.isPlaceholder?`<div class="event-placeholder-art" aria-hidden="true">✦</div>`:`<button class="event-image-open" type="button" data-event-image="${item.image}" data-event-alt="${title}" aria-label="${zoomLabel}"><img src="${item.image}" alt="${title}"></button>`;
+  const detailUrl=item.url||({"hole19-tournament":"../special-event-hole19.html","free-music-class":"../special-event-music-class.html"}[item.id]||"");
+  const detail=item.isPlaceholder?"":(detailUrl?`<a class="app-home-event-link" href="${detailUrl}">${detailLabel}</a>`:`<button class="app-home-event-link" type="button" data-event-image="${item.image}" data-event-alt="${title}">${detailLabel}</button>`);
+  return `<article class="app-home-event-card${item.isPlaceholder?" event-placeholder":""}">${media}<h3>${title}</h3>${detail}</article>`;
+}
 function renderHomeEvents(){
   const container=$("#homeEvents");
   if(!container)return;
   const today=new Date().toISOString().slice(0,10);
-  container.innerHTML=events.filter(item=>(item.endDate||item.date)>=today).slice(0,1).map(eventCard).join("");
+  container.innerHTML=events.filter(item=>(item.endDate||item.date)>=today).map(homeEventCard).join("");
 }
 function renderFilters(){
   if(!$("#categoryFilters"))return;

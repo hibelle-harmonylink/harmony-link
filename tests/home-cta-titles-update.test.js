@@ -109,23 +109,22 @@ test('Business/Events canonical data are untouched by the title/CTA edits', () =
   assert.deepEqual(eventIds, ['messiah', 'hole19-tournament', 'free-music-class', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
 });
 
-test('Bottom nav (5 items) and hamburger are untouched; Quick Access grew from 4 to 10 tiles reusing the existing data-go/anchor/action-delegate pattern', () => {
+test('Bottom nav (5 items) and hamburger are untouched; Quick Access has 6 tiles reusing the existing data-go/anchor/data-scroll pattern', () => {
   const bottomNav = appPage.match(/<nav class="bottom-nav"[\s\S]*?<\/nav>/)?.[0] || '';
   assert.equal((bottomNav.match(/data-go=|<a /g) || []).length, 5);
   assert.match(appPage, /<nav class="desktop-app-nav" id="appPrimaryNav" aria-label="주요 메뉴">/);
   const quickBlock = appPage.match(/<section class="quick-access-grid" id="quickAccess"[\s\S]*?<\/section>/)?.[0] || '';
-  assert.equal((quickBlock.match(/class="quick-access-tile"/g) || []).length, 10);
+  assert.equal((quickBlock.match(/class="quick-access-tile"/g) || []).length, 6);
   assert.match(quickBlock, /data-go="programs"/);
   assert.match(quickBlock, /href="\.\.\/senior-learning\.html"/);
   assert.match(quickBlock, /data-go="events"/);
   assert.match(quickBlock, /href="\.\.\/#partner-center"/);
-  // The 6 new tiles added this round.
   assert.match(quickBlock, /data-scroll="appPartners"/);
-  assert.match(quickBlock, /href="\.\.\/career\.html"/);
-  assert.match(quickBlock, /data-action="install"/);
-  assert.match(quickBlock, /data-action="account"/);
   assert.match(quickBlock, /data-go="about"/);
-  assert.match(quickBlock, /data-go="contact"/);
+  // mobile-home-polish round: 직업/미니앱/마이페이지/문의 were intentionally
+  // removed from this grid (career.html, the install/account handlers, and
+  // the bottom-nav/desktop-nav 문의 links all remain untouched elsewhere).
+  assert.doesNotMatch(quickBlock, /href="\.\.\/career\.html"|data-action="install"|data-action="account"|data-go="contact"/);
 });
 
 test('the general website files are unaffected by this app-only round', () => {

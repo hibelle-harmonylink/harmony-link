@@ -362,6 +362,16 @@
   color: #1155d9 !important;
 }
 
+/* Below ~440px, 32px pushes the <br>-separated 2nd line ("가르치는 사람을
+   연결합니다.") past one line, wrapping mid-word into an awkward 3rd line.
+   Scale down smoothly (clamp, not a single fixed value) so every width in
+   this range keeps exactly the intended 2 lines instead of only the exact
+   breakpoints that happened to be tested. 32px already fits in 2 lines from
+   ~460px up, so nothing changes above this query. */
+@media(max-width:440px){
+  .app-shell #home .hero h1{font-size:clamp(20px,calc(-1.333px + 6.667vw),28px)}
+}
+
 .app-shell #home .hero .eyebrow {
   margin-bottom: 9px;
   color: #1155d9 !important;
@@ -681,8 +691,8 @@ a.program-mini h3{color:inherit;text-decoration:none}
 .app-pathway-grid article{display:flex;min-width:0;flex-direction:column;padding:20px;border:1px solid rgba(4,41,99,.13);border-radius:18px;background:#fff}
 .app-pathway-grid h3{margin:0 0 7px;color:#042963;font-size:19px}.app-pathway-grid p{margin:0 0 15px;color:#526681;font-size:13px;line-height:1.55}
 .app-pathway-grid a{display:flex;align-items:center;justify-content:center;height:44px;margin-top:auto;border-radius:11px;background:#0b54c2;color:#fff;text-decoration:none;font-size:13px;font-weight:800}
-.app-home-events{padding-bottom:18px!important}.app-home-event-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.app-home-event-grid .event-card{display:flex;min-width:0;height:100%;flex-direction:column;margin:0!important}.app-home-event-grid .event-image-open img{height:190px}.app-home-event-grid .event-card>div{display:flex;flex:1;flex-direction:column;padding:18px}.app-home-event-grid .event-card h2{font-size:18px}.app-home-event-grid .event-card p{font-size:13px}.event-detail-link{display:flex;align-items:center;justify-content:center;height:42px;margin-top:auto;border-radius:11px;background:#0b54c2;color:#fff;text-decoration:none;font-size:13px;font-weight:800}
+.app-home-events{padding-bottom:18px!important}
+.event-detail-link{display:flex;align-items:center;justify-content:center;height:42px;margin-top:auto;border-radius:11px;background:#0b54c2;color:#fff;text-decoration:none;font-size:13px;font-weight:800}
 .app-about-heading{padding-bottom:10px}.app-about-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;padding:0 54px 54px}
 .app-about-company,.app-about-video{display:flex;min-width:0;flex-direction:column;padding:24px;border:1px solid rgba(4,41,99,.14);border-radius:22px;background:#fff;box-shadow:0 12px 30px rgba(4,41,99,.08)}
 .app-about-company>a{display:flex;align-items:center;justify-content:center;height:44px;margin-top:auto;border-radius:11px;background:#0b54c2;color:#fff;text-decoration:none;font-size:13px;font-weight:800}
@@ -694,8 +704,8 @@ a.program-mini h3{color:inherit;text-decoration:none}
 .app-auth-modal{position:fixed;inset:0;z-index:180;display:grid;place-items:center;padding:20px}.app-auth-modal[hidden]{display:none}.app-auth-backdrop{position:absolute;inset:0;border:0;background:rgba(4,41,99,.76)}.app-auth-panel{position:relative;z-index:1;width:min(100%,430px);padding:28px;border-radius:22px;background:#fff;box-shadow:0 24px 70px rgba(4,41,99,.3)}.app-auth-close{position:absolute;right:14px;top:14px;width:34px;height:34px;border:0;border-radius:50%;background:#dbeaff;color:#042963;font-size:22px}.app-auth-brand{display:flex;align-items:center;gap:10px;margin-bottom:22px;color:#042963;font-size:11px;font-weight:900;letter-spacing:.1em}.app-auth-brand .logo-mark{width:40px;height:40px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0}.app-auth-brand .brand-image{padding:4px;border-radius:11px;background:linear-gradient(145deg,#bcd5fb,#6f9fe6);box-shadow:0 5px 16px rgba(12,64,140,.16);overflow:hidden}.app-auth-brand .brand-image img{display:block;width:100%;height:100%;object-fit:contain}.app-auth-choice,.app-auth-flow{display:grid;gap:12px}.app-auth-choice[hidden],.app-auth-flow[hidden]{display:none}.app-auth-choice h2,.app-auth-flow h2{margin:0 0 6px;color:#042963;font-size:23px}.app-auth-choice>button{height:52px;border:1px solid #0b54c2;border-radius:13px;background:#fff;color:#0b54c2;font-size:15px;font-weight:800}.app-auth-choice>button:first-of-type{background:#0b54c2;color:#fff}.app-auth-back{justify-self:start;border:0;background:none;color:#0b54c2;font-weight:800}.app-auth-flow>p{margin:0 0 5px;color:#526681;font-size:14px}.app-signup-types{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.app-signup-types[hidden]{display:none}.app-signup-types button{display:flex;min-height:82px;flex-direction:column;align-items:flex-start;justify-content:center;gap:5px;padding:13px;border:1px solid #bdd0e8;border-radius:13px;background:#fff;color:#042963;text-align:left}.app-signup-types button.active{border:2px solid #0b54c2;background:#dbeaff}.app-signup-types b{font-size:15px}.app-signup-types small{font-size:11px;color:#526681}.app-auth-providers{display:grid;gap:9px;margin-top:3px}.app-auth-providers button{display:flex;align-items:center;justify-content:center;gap:10px;height:50px;border:1px solid #d5e0ee;border-radius:13px;background:#fff;color:#042963;font-size:14px;font-weight:800}.app-auth-providers button.kakao{border-color:#f0d900;background:#fee500;color:#191919}.app-auth-providers img{width:22px;height:22px}.app-auth-status{min-height:18px;margin:0!important;color:#526681;font-size:12px!important;text-align:center}.app-auth-open{overflow:hidden}
 #contact{height:auto!important;min-height:calc(100dvh - 154px)!important;overflow:visible!important}body.contact-screen-open{height:auto!important;overflow:auto!important}.member-button{border:0;font-family:inherit;cursor:pointer}
 
-@media(min-width:900px){.app-company-summary span{white-space:nowrap}.app-about-heading{padding-inline:54px}.app-home-event-grid .event-card h2{min-height:48px}}
-@media(max-width:899px){.app-pathways{margin:24px 20px 0}.app-home-event-grid{grid-template-columns:1fr}.app-home-event-grid .event-card{display:grid;grid-template-columns:140px minmax(0,1fr)}.app-home-event-grid .event-image-open img{height:100%;min-height:220px}.app-about-grid{grid-template-columns:1fr;padding:0 20px 36px}.app-about-heading{padding-inline:20px}.app-company-summary span{white-space:normal}}
+@media(min-width:900px){.app-company-summary span{white-space:nowrap}.app-about-heading{padding-inline:54px}}
+@media(max-width:899px){.app-pathways{margin:24px 20px 0}.app-about-grid{grid-template-columns:1fr;padding:0 20px 36px}.app-about-heading{padding-inline:20px}.app-company-summary span{white-space:normal}}
 @media(max-width:560px){
   .topbar{padding:7px 10px!important;gap:4px 6px!important}
   .brand>.logo-mark{width:34px!important;height:34px!important}.brand .logo-name{font-size:13px!important}.top-actions{gap:2px!important}.app-language-toggle button{height:26px!important;min-width:25px!important}.member-button{height:30px!important;min-width:43px!important;font-size:10px!important}
@@ -703,7 +713,7 @@ a.program-mini h3{color:inherit;text-decoration:none}
   .desktop-app-nav a,.desktop-app-nav button{min-height:29px!important;padding:3px 0!important;font-size:11px!important;letter-spacing:-.055em!important;overflow:visible}
   .desktop-app-nav .menu-lock{margin-left:1px;font-size:.68em}
   .app-company-summary{gap:5px}.app-shell #home .app-company-summary{white-space:normal!important;font-size:13px!important;line-height:1.55!important}.app-mobile-copy-break{display:block}
-  .app-pathways{margin:20px 14px 0;padding:18px}.app-pathway-grid{grid-template-columns:1fr}.app-home-event-grid .event-card{grid-template-columns:108px minmax(0,1fr)}.app-home-event-grid .event-card>div{padding:14px}.app-home-event-grid .event-card h2{font-size:16px}.app-home-event-grid .event-card p{font-size:12px}.app-about-grid{padding-inline:14px}.app-about-company,.app-about-video{padding:19px}.app-auth-panel{padding:24px 20px}.app-contact-social{padding-bottom:96px}.app-specialty-screen-grid{padding:0 20px 100px}
+  .app-pathways{margin:20px 14px 0;padding:18px}.app-pathway-grid{grid-template-columns:1fr}.app-about-grid{padding-inline:14px}.app-about-company,.app-about-video{padding:19px}.app-auth-panel{padding:24px 20px}.app-contact-social{padding-bottom:96px}.app-specialty-screen-grid{padding:0 20px 100px}
 }
 
 /* Card hover lift: pointer devices only, so touch taps never leave a "stuck" hover state. */
@@ -748,6 +758,29 @@ a.program-mini h3{color:inherit;text-decoration:none}
 }
 @media(prefers-reduced-motion:reduce){
   .app-menu-toggle span,.desktop-app-nav{transition:none!important}
+}
+
+/* Hamburger-visibility fix: index.html declares viewport-fit=cover, so content
+   can render under a device's right-edge safe area (rounded corners/notch) --
+   .bottom-nav already accounts for this (env(safe-area-inset-right)) but
+   .topbar never did, and .brand/.top-actions had no shrink priority, so on
+   some phones there was no buffer left for real-device font metrics or a
+   safe-area inset before the hamburger's right edge crossed the visible
+   screen. Fix: give the topbar a safe-area-aware right edge, let the brand
+   (least essential on a tight header) yield space first, and shrink the
+   login button so there is real slack instead of an exact-fit layout. The
+   hamburger itself is never hidden or shrunk below its existing 44px target. */
+@media(max-width:899px){
+  .topbar{padding-right:max(14px,env(safe-area-inset-right))!important}
+  .brand{min-width:0}
+  .brand .logo-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .top-actions{flex-shrink:0}
+  .app-menu-toggle{flex-shrink:0}
+  .member-button.member-login{min-width:56px!important;padding-inline:10px!important}
+}
+@media(max-width:560px){
+  .topbar{padding-right:max(10px,env(safe-area-inset-right))!important}
+  .member-button.member-login{height:28px!important;min-width:50px!important;padding-inline:8px!important}
 }
 
 /* ============================================================
@@ -893,8 +926,13 @@ html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-si
 }
 @media(prefers-reduced-motion:reduce){.quick-access-tile{transition:none!important}}
 @media(min-width:640px) and (max-width:899px){.quick-access-grid{grid-template-columns:repeat(3,1fr);margin:20px 32px 4px;max-width:640px}}
-@media(min-width:900px){.quick-access-grid{grid-template-columns:repeat(5,1fr);margin:22px 54px 4px;max-width:980px}}
+@media(min-width:900px){.quick-access-grid{grid-template-columns:repeat(6,1fr);margin:22px 54px 4px;max-width:1120px}}
 @media(max-width:380px){.quick-access-label{font-size:13px}}
+/* All 6 tiles share one card height regardless of label length -- long labels
+   ("시니어 배움터", "강좌·행사") stay within this height instead of stretching
+   only their own grid row (CSS Grid rows size independently per row, so a
+   taller label would otherwise make just that row taller than the rest). */
+.quick-access-tile{min-height:78px}
 
 /* 배움과 서비스: mirrors index.html's #program-categories grid (12 cards, 6x2 on
    desktop) at app scale, driven by the same shared/data/categories.js this
@@ -926,8 +964,18 @@ html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-si
    style as the existing "행사 보기"/"전체 보기" <button>s in the other section-titles. */
 .section-title a{color:#65738a;font-weight:600;text-decoration:none}
 
-/* Featured Event / Business Preview now render exactly one card each (see
-   renderHomeEvents()/renderPartners() in app.js), so their containers cap to a
-   single-card width instead of the old multi-card grid/carousel sizing. */
-.app-home-event-grid{max-width:560px}
-@media(min-width:900px){.app-home-event-grid{grid-template-columns:minmax(0,1fr)!important}}
+/* Business Preview still renders exactly one card (renderPartners() in app.js). */
+
+/* HOME "강좌·행사" flyer gallery: poster-forward cards (renderHomeEvents()/
+   homeEventCard() in app.js) with no description text, so the section reads as
+   a compact flyer wall instead of the full #events screen's detailed list.
+   object-fit:contain keeps each flyer's real proportions with no crop/distortion,
+   matching the "선택하면 전체 전단지가 보이도록" requirement. 2 columns on small
+   phones, 3 columns from tablet width up (never forced narrower on mobile). */
+.app-home-event-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.app-home-event-card{display:flex;flex-direction:column;min-width:0;border:1px solid rgba(4,41,99,.12);border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 8px 20px rgba(4,41,99,.07)}
+.app-home-event-card .event-image-open,.app-home-event-card .event-placeholder-art{display:block;width:100%;aspect-ratio:3/4;padding:6px;border:0;background:#f4f8ff;cursor:zoom-in}
+.app-home-event-card .event-image-open img{display:block;width:100%;height:100%;object-fit:contain}
+.app-home-event-card h3{margin:0;padding:8px 10px 2px;color:#042963;font-size:13px;font-weight:800;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.app-home-event-link{display:block;padding:2px 10px 10px;color:#0b54c2;text-decoration:none;font-size:12px;font-weight:700;border:0;background:none;text-align:left;font-family:inherit;cursor:pointer}
+@media(max-width:480px){.app-home-event-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}}

@@ -13,7 +13,7 @@ const webScript = read('script.js');
 const webStyles = read('styles.css');
 const homepageUiCss = read('homepage-ui.css');
 
-test('HOME gets a 10-tile Quick Access grid (grown from the original 4) reusing the existing data-go/anchor navigation plus a small data-scroll/data-action delegate, right after the Hero', () => {
+test('HOME Quick Access grid sits between the Hero and the next section, reusing the existing data-go/anchor navigation plus a small data-scroll/data-action delegate; shrunk to 6 tiles by the mobile-home-polish round', () => {
   const home = appPage.match(/<section class="screen active home-dashboard"[\s\S]*?<\/section>|<section class="screen active" id="home"[\s\S]*$/)?.[0] || appPage;
   const heroIndex = home.indexOf('class="hero hero-dashboard"');
   const quickIndex = home.indexOf('id="quickAccess"');
@@ -25,13 +25,12 @@ test('HOME gets a 10-tile Quick Access grid (grown from the original 4) reusing 
   assert.match(quickBlock, /href="\.\.\/senior-learning\.html"/);
   assert.match(quickBlock, /data-go="events"/);
   assert.match(quickBlock, /href="\.\.\/#partner-center"/);
-  assert.equal((quickBlock.match(/class="quick-access-tile"/g) || []).length, 10);
-  // Still no ID-specific JS wiring: programs/events/about/contact reuse the existing
-  // document-level [data-go] click delegation; 시니어 배움터/파트너/직업 are plain links
-  // identical in pattern to the desktop nav; only the 2 truly new interactions
-  // (business-spotlight scroll, install/account actions) needed a few lines of new
-  // generic [data-scroll]/[data-action] delegation, scoped by attribute, not by this
-  // grid's id or class.
+  assert.equal((quickBlock.match(/class="quick-access-tile"/g) || []).length, 6);
+  // Still no ID-specific JS wiring: programs/events/about reuse the existing
+  // document-level [data-go] click delegation; 시니어 배움터/파트너 are plain links
+  // identical in pattern to the desktop nav; the business-spotlight scroll still
+  // uses the same generic [data-scroll] delegation (scoped by attribute, not by
+  // this grid's id or class).
   assert.doesNotMatch(appScript, /quickAccess|quick-access/);
   assert.match(appScript, /data-scroll/);
   assert.match(appScript, /data-action/);
@@ -57,8 +56,19 @@ test('Programs Preview stays a compact CSS-only row layout scoped to #recommende
   assert.doesNotMatch(overridesCss, /#programList\.app-specialty-|#programList \.app-specialty-/);
 });
 
-test('Featured Event shows exactly the nearest upcoming event via renderHomeEvents(), with the full Events screen and eventCard() untouched', () => {
-  assert.match(appScript, /function renderHomeEvents\(\)\{[\s\S]*?\.slice\(0,1\)\.map\(eventCard\)\.join\(""\);/);
+// mobile-home-polish round: HOME "강좌·행사" grew from showing 1 event with
+// full description text to a flyer-first gallery of every upcoming event
+// (title only, no description), via a new homeEventCard() renderer. The full
+// #events screen still uses the original, unmodified eventCard() with badge/
+// description/detail button -- only the HOME summary changed.
+test('HOME "강좌·행사" gallery shows every upcoming event via homeEventCard(), with no description text; the full Events screen and eventCard() are untouched', () => {
+  assert.match(appScript, /function homeEventCard\(item\)\{/);
+  assert.match(appScript, /function renderHomeEvents\(\)\{[\s\S]*?\.map\(homeEventCard\)\.join\(""\);/);
+  assert.doesNotMatch(appScript, /\.map\(homeEventCard\)[\s\S]{0,5}\.slice/);
+  // homeEventCard()'s markup carries no <p> description, unlike eventCard()'s.
+  const homeEventCardBody = appScript.match(/function homeEventCard\(item\)\{[\s\S]*?\n\}/)?.[0] || '';
+  assert.doesNotMatch(homeEventCardBody, /<p>\$\{text\}<\/p>|item\.textKo|item\.textEn/);
+  assert.match(homeEventCardBody, /data-event-image/); // lightbox zoom preserved
   assert.match(appScript, /function eventCard\(item\)\{/);
   assert.match(appScript, /function renderEvents\(\)\{/);
   assert.match(appPage, /<h2 data-ko="강좌 · 행사" data-en="Classes & Events">강좌 · 행사<\/h2>/);
