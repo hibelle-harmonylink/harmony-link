@@ -55,9 +55,12 @@ test('HOME 강좌·행사 gallery cards carry no description text (title + flyer
   assert.match(eventCardBody, /class="badge/);
 });
 
-test('HOME 강좌·행사 gallery is a CSS grid, 2 columns at/below 480px and 3 columns above it', () => {
+// app-path-events-carousel round: below 640px this became a horizontal-scroll
+// carousel of small flyer cards (see tests/app-path-events-carousel.test.js);
+// the base 3-column grid this test already checked is still what tablet/
+// desktop (>=640px) use, untouched.
+test('HOME 강좌·행사 gallery is a 3-column CSS grid on tablet/desktop (>=640px), with object-fit:contain flyers', () => {
   assert.match(overridesCss, /\.app-home-event-grid\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\);/);
-  assert.match(overridesCss, /@media\(max-width:480px\)\{\.app-home-event-grid\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(overridesCss, /\.app-home-event-card \.event-image-open img\{display:block;width:100%;height:100%;object-fit:contain\}/);
 });
 
