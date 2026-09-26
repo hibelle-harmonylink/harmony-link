@@ -36,8 +36,8 @@ test('existing member numbers are preserved on repeat registration, never reissu
 
 test('detail modal reads synchronized metadata from the canonical RPC row without editable controls', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
-  assert.match(detail, /syncedReadonlyField\('전문분야', member\.specialty\)/);
-  assert.match(detail, /syncedReadonlyField\('강의과목', member\.teaching_subjects\)/);
+  assert.match(detail, /syncedReadonlyField\('전문분야', member\.specialty,/);
+  assert.match(detail, /syncedReadonlyField\('강의과목', member\.teaching_subjects,/);
   assert.match(detail, /syncedReadonlyField\('수강과목', member\.enrolled_subject\)/);
   assert.match(detail, /syncedReadonlyField\('담당강사', member\.assigned_instructor\)/);
   assert.doesNotMatch(detail, /id="detailSpecialty"|id="detailTeachingSubjects"|id="detailEnrolledSubject"|id="detailAssignedInstructor"/);
@@ -78,7 +78,7 @@ test('detail dialog is a 3-group compact grid (기본 정보 / 회원·파트너
   assert.match(detail, /<h3>지역·권한<\/h3>/);
   assert.match(detail, /class="member-detail-groups"/);
   assert.match(adminCss, /\.member-detail-groups\{display:grid;gap:14px\}/);
-  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-groups\{grid-template-columns:1fr 1fr;gap:\d+px;align-items:start\}/);
+  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-groups\{grid-template-columns:minmax\(0,\.96fr\) minmax\(0,1\.04fr\);gap:\d+px;align-items:start\}/);
   // 지역·권한 is the 3rd group and spans the full width beneath the other two.
   assert.match(adminCss, /\.member-detail-groups>\.member-group:nth-child\(3\)\{grid-column:1\/-1\}/);
 });
@@ -96,6 +96,6 @@ test('every grid/flex child and every group-grid input/select shrinks to fit ins
 
 test('a long email in 기본 정보 truncates with an ellipsis (and a title tooltip) instead of wrapping across several lines and pushing the layout taller', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
-  assert.match(detail, /readonlyField\('이메일', escapeHtml\(member\.email \|\| ''\), true\)/);
+  assert.match(detail, /readonlyField\('이메일', escapeHtml\(member\.email \|\| ''\), 'member-field-email', true, member\.email \|\| ''\)/);
   assert.match(adminCss, /\.member-readonly-truncate strong\{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;min-width:0\}/);
 });

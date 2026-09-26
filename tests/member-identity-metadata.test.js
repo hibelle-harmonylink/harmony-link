@@ -25,7 +25,7 @@ test('admin roster keeps the nickname column separate while rendering the public
   assert.match(admin, /\['이름', escapeHtml\(memberPersonName\(member\)\)/);
   assert.match(admin, /member\.nickname \|\| ''} \$\{member\.full_name/);
   assert.match(admin, /id="detailNickname"/);
-  assert.match(admin, /syncedReadonlyField\('영문 이름', memberFullName\(member\)\)/);
+  assert.match(admin, /syncedReadonlyField\('영문 이름', memberFullName\(member\), 'member-field-full-name'\)/);
   assert.doesNotMatch(admin, /id="detailFullName"/);
 });
 

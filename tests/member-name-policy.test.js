@@ -13,16 +13,17 @@ const applicationMigration = read('supabase/migrations/202609130004_member_appli
 const metadataMigration = read('supabase/migrations/202609130002_member_identity_metadata.sql');
 
 test('admin member detail labels make the three independent name sources explicit', () => {
-  assert.match(admin, /title="일반 수정 · 사업체명 또는 활동명">닉네임\/업체명<input id="detailNickname"/);
-  assert.match(admin, /syncedReadonlyField\('영문 이름', memberFullName\(member\)\)/);
-  assert.match(admin, /title="관리자 직접 관리 · 신청서 재동기화로 변경되지 않음">한글 이름<input id="detailName"/);
+  assert.match(admin, /title="일반 수정 · 사업체명 또는 활동명"><span class="member-field-heading"><span>닉네임\/업체명<\/span><em>관리자 직접 관리<\/em><\/span><input id="detailNickname"/);
+  assert.match(admin, /syncedReadonlyField\('영문 이름', memberFullName\(member\), 'member-field-full-name'\)/);
+  assert.match(admin, /title="관리자 직접 관리 · 신청서 재동기화로 변경되지 않음"><span class="member-field-heading"><span>한글 이름<\/span><em>관리자 직접 관리<\/em><\/span><input id="detailName"/);
 });
 
 test('Korean public name saves directly while the application name remains synchronized', () => {
   assert.match(admin, /admin_update_member_name', \{ p_member_id: member\.id, p_display_name: nextName \}/);
-  const metadataCall = admin.match(/admin_update_member_metadata', \{([\s\S]*?)\n        \}\);/)?.[1] || '';
+  const metadataCall = admin.slice(admin.indexOf("callRpc('admin_update_member_metadata'"), admin.indexOf('let savedRegion'));
   assert.match(metadataCall, /p_nickname: metadata\.nickname/);
-  assert.match(metadataCall, /p_full_name: memberFullName\(member\)/);
+  assert.match(metadataCall, /p_full_name: latestMember\.full_name \?\? ''/);
+  assert.doesNotMatch(metadataCall, /memberFullName\(/);
   assert.match(admin, /한글 이름은 2자 이상 50자 이하/);
 });
 
@@ -78,6 +79,7 @@ test('application resync leaves member numbers alone and the name guidance prese
   const syncEnd = applicationMigration.indexOf('revoke all on function public.internal_sync_member_application_metadata', syncStart);
   const sync = applicationMigration.slice(syncStart, syncEnd);
   assert.doesNotMatch(sync, /member_number/);
-  assert.match(adminCss, /@media\(min-width:681px\)\{\s*\.member-dialog\{max-height:none\}\s*\.member-detail\{max-height:none;overflow-y:visible;position:relative\}/);
-  assert.match(adminCss, /@media\(max-width:680px\)\{\s*\.member-dialog\{width:calc\(100% - 18px\);max-height:92vh;overflow:hidden\}/);
+  assert.match(adminCss, /\.member-dialog\[open\]\{display:flex;flex-direction:column\}/);
+  assert.match(adminCss, /\.member-detail\{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overflow-x:hidden/);
+  assert.match(adminCss, /@media\(max-width:680px\)\{\s*\.member-dialog\{width:calc\(100% - 18px\);max-height:90vh;overflow:hidden\}/);
 });

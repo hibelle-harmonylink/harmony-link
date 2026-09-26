@@ -35,10 +35,10 @@ test('saving unchanged values performs no update request', () => {
 });
 
 test('nickname uses the existing metadata RPC without making synchronized fields editable', () => {
-  const metadataCall = adminSource.match(/admin_update_member_metadata', \{([\s\S]*?)\n        \}\);/)?.[1] || '';
+  const metadataCall = adminSource.slice(adminSource.indexOf("callRpc('admin_update_member_metadata'"), adminSource.indexOf('let savedRegion'));
   assert.match(metadataCall, /p_nickname: metadata\.nickname/);
-  assert.match(metadataCall, /p_phone: member\.phone \|\| ''/);
-  assert.match(metadataCall, /p_specialty: member\.specialty \|\| ''/);
+  assert.match(metadataCall, /p_phone: latestMember\.phone \?\? ''/);
+  assert.match(metadataCall, /p_specialty: latestMember\.specialty \?\? ''/);
   assert.doesNotMatch(metadataCall, /nextMetadata\.(?:fullName|phone|specialty|teachingSubjects|enrolledSubject|assignedInstructor)/);
   assert.match(adminSource, /if \(roleChanged && accessSaved\) void \(async \(\) =>/);
   assert.doesNotMatch(metadataCall, /role|membership|account_status/);

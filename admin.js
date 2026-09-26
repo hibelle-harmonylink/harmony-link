@@ -76,39 +76,6 @@
     if (error.hint) parts.push(`hint=${error.hint}`);
     return parts.join(' | ');
   };
-  // client.functions.invoke() errors are NOT shaped like PostgREST/RPC
-  // errors -- they're FunctionsHttpError/FunctionsRelayError/
-  // FunctionsFetchError instances with .name/.context (a Response, for the
-  // first two) instead of .code/.details/.hint. describeError() above
-  // silently drops all of that (falls back to just .message), which is
-  // exactly why a Sheet-sync failure only ever showed the bare
-  // "Failed to send a request to the Edge Function" with no further
-  // detail. This reads the actual HTTP status and response body when the
-  // request reached the function at all (FunctionsHttpError/
-  // FunctionsRelayError), and the error's name otherwise (FunctionsFetchError
-  // -- the fetch never got a response, e.g. the function isn't deployed at
-  // this URL, or the request was blocked by CORS; browsers deliberately
-  // withhold further detail from JS for that specific failure mode, so the
-  // Network tab in devtools -- not this message -- is the way to see the
-  // real status/reason when this is what's shown).
-  const describeFunctionError = async error => {
-    if (!error) return '알 수 없는 오류';
-    const parts = [error.message || String(error)];
-    if (error.name) parts.push(`type=${error.name}`);
-    const response = error.context;
-    if (response && typeof response === 'object') {
-      if (typeof response.status === 'number') parts.push(`status=${response.status}`);
-      if (typeof response.clone === 'function') {
-        try {
-          const bodyText = await response.clone().text();
-          if (bodyText) parts.push(`body=${bodyText.slice(0, 400)}`);
-        } catch (readError) {
-          parts.push(`(응답 본문을 읽지 못함: ${readError.message})`);
-        }
-      }
-    }
-    return parts.join(' | ');
-  };
   const setMessage = (text = '', isError = false) => {
     message.textContent = text;
     message.classList.toggle('error', isError);
@@ -344,19 +311,25 @@
     refreshButton.disabled = true;
     refreshButton.classList.add('is-refreshing');
     refreshButton.textContent = '새로고침 중…';
-    const { data, error } = await client.rpc('admin_list_members', { p_search: null, p_role: null });
-    refreshButton.disabled = false;
-    refreshButton.classList.remove('is-refreshing');
-    refreshButton.textContent = '새로고침 ↻';
-    if (error) {
-      if (error.code === '42501') deny('관리자 권한이 확인되지 않아 접근할 수 없습니다.');
+    try {
+      const { data, error } = await client.rpc('admin_list_members', { p_search: null, p_role: null });
+      if (error) throw error;
+      if (!Array.isArray(data)) throw new Error('회원 명단 응답 형식이 올바르지 않습니다.');
+      allMembers = data.map(member => member.id === currentUserId && currentUserName ? { ...member, display_name: currentUserName } : member);
+      setCounts(allMembers);
+      applyFilters();
+      setMessage(`최근 가입 순서로 ${allMembers.length}명의 회원을 표시합니다.`);
+      // Only this response, never a previous allMembers cache, is verification evidence.
+      return { ok: true, members: data };
+    } catch (error) {
+      if (error?.code === '42501') deny('관리자 권한이 확인되지 않아 접근할 수 없습니다.');
       else setMessage(`회원 명단을 불러오지 못했습니다: ${describeError(error)}`, true);
-      return;
+      return { ok: false, error };
+    } finally {
+      refreshButton.disabled = false;
+      refreshButton.classList.remove('is-refreshing');
+      refreshButton.textContent = '새로고침 ↻';
     }
-    allMembers = (data || []).map(member => member.id === currentUserId && currentUserName ? { ...member, display_name: currentUserName } : member);
-    setCounts(allMembers);
-    applyFilters();
-    setMessage(`최근 가입 순서로 ${allMembers.length}명의 회원을 표시합니다.`);
   };
 
   const applyFilters = ({ resetPage = true } = {}) => {
@@ -492,13 +465,13 @@
     // used to appear twice (닉네임/이름/연락처/회원유형/멤버십/계정상태) now
     // renders exactly once, as its live input/select, which is what removed
     // the internal scrollbar on common desktop viewports (1366x768+).
-    const readonlyField = (label, valueHtml, truncate = false) => `<div class="member-readonly member-system-field${truncate ? ' member-readonly-truncate' : ''}"><span>${label}<em>자동 관리</em></span><strong${truncate ? ` title="${escapeHtml(member.email || '')}"` : ''}>${valueHtml}</strong></div>`;
-    const syncedReadonlyField = (label, value) => `<div class="member-readonly member-synced-field" title="신청서 자동연동 · 신청서 재동기화로 갱신됩니다"><span>${label}<em>신청서 자동연동</em></span><strong>${escapeHtml(value || '—')}</strong></div>`;
-    const basicInfoFields = `<section class="member-group"><h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시</small></h3><div class="member-group-grid">${readonlyField('회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>`)}${readonlyField('이메일', escapeHtml(member.email || ''), true)}${readonlyField('가입일', formatDate(member.created_at))}<label class="${manualFieldClass}" title="일반 수정 · 사업체명 또는 활동명">닉네임/업체명<input id="detailNickname" type="text" maxlength="80" autocomplete="nickname"${editableDisabled}></label>${syncedReadonlyField('영문 이름', memberFullName(member))}${syncedReadonlyField('연락처', formatPhone(member.phone ?? ''))}</div></section>`;
+    const readonlyField = (label, valueHtml, fieldClass = '', truncate = false, title = '') => `<div class="member-readonly member-system-field ${fieldClass}${truncate ? ' member-readonly-truncate' : ''}"><span class="member-field-heading"><span>${label}</span><em>자동 관리</em></span><strong${title ? ` title="${escapeHtml(title)}"` : ''}>${valueHtml}</strong></div>`;
+    const syncedReadonlyField = (label, value, fieldClass = '', longValue = false) => `<div class="member-readonly member-synced-field ${fieldClass}${longValue ? ' member-long-value' : ' member-single-value'}" title="신청서 자동연동 · 신청서 재동기화로 갱신됩니다"><span class="member-field-heading"><span>${label}</span><em>신청서 자동연동</em></span><strong${longValue ? '' : ` title="${escapeHtml(value || '—')}"`}>${escapeHtml(value || '—')}</strong></div>`;
+    const basicInfoFields = `<section class="member-group member-basic-group"><h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시</small></h3><div class="member-group-grid">${readonlyField('회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>`, 'member-field-number')}${readonlyField('이메일', escapeHtml(member.email || ''), 'member-field-email', true, member.email || '')}${readonlyField('가입일', formatDate(member.created_at), 'member-field-joined')}<label class="member-field-nickname ${manualFieldClass}" title="일반 수정 · 사업체명 또는 활동명"><span class="member-field-heading"><span>닉네임/업체명</span><em>관리자 직접 관리</em></span><input id="detailNickname" type="text" maxlength="80" autocomplete="nickname"${editableDisabled}></label>${syncedReadonlyField('영문 이름', memberFullName(member), 'member-field-full-name')}${syncedReadonlyField('연락처', formatPhone(member.phone ?? ''), 'member-field-phone')}</div></section>`;
     const protectedNotice = withdrawn || protectedAccount ? `<div class="member-protected-copy">${withdrawn ? '탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다.' : '관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.'}</div>` : '';
-    const accessInputs = withdrawn || protectedAccount ? '' : `<label class="member-name-field ${directFieldClass}" title="관리자 직접 관리 · 신청서 재동기화로 변경되지 않음">한글 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label>`;
-    const roleMetadataInputs = `<div class="partner-metadata">${syncedReadonlyField('전문분야', member.specialty)}</div><div class="partner-metadata">${syncedReadonlyField('강의과목', member.teaching_subjects)}</div><div class="student-metadata">${syncedReadonlyField('수강과목', member.enrolled_subject)}</div><div class="student-metadata">${syncedReadonlyField('담당강사', member.assigned_instructor)}</div>`;
-    const roleInfoFields = `<section class="member-group"><h3>회원·파트너 정보 <small class="member-editable-note">관리 설정 · 자동연동 정보</small></h3>${protectedNotice}<div class="member-group-grid">${accessInputs}${roleMetadataInputs}</div></section>`;
+    const accessInputs = withdrawn || protectedAccount ? '' : `<label class="member-name-field member-field-korean-name ${directFieldClass}" title="관리자 직접 관리 · 신청서 재동기화로 변경되지 않음"><span class="member-field-heading"><span>한글 이름</span><em>관리자 직접 관리</em></span><input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label class="member-field-type ${settingFieldClass}" title="관리 설정 · 플랫폼 운영값"><span class="member-field-heading"><span>회원유형</span><em>관리 설정</em></span><select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label class="member-field-membership ${settingFieldClass}" title="관리 설정 · 플랫폼 운영값"><span class="member-field-heading"><span>멤버십</span><em>관리 설정</em></span><select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label class="member-field-status ${settingFieldClass}" title="관리 설정 · 플랫폼 운영값"><span class="member-field-heading"><span>계정 상태</span><em>관리 설정</em></span><select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label>`;
+    const roleMetadataInputs = `<div class="partner-metadata member-field-specialty">${syncedReadonlyField('전문분야', member.specialty, '', true)}</div><div class="partner-metadata member-field-teaching">${syncedReadonlyField('강의과목', member.teaching_subjects, '', true)}</div><div class="student-metadata member-field-course">${syncedReadonlyField('수강과목', member.enrolled_subject)}</div><div class="student-metadata member-field-instructor">${syncedReadonlyField('담당강사', member.assigned_instructor)}</div>`;
+    const roleInfoFields = `<section class="member-group member-role-group"><h3>회원·파트너 정보 <small class="member-editable-note">관리 설정 · 자동연동 정보</small></h3>${protectedNotice}<div class="member-group-grid">${accessInputs}${roleMetadataInputs}</div></section>`;
     const partnerRegionFields = `<section class="partner-region partner-metadata" hidden aria-labelledby="detailPartnerRegionTitle"><div class="partner-region-heading"><div><h3 id="detailPartnerRegionTitle">활동 지역</h3><p id="detailPartnerRegionSummary">지역 정보를 불러오는 중…</p><p id="detailPartnerRegionServices" class="partner-region-services" hidden></p></div><span class="partner-region-note">파트너 전용</span></div><div class="partner-region-actions"><button id="detailManagePartnerRegion" type="button" class="member-region-manage">지역정보 관리</button></div></section>`;
     const regionAccessFields = `<section class="member-group"><h3>지역·권한</h3><div class="member-region-access-row">${partnerRegionFields}<div id="detailFeatures">${withdrawn ? '' : featureHtml(member)}</div></div></section>`;
     const feedback = '<p class="member-save-feedback" id="detailSaveFeedback" role="status" aria-live="polite"></p>';
@@ -656,7 +629,7 @@
       }
     } catch (error) {
       const errorText = '안내메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.';
-      console.error('[admin] resend notification failed', { memberId: member.id, error: describeError(error) });
+      console.error('[admin] resend notification failed');
       setMessage(errorText, true);
       if (feedback) {
         feedback.textContent = errorText;
@@ -672,12 +645,14 @@
   const updateMember = async (raw, requestedName, nextUserType, nextMembership, nextStatus, nextMetadata = {}, nextRegion = null, currentRegion = null) => {
     const member = normalize(raw);
     const nextName = requestedName.trim();
-    const nameChanged = nextName !== (member.display_name || '');
+    // Compare with the input's original display value. Merely saving a nickname
+    // must not persist a full-name/email fallback as a new profile name.
+    const nameChanged = nextName !== resolveDisplayName(member);
     const accessChanged = nextUserType !== member.user_type || nextMembership !== member.membership || nextStatus !== member.account_status;
     // Nickname/업체명 is operationally distinct from application data and
     // remains the one general metadata field an administrator may edit here.
-    // The synchronized fields are display-only and are deliberately sourced
-    // from the loaded member rather than from editable controls.
+    // Display helpers are not storage values. Synchronized fields are re-read
+    // immediately before the existing whole-metadata RPC below.
     const metadata = { nickname: String(nextMetadata.nickname || '').trim() };
     const metadataChanged = metadata.nickname !== memberNickname(member);
     // Region metadata is independent from the normal member metadata. Only
@@ -703,7 +678,7 @@
       metadataChanged ? '관리 정보 변경' : '',
       regionChanged ? '활동 지역 변경' : ''
     ].filter(Boolean).join('\n');
-    console.log('[admin] asking for confirmation', { memberId: member.id, detailLines });
+    console.log('[admin] asking for confirmation');
     const confirmed = await askConfirm(`${member.email} 회원을 다음과 같이 변경할까요?\n\n${detailLines}`);
     console.log('[admin] confirmation result', confirmed);
     if (!confirmed) {
@@ -716,22 +691,23 @@
     if (saveButton) { saveButton.disabled = true; saveButton.textContent = '저장 중…'; }
     if (feedback) { feedback.textContent = ''; feedback.className = 'member-save-feedback'; }
     setMessage(`${member.email} 회원 정보를 변경하고 있습니다.`);
-    console.log('[admin] updateMember start', { memberId: member.id, email: member.email, nameChanged, accessChanged, nextUserType, nextMembership, nextStatus });
+    console.log('[admin] updateMember start');
 
-    // Diagnostic wrapper: logs every RPC call and its result, and makes
+    // Diagnostic wrapper: logs only the RPC name and outcome, never member
+    // payloads or raw errors (which can also contain personal data), and makes
     // sure setMessage is always reached even if an RPC call rejects
     // outright (network error, thrown exception) instead of cleanly
     // resolving to { data, error } — previously an unexpected rejection
     // here would abort the whole function with no message ever shown,
     // which looked like the save button silently doing nothing.
     const callRpc = async (name, params) => {
-      console.log(`[admin] calling RPC "${name}"`, params);
+      console.log(`[admin] calling RPC "${name}"`);
       try {
         const response = await client.rpc(name, params);
-        console.log(`[admin] RPC "${name}" response`, { data: response.data, error: response.error });
+        console.log(`[admin] RPC "${name}" response`, { ok: !response.error });
         return response;
       } catch (thrown) {
-        console.error(`[admin] RPC "${name}" threw instead of returning { data, error }`, thrown);
+        console.error(`[admin] RPC "${name}" failed`, { category: 'exception' });
         return { data: null, error: thrown instanceof Error ? thrown : new Error(String(thrown)) };
       }
     };
@@ -755,20 +731,30 @@
         regionAccessSaved = !error;
       }
       if (metadataChanged) {
-        const { error } = await callRpc('admin_update_member_metadata', {
-          p_member_id: member.id,
-          p_nickname: metadata.nickname,
-          // The deployed RPC has an eight-argument signature. Preserve the
-          // authoritative synchronized values verbatim; none are read from
-          // or editable through this Admin form.
-          p_full_name: memberFullName(member),
-          p_phone: member.phone || '',
-          p_specialty: member.specialty || '',
-          p_teaching_subjects: member.teaching_subjects || '',
-          p_enrolled_subject: member.enrolled_subject || '',
-          p_assigned_instructor: member.assigned_instructor || ''
-        });
-        results.push({ field: 'metadata', label: '관리 정보', ok: !error, error });
+        const { data: latestRows, error: readError } = await callRpc('admin_list_members', { p_search: null, p_role: null });
+        const latestMember = Array.isArray(latestRows) ? latestRows.find(row => row.id === member.id) : null;
+        const synchronizedFields = ['full_name', 'phone', 'specialty', 'teaching_subjects', 'enrolled_subject', 'assigned_instructor'];
+        const hasRawMetadata = latestMember && synchronizedFields.every(field =>
+          Object.prototype.hasOwnProperty.call(latestMember, field)
+          && (latestMember[field] === null || typeof latestMember[field] === 'string'));
+        if (readError || !hasRawMetadata || latestMember.is_withdrawn || latestMember.account_status === 'withdrawn') {
+          results.push({ field: 'metadata', label: '관리 정보', ok: false, error: readError || new Error('최신 관리정보를 확인하지 못해 닉네임을 저장하지 않았습니다.') });
+        } else {
+          // This RPC still replaces all metadata fields. Preserve the latest raw
+          // values (including empty values), never display fallbacks/formatting.
+          // A concurrent change after this read still needs a future atomic RPC.
+          const { error } = await callRpc('admin_update_member_metadata', {
+            p_member_id: member.id,
+            p_nickname: metadata.nickname,
+            p_full_name: latestMember.full_name ?? '',
+            p_phone: latestMember.phone ?? '',
+            p_specialty: latestMember.specialty ?? '',
+            p_teaching_subjects: latestMember.teaching_subjects ?? '',
+            p_enrolled_subject: latestMember.enrolled_subject ?? '',
+            p_assigned_instructor: latestMember.assigned_instructor ?? ''
+          });
+          results.push({ field: 'metadata', label: '관리 정보', ok: !error, error });
+        }
       }
       let savedRegion = null;
       if (regionChanged) {
@@ -797,48 +783,59 @@
       // second copy of the data to fall out of sync) and only count a
       // field as saved if the fresh value actually matches what was asked
       // for.
-      await loadMembers();
-      const freshRaw = allMembers.find(candidate => candidate.id === member.id);
-      const freshMember = freshRaw ? normalize(freshRaw) : null;
-      console.log('[admin] post-save verification read', freshMember);
+      const reload = await loadMembers();
+      const freshRaw = reload.ok ? reload.members.find(candidate => candidate.id === member.id) : null;
+      // Validate only the fields changed by this save, before any display
+      // normalization can turn a missing/invalid value into a matching default.
+      const hasRawField = (field, valid) => freshRaw
+        && Object.prototype.hasOwnProperty.call(freshRaw, field) && valid(freshRaw[field]);
+      const nullableText = value => value === null || typeof value === 'string';
+      const hasVerificationFields = (!nameChanged || hasRawField('display_name', nullableText))
+        && (!accessChanged || (
+          hasRawField('user_type', value => typeof value === 'string' && Object.prototype.hasOwnProperty.call(TYPE_LABELS, value))
+          && hasRawField('membership', value => typeof value === 'string' && Object.prototype.hasOwnProperty.call(MEMBERSHIP_LABELS, value))
+          && hasRawField('account_status', value => typeof value === 'string' && Object.prototype.hasOwnProperty.call(STATUS_LABELS, value))))
+        && (!metadataChanged || hasRawField('nickname', nullableText));
+      if (!reload.ok || !freshRaw || !hasVerificationFields) {
+        const failedRequests = results.filter(result => !result.ok).map(result => `${result.label}: ${describeError(result.error)}`);
+        const verificationMessage = '저장 요청 후 DB 반영 여부를 확인하지 못했습니다. 일부 변경이 반영되었을 수 있으므로 새로고침 후 확인해 주세요.'
+          + (failedRequests.length ? ` 실패한 요청: ${failedRequests.join(' / ')}` : '');
+        setMessage(verificationMessage, true);
+        if (feedback) { feedback.textContent = verificationMessage; feedback.className = 'member-save-feedback error'; }
+        if (saveButton) { saveButton.disabled = false; saveButton.textContent = '변경 저장'; }
+        return;
+      }
+      // The validated raw values, not display fallbacks, are storage evidence.
+      const freshMember = freshRaw;
       const markUnverified = (field, msg) => {
         const result = results.find(candidate => candidate.field === field && candidate.ok);
         if (result) { result.ok = false; result.error = { message: msg }; }
       };
-      if (!freshMember) {
-        results.filter(result => result.ok).forEach(result => {
-          result.ok = false;
-          result.error = { message: '저장 후 회원 정보를 다시 불러오지 못해 DB 반영 여부를 확인할 수 없습니다.' };
-        });
-      } else {
-        if (nameChanged && freshMember.display_name !== nextName) {
-          markUnverified('name', `DB에 실제로 반영되지 않았습니다 (요청값: ${nextName}, 실제값: ${freshMember.display_name || '(없음)'})`);
+      if (nameChanged && freshMember.display_name !== nextName) {
+        markUnverified('name', `DB에 실제로 반영되지 않았습니다 (요청값: ${nextName}, 실제값: ${freshMember.display_name || '(없음)'})`);
+      }
+      if (accessChanged) {
+        if (freshMember.user_type !== nextUserType) {
+          markUnverified('access', `회원유형이 DB에 실제로 반영되지 않았습니다 (요청값: ${TYPE_LABELS[nextUserType]}, 실제값: ${TYPE_LABELS[freshMember.user_type]})`);
+        } else if (freshMember.membership !== nextMembership) {
+          markUnverified('access', `멤버십이 DB에 실제로 반영되지 않았습니다 (요청값: ${MEMBERSHIP_LABELS[nextMembership]}, 실제값: ${MEMBERSHIP_LABELS[freshMember.membership]})`);
+        } else if (freshMember.account_status !== nextStatus) {
+          markUnverified('access', `계정 상태가 DB에 실제로 반영되지 않았습니다 (요청값: ${STATUS_LABELS[nextStatus]}, 실제값: ${STATUS_LABELS[freshMember.account_status]})`);
         }
-        if (accessChanged) {
-          if (freshMember.user_type !== nextUserType) {
-            markUnverified('access', `회원유형이 DB에 실제로 반영되지 않았습니다 (요청값: ${TYPE_LABELS[nextUserType]}, 실제값: ${TYPE_LABELS[freshMember.user_type]})`);
-          } else if (freshMember.membership !== nextMembership) {
-            markUnverified('access', `멤버십이 DB에 실제로 반영되지 않았습니다 (요청값: ${MEMBERSHIP_LABELS[nextMembership]}, 실제값: ${MEMBERSHIP_LABELS[freshMember.membership]})`);
-          } else if (freshMember.account_status !== nextStatus) {
-            markUnverified('access', `계정 상태가 DB에 실제로 반영되지 않았습니다 (요청값: ${STATUS_LABELS[nextStatus]}, 실제값: ${STATUS_LABELS[freshMember.account_status]})`);
-          }
-        }
-        if (metadataChanged && (
-          memberNickname(freshMember) !== metadata.nickname
-        )) {
-          markUnverified('metadata', '관리 정보가 DB에 실제로 반영되지 않았습니다.');
-        }
-        // admin_list_members deliberately has no region columns. The
-        // dedicated region RPC returns the saved record, which is the
-        // equivalent post-save proof without widening the existing list RPC.
-        if (regionChanged && !samePartnerRegion(savedRegion, nextRegion)) {
-          markUnverified('region', '활동 지역이 DB에 실제로 반영되지 않았습니다.');
-        }
+      }
+      if (metadataChanged && String(freshMember.nickname ?? '').trim() !== metadata.nickname) {
+        markUnverified('metadata', '관리 정보가 DB에 실제로 반영되지 않았습니다.');
+      }
+      // admin_list_members deliberately has no region columns. The
+      // dedicated region RPC returns the saved record, which is the
+      // equivalent post-save proof without widening the existing list RPC.
+      if (regionChanged && !samePartnerRegion(savedRegion, nextRegion)) {
+        markUnverified('region', '활동 지역이 DB에 실제로 반영되지 않았습니다.');
       }
 
       const failed = results.filter(result => !result.ok);
       const succeeded = results.filter(result => result.ok);
-      console.log('[admin] updateMember results (after DB verification)', results);
+      console.log('[admin] updateMember results (after DB verification)', { succeeded: succeeded.length, failed: failed.length });
       let resultMessage;
       if (failed.length === 0) {
         resultMessage = '저장되었습니다. (DB 재조회로 확인함)';
@@ -883,17 +880,17 @@
 
       const accessSaved = results.some(result => result.field === 'access' && result.ok);
       if (roleChanged && accessSaved) void (async () => {
-        console.log('[admin] waiting for the automatic role-change email', { memberId: member.id, accessChangedAt });
+        console.log('[admin] waiting for the automatic role-change email');
         try {
           await withTimeout(waitForAutomaticRoleEmail(member.id, accessChangedAt), 25000, '메일 발송 확인이 시간 초과되었습니다.');
-          console.log('[admin] automatic role-change email confirmed sent', { memberId: member.id });
+          console.log('[admin] automatic role-change email confirmed sent');
         } catch (automaticError) {
-          console.error('[admin] automatic role-change email was not confirmed; falling back to a direct send', { memberId: member.id, error: automaticError.message });
+          console.error('[admin] automatic role-change email was not confirmed; falling back to a direct send');
           try {
             await withTimeout(sendDirectRoleNotification({ ...member, role: deriveRole(nextUserType, nextMembership, member.is_admin) }, member.role), 10000, '안내메일 직접 발송이 시간 초과되었습니다.');
-            console.log('[admin] direct role-change email sent', { memberId: member.id });
+            console.log('[admin] direct role-change email sent');
           } catch (directError) {
-            console.error('[admin] direct role-change email also failed', { memberId: member.id, error: directError.message });
+            console.error('[admin] direct role-change email also failed');
             setMessage(`변경사항은 저장되었습니다. 다만 안내메일 발송에는 실패했습니다: ${directError.message}`, true);
           }
         }
@@ -908,7 +905,7 @@
       // reported as a separate, additional note.
       const anyFieldSaved = results.some(result => result.ok);
       if (anyFieldSaved) void (async () => {
-        console.log('[admin] syncing profile to member roster sheet', { memberId: member.id });
+        console.log('[admin] syncing profile to member roster sheet');
         try {
           const { error: syncError } = await withTimeout(
             client.functions.invoke('notify-role-change', { body: { action: 'profile_sync', memberId: member.id } }),
@@ -916,25 +913,18 @@
             '회원 명단 시트 업데이트 요청이 시간 초과되었습니다.'
           );
           if (syncError) {
-            const detail = await describeFunctionError(syncError);
-            console.error('[admin] roster sheet sync failed', {
-              memberId: member.id,
-              name: syncError.name,
-              message: syncError.message,
-              status: syncError.context?.status,
-              detail
-            });
+            console.error('[admin] roster sheet sync failed');
             setMessage('변경사항은 저장되었습니다. 명단 시트 동기화는 계속 진행 중입니다.');
           } else {
-            console.log('[admin] roster sheet sync succeeded', { memberId: member.id });
+            console.log('[admin] roster sheet sync succeeded');
           }
         } catch (syncTimeoutError) {
-          console.error('[admin] roster sheet sync timed out or threw', { memberId: member.id, error: syncTimeoutError.message });
+          console.error('[admin] roster sheet sync timed out or threw');
           setMessage('변경사항은 저장되었습니다. 명단 시트 동기화는 계속 진행 중입니다.');
         }
       })();
     } catch (unexpected) {
-      console.error('[admin] updateMember failed unexpectedly', unexpected);
+      console.error('[admin] updateMember failed unexpectedly');
       setMessage(`예기치 않은 오류로 저장하지 못했습니다: ${describeError(unexpected)}`, true);
       if (saveButton) { saveButton.disabled = false; saveButton.textContent = '변경 저장'; }
     }

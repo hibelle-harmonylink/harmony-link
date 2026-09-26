@@ -31,7 +31,7 @@ test('normalizes only unambiguous US phone strings and preserves Korean or inter
 
 test('renders contact as a single synchronized read-only value, not an editable input', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
-  assert.match(detail, /syncedReadonlyField\('연락처', formatPhone\(member\.phone \?\? ''\)\)/);
+  assert.match(detail, /syncedReadonlyField\('연락처', formatPhone\(member\.phone \?\? ''\), 'member-field-phone'\)/);
   assert.doesNotMatch(detail, /id="detailPhone"/);
   assert.doesNotMatch(detail, /const summary = /);
   assert.equal((detail.match(/formatPhone\(member\.phone/g) || []).length, 1);
@@ -48,7 +48,7 @@ test('withdrawn members are fully read-only and cannot submit a save action', ()
 test('only nickname remains editable metadata outside the role-notification email trigger', () => {
   assert.match(adminJs, /const metadataChanged = metadata\.nickname !== memberNickname\(member\)/);
   assert.match(adminJs, /p_nickname: metadata\.nickname/);
-  assert.match(adminJs, /p_full_name: memberFullName\(member\)/);
+  assert.match(adminJs, /p_full_name: latestMember\.full_name \?\? ''/);
   assert.match(adminJs, /if \(roleChanged && accessSaved\) void \(async \(\) =>/);
 });
 
@@ -60,10 +60,10 @@ test('reapplies Sheet G/H/I colors from the current display values', () => {
   assert.match(appsScript, /applyRosterDisplayStyles_\(sheet, 2, Math\.max\(sheet\.getLastRow\(\) - 1, 0\), columns\)/);
 });
 
-test('detail dialog uses a compact grouped grid with desktop no-scroll and mobile fallback scrolling', () => {
-  assert.match(adminCss, /\.member-dialog\{width:min\(900px,calc\(100% - 24px\)\);max-height:92vh;overflow:hidden\}/);
-  assert.match(adminCss, /\.member-detail\{max-height:calc\(92vh - 54px\);overflow-y:auto;overflow-x:hidden;gap:\d+px\}/);
-  assert.match(adminCss, /@media\(min-width:681px\)\{\s*\.member-dialog\{max-height:none\}\s*\.member-detail\{max-height:none;overflow-y:visible;position:relative\}/);
-  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-groups\{grid-template-columns:1fr 1fr/);
+test('detail dialog uses a compact grouped grid with a 90vh cap and internal fallback scrolling', () => {
+  assert.match(adminCss, /\.member-dialog\{width:min\(1040px,calc\(100% - 24px\)\);max-height:90vh;overflow:hidden\}/);
+  assert.match(adminCss, /\.member-detail\{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain/);
+  assert.match(adminCss, /\.member-dialog\[open\]\{display:flex;flex-direction:column\}/);
+  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-groups\{grid-template-columns:minmax\(0,\.96fr\) minmax\(0,1\.04fr\)/);
   assert.match(adminCss, /\.partner-region-dialog\{width:min\(640px,calc\(100vw - 32px\)\);max-height:80vh/);
 });

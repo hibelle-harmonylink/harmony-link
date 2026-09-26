@@ -7,7 +7,8 @@ const root = path.join(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const appPage = read('app/index.html');
 const appScript = read('app/app.js');
-const overridesCss = read('app/overrides.css');
+// CSS whitespace semantics are identical on LF and Windows CRLF checkouts.
+const overridesCss = read('app/overrides.css').replace(/\r\n/g, '\n');
 const webIndex = read('index.html');
 const webScript = read('script.js');
 const webStyles = read('styles.css');
