@@ -71,10 +71,10 @@ function describeCacheBustedAsset({ assetLabel, tagRe, currentVersionQuery, know
 describeCacheBustedAsset({
   assetLabel: 'senior-learning.js',
   tagRe: /<script src="senior-learning\.js(\?[^"]*)?"><\/script>/,
-  currentVersionQuery: '?v=20260926-textbook-03',
-  knownStaleVersions: ['20260926-textbook-list', '20260926-materials-4cat', '20260926-textbooks-02', '20260921-smartphone-flow', '20260916-25', '20260916-24'],
+  currentVersionQuery: '?v=20260926-textbook-04',
+  knownStaleVersions: ['20260926-textbook-03', '20260926-textbook-list', '20260926-materials-4cat', '20260926-textbooks-02', '20260921-smartphone-flow', '20260916-25', '20260916-24'],
   contentFile: 'senior-learning.js',
-  expectedHash: 'ace050aa3dcecb320d345e25d5a87591f0564bb7d32c90d17cac312207b20ee7',
+  expectedHash: '550c8696707c8297ef8a7101175bdff67af8fda624ac55eb2f492e06794f5314',
 });
 
 describeCacheBustedAsset({
