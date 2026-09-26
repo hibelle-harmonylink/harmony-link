@@ -42,7 +42,8 @@
   // Approved textbook PDFs from Muse (Drive 03_승인완료), placed as-is under
   // downloads/senior-learning/. Never edit the PDF content here.
   const smartphoneTextbooks = [
-    { id:'smartphone-01', title:'01. 스마트폰, 이것만 알기', href:'downloads/senior-learning/01_스마트폰_이것만알기.pdf' }
+    { id:'smartphone-01', title:'01. 스마트폰, 이것만 알기', href:'downloads/senior-learning/01_스마트폰_이것만알기.pdf' },
+    { id:'smartphone-02', title:'02. 버튼과 화면 첫걸음', href:'downloads/senior-learning/02_스마트폰_버튼과화면첫걸음.pdf' }
   ];
   const learningData = [
     {
