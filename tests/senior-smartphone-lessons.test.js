@@ -166,8 +166,12 @@ test('home/mini apps and other preparing categories retain their rendering', asy
   assert.match(mini.node('seniorLearningContent').innerHTML, /easy-hanja.html/);
   assert.equal(mini.node('seniorBreadcrumb').innerHTML, '');
   const computer = await harness('?category=computer');
-  assert.match(computer.node('seniorLearningContent').innerHTML, /자료 준비중/);
+  assert.match(computer.node('seniorLearningContent').innerHTML, /class="senior-empty-category">교재를 준비하고 있어요\. 곧 만나요!/);
   assert.doesNotMatch(computer.node('seniorLearningContent').innerHTML, /data-senior-lesson=/);
+  assert.doesNotMatch(computer.node('seniorLearningContent').innerHTML, /자료 준비중/);
+  const aiTools = await harness('?category=ai-tools');
+  assert.match(aiTools.node('seniorLearningContent').innerHTML, /class="senior-empty-category">교재를 준비하고 있어요\. 곧 만나요!/);
+  assert.doesNotMatch(aiTools.node('seniorLearningContent').innerHTML, /data-senior-lesson=|자료 준비중/);
   const invalid = await harness('?category=smartphone&lesson=not-real&page=oops');
   assert.doesNotThrow(() => invalid.listeners.keydown({ target:{ matches:() => false }, key:'ArrowRight' }));
 });

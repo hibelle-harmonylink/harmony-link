@@ -22,14 +22,24 @@ test('senior learning space has a homepage entry and uses existing member authen
   assert.match(auth, /window\.location\.replace\(returnTarget\)/);
 });
 
-test('senior learning preserves source categories while grouping their materials into three cards', () => {
+test('senior learning preserves source categories on disk even though computer/ai-tools are hidden from the user-facing screen', () => {
+  // sourceLearningData still has all 6 original placeholder categories --
+  // nothing was deleted, only computer/ai-tools stopped rendering theirs.
   for (const title of ['스마트폰', '설정과 화면', '생활 디지털', 'AI 배우기', '디지털 취미', '디지털 안전']) assert.match(script, new RegExp(`title:'${title}'`));
   for (const title of ['스마트폰', '컴퓨터', 'AI 도구', '생활 활용']) assert.match(script, new RegExp(`title:'${title}'`));
   assert.match(script, /const sourceLearningData = \[/);
-  assert.match(script, /sourceLearningData\.find\(category => category\.id === 'digital-hobby'\)\.lessons/);
   assert.match(script, /accessLevel:'free'/);
   assert.match(script, /status:'ready'/);
   assert.match(script, /status:'preparing'/);
+});
+
+test('컴퓨터/AI 도구 hide their old placeholder lessons behind the same empty-state as 생활 활용, without deleting sourceLearningData', () => {
+  assert.match(script, /id:'computer',[\s\S]*?lessons:\[\]\s*\n\s*\},/);
+  assert.match(script, /id:'ai-tools',[\s\S]*?lessons:\[\]\s*\n\s*\},/);
+  // The old wiring that surfaced sourceLearningData's placeholder lessons on
+  // these two screens is gone -- they render the same empty state as 생활 활용.
+  assert.doesNotMatch(script, /sourceLearningData\.find\(category => category\.id === 'digital-hobby'\)/);
+  assert.doesNotMatch(script, /sourceLearningData\.find\(category => category\.id === 'ai'\)/);
 });
 
 test('smartphone materials retain the fifteen delivered assets and bookmark IDs in order', () => {
@@ -59,8 +69,8 @@ test('senior learning keeps a pending category card and provides an extensible m
   assert.match(script, /mini-hanja\.svg/);
   assert.match(css, /\.senior-mini-app-grid \{ display:grid; grid-template-columns:repeat\(3,minmax\(0,1fr\)\); gap:22px; \}/);
   assert.match(css, /@media \(max-width:620px\)[\s\S]*?\.senior-category-grid,\.senior-mini-app-grid \{ grid-template-columns:repeat\(2,minmax\(0,1fr\)\);/);
-  assert.match(page, /senior-learning\.css\?v=20260926-materials-4cat/);
-  assert.match(page, /senior-learning\.js\?v=20260926-materials-4cat/);
+  assert.match(page, /senior-learning\.css\?v=20260926-textbook-list/);
+  assert.match(page, /senior-learning\.js\?v=20260926-textbook-list/);
   assert.match(miniAppsPage, /data-senior-page="mini-apps"/);
   assert.match(miniAppsPage, /생활에 도움이 되는 간편한 디지털 도구를 이용해보세요/);
   assert.match(miniAppsPage, /href="senior-learning\.html">← 시니어 배움터/);

@@ -76,12 +76,30 @@ test('the smartphone screen renders straight into the textbook cards -- no on-sc
   assert.match(script, /class="smartphone-lesson-grid"/);
 });
 
-test('CSS for the new textbook card reuses existing design tokens/patterns and adds only minimal new rules', () => {
-  assert.match(css, /\.smartphone-textbook-card \{[^}]*border:2px solid var\(--senior-line\)/);
+test('textbook cards use a compact list-row layout (title left, button right) that reuses existing design tokens', () => {
+  // As of the "compact list" round: one row per textbook, title and button
+  // side by side, so the list stays scannable as more Muse PDFs (03, 04,
+  // 05...) get added, instead of each textbook taking a tall standalone box.
+  assert.match(css, /\.smartphone-textbook-grid \{ display:grid; grid-template-columns:1fr;/);
+  assert.match(css, /\.smartphone-textbook-card \{[^}]*display:flex; flex-direction:row; align-items:center; justify-content:space-between;/);
   assert.match(css, /\.smartphone-textbook-card \{[^}]*background:var\(--senior-pale\)/);
-  assert.match(css, /\.smartphone-textbook-card \.senior-primary-button \{ width:100%; \}/);
-  // The button itself is unmodified -- only its width is adjusted per card, not redefined.
+  // Title can wrap up to 2 lines for long future titles but never more.
+  assert.match(css, /\.smartphone-textbook-card strong \{[^}]*-webkit-line-clamp:2/);
+  // Button sits to the right at a fixed width, not stretched full-width.
+  assert.match(css, /\.smartphone-textbook-card \.senior-primary-button \{[^}]*flex:0 0 auto; width:auto;[^}]*min-height:44px/);
+  // The accessibility touch-target floor (44px) established in an earlier
+  // round is kept, even though the base button style still defaults to 52px.
   assert.match(css, /\.senior-primary-button,\.senior-secondary-button \{ min-height:52px;/);
+});
+
+test('mobile (<=620px) shrinks textbook card padding/gap further without dropping below the 44px button floor or shrinking the title to unreadable size', () => {
+  const mobileBlock = css.match(/@media \(max-width:620px\) \{[\s\S]*?\n\}/)?.[0] || '';
+  assert.notEqual(mobileBlock, '', 'expected the materials-specific @media(max-width:620px) block to exist');
+  assert.match(mobileBlock, /\.smartphone-textbook-grid \{ gap:6px; \}/);
+  assert.match(mobileBlock, /\.smartphone-textbook-card \{ padding:9px 12px; gap:8px;/);
+  assert.match(mobileBlock, /\.smartphone-textbook-card strong \{ font-size:14\.5px;/);
+  // Button keeps its 44px min-height on mobile too -- only padding/font shrink.
+  assert.doesNotMatch(mobileBlock, /\.smartphone-textbook-card \.senior-primary-button \{[^}]*min-height:(?!44px)/);
 });
 
 test('the existing three smartphone folders, their sixty lessons, and slide images are preserved on disk as Muse reference material (not deleted)', () => {
