@@ -140,11 +140,14 @@
     const folder = smartphoneFolders.find(item => item.id === state.folderId);
     if (!folder) {
       // Muse's new PDF textbook series is now the only smartphone content
-      // shown here. The folder/lesson browsing UI below (and its render
-      // code) stays reachable by direct link/state for now -- only its
-      // entry points on this screen are removed. Do not delete
-      // smartphoneFolders data or this branch's sibling render functions.
-      content.innerHTML = `<section class="smartphone-folders"><h2 tabindex="-1">스마트폰</h2><section class="smartphone-textbooks" aria-labelledby="smartphoneTextbooksTitle"><h3 id="smartphoneTextbooksTitle">스마트폰 교재</h3><div class="smartphone-textbook-grid">${smartphoneTextbooks.map(book => `<article class="smartphone-textbook-card"><strong>${escapeHtml(book.title)}</strong><a class="senior-primary-button" href="${book.href}" target="_blank" rel="noopener noreferrer">교재 보기</a></article>`).join('')}</div></section></section>`;
+      // shown here. The breadcrumb ("교재 > 스마트폰") already names this
+      // screen, so no on-screen "스마트폰"/"스마트폰 교재" heading is
+      // repeated -- straight to the textbook cards. The folder/lesson
+      // browsing UI below (and its render code) stays reachable by direct
+      // link/state for now -- only its entry points on this screen are
+      // removed. Do not delete smartphoneFolders data or this branch's
+      // sibling render functions.
+      content.innerHTML = `<section class="smartphone-folders" aria-label="스마트폰 교재"><section class="smartphone-textbooks"><div class="smartphone-textbook-grid">${smartphoneTextbooks.map(book => `<article class="smartphone-textbook-card"><strong>${escapeHtml(book.title)}</strong><a class="senior-primary-button" href="${book.href}" target="_blank" rel="noopener noreferrer">교재 보기</a></article>`).join('')}</div></section></section>`;
       return;
     }
     content.innerHTML = `<section class="smartphone-folder"><header><h2 tabindex="-1">${folder.title}</h2><p>${escapeHtml(folder.introduction)}<br>20개 학습 · 필요한 내용부터 골라 배우세요.</p></header><div class="smartphone-lesson-grid">${folder.lessons.map(lesson => `<article class="smartphone-lesson-card"><span class="smartphone-number">${lesson.number}</span><h3 title="${escapeHtml(lesson.title)}">${escapeHtml(lesson.cardTitle || lesson.title)}</h3><p title="${escapeHtml(lesson.description)}">${escapeHtml(lesson.description)}</p><button type="button" class="senior-primary-button" data-senior-lesson="${lesson.id}" aria-label="${escapeHtml(lesson.title)} 배우기">배우기 →</button></article>`).join('')}</div><button type="button" class="senior-secondary-button" data-senior-category="smartphone">← 스마트폰 폴더</button></section>`;
