@@ -193,7 +193,7 @@ test('materials-only compact header and responsive grids preserve readable sizes
 
 test('materials to folders to grid to text detail uses one content title and reversible query hierarchy', async () => {
   const h = await harness('');
-  assert.equal((h.node('seniorLearningContent').innerHTML.match(/class="senior-category-card"/g) || []).length, 3);
+  assert.equal((h.node('seniorLearningContent').innerHTML.match(/class="senior-category-card"/g) || []).length, 4);
   assert.equal(h.node('seniorMaterialsIntro').hidden, false);
   h.click('data-senior-category', 'smartphone');
   assert.equal(h.node('seniorMaterialsIntro').hidden, true);
@@ -220,7 +220,7 @@ test('materials landing removes duplicate tabs and their space but nested breadc
   const h = await harness('');
   assert.equal(h.node('seniorBreadcrumb').hidden, true);
   assert.equal(h.node('seniorBreadcrumb').innerHTML, '');
-  assert.equal((h.node('seniorLearningContent').innerHTML.match(/class="senior-category-card"/g) || []).length, 3);
+  assert.equal((h.node('seniorLearningContent').innerHTML.match(/class="senior-category-card"/g) || []).length, 4);
   h.click('data-senior-category', 'smartphone');
   assert.equal(h.node('seniorBreadcrumb').hidden, false);
   assert.match(h.node('seniorBreadcrumb').innerHTML, />교재<.*>스마트폰</);

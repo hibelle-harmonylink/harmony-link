@@ -71,17 +71,17 @@ function describeCacheBustedAsset({ assetLabel, tagRe, currentVersionQuery, know
 describeCacheBustedAsset({
   assetLabel: 'senior-learning.js',
   tagRe: /<script src="senior-learning\.js(\?[^"]*)?"><\/script>/,
-  currentVersionQuery: '?v=20260926-textbooks-02',
-  knownStaleVersions: ['20260921-smartphone-flow', '20260916-25', '20260916-24'],
+  currentVersionQuery: '?v=20260926-materials-4cat',
+  knownStaleVersions: ['20260926-textbooks-02', '20260921-smartphone-flow', '20260916-25', '20260916-24'],
   contentFile: 'senior-learning.js',
-  expectedHash: '05f9a37611968eda3742f08fe5970624d7d2fac6d569bea72b19e0a4ed188da9',
+  expectedHash: '3d57a49263eac8c313dff052e0beaca43f753f43b66797088236974f9096e26f',
 });
 
 describeCacheBustedAsset({
   assetLabel: 'senior-learning.css',
   tagRe: /<link rel="stylesheet" href="senior-learning\.css(\?[^"]*)?">/,
-  currentVersionQuery: '?v=20260926-compact-mobile',
-  knownStaleVersions: ['20260921-smartphone-flow', '20260916-25', '20260916-24'],
+  currentVersionQuery: '?v=20260926-materials-4cat',
+  knownStaleVersions: ['20260926-compact-mobile', '20260921-smartphone-flow', '20260916-25', '20260916-24'],
   contentFile: 'senior-learning.css',
-  expectedHash: '769dc1d31d6392e4a33e0c6beac4c55bb72de1892a836482848e611f34dd8f88',
+  expectedHash: '45107334effe1278c5b6ebaa3ba3061c092b8c8e8a062c39fca3d38459f5c690',
 });

@@ -24,7 +24,7 @@ test('senior learning space has a homepage entry and uses existing member authen
 
 test('senior learning preserves source categories while grouping their materials into three cards', () => {
   for (const title of ['스마트폰', '설정과 화면', '생활 디지털', 'AI 배우기', '디지털 취미', '디지털 안전']) assert.match(script, new RegExp(`title:'${title}'`));
-  for (const title of ['스마트폰', '컴퓨터', 'AI 도구']) assert.match(script, new RegExp(`title:'${title}'`));
+  for (const title of ['스마트폰', '컴퓨터', 'AI 도구', '생활 활용']) assert.match(script, new RegExp(`title:'${title}'`));
   assert.match(script, /const sourceLearningData = \[/);
   assert.match(script, /sourceLearningData\.find\(category => category\.id === 'digital-hobby'\)\.lessons/);
   assert.match(script, /accessLevel:'free'/);
@@ -59,8 +59,8 @@ test('senior learning keeps a pending category card and provides an extensible m
   assert.match(script, /mini-hanja\.svg/);
   assert.match(css, /\.senior-mini-app-grid \{ display:grid; grid-template-columns:repeat\(3,minmax\(0,1fr\)\); gap:22px; \}/);
   assert.match(css, /@media \(max-width:620px\)[\s\S]*?\.senior-category-grid,\.senior-mini-app-grid \{ grid-template-columns:repeat\(2,minmax\(0,1fr\)\);/);
-  assert.match(page, /senior-learning\.css\?v=20260926-compact-mobile/);
-  assert.match(page, /senior-learning\.js\?v=20260926-textbooks-02/);
+  assert.match(page, /senior-learning\.css\?v=20260926-materials-4cat/);
+  assert.match(page, /senior-learning\.js\?v=20260926-materials-4cat/);
   assert.match(miniAppsPage, /data-senior-page="mini-apps"/);
   assert.match(miniAppsPage, /생활에 도움이 되는 간편한 디지털 도구를 이용해보세요/);
   assert.match(miniAppsPage, /href="senior-learning\.html">← 시니어 배움터/);
@@ -100,7 +100,7 @@ test('senior learning materials and mini apps share protected rendering without 
   assert.match(script, /data-mini-app-card/);
   assert.match(script, /event\.key === ' '/);
   assert.match(script, /<a class="senior-mini-app-card"/);
-  for (const asset of ['material-smartphone.svg', 'material-computer.svg', 'material-ai.svg', 'mini-hanja.svg']) {
+  for (const asset of ['material-smartphone.svg', 'material-computer.svg', 'material-ai.svg', 'material-life.svg', 'mini-hanja.svg']) {
     assert.equal(fs.existsSync(path.join(root, 'assets', 'senior-learning', asset)), true, `${asset} exists`);
   }
   assert.match(script, /<b>교재 보기<\/b>/);
@@ -163,4 +163,22 @@ test('senior learning header auth button reflects real session state instead of 
   assert.match(page, /id="seniorSignin" href="index\.html\?auth=login&amp;return=senior-learning\.html"/);
   assert.match(materialsPage, /id="seniorSignin" href="index\.html\?auth=login&amp;return=senior-learning-materials\.html"/);
   assert.match(miniAppsPage, /id="seniorSignin" href="index\.html\?auth=login&amp;return=senior-mini-apps\.html"/);
+});
+
+test('materials category grid adds a real 생활 활용 entry point (2x2 on mobile) without inventing lessons for it', () => {
+  assert.match(script, /id:'life',\s*\n\s*icon:'🏡',\s*\n\s*image:'assets\/senior-learning\/material-life\.svg',\s*\n\s*title:'생활 활용',\s*\n\s*description:'생활에 필요한 디지털 기능을 배워보세요\.',/);
+  assert.match(script, /lessons:\[\]\s*\n\s*\}\s*\n\s*\];/);
+  assert.equal(fs.existsSync(path.join(root, 'assets', 'senior-learning', 'material-life.svg')), true);
+  // Existing categories keep their lessons untouched -- only 'life' is empty.
+  assert.doesNotMatch(script, /id:'smartphone-textbook-fake'|id:'life-lesson/);
+  // Empty categories get a real, non-fake empty state instead of a placeholder lesson/link.
+  assert.match(script, /if \(!category\.lessons\.length\) \{/);
+  assert.match(script, /class="senior-empty-category">교재를 준비하고 있어요/);
+  assert.match(css, /\.senior-empty-category \{/);
+  // 4 categories still lay out 2x2 on mobile via the existing 2-column grid rule.
+  assert.match(css, /@media \(max-width:620px\)[\s\S]*?\.senior-category-grid,\.senior-mini-app-grid \{ grid-template-columns:repeat\(2,minmax\(0,1fr\)\);/);
+  // Mobile-only further compaction is scoped to .senior-category-card alone, so
+  // the mini-apps screen (still 1 card) is not affected by this round's shrink.
+  assert.match(css, /@media \(max-width:620px\)[\s\S]*?\.senior-category-grid \{ gap:8px; \} \.senior-category-card \{ padding:9px;/);
+  assert.doesNotMatch(css, /\.senior-mini-app-card \{ padding:9px;/);
 });

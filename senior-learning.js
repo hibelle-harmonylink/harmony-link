@@ -69,6 +69,16 @@
       title:'AI 도구',
       description:'생활에 유용한 AI 도구를 쉽게 배워보세요.',
       lessons:[...sourceLearningData.find(category => category.id === 'ai').lessons]
+    },
+    {
+      id:'life',
+      icon:'🏡',
+      image:'assets/senior-learning/material-life.svg',
+      title:'생활 활용',
+      description:'생활에 필요한 디지털 기능을 배워보세요.',
+      // No textbook has been approved for this category yet -- keep the entry
+      // point real (card, breadcrumb, empty-state) without inventing lessons.
+      lessons:[]
     }
   ];
   // Keep mini apps data-driven so new member tools can be added without
@@ -133,7 +143,12 @@
   const renderMiniApps = () => `<section class="senior-mini-apps"><div class="senior-mini-app-grid">${miniApps.map(app => `<a class="senior-mini-app-card" data-mini-app-card href="${app.href}" aria-label="${app.title} 사용하기"><img src="${app.image}" alt=""><div><h3>${app.title}</h3><p>${app.description}</p></div><span class="senior-primary-button" aria-hidden="true">사용하기</span></a>`).join('')}</div></section>`;
   const renderLessons = category => {
     if (category.id === 'smartphone') { renderSmartphone(); return; }
-    content.innerHTML = `<section class="senior-lesson-view"><div class="senior-view-heading"><span aria-hidden="true">${category.icon}</span><div><h2>${category.title}</h2><p>${category.description}</p></div></div><div class="senior-lesson-list">${category.lessons.map(lesson => { const available = isLessonAvailable(lesson); return `<article class="senior-lesson-card ${available ? 'is-ready' : 'is-preparing'}"${available ? '' : ' aria-disabled="true"'}><div><h3>${lesson.title}</h3><p>${lesson.description}</p></div>${available ? `<button class="senior-primary-button" type="button" data-senior-lesson="${lesson.id}">교재 보기</button>` : '<span class="senior-preparing">자료 준비중</span>'}</article>`; }).join('')}</div></section>`;
+    const heading = `<div class="senior-view-heading"><span aria-hidden="true">${category.icon}</span><div><h2>${category.title}</h2><p>${category.description}</p></div></div>`;
+    if (!category.lessons.length) {
+      content.innerHTML = `<section class="senior-lesson-view">${heading}<p class="senior-empty-category">교재를 준비하고 있어요. 곧 만나요!</p></section>`;
+      return;
+    }
+    content.innerHTML = `<section class="senior-lesson-view">${heading}<div class="senior-lesson-list">${category.lessons.map(lesson => { const available = isLessonAvailable(lesson); return `<article class="senior-lesson-card ${available ? 'is-ready' : 'is-preparing'}"${available ? '' : ' aria-disabled="true"'}><div><h3>${lesson.title}</h3><p>${lesson.description}</p></div>${available ? `<button class="senior-primary-button" type="button" data-senior-lesson="${lesson.id}">교재 보기</button>` : '<span class="senior-preparing">자료 준비중</span>'}</article>`; }).join('')}</div></section>`;
   };
   const formatCopy = text => escapeHtml(text).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   const listCopy = (items, ordered = false) => `<${ordered ? 'ol' : 'ul'}>${items.map(item => `<li>${formatCopy(item)}</li>`).join('')}</${ordered ? 'ol' : 'ul'}>`;
