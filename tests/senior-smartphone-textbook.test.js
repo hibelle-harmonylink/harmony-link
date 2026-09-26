@@ -1,8 +1,9 @@
 // Regression tests for the Muse -> Drive -> Claude -> Harmony Link textbook
 // publishing pipeline: approved PDFs ("01_스마트폰_이것만알기.pdf",
-// "02_스마트폰_버튼과화면첫걸음.pdf") placed under downloads/senior-learning/
-// and surfaced as stacked cards in the "스마트폰 교재" section on the
-// 시니어배움터 -> 스마트폰 screen, in order, same card design.
+// "02_스마트폰_버튼과화면첫걸음.pdf", "03_스마트폰_손가락으로조작하기.pdf")
+// placed under downloads/senior-learning/ and surfaced as compact list-row
+// cards in the "스마트폰 교재" section on the 시니어배움터 -> 스마트폰
+// screen, in order, same card design.
 //
 // As of the "PDF 교재로 통일" round, the 3 legacy folder cards (설정 /
 // 인터넷·연결 / 전화·문자·연락처) and their "폴더를 고르세요" guide copy are
@@ -23,9 +24,10 @@ const script = read('senior-learning.js');
 const css = read('senior-learning.css');
 const pdfPath01 = path.join(root, 'downloads/senior-learning/01_스마트폰_이것만알기.pdf');
 const pdfPath02 = path.join(root, 'downloads/senior-learning/02_스마트폰_버튼과화면첫걸음.pdf');
+const pdfPath03 = path.join(root, 'downloads/senior-learning/03_스마트폰_손가락으로조작하기.pdf');
 const folders = require('../senior-smartphone-lessons');
 
-test('both approved PDFs are stored under downloads/senior-learning/ unmodified -- real PDFs at their exact Drive-approved byte size', () => {
+test('all three approved PDFs are stored under downloads/senior-learning/ unmodified -- real PDFs at their exact Drive-approved byte size', () => {
   assert.ok(fs.existsSync(pdfPath01), 'PDF file must exist at downloads/senior-learning/01_스마트폰_이것만알기.pdf');
   const buffer01 = fs.readFileSync(pdfPath01);
   assert.match(buffer01.subarray(0, 5).toString('latin1'), /^%PDF-/);
@@ -37,19 +39,29 @@ test('both approved PDFs are stored under downloads/senior-learning/ unmodified 
   const buffer02 = fs.readFileSync(pdfPath02);
   assert.match(buffer02.subarray(0, 5).toString('latin1'), /^%PDF-/);
   assert.equal(buffer02.length, 444076, '02 PDF must match its exact Drive-approved size (unmodified)');
+
+  assert.ok(fs.existsSync(pdfPath03), 'PDF file must exist at downloads/senior-learning/03_스마트폰_손가락으로조작하기.pdf');
+  const buffer03 = fs.readFileSync(pdfPath03);
+  assert.match(buffer03.subarray(0, 5).toString('latin1'), /^%PDF-/);
+  // Exact Drive-approved byte size (384267), confirming a byte-identical
+  // copy of the Drive original rather than a re-export/edit.
+  assert.equal(buffer03.length, 384267, '03 PDF must match its exact Drive-approved size (unmodified)');
 });
 
-test('senior-learning.js declares both smartphone textbooks as data, in order, with 01 unchanged (extensible for future approved PDFs)', () => {
+test('senior-learning.js declares all three smartphone textbooks as data, in order, with 01/02 unchanged (extensible for future approved PDFs)', () => {
   assert.match(script, /const smartphoneTextbooks = \[/);
   const dataBlock = script.match(/const smartphoneTextbooks = \[[\s\S]*?\];/)?.[0] || '';
   assert.notEqual(dataBlock, '');
   const entry01Index = dataBlock.indexOf("id:'smartphone-01'");
   const entry02Index = dataBlock.indexOf("id:'smartphone-02'");
-  assert.ok(entry01Index >= 0 && entry02Index > entry01Index, '01 must come before 02 in source order');
+  const entry03Index = dataBlock.indexOf("id:'smartphone-03'");
+  assert.ok(entry01Index >= 0 && entry02Index > entry01Index && entry03Index > entry02Index, '01 must come before 02, which must come before 03, in source order');
   assert.match(script, /title:'01\. 스마트폰, 이것만 알기'/);
   assert.match(script, /href:'downloads\/senior-learning\/01_스마트폰_이것만알기\.pdf'/);
   assert.match(script, /title:'02\. 버튼과 화면 첫걸음'/);
   assert.match(script, /href:'downloads\/senior-learning\/02_스마트폰_버튼과화면첫걸음\.pdf'/);
+  assert.match(script, /title:'03\. 손가락으로 조작하기'/);
+  assert.match(script, /href:'downloads\/senior-learning\/03_스마트폰_손가락으로조작하기\.pdf'/);
 });
 
 test('the smartphone screen renders straight into the textbook cards -- no on-screen "스마트폰"/"스마트폰 교재" heading duplicates the breadcrumb, no legacy folder grid or guide text, one "교재 보기" button per card', () => {
@@ -147,7 +159,7 @@ async function harness(query = '?category=smartphone') {
   return { node };
 }
 
-test('real controller renders both textbook cards stacked in order (01 above 02), same card design, no duplicate heading, no legacy folder cards or guide text', async () => {
+test('real controller renders all three textbook cards stacked in order (01, 02, 03), same card design, no duplicate heading, no legacy folder cards or guide text', async () => {
   const h = await harness();
   const html = h.node('seniorLearningContent').innerHTML;
   assert.doesNotMatch(html, /<h2[^>]*>스마트폰<\/h2>/);
@@ -156,14 +168,18 @@ test('real controller renders both textbook cards stacked in order (01 above 02)
   // 01 unchanged.
   assert.match(html, /<strong>01\. 스마트폰, 이것만 알기<\/strong>/);
   assert.match(html, /<a class="senior-primary-button" href="downloads\/senior-learning\/01_스마트폰_이것만알기\.pdf" target="_blank" rel="noopener noreferrer">교재 보기<\/a>/);
-  // 02 added, same card structure/design (identical article/strong/button markup shape).
+  // 02 unchanged.
   assert.match(html, /<strong>02\. 버튼과 화면 첫걸음<\/strong>/);
   assert.match(html, /<a class="senior-primary-button" href="downloads\/senior-learning\/02_스마트폰_버튼과화면첫걸음\.pdf" target="_blank" rel="noopener noreferrer">교재 보기<\/a>/);
-  // 01 must appear before 02 (stacked in order).
+  // 03 added, same card structure/design (identical article/strong/button markup shape).
+  assert.match(html, /<strong>03\. 손가락으로 조작하기<\/strong>/);
+  assert.match(html, /<a class="senior-primary-button" href="downloads\/senior-learning\/03_스마트폰_손가락으로조작하기\.pdf" target="_blank" rel="noopener noreferrer">교재 보기<\/a>/);
+  // 01 must appear before 02, which must appear before 03 (stacked in order).
   assert.ok(html.indexOf('01. 스마트폰, 이것만 알기') < html.indexOf('02. 버튼과 화면 첫걸음'), '01 must render above 02');
-  // Exactly 2 cards, exactly 2 buttons -- no extra placeholder cards for 03+.
-  assert.equal((html.match(/class="smartphone-textbook-card"/g) || []).length, 2);
-  assert.equal((html.match(/senior-primary-button/g) || []).length, 2);
+  assert.ok(html.indexOf('02. 버튼과 화면 첫걸음') < html.indexOf('03. 손가락으로 조작하기'), '02 must render above 03');
+  // Exactly 3 cards, exactly 3 buttons -- no extra placeholder cards for 04+.
+  assert.equal((html.match(/class="smartphone-textbook-card"/g) || []).length, 3);
+  assert.equal((html.match(/senior-primary-button/g) || []).length, 3);
 
   assert.equal((html.match(/class="smartphone-folder-card"/g) || []).length, 0);
   for (const label of ['설정', '인터넷·연결', '전화·문자·연락처']) assert.doesNotMatch(html, new RegExp(`<strong>${label}</strong>`));
