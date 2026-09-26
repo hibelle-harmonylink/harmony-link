@@ -70,7 +70,7 @@ test('senior learning keeps a pending category card and provides an extensible m
   assert.match(css, /\.senior-mini-app-grid \{ display:grid; grid-template-columns:repeat\(3,minmax\(0,1fr\)\); gap:22px; \}/);
   assert.match(css, /@media \(max-width:620px\)[\s\S]*?\.senior-category-grid,\.senior-mini-app-grid \{ grid-template-columns:repeat\(2,minmax\(0,1fr\)\);/);
   assert.match(page, /senior-learning\.css\?v=20260926-textbook-list/);
-  assert.match(page, /senior-learning\.js\?v=20260926-textbook-03/);
+  assert.match(page, /senior-learning\.js\?v=20260926-textbook-04/);
   assert.match(miniAppsPage, /data-senior-page="mini-apps"/);
   assert.match(miniAppsPage, /생활에 도움이 되는 간편한 디지털 도구를 이용해보세요/);
   assert.match(miniAppsPage, /href="senior-learning\.html">← 시니어 배움터/);
