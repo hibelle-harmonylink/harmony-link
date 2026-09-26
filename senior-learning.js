@@ -43,7 +43,8 @@
   // downloads/senior-learning/. Never edit the PDF content here.
   const smartphoneTextbooks = [
     { id:'smartphone-01', title:'01. 스마트폰, 이것만 알기', href:'downloads/senior-learning/01_스마트폰_이것만알기.pdf' },
-    { id:'smartphone-02', title:'02. 버튼과 화면 첫걸음', href:'downloads/senior-learning/02_스마트폰_버튼과화면첫걸음.pdf' }
+    { id:'smartphone-02', title:'02. 버튼과 화면 첫걸음', href:'downloads/senior-learning/02_스마트폰_버튼과화면첫걸음.pdf' },
+    { id:'smartphone-03', title:'03. 손가락으로 조작하기', href:'downloads/senior-learning/03_스마트폰_손가락으로조작하기.pdf' }
   ];
   const learningData = [
     {
