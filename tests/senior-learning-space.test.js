@@ -14,7 +14,7 @@ const auth = fs.readFileSync(path.join(root, 'auth.js'), 'utf8');
 
 test('senior learning space has a homepage entry and uses existing member authentication', () => {
   assert.match(home, /href="senior-learning\.html"[^>]*>시니어 배움터/);
-  assert.match(page, /하모니링크 회원을 위한 배움터예요/);
+  assert.match(page, /회원 전용 배움터/);
   assert.match(page, /return=senior-learning\.html/);
   assert.match(script, /get_own_member_profile/);
   assert.match(script, /\['active', 'expiring'\]/);
@@ -58,8 +58,8 @@ test('senior learning keeps a pending category card and provides an extensible m
   assert.match(script, />사용하기</);
   assert.match(script, /mini-hanja\.svg/);
   assert.match(css, /\.senior-mini-app-grid \{ display:grid; grid-template-columns:repeat\(3,minmax\(0,1fr\)\); gap:22px; \}/);
-  assert.match(css, /@media \(max-width:620px\)[\s\S]*?\.senior-mini-app-grid \{ grid-template-columns:1fr;/);
-  assert.match(page, /senior-learning\.css\?v=20260916-25/);
+  assert.match(css, /@media \(max-width:620px\)[\s\S]*?\.senior-category-grid,\.senior-mini-app-grid \{ grid-template-columns:repeat\(2,minmax\(0,1fr\)\);/);
+  assert.match(page, /senior-learning\.css\?v=20260926-compact-mobile/);
   assert.match(page, /senior-learning\.js\?v=20260926-textbooks-02/);
   assert.match(miniAppsPage, /data-senior-page="mini-apps"/);
   assert.match(miniAppsPage, /생활에 도움이 되는 간편한 디지털 도구를 이용해보세요/);
@@ -85,7 +85,7 @@ test('senior learning home keeps its choices and routes each choice to a dedicat
   assert.match(css, /\.tool-site-header \{ min-height:68px; background:#eef8f1!important;/);
   assert.match(css, /\.senior-content-tabs \{[^}]*display:grid; grid-template-columns:repeat\(2,minmax\(0,1fr\)\);/);
   assert.match(css, /\.senior-section-choice \{ min-height:360px;/);
-  assert.match(css, /@media \(max-width:620px\).*?\.senior-content-tabs \{ grid-template-columns:1fr;/s);
+  assert.match(css, /@media \(max-width:620px\).*?\.senior-content-tabs \{ grid-template-columns:repeat\(2,minmax\(0,1fr\)\);/s);
 });
 
 test('senior learning materials and mini apps share protected rendering without repeating the home choices', () => {
@@ -148,7 +148,7 @@ test('senior learning header auth button reflects real session state instead of 
   assert.match(script, /if \(!client\) \{ if \(checkId === memberCheckId\) showGate\(\); return; \}/);
   assert.match(script, /if \(!session\?\.user\) \{ if \(checkId === memberCheckId\) showGate\(\); return; \}/);
   // 7) The member-only content gate itself is unchanged.
-  assert.match(page, /하모니링크 회원을 위한 배움터예요/);
+  assert.match(page, /회원 전용 배움터/);
   assert.match(page, /무료 회원가입/);
 
   // Safe initial paint: #seniorSignin ships with no [hidden] attribute (visible
