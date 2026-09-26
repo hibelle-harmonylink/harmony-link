@@ -12,6 +12,12 @@ body[data-senior-page="materials"] .senior-breadcrumb button { min-height:44px; 
 body[data-senior-page="materials"] .senior-breadcrumb strong { min-width:0; overflow-wrap:anywhere; }
 .smartphone-folders h2,.smartphone-folder h2,.smartphone-detail h2 { margin:0; color:var(--senior-deep); font-size:clamp(26px,3vw,32px); line-height:1.4; }
 .smartphone-folders>p,.smartphone-folder header>p { margin:8px 0 16px; color:#334b63; font-size:18px; line-height:1.6; }
+.smartphone-textbooks { margin:16px 0 20px; }
+.smartphone-textbooks h3 { margin:0 0 10px; color:var(--senior-deep); font-size:22px; line-height:1.4; }
+.smartphone-textbook-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; }
+.smartphone-textbook-card { min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:14px; padding:18px 20px; border:2px solid var(--senior-line); border-radius:14px; background:var(--senior-pale); }
+.smartphone-textbook-card strong { font-size:20px; line-height:1.4; color:var(--senior-deep); }
+.smartphone-textbook-card .senior-primary-button { width:100%; }
 .smartphone-folder-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
 .smartphone-folder-card { min-width:0; width:100%; max-width:280px; min-height:184px; display:flex; flex-direction:column; align-items:flex-start; gap:6px; padding:16px; border:2px solid #c7d9ec; border-radius:14px; background:white; color:var(--senior-deep); font:inherit; text-align:left; cursor:pointer; }
 .smartphone-folder-card>span { font-size:26px; line-height:1.2; }
