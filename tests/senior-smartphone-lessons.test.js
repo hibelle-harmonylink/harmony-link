@@ -82,9 +82,15 @@ test('all sixty lessons contain substantive separate device steps, use cases, re
   }
 });
 
-test('real controller renders folders first, twenty cards next, and all sixty text details', async () => {
+// Since the "스마트폰 교재" PDF series round, the 3 folder cards are no
+// longer shown on the initial smartphone screen (see
+// tests/senior-smartphone-textbook.test.js), but their render code and
+// data are intentionally preserved -- this test proves folder/lesson
+// browsing still works end-to-end when reached by state (e.g. an old
+// bookmark/deep link), not merely that the underlying data exists.
+test('real controller keeps folders/lessons reachable by state even though their cards are hidden from the initial screen', async () => {
   const h = await harness();
-  assert.equal((h.node('seniorLearningContent').innerHTML.match(/class="smartphone-folder-card"/g) || []).length, 3);
+  assert.doesNotMatch(h.node('seniorLearningContent').innerHTML, /class="smartphone-folder-card"/);
   assert.doesNotMatch(h.node('seniorLearningContent').innerHTML, /data-senior-lesson=/);
   for (const folder of folders) {
     h.click('data-senior-folder', folder.id);
@@ -203,7 +209,9 @@ test('materials to folders to grid to text detail uses one content title and rev
     h.sandbox.location.search = query;
     h.listeners.popstate();
     const html = h.node('seniorLearningContent').innerHTML;
-    assert.ok(html.includes(query.includes('folder') ? 'smartphone-lesson-grid' : query ? 'smartphone-folder-grid' : 'senior-category-grid'));
+    // Bare ?category=smartphone (no folder) now shows the 스마트폰 교재
+    // section instead of the removed folder grid.
+    assert.ok(html.includes(query.includes('folder') ? 'smartphone-lesson-grid' : query ? 'smartphone-textbooks' : 'senior-category-grid'));
   }
   assert.equal(h.node('seniorMaterialsIntro').hidden, false);
 });
@@ -224,9 +232,10 @@ test('materials landing removes duplicate tabs and their space but nested breadc
 test('all sixty compact card labels are separate from full detail titles and accessible button labels', async () => {
   const h = await harness();
   for (const folder of folders) {
+    // folder.cardDescription data is preserved even though the folder cards
+    // that used to display it are no longer shown on the smartphone screen.
     assert.ok(folder.cardDescription && folder.cardDescription.length <= 20);
     h.click('data-senior-category', 'smartphone');
-    assert.ok(h.node('seniorLearningContent').innerHTML.includes(folder.cardDescription));
     h.click('data-senior-folder', folder.id);
     const cards = h.node('seniorLearningContent').innerHTML;
     for (const item of folder.lessons) {
