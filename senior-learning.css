@@ -14,10 +14,10 @@ body[data-senior-page="materials"] .senior-breadcrumb strong { min-width:0; over
 .smartphone-folders>p,.smartphone-folder header>p { margin:8px 0 16px; color:#334b63; font-size:18px; line-height:1.6; }
 .smartphone-textbooks { margin:16px 0 20px; }
 .smartphone-textbooks h3 { margin:0 0 10px; color:var(--senior-deep); font-size:22px; line-height:1.4; }
-.smartphone-textbook-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; }
-.smartphone-textbook-card { min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:14px; padding:18px 20px; border:2px solid var(--senior-line); border-radius:14px; background:var(--senior-pale); }
-.smartphone-textbook-card strong { font-size:20px; line-height:1.4; color:var(--senior-deep); }
-.smartphone-textbook-card .senior-primary-button { width:100%; }
+.smartphone-textbook-grid { display:grid; grid-template-columns:1fr; gap:10px; }
+.smartphone-textbook-card { min-width:0; display:flex; flex-direction:row; align-items:center; justify-content:space-between; gap:14px; padding:13px 18px; border:1px solid var(--senior-line); border-radius:12px; background:var(--senior-pale); }
+.smartphone-textbook-card strong { flex:1 1 auto; min-width:0; font-size:18px; line-height:1.35; color:var(--senior-deep); display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; }
+.smartphone-textbook-card .senior-primary-button { flex:0 0 auto; width:auto; min-width:104px; min-height:44px; padding:0 16px; font-size:14.5px; }
 .smartphone-folder-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; }
 .smartphone-folder-card { min-width:0; width:100%; max-width:280px; min-height:184px; display:flex; flex-direction:column; align-items:flex-start; gap:6px; padding:16px; border:2px solid #c7d9ec; border-radius:14px; background:white; color:var(--senior-deep); font:inherit; text-align:left; cursor:pointer; }
 .smartphone-folder-card>span { font-size:26px; line-height:1.2; }
@@ -59,8 +59,10 @@ body[data-senior-page="materials"] .senior-breadcrumb strong { min-width:0; over
   body[data-senior-page="materials"] .senior-learning-subhero h1 { font-size:28px; }
   body[data-senior-page="materials"] #seniorMaterialsIntro>span { margin-top:2px; font-size:15px; }
   .smartphone-textbooks { margin:8px 0 12px; }
-  .smartphone-textbook-grid { gap:10px; }
-  .smartphone-textbook-card { padding:12px 14px; gap:10px; }
+  .smartphone-textbook-grid { gap:6px; }
+  .smartphone-textbook-card { padding:9px 12px; gap:8px; border-radius:10px; }
+  .smartphone-textbook-card strong { font-size:14.5px; line-height:1.3; }
+  .smartphone-textbook-card .senior-primary-button { min-width:0; padding:0 10px; font-size:12.5px; }
   .smartphone-lesson-grid { grid-template-columns:1fr; gap:12px; }
   .smartphone-folder-grid { grid-template-columns:1fr; gap:12px; }
   .smartphone-folder-card { max-width:360px; min-height:176px; }

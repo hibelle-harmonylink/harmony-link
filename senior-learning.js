@@ -60,7 +60,12 @@
       image:'assets/senior-learning/material-computer.svg',
       title:'컴퓨터',
       description:'컴퓨터 기본 사용법을 쉽게 배워보세요.',
-      lessons:[...sourceLearningData.find(category => category.id === 'digital-hobby').lessons]
+      // The old placeholder lessons (still in sourceLearningData's
+      // 'digital-hobby' entry, kept for Muse to reference while writing the
+      // real PDF textbook) are hidden from the user-facing screen until a
+      // Muse PDF textbook is approved for this category -- see renderLessons'
+      // empty-state branch below.
+      lessons:[]
     },
     {
       id:'ai-tools',
@@ -68,7 +73,9 @@
       image:'assets/senior-learning/material-ai.svg',
       title:'AI 도구',
       description:'생활에 유용한 AI 도구를 쉽게 배워보세요.',
-      lessons:[...sourceLearningData.find(category => category.id === 'ai').lessons]
+      // Same as 'computer' above: sourceLearningData's 'ai' entry is kept
+      // on disk for reference, just not rendered until a real PDF exists.
+      lessons:[]
     },
     {
       id:'life',
