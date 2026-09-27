@@ -271,11 +271,17 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
    (기본 정보 / 회원·파트너 정보, side by side) with 지역·권한 spanning full
    width below, instead of a read-only summary list followed by a
    separately-scrolling edit form that repeated most of the same fields.
-   This is short enough on a normal PC viewport (1366x768+) that the modal
-   fits without an internal scrollbar; .member-detail keeps a capped,
-   scrollable max-height purely as a fallback for unusually short viewports. */
-.member-dialog{width:min(900px,calc(100% - 24px));max-height:92vh;overflow:hidden}
-.member-detail{max-height:calc(92vh - 54px);overflow-y:auto;overflow-x:hidden;gap:10px}
+   Restore the 780px / 90vh envelope used by the compact dialog in #276.
+   Only the information groups scroll; the summary, X, and actions stay visible. */
+.member-dialog{width:min(780px,calc(100% - 28px));max-height:90vh;overflow:hidden}
+.member-dialog[open]{display:flex;flex-direction:column}
+.member-dialog-head{flex-shrink:0}
+.member-detail{display:flex;flex-direction:column;min-height:0;overflow:hidden;gap:10px}
+.member-detail-summary,.member-detail-actions{flex-shrink:0}
+.member-detail-groups{min-height:0;overflow-y:auto;overflow-x:hidden;align-content:start}
+/* Old edit-form spans must not create implicit narrow tracks on mobile. */
+.member-group-grid>.member-name-field{grid-column:auto}
+.member-group-grid>.partner-metadata,.member-group-grid>.student-metadata{grid-column:1/-1}
 /* .eyebrow carries a 22px bottom margin sized for full-page hero
    sections site-wide -- inside this compact dialog header it was most
    of the "too much top padding" the header appeared to have. */
@@ -311,11 +317,11 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   /* 기본 정보 and 회원·파트너 정보 sit side by side; 지역·권한 (which holds
      both the partner region block and the feature-access lists, so it runs
      longer) spans the full width beneath them. */
-  .member-detail-groups{grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+  .member-detail-groups{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
   .member-detail-groups>.member-group:nth-child(3){grid-column:1/-1}
   .member-group{padding:10px 14px}
   .member-group h3{font-size:12px;margin-bottom:8px}
-  .member-group-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px}
+  .member-group-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}
   .member-group-grid label{font-size:11px;gap:4px}
   .member-group-grid select,.member-group-grid input{font-size:12.5px;font-weight:600;min-height:32px;padding:5px 8px}
   .member-readonly span{font-size:10px}
@@ -335,7 +341,7 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   .member-detail-actions .btn{min-height:34px;padding:7px 15px;font-size:13px}
 }
 @media(max-width:680px){
-  .member-dialog{width:calc(100% - 18px);max-height:92vh;overflow:hidden}
+  .member-dialog{width:calc(100% - 18px);max-height:90vh;overflow:hidden}
   .member-detail{overflow-x:hidden;padding:17px}
   .member-detail input,.member-detail select{max-width:100%;box-sizing:border-box}
   .member-dialog-head{padding:17px}
@@ -552,22 +558,27 @@ body.admin-page{overflow-x:hidden}
 .member-synced-field{min-width:0;border:1px solid #d5e0ea;border-radius:10px;background:#f4f7fa;padding:9px;box-sizing:border-box}.member-synced-field>span{display:flex;align-items:center;gap:5px;color:#61758b;font-size:11px;font-weight:800}.member-synced-field em{font-style:normal;color:#657b91;font-size:9px;font-weight:750}.member-synced-field strong{display:block;min-width:0;margin-top:5px;color:#42586f;font-size:13px;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
 
 @media(min-width:681px){
-  .member-dialog{max-height:none}
-  .member-detail{max-height:none;overflow-y:visible;position:relative}
   .member-detail-actions{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:9px;min-height:36px}
   .member-save-feedback{display:block;min-height:15px;max-height:15px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:left}
   .member-save-feedback.success,.member-save-feedback.error,.member-save-feedback.pending{display:block;padding:0;border:0;background:transparent}
   /* Region, allowed features, and denied features have equal desktop tracks. */
   .member-region-access-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:stretch}
-  .member-region-access-row .partner-region{display:grid;flex:none;min-width:0;max-width:100%;height:144px;padding:10px 7px;box-sizing:border-box}
+  .member-region-access-row .partner-region{display:grid;flex:none;min-width:0;max-width:100%;min-height:144px;padding:10px 7px;box-sizing:border-box}
+  .member-region-access-row .partner-region[hidden]{display:none}
+  .member-region-access-row:has(>.partner-region[hidden]){grid-template-columns:repeat(2,minmax(0,1fr))}
   .member-region-access-row .partner-region-heading,.member-region-access-row .partner-region-heading>div,.member-region-access-row .partner-region-actions{min-width:0;max-width:100%;box-sizing:border-box}
   .member-region-access-row .partner-region-heading{display:block;position:relative;width:100%}
   .member-region-access-row .partner-region-heading>div,.member-region-access-row .partner-region-actions{width:100%}
   .member-region-access-row .partner-region-note{position:absolute;top:0;right:0}
   #detailFeatures,.feature-columns{display:contents}
-  .member-region-access-row .feature-box{min-width:0;max-width:100%;height:144px;padding:8px 14px;box-sizing:border-box}
-  .feature-box ul{min-width:0;max-width:100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 8px;font-size:10.5px}
-  .feature-box li{min-width:0;max-width:100%;white-space:nowrap}
+  .member-region-access-row .feature-box{min-width:0;max-width:100%;min-height:144px;padding:8px 14px;box-sizing:border-box}
+  .member-region-access-row .feature-box ul{min-width:0;max-width:100%;grid-template-columns:minmax(0,1fr);gap:3px 8px;font-size:12px}
+  .member-region-access-row .feature-box li{min-width:0;max-width:100%;white-space:normal;word-break:keep-all;overflow-wrap:break-word}
   .feature-box .feature-learning{grid-column:1/-1}
-  .partner-region-services{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10.5px!important}
+  .partner-region-services{white-space:normal;word-break:keep-all;overflow-wrap:break-word;font-size:11px!important}
 }
+
+/* Keep labels readable without changing their source badges or field values. */
+.member-synced-field>span,.member-system-field>span{flex-wrap:wrap}
+.member-synced-field em,.member-system-field em{white-space:nowrap}
+.member-group-grid>.partner-metadata strong,.member-group-grid>.student-metadata strong{word-break:keep-all;overflow-wrap:break-word}

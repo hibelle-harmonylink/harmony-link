@@ -8,10 +8,11 @@ const adminJs = fs.readFileSync(path.join(root, 'admin.js'), 'utf8');
 const adminCss = fs.readFileSync(path.join(root, 'admin.css'), 'utf8');
 const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
 
-test('1366×768, 1440×900, and 1920×1080 desktop member dialogs use the no-scroll detail rule while mobile retains its fallback', () => {
-  [1366, 1440, 1920].forEach(width => assert.ok(width >= 681));
-  assert.match(adminCss, /@media\(min-width:681px\)\{\s*\.member-dialog\{max-height:none\}\s*\.member-detail\{max-height:none;overflow-y:visible;position:relative\}/);
-  assert.match(adminCss, /@media\(max-width:680px\)\{\s*\.member-dialog\{width:calc\(100% - 18px\);max-height:92vh;overflow:hidden\}/);
+test('desktop and mobile member dialogs cap their height and scroll only the information groups', () => {
+  assert.match(adminCss, /\.member-dialog\{width:min\(780px,calc\(100% - 28px\)\);max-height:90vh;overflow:hidden\}/);
+  assert.match(adminCss, /\.member-detail-groups\{min-height:0;overflow-y:auto;overflow-x:hidden;align-content:start\}/);
+  assert.doesNotMatch(adminCss, /\.member-dialog\{max-height:none\}/);
+  assert.match(adminCss, /@media\(max-width:680px\)\{\s*\.member-dialog\{width:calc\(100% - 18px\);max-height:90vh;overflow:hidden\}/);
 });
 
 test('sending, success, and error feedback share one fixed-height desktop action slot', () => {
@@ -35,18 +36,18 @@ test('editable and system-managed member fields are visually distinct without ma
   assert.doesNotMatch(detail, /id="detailMemberNumber"/);
 });
 
-test('partner region text is labeled and feature labels remain compact one-line desktop items', () => {
+test('partner region and feature text wrap at word boundaries without clipping their contents', () => {
   assert.match(detail, /regionSummary\.textContent = `지역: \$\{partnerRegionSummary\(partnerRegion\)\}`;/);
   assert.match(detail, /regionServices\.textContent = detail \? `수업 범위: \$\{detail\}` : '';/);
-  assert.match(adminCss, /\.partner-region-services\{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10\.5px!important\}/);
-  assert.match(adminCss, /\.feature-box li\{min-width:0;max-width:100%;white-space:nowrap\}/);
+  assert.match(adminCss, /\.partner-region-services\{white-space:normal;word-break:keep-all;overflow-wrap:break-word;/);
+  assert.match(adminCss, /\.feature-box li\{min-width:0;max-width:100%;white-space:normal;word-break:keep-all;overflow-wrap:break-word\}/);
 });
 
-test('equal desktop lower boxes cannot expand from flex or grid min-content widths, and the long learning label spans both tracks', () => {
-  assert.match(adminCss, /\.member-region-access-row \.partner-region\{display:grid;flex:none;min-width:0;max-width:100%;height:144px;padding:10px 7px/);
+test('equal desktop lower boxes use readable full-width list items and grow inside the information scroll surface', () => {
+  assert.match(adminCss, /\.member-region-access-row \.partner-region\{display:grid;flex:none;min-width:0;max-width:100%;min-height:144px;padding:10px 7px/);
   assert.match(adminCss, /\.member-region-access-row \.partner-region-heading,.member-region-access-row \.partner-region-heading>div,.member-region-access-row \.partner-region-actions\{min-width:0;max-width:100%;box-sizing:border-box\}/);
-  assert.match(adminCss, /\.member-region-access-row \.feature-box\{min-width:0;max-width:100%;height:144px;padding:8px 14px/);
-  assert.match(adminCss, /\.feature-box ul\{min-width:0;max-width:100%;grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(adminCss, /\.member-region-access-row \.feature-box\{min-width:0;max-width:100%;min-height:144px;padding:8px 14px/);
+  assert.match(adminCss, /\.feature-box ul\{min-width:0;max-width:100%;grid-template-columns:minmax\(0,1fr\)/);
   assert.match(adminCss, /\.feature-box \.feature-learning\{grid-column:1\/-1\}/);
   assert.match(adminJs, /<li class="feature-\$\{item\.feature\}">\$\{item\.label\}<\/li>/);
 });

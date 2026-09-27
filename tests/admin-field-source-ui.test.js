@@ -45,9 +45,9 @@ test('operational settings and automatic system fields remain visually and funct
   assert.match(admin, /p_full_name: memberFullName\(member\)/);
 });
 
-test('source labels preserve the compact no-scroll and mobile width protections', () => {
+test('source labels preserve the compact bounded dialog and mobile width protections', () => {
   assert.match(admin, /title="신청서 자동연동 · 신청서 재동기화로 갱신됩니다"/);
   assert.match(admin, /title="관리 설정 · 플랫폼 운영값"/);
-  assert.match(css, /@media\(min-width:681px\)\{\s*\.member-dialog\{max-height:none\}\s*\.member-detail\{max-height:none;overflow-y:visible;position:relative\}/);
-  assert.match(css, /@media\(max-width:680px\)\{\s*\.member-dialog\{width:calc\(100% - 18px\);max-height:92vh;overflow:hidden\}/);
+  assert.match(css, /\.member-detail-groups\{min-height:0;overflow-y:auto;overflow-x:hidden;align-content:start\}/);
+  assert.match(css, /@media\(max-width:680px\)\{\s*\.member-dialog\{width:calc\(100% - 18px\);max-height:90vh;overflow:hidden\}/);
 });

@@ -78,6 +78,6 @@ test('application resync leaves member numbers alone and the name guidance prese
   const syncEnd = applicationMigration.indexOf('revoke all on function public.internal_sync_member_application_metadata', syncStart);
   const sync = applicationMigration.slice(syncStart, syncEnd);
   assert.doesNotMatch(sync, /member_number/);
-  assert.match(adminCss, /@media\(min-width:681px\)\{\s*\.member-dialog\{max-height:none\}\s*\.member-detail\{max-height:none;overflow-y:visible;position:relative\}/);
-  assert.match(adminCss, /@media\(max-width:680px\)\{\s*\.member-dialog\{width:calc\(100% - 18px\);max-height:92vh;overflow:hidden\}/);
+  assert.match(adminCss, /\.member-detail-groups\{min-height:0;overflow-y:auto;overflow-x:hidden;align-content:start\}/);
+  assert.match(adminCss, /@media\(max-width:680px\)\{\s*\.member-dialog\{width:calc\(100% - 18px\);max-height:90vh;overflow:hidden\}/);
 });
