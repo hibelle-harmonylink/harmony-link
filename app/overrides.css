@@ -914,10 +914,7 @@ html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-si
 #recommendedPrograms .app-specialty-copy p{margin:0 0 6px;font-size:12px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 #recommendedPrograms .app-specialty-link{height:32px!important;min-height:32px!important;margin-top:0;font-size:12px!important}
 
-/* Business Preview on HOME reuses renderPartners()/app-partner-card unchanged (same
-   canonical businessPromotions data, same carousel prev/next), but now shows exactly
-   one card at a time (see renderPartners() in app.js) sized as a compact preview
-   instead of the old full-height 390px card, so it reads as one dashboard tile. */
+/* Business Spotlight home presentation; canonical descriptions remain intact. */
 #partnerPrograms .app-partner-card{min-height:0!important}
 #partnerPrograms .app-partner-logo{height:120px!important;flex:0 0 120px!important}
 #partnerPrograms .app-partner-copy h3{min-height:0!important}
@@ -988,7 +985,7 @@ html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-si
    style as the existing "행사 보기"/"전체 보기" <button>s in the other section-titles. */
 .section-title a{color:#65738a;font-weight:600;text-decoration:none}
 
-/* Business Preview still renders exactly one card (renderPartners() in app.js). */
+/* Business Spotlight renders all canonical businesses; mobile uses native scroll. */
 
 /* HOME "강좌·행사" flyer gallery: poster-forward cards (renderHomeEvents()/
    homeEventCard() in app.js) with no description text, so the section reads as
@@ -999,7 +996,8 @@ html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-si
 .app-home-event-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .app-home-event-card{display:flex;flex-direction:column;min-width:0;border:1px solid rgba(4,41,99,.12);border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 8px 20px rgba(4,41,99,.07)}
 .app-home-event-card .event-image-open,.app-home-event-card .event-placeholder-art{display:block;width:100%;aspect-ratio:3/4;padding:6px;border:0;background:#f4f8ff;cursor:zoom-in}
-.app-home-event-card .event-image-open img{display:block;width:100%;height:100%;object-fit:contain}
+.app-home-event-card .event-image-open{position:relative;flex:0 0 auto;min-height:0;overflow:hidden}
+.app-home-event-card .event-image-open img{position:absolute;inset:6px;display:block;width:calc(100% - 12px);height:calc(100% - 12px);object-fit:contain}
 .app-home-event-card h3{margin:0;padding:8px 10px 2px;color:#042963;font-size:13px;font-weight:800;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .app-home-event-link{display:block;padding:2px 10px 10px;color:#0b54c2;text-decoration:none;font-size:12px;font-weight:700;border:0;background:none;text-align:left;font-family:inherit;cursor:pointer}
 /* Mobile only (<640px, same boundary 배움과 서비스's carousel uses): a small
@@ -1016,3 +1014,47 @@ html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-si
   .app-home-event-card h3{font-size:12px;padding:6px 8px 1px}
   .app-home-event-link{font-size:11px;padding:1px 8px 8px}
 }
+
+/* Compact business cards: no autoplay and no arrow paging. All six remain in DOM. */
+#home .app-partners-section{padding-top:16px!important;padding-bottom:18px!important}
+#partnerPrograms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;min-width:0}
+#partnerPrograms .app-partner-card{display:flex!important;height:264px;min-height:0!important}
+#partnerPrograms .app-partner-logo{height:106px!important;flex:0 0 106px!important;padding:12px}
+#partnerPrograms .app-partner-logo.yura-mini-logo:before{width:58px;height:58px;flex-shrink:0}
+#partnerPrograms .app-partner-copy{padding:10px!important;min-height:0}
+#partnerPrograms .app-partner-copy h3{height:42px;min-height:42px!important;margin:0 0 5px;font-size:16px;line-height:21px;overflow:hidden}
+#partnerPrograms .app-partner-copy h3 small{font-size:12px;line-height:19px;margin:0}
+#partnerPrograms .business-name-line{display:block;white-space:nowrap}
+#partnerPrograms .business-name-secondary{font-size:12px}
+#partnerPrograms .app-partner-copy p{display:block!important;height:20px;min-height:20px!important;line-height:20px;font-size:13px;margin:0 0 8px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden!important;-webkit-line-clamp:1!important}
+#partnerPrograms .app-partner-copy a{height:44px!important;min-height:44px!important;font-size:14px!important;white-space:nowrap;flex-shrink:0}
+#partnerPrograms:focus-visible{outline:3px solid #1155d9;outline-offset:4px}
+@media(min-width:640px) and (max-width:899px){#partnerPrograms{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:639px){
+  #partnerPrograms{display:flex;grid-template-columns:none;overflow-x:auto;overflow-y:hidden;gap:8px;padding-bottom:3px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  #partnerPrograms::-webkit-scrollbar{display:none}
+  #partnerPrograms .app-partner-card{flex:0 0 154px;width:154px;height:220px;scroll-snap-align:start}
+  #partnerPrograms .app-partner-logo{height:76px!important;flex-basis:76px!important;padding:8px}
+  #partnerPrograms .app-partner-logo.yura-mini-logo{gap:2px}
+  #partnerPrograms .app-partner-logo.yura-mini-logo:before{width:40px;height:40px}
+  #partnerPrograms .app-partner-logo.yura-mini-logo:after{font-size:7px}
+  #partnerPrograms .app-partner-copy{padding:8px!important}
+  #partnerPrograms .app-partner-copy h3{font-size:14px}
+}
+
+/* Explicit period controls reuse the existing UTC end-date classification. */
+.event-view-controls{display:flex;gap:8px;margin:0 20px 20px}
+.event-view-controls button{min-height:44px;padding:10px 18px;border:1px solid #a9c8ee;border-radius:999px;background:#edf5ff;color:#0b54c2;font:700 15px/1.3 "DM Sans","Noto Sans KR",sans-serif;cursor:pointer}
+.event-view-controls button[aria-pressed="true"]{background:#1155d9;border-color:#1155d9;color:#fff}
+.event-view-controls button:focus-visible{outline:3px solid #66a2ed;outline-offset:3px}
+#upcomingEventsList,#pastEventsList{display:grid;grid-template-columns:minmax(0,1fr);grid-auto-rows:1fr;gap:16px;padding:0 20px 24px}
+#upcomingEventsList[hidden],#pastEventsList[hidden]{display:none}
+#events .event-card{display:flex;flex-direction:column;min-width:0;margin:0}
+#events .event-card>div{display:flex;flex:1;flex-direction:column;min-width:0}
+#events .event-card-actions{margin-top:auto}
+/* Full-event media also gets a definite frame: intrinsic flyer size cannot stretch it. */
+#events .event-card .event-image-open{position:relative;overflow:hidden;flex-shrink:0}
+#events .event-card .event-image-open img{position:absolute;inset:6px;width:calc(100% - 12px);height:calc(100% - 12px)!important;object-fit:contain!important}
+/* The closed menu used 100vw (including the scrollbar), producing 8px overflow.
+   Keep its layout/behavior/safe-area intact, but size it to the containing viewport. */
+@media(max-width:899px){.desktop-app-nav{width:min(100%,560px)!important}}
