@@ -1,3 +1,86 @@
+// App document diagnostics: local-only observations, never navigation or recovery.
+(() => {
+  const storageKey="harmony-link-app-diagnostics", limit=20;
+  const screens=["home","about","programs","events","contact"];
+  const queryValues={source:["pwa"],popup:["off"],debugApp:["1"],install:["1"],contact:["volunteer"],topic:["partner"]};
+  let memory=[],storageAvailable=true;
+  function safeUrl(value,worker=false){
+    try{
+      if(typeof value!=="string")return null;
+      const url=new URL(value,location.origin);
+      if(url.origin!==location.origin)return null;
+      const allowedPath=worker?/^\/(?:app\/)?service-worker(?:-v\d+)?\.js$/.test(url.pathname):["/app/","/app/index.html"].includes(url.pathname);
+      const pathname=allowedPath?url.pathname:"/[redacted]";
+      const params=new URLSearchParams();
+      if(!worker&&allowedPath){
+        for(const [key,values] of Object.entries(queryValues)){
+          const selected=url.searchParams.get(key);
+          if(values.includes(selected))params.set(key,selected);
+        }
+        const version=url.searchParams.get("v");
+        if(/^\d{1,6}$/.test(version||""))params.set("v",version);
+      }
+      const search=params.size?`?${params}`:"";
+      const hash=!worker&&screens.includes(url.hash.slice(1))?url.hash:"";
+      return {href:url.origin+pathname+search+hash,pathname,search,hash};
+    }catch{return null;}
+  }
+  // Also sanitize stored records before reading/re-saving: never trust arbitrary storage content.
+  function safeRecord(raw){
+    if(!raw||!["pageshow","pagehide","popstate"].includes(raw.event)||!Number.isSafeInteger(raw.timestamp))return null;
+    const url=safeUrl(raw.href);
+    if(!url)return null;
+    const state=raw.historyState;
+    const historyState=state&&typeof state==="object"?{
+      screen:screens.includes(state.screen)?state.screen:null,
+      contactMode:["general","volunteer"].includes(state.contactMode)?state.contactMode:null
+    }:null;
+    const shellVersion=/^\d{4}-\d{2}-\d{2}-\d{1,3}$/.test(raw.shellVersion||"")?raw.shellVersion:"legacy-or-unknown";
+    const controllerUrl=raw.controllerPresent===true?safeUrl(raw.controllerScriptURL,true):null;
+    const size=value=>Number.isFinite(value)&&value>=0?value:null;
+    return {
+      event:raw.event,timestamp:raw.timestamp,shellVersion,markerPresent:raw.markerPresent===true,
+      ...url,visibilityState:["visible","hidden","prerender"].includes(raw.visibilityState)?raw.visibilityState:null,
+      historyState,navigationType:["navigate","reload","back_forward","prerender"].includes(raw.navigationType)?raw.navigationType:null,
+      persisted:raw.event==="popstate"?null:raw.persisted===true,
+      controllerPresent:raw.controllerPresent===true,controllerScriptURL:controllerUrl?.href||null,
+      transferSize:size(raw.transferSize),encodedBodySize:size(raw.encodedBodySize),workerStart:size(raw.workerStart)
+    };
+  }
+  function recent(){
+    if(!storageAvailable)return memory.slice();
+    try{
+      const saved=localStorage.getItem(storageKey);
+      const parsed=saved&&saved.length<=64000?JSON.parse(saved):[];
+      if(Array.isArray(parsed))return parsed.slice(-limit).map(safeRecord).filter(Boolean);
+    }catch{ /* Storage may be blocked; diagnostics must not break the app. */ }
+    return memory.slice();
+  }
+  function record(event){
+    try{
+      const marker=document.documentElement.getAttribute("data-app-shell-version");
+      const navigation=performance.getEntriesByType("navigation")[0];
+      const controller=navigator.serviceWorker?.controller;
+      const entry=safeRecord({
+        event:event.type,timestamp:Date.now(),shellVersion:marker,markerPresent:marker!==null,
+        href:location.href,visibilityState:document.visibilityState,
+        historyState:event.type==="popstate"?event.state:history.state,
+        navigationType:navigation?.type,persisted:event.persisted,
+        controllerPresent:!!controller,controllerScriptURL:controller?.scriptURL||null,
+        transferSize:navigation?.transferSize,encodedBodySize:navigation?.encodedBodySize,workerStart:navigation?.workerStart
+      });
+      if(!entry)return;
+      memory=[...recent(),entry].slice(-limit);
+      try{localStorage.setItem(storageKey,JSON.stringify(memory));}catch{storageAvailable=false; /* Keep a bounded in-memory fallback. */ }
+    }catch{ /* Observation must never interfere with navigation/auth/UI. */ }
+  }
+  for(const type of ["pageshow","pagehide","popstate"])window.addEventListener(type,record);
+  Object.defineProperty(window,"HARMONY_APP_DIAGNOSTICS",{value:Object.freeze({
+    read:()=>Object.freeze(recent().map(entry=>Object.freeze({...entry,historyState:entry.historyState?Object.freeze({...entry.historyState}):null})))
+  }),writable:false,configurable:false});
+})();
+// End app document diagnostics.
+
 const basePrograms = [
   {id:"digital",emoji:"💻",ko:"디지털 교육",en:"Digital Learning",category:"디지털",tagsKo:"스마트폰 · 키오스크 · AI 활용",tagsEn:"Smartphones · Kiosks · AI",color:"#dbeaff"},
   {id:"english",emoji:"🌍",ko:"언어 교육",en:"Language Education",category:"언어",tagsKo:"영어 · 생활 회화 · 일본어",tagsEn:"English · Conversation · Japanese",color:"#bcd9e8"},
