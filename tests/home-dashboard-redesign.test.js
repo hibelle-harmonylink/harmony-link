@@ -127,12 +127,12 @@ test('Auth/Contact/Senior Learning/Community are not touched by the HOME redesig
   assert.match(appPage, /<a href="\.\.\/community\.html"><span class="bn-icon-wrap">/);
 });
 
-test('service worker v104 registers and versions bump together (app.js, service worker) -- overrides.css is untouched by Phase 3 and correctly stays at v103', () => {
+test('stable worker registration refreshes the app cache without changing the current design assets', () => {
   assert.match(appPage, /overrides\.css\?v=103/);
   assert.match(appPage, /app\.js\?v=104/);
   assert.match(appScript, /register\("service-worker-v104\.js"/);
   const sw104 = read('app/service-worker-v104.js');
-  assert.match(sw104, /const CACHE="harmony-link-app-v104"/);
+  assert.match(sw104, /const CACHE="harmony-link-app-v105"/);
   assert.match(sw104, /"\.\/overrides\.css\?v=103"/);
   assert.match(sw104, /"\.\/app\.js\?v=104"/);
 });
