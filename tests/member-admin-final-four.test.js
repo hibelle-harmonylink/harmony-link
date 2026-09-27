@@ -60,10 +60,10 @@ test('reapplies Sheet G/H/I colors from the current display values', () => {
   assert.match(appsScript, /applyRosterDisplayStyles_\(sheet, 2, Math\.max\(sheet\.getLastRow\(\) - 1, 0\), columns\)/);
 });
 
-test('detail dialog uses a compact grouped grid with desktop no-scroll and mobile fallback scrolling', () => {
-  assert.match(adminCss, /\.member-dialog\{width:min\(900px,calc\(100% - 24px\)\);max-height:92vh;overflow:hidden\}/);
-  assert.match(adminCss, /\.member-detail\{max-height:calc\(92vh - 54px\);overflow-y:auto;overflow-x:hidden;gap:\d+px\}/);
-  assert.match(adminCss, /@media\(min-width:681px\)\{\s*\.member-dialog\{max-height:none\}\s*\.member-detail\{max-height:none;overflow-y:visible;position:relative\}/);
-  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-groups\{grid-template-columns:1fr 1fr/);
+test('detail dialog uses the compact historical width with a bounded information scroll surface', () => {
+  assert.match(adminCss, /\.member-dialog\{width:min\(780px,calc\(100% - 28px\)\);max-height:90vh;overflow:hidden\}/);
+  assert.match(adminCss, /\.member-detail\{display:flex;flex-direction:column;min-height:0;overflow:hidden;gap:\d+px\}/);
+  assert.match(adminCss, /\.member-detail-groups\{min-height:0;overflow-y:auto;overflow-x:hidden;align-content:start\}/);
+  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-groups\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(adminCss, /\.partner-region-dialog\{width:min\(640px,calc\(100vw - 32px\)\);max-height:80vh/);
 });

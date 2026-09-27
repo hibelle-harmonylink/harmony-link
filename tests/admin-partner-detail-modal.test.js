@@ -78,7 +78,7 @@ test('detail dialog is a 3-group compact grid (기본 정보 / 회원·파트너
   assert.match(detail, /<h3>지역·권한<\/h3>/);
   assert.match(detail, /class="member-detail-groups"/);
   assert.match(adminCss, /\.member-detail-groups\{display:grid;gap:14px\}/);
-  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-groups\{grid-template-columns:1fr 1fr;gap:\d+px;align-items:start\}/);
+  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-groups\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\);gap:\d+px;align-items:start\}/);
   // 지역·권한 is the 3rd group and spans the full width beneath the other two.
   assert.match(adminCss, /\.member-detail-groups>\.member-group:nth-child\(3\)\{grid-column:1\/-1\}/);
 });
@@ -86,7 +86,7 @@ test('detail dialog is a 3-group compact grid (기본 정보 / 회원·파트너
 test('활동 지역, allowed features, and denied features use equal desktop tracks', () => {
   assert.match(adminCss, /\.member-region-access-row\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\);gap:10px;align-items:stretch\}/);
   assert.match(adminCss, /#detailFeatures,\.feature-columns\{display:contents\}/);
-  assert.match(adminCss, /\.member-region-access-row \.partner-region\{display:grid;flex:none;min-width:0;max-width:100%;height:144px;padding:10px 7px;box-sizing:border-box\}/);
+  assert.match(adminCss, /\.member-region-access-row \.partner-region\{display:grid;flex:none;min-width:0;max-width:100%;min-height:144px;padding:10px 7px;box-sizing:border-box\}/);
 });
 
 test('every grid/flex child and every group-grid input/select shrinks to fit instead of forcing the dialog to scroll horizontally', () => {
