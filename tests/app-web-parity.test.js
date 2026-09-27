@@ -89,8 +89,8 @@ test('app events include the current Production 3 upcoming + 3 past classes', ()
   assert.deepEqual(ids, ['messiah', 'hole19-tournament', 'free-music-class', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
 });
 
-test('service worker v104 precaches the Phase 3 Programs canonical file without changing the caching strategy', () => {
-  assert.match(serviceWorker, /const CACHE="harmony-link-app-v104"/);
+test('stable service worker v104 precaches the Phase 3 Programs canonical file in the refreshed app cache', () => {
+  assert.match(serviceWorker, /const CACHE="harmony-link-app-v105"/);
   assert.match(serviceWorker, /"\.\.\/assets\/events\/ai-business-automation-free-class-20260911\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/images\/dms-care-logo\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/home\/harmony-community-learning\.png"/);
@@ -99,7 +99,7 @@ test('service worker v104 precaches the Phase 3 Programs canonical file without 
   assert.match(serviceWorker, /"\.\/app\.css\?v=65"/);
   assert.match(serviceWorker, /"\.\/overrides\.css\?v=103"/);
   assert.match(serviceWorker, /"\.\/app\.js\?v=104"/);
-  // Same network-first, cache-as-fallback strategy as v103 -- not rewritten.
+  // Network-first remains; fallback is now scoped to the refreshed app cache.
   assert.match(serviceWorker, /fetch\(event\.request,\{cache:"no-store"\}\)/);
   assert.match(appScript, /register\("service-worker-v104\.js",\{updateViaCache:"none"\}\)/);
   // Older versions are kept on disk (asset safety), not deleted.
