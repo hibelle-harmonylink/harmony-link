@@ -77,13 +77,12 @@ test('HOME "강좌·행사" gallery shows every upcoming event via homeEventCard
   assert.match(appPage, /id="pastEventsList" class="past-events-list" hidden/);
 });
 
-test('Business Preview shows exactly one canonical business via renderPartners(), with a "더보기" link to the existing partner-center entry point', () => {
-  assert.match(appScript, /function renderPartners\(\)\{[\s\S]*?Math\.min\(1,partners\.length\)/);
+test('Business Preview keeps every canonical business in the native carousel and the existing partner-center link', () => {
+  assert.match(appScript, /container\.innerHTML=partners\.map\(/);
   assert.match(appScript, /const partners\s*=\s*businessPromotions;/);
   assert.match(appPage, /<a href="\.\.\/#partner-center" data-ko="더보기" data-en="See More">더보기<\/a>/);
-  // Carousel navigation (prev/next) is unchanged, so paging still cycles through all 6 businesses.
-  assert.match(appPage, /class="app-partner-prev" type="button"/);
-  assert.match(appPage, /class="app-partner-next" type="button"/);
+  assert.doesNotMatch(appPage, /class="app-partner-(?:prev|next)"/);
+  assert.doesNotMatch(appScript, /restartPartnerTimer|partnerIndex/);
   assert.match(overridesCss, /#partnerPrograms \.app-partner-card\{min-height:0!important\}/);
 });
 

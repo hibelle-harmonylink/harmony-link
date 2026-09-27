@@ -61,7 +61,7 @@ test('HOME 강좌·행사 gallery cards carry no description text (title + flyer
 // desktop (>=640px) use, untouched.
 test('HOME 강좌·행사 gallery is a 3-column CSS grid on tablet/desktop (>=640px), with object-fit:contain flyers', () => {
   assert.match(overridesCss, /\.app-home-event-grid\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\);/);
-  assert.match(overridesCss, /\.app-home-event-card \.event-image-open img\{display:block;width:100%;height:100%;object-fit:contain\}/);
+  assert.match(overridesCss, /\.app-home-event-card \.event-image-open img\{position:absolute;inset:6px;display:block;width:calc\(100% - 12px\);height:calc\(100% - 12px\);object-fit:contain\}/);
 });
 
 test('mobile header: login button is shrunk on mobile only, and the topbar accounts for env(safe-area-inset-right) so the hamburger keeps a real margin', () => {

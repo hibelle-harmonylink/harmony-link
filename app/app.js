@@ -81,8 +81,6 @@ let saved=new Set(JSON.parse(localStorage.getItem("hl-saved")||"[]"));
 let installPrompt=null;
 let popupIndex=Math.floor(Math.random()*popupNews.length);
 let popupTimer=null;
-let partnerIndex=0;
-let partnerTimer=null;
 let activeContactMode="general";
 let pastEventsOpen=false;
 let appAuthClient=null;
@@ -155,15 +153,18 @@ function renderPartners(){
   const container=$("#partnerPrograms");
   if(!container)return;
   const partners=businessPromotions;
-  if(!partners.length){container.innerHTML="";return}
-  partnerIndex=(partnerIndex+partners.length)%partners.length;
-  const visible=Array.from({length:Math.min(1,partners.length)},(_,offset)=>partners[(partnerIndex+offset)%partners.length]);
-  container.innerHTML=visible.map(item=>{
-    const title=language==="ko"?item.titleKo:item.titleEn;
-    const details=language==="ko"?item.textKo:item.textEn;
-    const action=language==="ko"?item.actionKo:item.actionEn;
+  // Home-only presentation: keep the canonical data and popup promotions intact.
+  // Render every business once; native scrolling replaces timed/arrow paging.
+  container.innerHTML=partners.map((item,index)=>{
+    const business=window.HARMONY_LINK_BUSINESSES[index];
+    let title=language==="ko"?item.titleKo:item.titleEn;
+    if(business.id==="dms-care")title='<span class="business-name-line">DMS</span><span class="business-name-line business-name-secondary">Care Training Center</span>';
+    if(business.id==="aaleac")title='<span class="business-name-line">아시안 아메리칸</span><span class="business-name-line">사법 경찰자문위원회</span>';
+    const details=(language==="ko"?item.textKo:item.textEn).replace(/<br\s*\/?\s*>/gi," ");
+    const url=business.id==="hole19"?business.websiteUrl:item.url;
+    const action=business.appCtaField==="phone"?(language==="ko"?item.actionKo:item.actionEn):(language==="ko"?"업체 바로가기":"Visit Business");
     const isYura=item.image?.includes("highline-hl-symbol");
-    return `<article class="app-partner-card"><div class="app-partner-logo${isYura?" yura-mini-logo":""}">${isYura?"":`<img src="${item.image}" alt="${title.replace(/<[^>]*>/g,"")}">`}</div><div class="app-partner-copy"><h3>${title}</h3><p>${details}</p><a href="${item.url}" target="_blank" rel="noopener noreferrer">${action}</a></div></article>`;
+    return `<article class="app-partner-card" data-business-id="${business.id}"><div class="app-partner-logo${isYura?" yura-mini-logo":""}">${isYura?"":`<img src="${item.image}" alt="${title.replace(/<[^>]*>/g," ").trim()}">`}</div><div class="app-partner-copy"><h3>${title}</h3><p>${details}</p><a href="${url}" target="_blank" rel="noopener noreferrer">${action}</a></div></article>`;
   }).join("");
 }
 function eventCard(item){
@@ -189,7 +190,10 @@ function renderEvents(){
   $("#upcomingEventsList").innerHTML=upcoming.map(eventCard).join("");
   const toggle=$("#pastEventsToggle");
   toggle.hidden=past.length===0;
-  toggle.classList.toggle("open",pastEventsOpen);
+  if(!past.length)pastEventsOpen=false;
+  toggle.setAttribute("aria-pressed",String(pastEventsOpen));
+  $("#upcomingEventsToggle").setAttribute("aria-pressed",String(!pastEventsOpen));
+  $("#upcomingEventsList").hidden=pastEventsOpen;
   $("#pastEventsList").innerHTML=past.map(eventCard).join("");
   $("#pastEventsList").hidden=!pastEventsOpen;
 }
@@ -329,12 +333,6 @@ function toggleSaved(id){
 }
 
 document.addEventListener("click",event=>{
-  if(event.target.closest('.app-partner-prev')){
-    partnerIndex-=1;renderPartners();restartPartnerTimer();return;
-  }
-  if(event.target.closest('.app-partner-next')){
-    partnerIndex+=1;renderPartners();restartPartnerTimer();return;
-  }
   const eventImage=event.target.closest("[data-event-image]");
   if(eventImage){
     openImageLightbox(eventImage.dataset.eventImage,eventImage.dataset.eventAlt||"");
@@ -380,11 +378,6 @@ document.addEventListener("click",event=>{
   if(mini){const program=programs.find(p=>p.id===mini.dataset.openProgram);if(program.url){window.open(program.url,"_blank","noopener,noreferrer")}else{activeCategory="전체";navigate("programs");$("#programSearch").value=language==="ko"?program.ko:program.en;renderFilters();renderPrograms()}}
 });
 
-function restartPartnerTimer(){
-  clearInterval(partnerTimer);
-  partnerTimer=setInterval(()=>{partnerIndex+=1;renderPartners()},5000);
-}
-
 const appMenuToggle=$("#appMenuToggle");
 const appPrimaryNav=$("#appPrimaryNav");
 function closeAppMenu(){
@@ -412,7 +405,8 @@ document.addEventListener("keydown",event=>{
   if(event.key==="Escape"&&appPrimaryNav.classList.contains("open")) closeAppMenu();
 });
 $("#programSearch")?.addEventListener("input",renderPrograms);
-$("#pastEventsToggle").addEventListener("click",()=>{pastEventsOpen=!pastEventsOpen;renderEvents()});
+$("#pastEventsToggle").addEventListener("click",()=>{pastEventsOpen=true;renderEvents()});
+$("#upcomingEventsToggle").addEventListener("click",()=>{pastEventsOpen=false;renderEvents()});
 $$('[data-language]').forEach(button=>button.addEventListener('click',()=>{
   language=button.dataset.language;
   applyLanguage();
@@ -687,7 +681,6 @@ if("serviceWorker" in navigator){
   }
 }
 applyLanguage();
-restartPartnerTimer();
 const initialParams=new URLSearchParams(location.search);
 if(initialParams.get("install")==="1"){
   const installButton=$("#installButton");

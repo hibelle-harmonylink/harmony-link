@@ -88,11 +88,10 @@ test('Business section title is unified to "Business Spotlight" on HOME (both la
   assert.match(webScript, /<p>BUSINESS SPOTLIGHT<\/p><h2 id="businessFlyerTitle">/);
 });
 
-test('Business Preview still renders exactly one canonical business, carousel and "더보기" link unaffected by the title change', () => {
-  assert.match(appScript, /function renderPartners\(\)\{[\s\S]*?Math\.min\(1,partners\.length\)/);
+test('Business Preview retains all canonical businesses and the existing "더보기" link in its native carousel', () => {
+  assert.match(appScript, /container\.innerHTML=partners\.map\(/);
   assert.match(appPage, /<a href="\.\.\/#partner-center" data-ko="더보기" data-en="See More">더보기<\/a>/);
-  assert.match(appPage, /class="app-partner-prev" type="button"/);
-  assert.match(appPage, /class="app-partner-next" type="button"/);
+  assert.doesNotMatch(appPage, /class="app-partner-(?:prev|next)"/);
 });
 
 test('Business/Events canonical data are untouched by the title/CTA edits', () => {
