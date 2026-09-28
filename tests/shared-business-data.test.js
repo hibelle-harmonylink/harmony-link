@@ -20,20 +20,25 @@ const loadBusinesses = () => {
 const businesses = loadBusinesses();
 const byId = id => businesses.find(b => b.id === id);
 
-test('canonical business data has exactly the 6 Business Spotlight companies with unique stable IDs', () => {
-  assert.equal(businesses.length, 6);
+test('canonical business data retains the original six and appends the seventh with unique stable IDs', () => {
+  assert.equal(businesses.length, 7);
   const ids = businesses.map(b => b.id);
-  assert.deepEqual(ids, ['yura-kim', 'organic-one', 'hole19', 'aaleac', 'jangsu-daycare', 'dms-care']);
-  assert.equal(new Set(ids).size, 6);
+  assert.deepEqual(ids, ['yura-kim', 'organic-one', 'hole19', 'aaleac', 'jangsu-daycare', 'dms-care', 'boxd-kitchen']);
+  assert.equal(new Set(ids).size, 7);
 });
 
-test('region counts match Production: 5 NEW YORK, 1 TEXAS', () => {
+test('region counts retain 5 NEW YORK, 1 TEXAS and add 1 VIRGINIA', () => {
   assert.equal(businesses.filter(b => b.region === 'ny').length, 5);
   assert.equal(businesses.filter(b => b.region === 'tx').length, 1);
+  assert.equal(businesses.filter(b => b.region === 'va').length, 1);
 });
 
 test('every business has a structured phone field (phoneKo/phoneEn), not just phone text buried in copy', () => {
   businesses.forEach(b => {
+    if(b.id === 'boxd-kitchen'){
+      assert.equal(b.phoneKo, null);assert.equal(b.phoneEn, null);assert.equal(b.phoneHref, null);
+      return; // No phone number was supplied; never invent one.
+    }
     assert.ok(b.phoneKo && b.phoneKo.length, `${b.id} missing phoneKo`);
     assert.ok(b.phoneEn && b.phoneEn.length, `${b.id} missing phoneEn`);
   });
@@ -76,7 +81,7 @@ test('DMS Care Training Center matches the specified Production values exactly',
 
 test('Korean and English fields exist for every business (name/category/summary/phone)', () => {
   businesses.forEach(b => {
-    ['nameKo', 'nameEn', 'categoryKo', 'categoryEn', 'summaryKo', 'summaryEn', 'phoneKo', 'phoneEn'].forEach(key => {
+    ['nameKo', 'nameEn', 'categoryKo', 'categoryEn', 'summaryKo', 'summaryEn', ...(b.phoneKo ? ['phoneKo', 'phoneEn'] : [])].forEach(key => {
       assert.ok(b[key] && b[key].length, `${b.id} missing ${key}`);
     });
   });

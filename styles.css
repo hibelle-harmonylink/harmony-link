@@ -1585,4 +1585,10 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
 .pwa-ios-share-symbol{display:inline-flex;position:relative;align-items:center;justify-content:center;width:52px;height:44px;margin:10px 0 2px;border:3px solid #0b4a8b;border-radius:8px;color:transparent}
 .pwa-ios-share-symbol b{position:absolute;left:50%;top:-16px;transform:translateX(-50%);color:#0b4a8b;font-size:34px;line-height:1;font-weight:500}
 .pwa-ios-final{margin:2px 0 0;padding:14px 16px;border-radius:14px;background:#061d45;color:#fff;font-size:17px;font-weight:700;line-height:1.5;text-align:center}
+.business-flyer-info{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.business-flyer-info[hidden]{display:none}
+.business-flyer-info>img{width:76px;height:58px;flex:0 0 76px;background:#000;object-fit:contain}
+.business-flyer-info>div{min-width:0}
+.business-flyer-info p{margin:3px 0;font-size:14px;overflow-wrap:anywhere}
+.business-flyer-external-links .business-flyer-sns img{width:20px;height:20px;margin-right:6px}
 @media(max-width:520px){.pwa-install-help.ios-senior-guide .pwa-install-help-panel{width:calc(100% - 20px);max-height:92vh;overflow:auto;padding:24px 18px}.pwa-install-help.ios-senior-guide h2{font-size:25px}.pwa-ios-step{grid-template-columns:42px 1fr;padding:14px 12px;gap:11px}.pwa-ios-step-number{width:42px;height:42px;font-size:21px}.pwa-ios-step strong{font-size:18px}.pwa-ios-step small{font-size:14px}}

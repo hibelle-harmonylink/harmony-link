@@ -1422,10 +1422,11 @@ const adRooms={
 const businessRegions = [
   {id:'all',labelKo:'전체',labelEn:'All'},
   {id:'ny',labelKo:'NEW YORK',labelEn:'NEW YORK'},
-  {id:'tx',labelKo:'TEXAS',labelEn:'TEXAS'}
+  {id:'tx',labelKo:'TEXAS',labelEn:'TEXAS'},
+  {id:'va',labelKo:'VIRGINIA',labelEn:'VIRGINIA'}
 ];
 const renderBusinessPhone = contact => String(contact || '').replace(/(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g, number => `<a class="business-phone-link" href="tel:${number.replace(/[^\d+]/g, '')}">${number}</a>`);
-// Business Spotlight's 6 companies now come from the canonical shared/data/businesses.js
+// Business Spotlight companies come from the canonical shared/data/businesses.js
 // (single source of truth for web + app) instead of being hand-duplicated here. This
 // reshapes each canonical entry into the {region,item,categoryKo,...} shape the existing
 // renderBusinessSpotlights()/openBusinessFlyer() below already expect, so neither of
@@ -1447,7 +1448,7 @@ const businessSpotlights = (window.HARMONY_LINK_BUSINESSES || []).map(business =
     copyEn: business.copyEn,
     contactKo: business.phoneKo ? `전화 ${business.phoneKo}` : '',
     contactEn: business.phoneEn ? `Phone ${business.phoneEn}` : '',
-    image: business.logo,
+    image: business.spotlightImage || business.logo,
     brokerUrl: business.websiteUrl || ''
   },
   categoryKo: business.categoryKo,
@@ -1457,7 +1458,11 @@ const businessSpotlights = (window.HARMONY_LINK_BUSINESSES || []).map(business =
   address: business.address || undefined,
   mapUrl: business.mapUrl || undefined,
   flyers: business.flyers && business.flyers.length ? business.flyers : [],
-  snsUrl: business.snsUrl || undefined
+  snsUrl: business.snsUrl || undefined,
+  socialLinks: business.socialLinks || [],
+  logo: business.logo,
+  websiteCtaKo: business.websiteCtaKo,
+  websiteCtaEn: business.websiteCtaEn
 }));
 const businessFlyerModal=document.createElement('div');
 businessFlyerModal.className='business-flyer-modal';businessFlyerModal.hidden=true;
@@ -1469,12 +1474,18 @@ const openBusinessFlyer=(business,trigger)=>{
   closeMessagePanel?.();
   const {item,flyers=[]}=business;const name=currentLanguage==='en'?(item.displayNameEn||item.name):(item.displayNameKo||item.name);
   const website=item.brokerUrl||item.url||'';const sns=business.snsUrl||item.instagramUrl||'';
+  const websiteLabelKo=business.websiteCtaKo||'홈페이지 보기';
+  const websiteLabelEn=business.websiteCtaEn||'Visit website';
+  let info=businessFlyerModal.querySelector('.business-flyer-info');
+  if(!info){info=document.createElement('div');info.className='business-flyer-info';businessFlyerModal.querySelector('.business-flyer-scroll').prepend(info);}
+  info.hidden=!business.socialLinks?.length;
+  info.innerHTML=info.hidden?'':`<img src="${business.logo}" alt="${name} logo"><div><p>${currentLanguage==='en'?business.categoryEn:business.categoryKo}</p><p>${business.address||''}</p><p>${currentLanguage==='en'?item.summaryEn:item.summaryKo}</p></div>`;
   businessFlyerReturnFocus=trigger;
   const navigation=businessFlyerModal.querySelector('.business-flyer-navigation');const images=businessFlyerModal.querySelector('.business-flyer-images');const previous=navigation.querySelector('[data-business-flyer-previous]');const next=navigation.querySelector('[data-business-flyer-next]');const position=navigation.querySelector('.business-flyer-position');let flyerIndex=0;
   const showFlyer=index=>{flyerIndex=Math.max(0,Math.min(index,flyers.length-1));images.innerHTML=flyers.length?`<img src="${flyers[flyerIndex]}" alt="${name} ${currentLanguage==='en'?'advertising flyer':'광고 전단지'}${flyers.length>1?` ${flyerIndex+1}`:''}">`:`<p class="business-flyer-pending" data-ko="전단지 이미지 준비 중" data-en="Flyer image coming soon">${currentLanguage==='en'?'Flyer image coming soon':'전단지 이미지 준비 중'}</p>`;position.textContent=`${flyerIndex+1} / ${flyers.length}`;previous.disabled=flyerIndex===0;next.disabled=flyerIndex===flyers.length-1;};
   businessFlyerModal.querySelector('#businessFlyerTitle').textContent=name;
   navigation.hidden=flyers.length<2;previous.onclick=()=>showFlyer(flyerIndex-1);next.onclick=()=>showFlyer(flyerIndex+1);showFlyer(0);
-  businessFlyerModal.querySelector('.business-flyer-external-links').innerHTML=`${website?`<a class="business-flyer-website" href="${website}" target="_blank" rel="noopener noreferrer" data-ko="홈페이지 보기" data-en="Visit website">${currentLanguage==='en'?'Visit website':'홈페이지 보기'}</a>`:''}${sns?`<a class="business-flyer-sns" href="${sns}" target="_blank" rel="noopener noreferrer" data-ko="SNS 보기" data-en="View social media">${currentLanguage==='en'?'View social media':'SNS 보기'}</a>`:''}`;
+  businessFlyerModal.querySelector('.business-flyer-external-links').innerHTML=`${website?`<a class="business-flyer-website" href="${website}" target="_blank" rel="noopener noreferrer" data-ko="${websiteLabelKo}" data-en="${websiteLabelEn}">${currentLanguage==='en'?websiteLabelEn:websiteLabelKo}</a>`:''}${business.socialLinks?.length?business.socialLinks.map(link=>`<a class="business-flyer-sns" href="${link.url}" target="_blank" rel="noopener noreferrer"><img src="${link.icon}" alt="">${link.label}</a>`).join(''):sns?`<a class="business-flyer-sns" href="${sns}" target="_blank" rel="noopener noreferrer" data-ko="SNS 보기" data-en="View social media">${currentLanguage==='en'?'View social media':'SNS 보기'}</a>`:''}`;
   businessFlyerModal.hidden=false;document.body.classList.add('modal-open');setLanguage(currentLanguage);businessFlyerModal.querySelector('.business-flyer-close')?.focus();
 };
 businessFlyerModal.querySelectorAll('[data-business-flyer-close]').forEach(control=>control.addEventListener('click',closeBusinessFlyer));
