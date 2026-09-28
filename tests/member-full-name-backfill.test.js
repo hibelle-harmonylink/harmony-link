@@ -9,32 +9,18 @@ const migration = fs.readFileSync(
   'utf8',
 );
 
-test('backfills only the seven confirmed member real names in one transaction', () => {
+test('production identity backfill migration remains a documented no-op transaction', () => {
   assert.match(migration, /^begin;/m);
   assert.match(migration, /commit;\s*$/m);
-  assert.match(migration, /expected exactly seven member metadata rows for full-name backfill/);
-
-  const expected = {
-    'HL-26-001': '하이벨',
-    'HL-26-002': '김미란',
-    'HL-26-003': '노혜경',
-    'HL-26-004': '노혜경',
-    'HL-26-005': '신영숙',
-    'HL-26-006': '염명재',
-    'HL-26-007': '윤형준',
-  };
-
-  for (const [memberNumber, fullName] of Object.entries(expected)) {
-    assert.match(migration, new RegExp(`when '${memberNumber}' then '${fullName}'`));
-  }
+  assert.match(migration, /production identity backfills[\s\S]*outside[\s\S]*repository migrations/i);
+  assert.match(migration, /Google Sheet remains the member-number source of truth/i);
 });
 
-test('does not update identity or account fields other than full_name', () => {
-  const update = migration.match(/update public\.member_admin_metadata[\s\S]*?\ncommit;/)?.[0] ?? '';
-  assert.match(update, /set full_name = case member_number/);
-  assert.doesNotMatch(
-    update,
-    /set[\s\S]*\b(nickname|phone|member_id|member_number|joined_at|archived_at|specialty|teaching_subjects|enrolled_subject|assigned_instructor)\s*=/,
-  );
-  assert.doesNotMatch(migration, /update public\.member_profiles/);
+test('production identity backfill migration contains no data mutation or identity literals', () => {
+  assert.doesNotMatch(migration, /update\s+public\.member_admin_metadata/i);
+  assert.doesNotMatch(migration, /\b(?:update|insert\s+into|delete\s+from)\b/i);
+  assert.doesNotMatch(migration, /\braise\s+exception\b/i);
+  assert.doesNotMatch(migration, /\bHL-\d{2}-\d{3}\b/);
+  assert.doesNotMatch(migration, /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/i);
+  assert.doesNotMatch(migration, /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i);
 });
