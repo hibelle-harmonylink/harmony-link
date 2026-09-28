@@ -18,11 +18,12 @@ test('metadata schema is minimal, protected, and includes only approved administ
   assert.match(migration, /revoke all on table public\.member_admin_metadata from public, anon, authenticated/i);
 });
 
-test('backfill fixes seven verified member numbers without changing profiles', () => {
-  for (let sequence = 1; sequence <= 7; sequence += 1) {
-    assert.match(migration, new RegExp(`HL-26-00${sequence}`));
-  }
-  assert.match(migration, /'229e791e-df89-47f8-a2ec-362044ff6466', 'HL-26-004', '혜경\(KR\)'/);
+test('active-member initialization is generic and never issues member numbers', () => {
+  const initialization = migration.slice(migration.indexOf('insert into public.member_admin_metadata'), migration.indexOf('drop function'));
+  assert.match(initialization, /select profile\.id, user_account\.created_at/);
+  assert.match(initialization, /join auth\.users user_account on user_account\.id = profile\.id/);
+  assert.doesNotMatch(initialization, /HL-\d{2}-\d{3}/);
+  assert.doesNotMatch(initialization, /values\s*\(/i);
   assert.doesNotMatch(migration, /update public\.member_profiles/i);
   assert.doesNotMatch(migration, /delete from/i);
 });

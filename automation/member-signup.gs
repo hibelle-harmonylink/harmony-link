@@ -841,9 +841,7 @@ function buildMigratedRows_(legacyRows) {
 }
 
 function migratedIdentity_(memberNumber, legacyDisplayName) {
-  if (text_(memberNumber) === 'HL-26-003') {
-    return { nickname: '하이벨_샐리', fullName: '노혜경' };
-  }
+  void memberNumber;
   return { nickname: text_(legacyDisplayName), fullName: '' };
 }
 

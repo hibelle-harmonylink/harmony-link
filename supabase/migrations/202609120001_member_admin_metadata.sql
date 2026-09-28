@@ -22,24 +22,15 @@ create table if not exists public.member_admin_metadata (
 
 revoke all on table public.member_admin_metadata from public, anon, authenticated;
 
--- Read-only backfill from the verified member roster.  No profile, auth, role,
--- membership, or status field is changed.  The withdrawn account is kept as an
--- archive snapshot because it no longer has an auth.users row to join.
-insert into public.member_admin_metadata (
-  member_id, member_number, archived_display_name, archived_email, joined_at, archived_at
-) values
-  ('f7a5d99b-5866-47f6-a067-09556c44b03b', 'HL-26-001', null, null, '2026-08-01 00:30:00-04', null),
-  ('13cb343a-cdd4-4519-9a1d-2bfeb65faff1', 'HL-26-002', null, null, '2026-08-04 02:11:06-04', null),
-  ('c51ace57-d4cd-4f89-97bc-cb3229641be5', 'HL-26-003', null, null, '2026-08-10 02:51:23-04', null),
-  ('229e791e-df89-47f8-a2ec-362044ff6466', 'HL-26-004', '혜경(KR)', 'hibellenewyork@kakao.com', '2026-08-11 02:45:59-04', null),
-  ('d6b58c79-675a-4edf-8e50-079d4097af04', 'HL-26-005', null, null, '2026-08-21 22:55:03-04', null),
-  ('609670ec-40ec-4157-8563-bf27606fcbb5', 'HL-26-006', null, null, '2026-09-06 21:48:46-04', null),
-  ('8686931e-e2e8-498d-a153-4da762b841c3', 'HL-26-007', null, null, '2026-09-11 20:05:05-04', null)
+-- Initialize metadata rows for active members without issuing member numbers.
+-- The Google Sheet remains the sole source of HL-YY-NNN values and registers
+-- them later through internal_register_member_admin_metadata.
+insert into public.member_admin_metadata (member_id, joined_at)
+select profile.id, user_account.created_at
+from public.member_profiles profile
+join auth.users user_account on user_account.id = profile.id
 on conflict (member_id) do update set
-  member_number = excluded.member_number,
-  joined_at = coalesce(public.member_admin_metadata.joined_at, excluded.joined_at),
-  archived_display_name = coalesce(public.member_admin_metadata.archived_display_name, excluded.archived_display_name),
-  archived_email = coalesce(public.member_admin_metadata.archived_email, excluded.archived_email);
+  joined_at = coalesce(public.member_admin_metadata.joined_at, excluded.joined_at);
 
 drop function if exists public.admin_list_members(text, text);
 create function public.admin_list_members(p_search text default null, p_role text default null)

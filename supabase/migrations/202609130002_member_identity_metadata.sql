@@ -7,26 +7,22 @@ alter table public.member_admin_metadata
   add column if not exists nickname text,
   add column if not exists full_name text;
 
--- Preserve each existing display identity as the new nickname.  The display
--- name itself remains untouched; only verified real names populate full_name.
+-- Preserve the existing display identity as the nickname and accept a real
+-- name only from Google provider metadata. No user-specific identity is
+-- embedded in this migration.
 update public.member_admin_metadata metadata
-set nickname = nullif(btrim(profile.display_name), '')
+set nickname = nullif(btrim(profile.display_name), ''),
+    full_name = case
+      when user_account.raw_app_meta_data ->> 'provider' = 'google'
+        then nullif(btrim(coalesce(
+          user_account.raw_user_meta_data ->> 'full_name',
+          user_account.raw_user_meta_data ->> 'name'
+        )), '')
+      else metadata.full_name
+    end
 from public.member_profiles profile
-where metadata.member_id = profile.id
-  and metadata.member_number <> 'HL-26-003';
-
--- The withdrawn member has no active profile row, so retain its immutable
--- archive identity in the same nickname field.
-update public.member_admin_metadata metadata
-set nickname = nullif(btrim(metadata.archived_display_name), '')
-where metadata.member_number = 'HL-26-004'
-  and metadata.nickname is null;
-
--- Only the identity explicitly verified by an administrator gets a real name.
-update public.member_admin_metadata
-set nickname = '하이벨_샐리', full_name = '노혜경'
-where member_id = 'c51ace57-d4cd-4f89-97bc-cb3229641be5'::uuid
-  and member_number = 'HL-26-003';
+join auth.users user_account on user_account.id = profile.id
+where metadata.member_id = profile.id;
 
 drop function if exists public.admin_list_members(text, text);
 create function public.admin_list_members(p_search text default null, p_role text default null)

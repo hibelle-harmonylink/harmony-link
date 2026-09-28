@@ -10,13 +10,14 @@ const auth = fs.readFileSync(path.join(root, 'auth.js'), 'utf8');
 const sheet = fs.readFileSync(path.join(root, 'automation', 'member-signup.gs'), 'utf8');
 const edge = fs.readFileSync(path.join(root, 'supabase', 'functions', 'notify-role-change', 'index.ts'), 'utf8');
 
-test('preserves existing display identities as nicknames and backfills only the verified real name', () => {
+test('backfills provider identities generically without embedded user data', () => {
   assert.match(migration, /add column if not exists nickname text/);
   assert.match(migration, /add column if not exists full_name text/);
-  assert.match(migration, /'HL-26-003'/);
   assert.match(migration, /set nickname = nullif\(btrim\(profile\.display_name\), ''\)/);
-  assert.match(migration, /archived_display_name/);
-  assert.match(migration, /nickname = '하이벨_샐리', full_name = '노혜경'/);
+  assert.match(migration, /raw_app_meta_data ->> 'provider' = 'google'/);
+  assert.match(migration, /raw_user_meta_data ->> 'full_name'/);
+  assert.doesNotMatch(migration, /where member_id = '[0-9a-f-]+'/i);
+  assert.doesNotMatch(migration, /HL-\d{2}-\d{3}/);
   assert.doesNotMatch(migration, /update public\.member_profiles/);
 });
 

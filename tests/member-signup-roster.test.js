@@ -46,9 +46,9 @@ test('requires UUID, email, and name for signup', () => {
 test('creates the next immutable year sequence without reusing numbers', () => {
   const sheet = {
     getLastRow: () => 4,
-    getRange: () => ({ getDisplayValues: () => [['HL-26-001'], ['HL-26-007'], ['HL-25-099']] })
+    getRange: () => ({ getDisplayValues: () => [['HL-30-101'], ['HL-30-107'], ['HL-29-199']] })
   };
-  assert.equal(context.nextMemberNumber_(sheet, new Date('2026-09-12T00:00:00Z')), 'HL-26-008');
+  assert.equal(context.nextMemberNumber_(sheet, new Date('2030-01-15T00:00:00Z')), 'HL-30-108');
 });
 
 test('maps roster-facing member type, membership, and status labels', () => {
@@ -63,29 +63,27 @@ test('maps roster-facing member type, membership, and status labels', () => {
   assert.equal(context.statusLabel_('withdrawn'), '탈퇴');
 });
 
-test('migrates seven real members, removes fourteen invalid rows, and preserves UUIDs', () => {
-  const real = [
-    ['uuid-1', '2026-08-01T00:30:00Z', 'Harmony Link', 'admin@example.com', 'google', '관리자', '관리자', 'Harmony Link 홈페이지'],
-    ['uuid-2', '2026-08-04T02:11:06Z', 'meeran melody', 'meeran@example.com', 'google', '입점 파트너', '$50 프리미엄 파트너', 'Harmony Link 홈페이지'],
-    ['uuid-3', '2026-08-10T02:51:23Z', '노혜경', 'noh@example.com', 'google', '수강생', '', 'Harmony Link 홈페이지'],
-    ['uuid-4', '2026-08-11T02:45:59Z', '혜경(KR)', 'withdrawn@example.com', 'kakao', '탈퇴', '', 'Harmony Link 홈페이지'],
-    ['uuid-5', '2026-08-21T22:55:03Z', 'Agnes Shin', 'agnes@example.com', 'google', '수강생', '', 'Harmony Link 홈페이지'],
-    ['uuid-6', '2026-09-06T21:48:46Z', 'Jane Yom', 'jane@example.com', 'google', '수강생', '', 'Harmony Link 홈페이지'],
-    ['uuid-7', '2026-09-11T20:05:05Z', 'Dan Verrett', 'dan@example.com', 'google', '입점 파트너', '무료 파트너', 'Harmony Link 홈페이지']
+test('migrates seven sample members, removes fourteen invalid rows, and preserves UUIDs', () => {
+  const sample = [
+    ['sample-uuid-1', '2030-01-01T12:30:00Z', 'Sample Admin', 'admin@example.test', 'google', '관리자', '관리자', 'Example website'],
+    ['sample-uuid-2', '2030-01-02T12:11:06Z', 'Partner One', 'partner@example.test', 'google', '입점 파트너', '$50 프리미엄 파트너', 'Example website'],
+    ['sample-uuid-3', '2030-01-03T12:51:23Z', 'Student One', 'student@example.test', 'google', '수강생', '', 'Example website'],
+    ['sample-uuid-4', '2030-01-04T12:45:59Z', 'Former Member', 'former@example.test', 'kakao', '탈퇴', '', 'Example website'],
+    ['sample-uuid-5', '2030-01-05T12:55:03Z', 'Student Two', 'student2@example.test', 'google', '수강생', '', 'Example website'],
+    ['sample-uuid-6', '2030-01-06T12:48:46Z', 'Student Three', 'student3@example.test', 'google', '수강생', '', 'Example website'],
+    ['sample-uuid-7', '2030-01-07T12:05:05Z', 'Partner Two', 'partner2@example.test', 'google', '입점 파트너', '무료 파트너', 'Example website']
   ];
-  const invalid = Array.from({ length: 14 }, (_, index) => ['', `2026-09-11T23:${String(index).padStart(2, '0')}:00Z`, '', '', '', '일반회원']);
-  const migrated = context.buildMigratedRows_([...real, ...invalid]);
+  const invalid = Array.from({ length: 14 }, (_, index) => ['', `2030-01-08T23:${String(index).padStart(2, '0')}:00Z`, '', '', '', '일반회원']);
+  const migrated = context.buildMigratedRows_([...sample, ...invalid]);
 
   assert.equal(migrated.length, 7);
   assert.deepEqual(Array.from(migrated, row => row[0]), [
-    'HL-26-001', 'HL-26-002', 'HL-26-003', 'HL-26-004', 'HL-26-005', 'HL-26-006', 'HL-26-007'
+    'HL-30-001', 'HL-30-002', 'HL-30-003', 'HL-30-004', 'HL-30-005', 'HL-30-006', 'HL-30-007'
   ]);
-  assert.deepEqual(Array.from(migrated, row => row[16]), real.map(row => row[0]));
-  assert.deepEqual(Array.from(migrated, row => row[2]), [
-    'Harmony Link', 'meeran melody', '하이벨_샐리', '혜경(KR)', 'Agnes Shin', 'Jane Yom', 'Dan Verrett'
-  ]);
+  assert.deepEqual(Array.from(migrated, row => row[16]), sample.map(row => row[0]));
+  assert.deepEqual(Array.from(migrated, row => row[2]), sample.map(row => row[2]));
   assert.deepEqual(Array.from(migrated, row => row[3]), ['', '', '', '', '', '', '']);
-  assert.deepEqual(Array.from(migrated, row => row[4]), ['', '', '노혜경', '', '', '', '']);
+  assert.deepEqual(Array.from(migrated, row => row[4]), ['', '', '', '', '', '', '']);
   assert.equal(migrated[3][8], '수강생');
   assert.equal(migrated[3][10], '탈퇴');
 });

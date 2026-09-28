@@ -1,1 +1,6 @@
 supabase/.temp/
+.tmp/
+.worktrees/
+backup/
+tmp/
+automation/.clasp.json
