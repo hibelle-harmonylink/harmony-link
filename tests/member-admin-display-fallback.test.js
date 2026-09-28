@@ -19,13 +19,16 @@ test('member detail public-name display prioritizes display_name and then applic
   assert.match(adminJs, /syncedReadonlyField\('영문 이름', memberFullName\(member\)\)/);
 });
 
-test('HL-26-009 full name backfill changes only the intended metadata field', () => {
+test('production identity backfill migration remains a documented no-op', () => {
   assert.match(migration, /^begin;/m);
-  assert.match(migration, /member_number = 'HL-26-009'/);
-  assert.match(migration, /set full_name = '홍현숙'/);
-  assert.match(migration, /Expected exactly one member_admin_metadata row/);
   assert.match(migration, /commit;\s*$/m);
-  assert.doesNotMatch(migration, /nickname\s*=/);
+  assert.match(migration, /production identity backfills[\s\S]*outside[\s\S]*repository migrations[\s\S]*operational procedure/i);
+  assert.doesNotMatch(migration, /update\s+public\.member_admin_metadata/i);
+  assert.doesNotMatch(migration, /\b(?:update|insert\s+into|delete\s+from)\b/i);
+  assert.doesNotMatch(migration, /\braise\s+exception\b/i);
+  assert.doesNotMatch(migration, /\bHL-\d{2}-\d{3}\b/);
+  assert.doesNotMatch(migration, /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/i);
+  assert.doesNotMatch(migration, /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i);
 });
 
 test('admin asset query keys and page version advance together', () => {
