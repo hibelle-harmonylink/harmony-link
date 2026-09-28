@@ -458,7 +458,17 @@
     signupRecord.set('기록 유형', '회원가입');
     signupRecord.set('회원 ID', user.id);
     signupRecord.set('가입 시각', user.created_at || new Date().toISOString());
-    signupRecord.set('이름', profile.name);
+    // Keep the legacy single display name for compatibility, while forwarding
+    // only provider-declared identity values into their distinct roster fields.
+    const providerMetadata = user.user_metadata || {};
+    const signupProvider = user.app_metadata?.provider || '';
+    const fullName = signupProvider === 'google'
+      ? (providerMetadata.full_name || providerMetadata.name || '')
+      : '';
+    const nickname = providerMetadata.nickname || '';
+    signupRecord.set('닉네임', nickname);
+    signupRecord.set('이름', fullName);
+    signupRecord.set('표시 이름', profile.name);
     signupRecord.set('이메일', profile.email);
     signupRecord.set('가입 방식', user.app_metadata?.provider || 'social');
     signupRecord.set('회원 유형', activeMemberType === 'partner' ? '파트너' : '수강생');

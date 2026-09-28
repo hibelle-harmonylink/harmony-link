@@ -14,8 +14,12 @@ const notificationReaderMigration = fs.readFileSync(
   'utf8'
 );
 
-test('name updates send only the member id and display name', () => {
-  assert.match(adminSource, /admin_update_member_name', \{ p_member_id: member\.id, p_display_name: nextName \}/);
+test('nickname and full name use the metadata RPC without changing display_name', () => {
+  const metadataCall = adminSource.match(/admin_update_member_metadata', \{([\s\S]*?)\n        \}\);/)?.[1] || '';
+  assert.match(metadataCall, /p_member_id: member\.id/);
+  assert.match(metadataCall, /p_nickname: metadata\.nickname/);
+  assert.match(metadataCall, /p_full_name: metadata\.fullName/);
+  assert.doesNotMatch(adminSource, /admin_update_member_name', \{ p_member_id: member\.id/);
 });
 
 test('membership, status, and user-type updates use the dedicated access RPC without role', () => {
@@ -28,10 +32,20 @@ test('membership, status, and user-type updates use the dedicated access RPC wit
 });
 
 test('saving unchanged values performs no update request', () => {
-  const unchangedGuard = adminSource.indexOf('if (!nameChanged && !accessChanged)');
-  const firstRpc = adminSource.indexOf("callRpc('admin_update_member_name'", unchangedGuard);
+  const unchangedGuard = adminSource.indexOf('if (!accessChanged && !metadataChanged)');
+  const firstRpc = adminSource.indexOf("callRpc('admin_update_member_access'", unchangedGuard);
   assert.ok(unchangedGuard >= 0 && firstRpc > unchangedGuard);
   assert.match(adminSource.slice(unchangedGuard, firstRpc), /return;/);
+});
+
+test('administrative metadata uses its own RPC and is not an email trigger', () => {
+  const metadataCall = adminSource.match(/admin_update_member_metadata', \{([\s\S]*?)\n        \}\);/)?.[1] || '';
+  assert.match(metadataCall, /p_phone: metadata\.phone/);
+  assert.match(metadataCall, /p_nickname: metadata\.nickname/);
+  assert.match(metadataCall, /p_full_name: metadata\.fullName/);
+  assert.match(metadataCall, /p_specialty: metadata\.specialty/);
+  assert.match(adminSource, /const emailTask = \(roleChanged && accessSaved\)/);
+  assert.doesNotMatch(metadataCall, /role|membership|account_status/);
 });
 
 test('profile sync never transmits protected role as a mutable field', () => {
