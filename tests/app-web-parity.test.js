@@ -42,7 +42,7 @@ test('shared-content.js accurately describes its own scope', () => {
   assert.match(sharedContent, /mirrored from the public website/);
 });
 
-test('app Business Spotlight includes all 6 Production businesses, now sourced from shared/data/businesses.js instead of duplicated in shared-content.js', () => {
+test('app Business Spotlight includes the original six plus BOX\'D KITCHEN from canonical shared data', () => {
   // As of the Phase 1 web/app data unification, the 6 businesses moved out of
   // shared-content.js's promotions[] and into the canonical shared/data/businesses.js
   // that both script.js and app/app.js read (see tests/shared-business-data.test.js
@@ -50,7 +50,7 @@ test('app Business Spotlight includes all 6 Production businesses, now sourced f
   // values this test originally asserted, just from their new home.
   const advertising = (businessesData.match(/kind:"advertising"/g) || []).length;
   const community = (businessesData.match(/kind:"community"/g) || []).length;
-  assert.equal(advertising + community, 6);
+  assert.equal(advertising + community, 7);
   // DMS matches the exact Production fields from script.js's former dmsCareBusiness / businessSpotlights.
   assert.match(businessesData, /nameKo:"DMS Care Training Center",nameEn:"DMS Care Training Center"/);
   assert.match(businessesData, /미국 의료 직업 학교/);

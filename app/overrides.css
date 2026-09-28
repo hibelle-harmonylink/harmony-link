@@ -1015,7 +1015,7 @@ html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-si
   .app-home-event-link{font-size:11px;padding:1px 8px 8px}
 }
 
-/* Compact business cards: no autoplay and no arrow paging. All six remain in DOM. */
+/* Compact business cards: no autoplay and no arrow paging. Every business remains in DOM. */
 #home .app-partners-section{padding-top:16px!important;padding-bottom:18px!important}
 #partnerPrograms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;min-width:0}
 #partnerPrograms .app-partner-card{display:flex!important;height:264px;min-height:0!important}
@@ -1058,3 +1058,21 @@ html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-si
 /* The closed menu used 100vw (including the scrollbar), producing 8px overflow.
    Keep its layout/behavior/safe-area intact, but size it to the containing viewport. */
 @media(max-width:899px){.desktop-app-nav{width:min(100%,560px)!important}}
+
+/* Optional canonical business details reuse the existing image lightbox. */
+#partnerPrograms .app-partner-details-open{width:100%;border:0;cursor:pointer;font:inherit}
+#partnerPrograms .app-partner-details-open:focus-visible{outline:3px solid #1155d9;outline-offset:-3px}
+.image-lightbox.has-business-details:not([hidden]){display:flex;flex-direction:column;justify-content:center;gap:12px;padding:64px 16px 16px;overflow-y:auto}
+.image-lightbox.has-business-details #lightboxImage{min-height:0;max-width:min(100%,760px);max-height:calc(100dvh - 360px);flex:0 1 auto;object-fit:contain}
+#lightboxBusinessInfo{position:relative;z-index:1;width:min(100%,760px);min-width:0;flex:0 0 auto;padding:14px;border-radius:14px;background:#fff;color:#061d45;box-sizing:border-box}
+#lightboxBusinessInfo[hidden]{display:none}
+#lightboxBusinessInfo header{display:flex;gap:12px;align-items:center}
+#lightboxBusinessInfo header>div{min-width:0}
+#lightboxBusinessInfo .business-detail-logo{width:76px;height:58px;flex:0 0 76px;object-fit:contain;background:#000;border-radius:4px;box-shadow:none}
+#lightboxBusinessInfo h2{margin:0 0 4px;font-size:18px}
+#lightboxBusinessInfo p{margin:3px 0;font-size:13px;overflow-wrap:anywhere}
+#lightboxBusinessInfo .business-image-choices{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+#lightboxBusinessInfo .business-image-choices button{min-height:44px;padding:6px 12px;border:1px solid #a9c8ee;border-radius:9px;background:#edf5ff;color:#0b54c2;font:inherit;cursor:pointer}
+#lightboxBusinessInfo .app-contact-social{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0;padding:0}
+#lightboxBusinessInfo .app-contact-social a{display:inline-flex;flex:1 1 auto;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:6px 10px;white-space:nowrap}
+#lightboxBusinessInfo .app-contact-social img{width:20px;height:20px;box-shadow:none;border-radius:0}

@@ -1,5 +1,5 @@
 // Canonical HarmonyLink business data (Phase 1 of the web/app shared-data project).
-// This file is the single source of truth for the 6 Business Spotlight companies --
+// This file is the single source of truth for the Business Spotlight companies --
 // name, category, phone, address, Google Maps URL, website/SNS, logo, and flyers.
 // Both the public website (script.js) and the installed app (app/app.js) read this
 // file directly instead of keeping their own separate copies of the same data.
@@ -32,4 +32,27 @@ window.HARMONY_LINK_BUSINESSES = [
   {id:"aaleac",kind:"community",region:"ny",nameKo:"AALEAC",nameEn:"AALEAC",categoryKo:"커뮤니티 서비스",categoryEn:"Community Service",summaryKo:"아시안 커뮤니티와 사법기관 협력 지원",summaryEn:"Asian community and law-enforcement collaboration",copyKo:"아시안 커뮤니티와 사법기관의 소통과 협력을 지원합니다.<br>연락처 646-996-8093",copyEn:"Supporting communication and cooperation between<br>Asian American communities and law enforcement.<br>Contact 646-996-8093",phoneKo:"646-996-8093",phoneEn:"646-996-8093",phoneHref:"+16469968093",address:null,locationKo:"Flushing, New York",locationEn:"Flushing, New York",mapUrl:null,websiteUrl:"https://aaleac.org/",snsUrl:null,logo:"assets/partners/aaleac-shield.png?v=20260819-1",flyers:["assets/partners/aaleac-identity.png"],appTitleKo:"AALEAC",appTitleEn:"AALEAC",appTextKo:"아시안 커뮤니티와 사법 기관의<br>소통과 협력을 지원합니다.<br>연락처 646-996-8093",appTextEn:"Supporting communication between Asian American communities and law enforcement.",appBadgeKo:"협력업체 등록",appBadgeEn:"NEW COMMUNITY PARTNER",appLogo:"/assets/partners/aaleac-shield.png?v=20260819-1",appCtaKo:"업체 바로가기",appCtaEn:"Visit Business",appCtaField:"websiteUrl"},
   {id:"jangsu-daycare",kind:"community",region:"ny",nameKo:"장수 데이케어",nameEn:"Jangsu Daycare",categoryKo:"시니어 케어",categoryEn:"Senior Care",summaryKo:"시니어를 위한 데이케어 서비스",summaryEn:"Daycare services for seniors",copyKo:"어르신 한 분 한 분을 가족처럼 모시며 건강하고 행복한 하루를 함께하는<br class=\"jangsu-card-break-mobile\"> 데이케어 센터입니다.<br class=\"jangsu-card-break-desktop\"> 연락처 718-799-0133 · 718-864-6430",copyEn:"A daycare center caring for each senior like family, supporting a healthy and happy day together.<br>Phone 718-799-0133 · 718-864-6430",phoneKo:"718-799-0133 · 718-864-6430",phoneEn:"718-799-0133 · 718-864-6430",phoneHref:"+17187990133",address:"32-38 148th St, Flushing, NY 11354",locationKo:"Flushing, New York",locationEn:"Flushing, New York",mapUrl:"https://www.google.com/maps/place/%EC%9E%A5%EC%88%98%EB%8D%B0%EC%9D%B4%EC%BC%80%EC%96%B4+JANGSU+Adult+Day+Care/@40.7692212,-73.8210753,17z/data=!3m1!4b1!4m6!3m5!1s0x89c261d50904e783:0x524c9bbcbcc5da1e!8m2!3d40.7692172!4d-73.8185004!16s%2Fg%2F11lll_thly?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D",websiteUrl:null,snsUrl:null,logo:"assets/partners/jangsu-daycare-logo.png?v=20260815-304",flyers:["assets/partners/jangsu-daycare-banner.png"],appTitleKo:"장수 데이케어",appTitleEn:"Jangsu Daycare",appTextKo:"어르신 한 분 한 분을 가족처럼 모시며 건강하고<br>행복한 하루를 함께하는 데이케어 센터입니다.<br>연락처 718-799-0133 · 718-864-6430",appTextEn:"A daycare center caring for each senior like family.<br>Phone 718-799-0133 · 718-864-6430",appBadgeKo:"협력업체 등록",appBadgeEn:"NEW COMMUNITY PARTNER",appLogo:"/assets/partners/jangsu-daycare-logo.png?v=20260815-304",appCtaKo:"전화 바로걸기",appCtaEn:"Call Now",appCtaField:"phone"},
   {id:"dms-care",kind:"advertising",region:"tx",nameKo:"DMS Care Training Center",nameEn:"DMS Care Training Center",categoryKo:"미국 의료 직업 학교",categoryEn:"Care Training Center",summaryKo:"미국 의료 직업 학교",summaryEn:"Professional care workforce education",phoneKo:"469-605-6035",phoneEn:"469-605-6035",phoneHref:"+14696056035",address:"1933 E Frankford Rd. Suite 165, Carrollton, TX 75007",locationKo:"Texas",locationEn:"Texas",mapUrl:"https://www.google.com/maps/place/DMS+Care+Training+Center/@33.0008059,-96.8869749,17z/data=!3m1!4b1!4m6!3m5!1s0x864c25005c81bf67:0x1ff6428391587d36!8m2!3d33.0008014!4d-96.8844!16s%2Fg%2F11lddvd23w?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D",websiteUrl:"https://dmscare.org/ko",snsUrl:null,logo:"assets/images/dms-care-logo.webp",flyers:["assets/images/dms-care-flyer-en.png"],appTitleKo:"DMS Care Training Center",appTitleEn:"DMS Care Training Center",appTextKo:"미국 의료 직업 학교<br>1933 E Frankford Rd. Suite 165, Carrollton, TX 75007<br>연락처 469-605-6035",appTextEn:"Professional care workforce education.<br>1933 E Frankford Rd. Suite 165, Carrollton, TX 75007<br>Contact 469-605-6035",appBadgeKo:"프리미엄 광고 등록",appBadgeEn:"NEW PREMIUM ADVERTISER",appLogo:"/assets/images/dms-care-logo.webp",appCtaKo:"업체 바로가기",appCtaEn:"Visit Business",appCtaField:"websiteUrl"}
+  ,{id:"boxd-kitchen",kind:"advertising",region:"va",
+    nameKo:"BOX'D KITCHEN",nameEn:"BOX'D KITCHEN",
+    categoryKo:"지중해식 레스토랑 · 케이터링",categoryEn:"Restaurant / Catering",
+    summaryKo:"신선한 지중해식 보울 & 케이터링",summaryEn:"Fresh Mediterranean Bowls & Catering",
+    copyKo:"신선한 지중해식 보울 & 케이터링",copyEn:"Fresh Mediterranean Bowls & Catering",
+    phoneKo:null,phoneEn:null,phoneHref:null,mapUrl:null,
+    address:"909 West Main Street, Charlottesville, VA",
+    locationKo:"Charlottesville, Virginia",locationEn:"Charlottesville, Virginia",
+    websiteUrl:"https://order.toasttab.com/online/box-d-kitchen-charlottesville-909-w-main-st",
+    websiteCtaKo:"업체 바로가기",websiteCtaEn:"Visit Business",
+    snsUrl:null,
+    socialLinks:[
+      {label:"Instagram",url:"https://www.instagram.com/boxdkitchen_uva/",icon:"assets/instagram.svg"},
+      {label:"Threads",url:"https://www.threads.com/@boxdkitchen_uva",icon:"assets/threads.svg"}
+    ],
+    logo:"assets/ads/boxd-kitchen/logo.png",
+    spotlightImage:"assets/ads/boxd-kitchen/flyer-2-1.png",
+    flyers:["assets/ads/boxd-kitchen/flyer-1-1.png","assets/ads/boxd-kitchen/flyer-2-1.png","assets/ads/boxd-kitchen/flyer-4-1.png"],
+    appTitleKo:"BOX'D KITCHEN",appTitleEn:"BOX'D KITCHEN",
+    appTextKo:"신선한 지중해식 보울 & 케이터링",appTextEn:"Fresh Mediterranean Bowls & Catering",
+    appBadgeKo:"비즈니스 스포트라이트",appBadgeEn:"BUSINESS SPOTLIGHT",
+    appLogo:"/assets/ads/boxd-kitchen/logo.png",
+    appCtaKo:"업체 바로가기",appCtaEn:"Visit Business",appCtaField:"websiteUrl"}
 ];

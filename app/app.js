@@ -247,7 +247,10 @@ function renderPartners(){
     const url=business.id==="hole19"?business.websiteUrl:item.url;
     const action=business.appCtaField==="phone"?(language==="ko"?item.actionKo:item.actionEn):(language==="ko"?"업체 바로가기":"Visit Business");
     const isYura=item.image?.includes("highline-hl-symbol");
-    return `<article class="app-partner-card" data-business-id="${business.id}"><div class="app-partner-logo${isYura?" yura-mini-logo":""}">${isYura?"":`<img src="${item.image}" alt="${title.replace(/<[^>]*>/g," ").trim()}">`}</div><div class="app-partner-copy"><h3>${title}</h3><p>${details}</p><a href="${url}" target="_blank" rel="noopener noreferrer">${action}</a></div></article>`;
+    const image=business.spotlightImage?"/"+business.spotlightImage:item.image;
+    const imageMarkup=isYura?"":`<img src="${image}" alt="${title.replace(/<[^>]*>/g," ").trim()}">`;
+    const media=business.socialLinks?.length?`<button type="button" class="app-partner-logo app-partner-details-open" data-business-detail="${business.id}" aria-label="${language==="ko"?business.nameKo+" 상세 보기":business.nameEn+" details"}">${imageMarkup}</button>`:`<div class="app-partner-logo${isYura?" yura-mini-logo":""}">${imageMarkup}</div>`;
+    return `<article class="app-partner-card" data-business-id="${business.id}">${media}<div class="app-partner-copy"><h3>${title}</h3><p>${details}</p><a href="${url}" target="_blank" rel="noopener noreferrer">${action}</a></div></article>`;
   }).join("");
 }
 function eventCard(item){
@@ -494,7 +497,7 @@ $$('[data-language]').forEach(button=>button.addEventListener('click',()=>{
   language=button.dataset.language;
   applyLanguage();
 }));
-function openImageLightbox(src,alt,action){
+function openImageLightbox(src,alt,action,business){
   $("#lightboxImage").src=src;
   $("#lightboxImage").alt=alt;
   const actionButton=$("#lightboxAction");
@@ -503,11 +506,28 @@ function openImageLightbox(src,alt,action){
     actionButton.querySelector("span").textContent=action.label;
     actionButton.onclick=action.onClick;
   }
+  const info=$("#lightboxBusinessInfo");
+  info.hidden=!business;
+  $("#imageLightbox").classList.toggle("has-business-details",!!business);
+  if(business){
+    const name=language==="ko"?business.nameKo:business.nameEn;
+    info.innerHTML=`<header><img class="business-detail-logo" src="/${business.logo}" alt="${name} logo"><div><h2>${name}</h2><p>${business.address||""}</p><p>${language==="ko"?business.summaryKo:business.summaryEn}</p></div></header><div class="business-image-choices">${business.flyers.map((image,index)=>`<button type="button" data-business-image="/${image}" data-business-image-alt="${name} ${index+1}">${language==="ko"?"이미지":"Image"} ${index+1}</button>`).join("")}</div><nav class="app-contact-social" aria-label="${name} links"><a href="${business.websiteUrl}" target="_blank" rel="noopener noreferrer">${language==="ko"?business.appCtaKo:business.appCtaEn}</a>${business.socialLinks.map(link=>`<a href="${link.url}" target="_blank" rel="noopener noreferrer"><img src="/${link.icon}" alt="">${link.label}</a>`).join("")}</nav>`;
+  }else info.innerHTML="";
   $("#imageLightbox").hidden=false;
 }
 function closeImageLightbox(){
   $("#imageLightbox").hidden=true;
 }
+$("#partnerPrograms").addEventListener("click",event=>{
+  const trigger=event.target.closest("[data-business-detail]");
+  if(!trigger)return;
+  const business=window.HARMONY_LINK_BUSINESSES.find(item=>item.id===trigger.dataset.businessDetail);
+  if(business)openImageLightbox("/"+(business.spotlightImage||business.logo),language==="ko"?business.nameKo:business.nameEn,null,business);
+});
+$("#lightboxBusinessInfo").addEventListener("click",event=>{
+  const trigger=event.target.closest("[data-business-image]");
+  if(trigger){$("#lightboxImage").src=trigger.dataset.businessImage;$("#lightboxImage").alt=trigger.dataset.businessImageAlt;}
+});
 $("#newsPopupImage").addEventListener("click",()=>openImageLightbox($("#newsPopupImage").src,$("#newsPopupImage").alt));
 $("#newsPopupImage").addEventListener("keydown",event=>{
   if(event.key==="Enter"||event.key===" "){
