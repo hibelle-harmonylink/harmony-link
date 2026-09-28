@@ -1076,3 +1076,11 @@ html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-si
 #lightboxBusinessInfo .app-contact-social{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0;padding:0}
 #lightboxBusinessInfo .app-contact-social a{display:inline-flex;flex:1 1 auto;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:6px 10px;white-space:nowrap}
 #lightboxBusinessInfo .app-contact-social img{width:20px;height:20px;box-shadow:none;border-radius:0}
+/* Canonical gallery mode only: title, all flyers, then contact and existing CTAs. */
+.image-lightbox.has-flyer-gallery #lightboxImage{display:none}
+.image-lightbox.has-flyer-gallery #lightboxBusinessInfo{width:min(100%,920px);max-height:calc(100dvh - 80px);overflow-y:auto}
+#lightboxBusinessInfo .business-flyer-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+#lightboxBusinessInfo .business-flyer-gallery img{width:100%;height:auto;max-height:none;aspect-ratio:16/9;object-fit:contain;min-width:0;box-sizing:border-box;box-shadow:none;border:1px solid #e0eaf3;border-radius:10px;background:#f8fbfe}
+#lightboxBusinessInfo .business-gallery-contact{display:grid;gap:8px;margin-top:14px}
+#lightboxBusinessInfo .business-gallery-contact a{color:#174b7e;font-size:14px;overflow-wrap:anywhere;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:639px){#lightboxBusinessInfo .business-flyer-gallery{grid-template-columns:minmax(0,1fr)}}

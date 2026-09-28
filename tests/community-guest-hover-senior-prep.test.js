@@ -88,7 +88,11 @@ test('the learning and services heading is updated while business phone display 
   assert.match(homepage, /data-ko="배움과 서비스를 만나보세요" data-en="Discover Learning & Services">배움과 서비스를 만나보세요<\/h2>/);
   assert.match(homepageScript, /const renderBusinessPhone = contact => String\(contact \|\| ''\)\.replace/);
   assert.match(homepageScript, /href="tel:\$\{number\.replace\(\/\[\^\\d\+\]\/g, ''\)\}"/);
-  assert.match(homepageScript, /const contactMarkup=`<p class="business-contact">\$\{renderBusinessPhone\(contact\)\}<\/p>`/);
+  // Opt-in gallery businesses may supply an approved international tel target;
+  // all existing businesses still use the same phone-text renderer.
+  assert.match(homepageScript, /const contactMarkup=`<p class="business-contact">\$\{business\.detailMode==='gallery'&&business\.phoneHref\?/);
+  assert.match(homepageScript, /href="tel:\$\{business\.phoneHref\}"/);
+  assert.match(homepageScript, /:renderBusinessPhone\(contact\)\}<\/p>`/);
   assert.match(homepageScript, /event\.target\.closest\('a,button'\)/);
   // The actual phone numbers now live in the canonical shared/data/businesses.js that
   // script.js reads, rather than as literals in script.js itself.
