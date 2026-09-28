@@ -1,0 +1,194 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const test = require('node:test');
+
+const root = path.join(__dirname, '..');
+const page = fs.readFileSync(path.join(root, 'senior-learning.html'), 'utf8');
+const materialsPage = fs.readFileSync(path.join(root, 'senior-learning-materials.html'), 'utf8');
+const miniAppsPage = fs.readFileSync(path.join(root, 'senior-mini-apps.html'), 'utf8');
+const script = fs.readFileSync(path.join(root, 'senior-learning.js'), 'utf8');
+const css = fs.readFileSync(path.join(root, 'senior-learning.css'), 'utf8');
+const home = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const auth = fs.readFileSync(path.join(root, 'auth.js'), 'utf8');
+
+test('senior learning space has a homepage entry and uses existing member authentication', () => {
+  assert.match(home, /href="senior-learning\.html"[^>]*>시니어 배움터/);
+  assert.match(page, /회원 전용 배움터/);
+  assert.match(page, /return=senior-learning\.html/);
+  assert.match(script, /get_own_member_profile/);
+  assert.match(script, /\['active', 'expiring'\]/);
+  assert.match(auth, /'senior-learning\.html', 'senior-learning-materials\.html', 'senior-mini-apps\.html'/);
+  assert.match(auth, /window\.location\.replace\(returnTarget\)/);
+});
+
+test('senior learning preserves source categories on disk even though computer/ai-tools are hidden from the user-facing screen', () => {
+  // sourceLearningData still has all 6 original placeholder categories --
+  // nothing was deleted, only computer/ai-tools stopped rendering theirs.
+  for (const title of ['스마트폰', '설정과 화면', '생활 디지털', 'AI 배우기', '디지털 취미', '디지털 안전']) assert.match(script, new RegExp(`title:'${title}'`));
+  for (const title of ['스마트폰', '컴퓨터', 'AI 도구', '생활 활용']) assert.match(script, new RegExp(`title:'${title}'`));
+  assert.match(script, /const sourceLearningData = \[/);
+  assert.match(script, /accessLevel:'free'/);
+  assert.match(script, /status:'ready'/);
+  assert.match(script, /status:'preparing'/);
+});
+
+test('컴퓨터/AI 도구 hide their old placeholder lessons behind the same empty-state as 생활 활용, without deleting sourceLearningData', () => {
+  assert.match(script, /id:'computer',[\s\S]*?lessons:\[\]\s*\n\s*\},/);
+  assert.match(script, /id:'ai-tools',[\s\S]*?lessons:\[\]\s*\n\s*\},/);
+  // The old wiring that surfaced sourceLearningData's placeholder lessons on
+  // these two screens is gone -- they render the same empty state as 생활 활용.
+  assert.doesNotMatch(script, /sourceLearningData\.find\(category => category\.id === 'digital-hobby'\)/);
+  assert.doesNotMatch(script, /sourceLearningData\.find\(category => category\.id === 'ai'\)/);
+});
+
+test('smartphone materials retain the fifteen delivered assets and bookmark IDs in order', () => {
+  const lessons = require('../senior-smartphone-lessons')[0].lessons.slice(0, 15);
+  assert.equal(lessons.length, 15);
+  assert.deepEqual(lessons.map(lesson => lesson.id), Array.from({ length:15 }, (_, index) => `smartphone-${String(index + 1).padStart(2, '0')}`));
+  assert.ok(lessons.every(lesson => lesson.status === 'ready'));
+  const paths = lessons.map(lesson => lesson.slides[0]);
+  assert.equal(new Set(paths).size, 15);
+  paths.forEach((assetPath, index) => {
+    assert.equal(assetPath, `assets/senior-learning/smartphone/${String(index + 1).padStart(2, '0')}/slide-01.png`);
+    assert.equal(fs.existsSync(path.join(root, assetPath)), true, `${assetPath} exists`);
+  });
+  assert.match(script, /smartphoneFolders\.flatMap\(folder => folder.lessons\)/);
+  assert.match(script, /const isLessonAvailable = lesson => \['ready', 'available'\]\.includes\(lesson\?\.status\);/);
+});
+
+test('senior learning keeps a pending category card and provides an extensible mini-app page', () => {
+  assert.match(home, /class="program-category-card is-coming-soon reveal" type="button" data-program-coming-soon/);
+  assert.match(home, /<strong data-ko="미술" data-en="Art">미술<\/strong>/);
+  assert.doesNotMatch(home.match(/<nav class="primary-nav"[\s\S]*?<\/nav>/)?.[0] || '', />미니\s*앱</);
+  assert.match(script, /const miniApps = \[/);
+  assert.match(script, /title:'한자 변환기'/);
+  assert.match(script, /href:'easy-hanja\.html'/);
+  assert.match(script, /한자 정보를 쉽게 확인해보세요/);
+  assert.match(script, />사용하기</);
+  assert.match(script, /mini-hanja\.svg/);
+  assert.match(css, /\.senior-mini-app-grid \{ display:grid; grid-template-columns:repeat\(3,minmax\(0,1fr\)\); gap:22px; \}/);
+  assert.match(css, /@media \(max-width:620px\)[\s\S]*?\.senior-category-grid,\.senior-mini-app-grid \{ grid-template-columns:repeat\(2,minmax\(0,1fr\)\);/);
+  assert.match(page, /senior-learning\.css\?v=20260926-textbook-list/);
+  assert.match(page, /senior-learning\.js\?v=20260926-textbook-04/);
+  assert.match(miniAppsPage, /data-senior-page="mini-apps"/);
+  assert.match(miniAppsPage, /생활에 도움이 되는 간편한 디지털 도구를 이용해보세요/);
+  assert.match(miniAppsPage, /href="senior-learning\.html">← 시니어 배움터/);
+  assert.match(miniAppsPage, /return=senior-mini-apps\.html/);
+});
+
+test('senior learning home keeps its choices and routes each choice to a dedicated page', () => {
+  assert.match(page, /senior-account-actions/);
+  assert.match(page, /id="seniorSignout"/);
+  assert.match(page, /필요한 디지털 정보와 생활에 도움이 되는 도구를 쉽고 편하게 이용해보세요/);
+  assert.match(script, /assets\/senior-learning\/textbook-card\.svg/);
+  assert.match(script, /assets\/senior-learning\/mini-app-card\.svg/);
+  assert.match(script, /href="senior-learning-materials\.html"/);
+  assert.match(script, /href="senior-mini-apps\.html"/);
+  assert.doesNotMatch(script, /data-senior-tab/);
+  assert.doesNotMatch(script, /const setTab = tab =>/);
+  assert.match(materialsPage, /data-senior-page="materials"/);
+  assert.match(materialsPage, /스마트폰과 디지털 사용법을 필요한 주제별로 확인해보세요/);
+  assert.match(materialsPage, /href="senior-learning\.html">← 시니어 배움터/);
+  assert.match(materialsPage, /return=senior-learning-materials\.html/);
+  assert.match(script, /client\?\.auth\.signOut\(\)/);
+  assert.match(css, /\.tool-site-header \{ min-height:68px; background:#eef8f1!important;/);
+  assert.match(css, /\.senior-content-tabs \{[^}]*display:grid; grid-template-columns:repeat\(2,minmax\(0,1fr\)\);/);
+  assert.match(css, /\.senior-section-choice \{ min-height:360px;/);
+  assert.match(css, /@media \(max-width:620px\).*?\.senior-content-tabs \{ grid-template-columns:repeat\(2,minmax\(0,1fr\)\);/s);
+});
+
+test('senior learning materials and mini apps share protected rendering without repeating the home choices', () => {
+  assert.match(script, /const pageMode = document\.body\.dataset\.seniorPage \|\| 'home'/);
+  assert.match(script, /if \(pageMode === 'home'\) \{ content\.innerHTML = renderHomeChoices\(\); return; \}/);
+  assert.match(script, /if \(pageMode === 'mini-apps'\) \{ content\.innerHTML = renderMiniApps\(\); return; \}/);
+  assert.match(script, /const renderMiniApps = \(\) => `<section class="senior-mini-apps">/);
+  assert.doesNotMatch(materialsPage, /senior-section-choice/);
+  assert.doesNotMatch(miniAppsPage, /senior-section-choice/);
+  assert.match(script, /const renderCategories =/);
+  assert.match(script, /const renderMiniApps =/);
+  assert.match(script, /data-mini-app-card/);
+  assert.match(script, /event\.key === ' '/);
+  assert.match(script, /<a class="senior-mini-app-card"/);
+  for (const asset of ['material-smartphone.svg', 'material-computer.svg', 'material-ai.svg', 'material-life.svg', 'mini-hanja.svg']) {
+    assert.equal(fs.existsSync(path.join(root, 'assets', 'senior-learning', asset)), true, `${asset} exists`);
+  }
+  assert.match(script, /<b>교재 보기<\/b>/);
+  assert.match(css, /\.senior-category-card \{ min-height:390px;/);
+  assert.match(css, /\.senior-mini-app-card \{ min-height:390px;/);
+});
+
+test('senior learning viewer supports navigation, fullscreen, progress, and keyboard controls', () => {
+  assert.match(script, /data-senior-previous/);
+  assert.match(script, /data-senior-next/);
+  assert.match(script, /data-senior-fullscreen/);
+  assert.match(script, /requestFullscreen/);
+  assert.match(script, /ArrowLeft/);
+  assert.match(script, /ArrowRight/);
+  assert.match(script, /\$\{index \+ 1\} \/ \$\{total\}/);
+});
+
+test('senior learning layout is responsive and never relies on horizontal scrolling', () => {
+  assert.match(css, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(css, /@media \(max-width:900px\).*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/s);
+  assert.match(css, /@media \(max-width:620px\).*grid-template-columns:1fr/s);
+  assert.match(css, /aspect-ratio:16\/9/);
+});
+
+test('senior learning header auth button reflects real session state instead of always showing signed out', () => {
+  // The CSS bug: an unconditional `display:...!important` on .header-login
+  // overrode the browser's native [hidden] styling, so #seniorSignout stayed
+  // visibly rendered (with its static "로그아웃" text) even while JS had
+  // correctly set signoutButton.hidden = true for a logged-out visitor.
+  // :not([hidden]) makes the forced layout only apply while the element is
+  // actually shown, so the hidden attribute -- and therefore the real
+  // session check below -- has a visible effect again.
+  assert.match(css, /\.tool-site-header \.header-login:not\(\[hidden\]\) \{[^}]*display:inline-flex!important/);
+  assert.doesNotMatch(css, /\.tool-site-header \.header-login \{[^}]*display:inline-flex/);
+
+  // 1) session 없음 -> 로그인 button visible, 로그아웃 hidden.
+  assert.match(script, /const showGate = \(\) => \{ loading\.hidden = true; app\.hidden = true; gate\.hidden = false; signoutButton\.hidden = true; signinButton\.hidden = false; \};/);
+  // 2) session 있음 -> 로그아웃 button visible, 로그인 hidden.
+  assert.match(script, /const showApp = \(\) => \{ loading\.hidden = true; gate\.hidden = true; app\.hidden = false; signoutButton\.hidden = false; signinButton\.hidden = true; render\(\); \};/);
+  // 3) logout 후 -> re-runs the real session check (not a hardcoded flip),
+  //    which lands back on showGate() (로그인) once getSession() reports no user.
+  assert.match(script, /signoutButton\.addEventListener\('click', async \(\) => \{ await client\?\.auth\.signOut\(\); \}\);/);
+  assert.match(script, /client\?\.auth\.onAuthStateChange\(\(event, session\) => \{ if \(event !== 'INITIAL_SESSION'\) void checkMember\(session\); \}\);/);
+  // 6) Auth client failing to initialize is treated as logged-out (로그인), never as authenticated.
+  assert.match(script, /if \(!client\) \{ if \(checkId === memberCheckId\) showGate\(\); return; \}/);
+  assert.match(script, /if \(!session\?\.user\) \{ if \(checkId === memberCheckId\) showGate\(\); return; \}/);
+  // 7) The member-only content gate itself is unchanged.
+  assert.match(page, /회원 전용 배움터/);
+  assert.match(page, /무료 회원가입/);
+
+  // Safe initial paint: #seniorSignin ships with no [hidden] attribute (visible
+  // "로그인" from first paint), while #seniorSignout ships hidden -- so there is
+  // no flash of "로그아웃" before JS confirms the real session state.
+  for (const markup of [page, materialsPage, miniAppsPage]) {
+    assert.match(markup, /<a class="header-login senior-signin-button" id="seniorSignin" href="index\.html\?auth=login&amp;return=[^"]+\.html">로그인<\/a>/);
+    assert.match(markup, /<button class="header-login senior-signout-button" id="seniorSignout" type="button" hidden>로그아웃<\/button>/);
+  }
+  // Reuses the existing HarmonyLink login flow and per-page return path --
+  // no new sign-in system, same pattern already used by the gate's own link.
+  assert.match(page, /id="seniorSignin" href="index\.html\?auth=login&amp;return=senior-learning\.html"/);
+  assert.match(materialsPage, /id="seniorSignin" href="index\.html\?auth=login&amp;return=senior-learning-materials\.html"/);
+  assert.match(miniAppsPage, /id="seniorSignin" href="index\.html\?auth=login&amp;return=senior-mini-apps\.html"/);
+});
+
+test('materials category grid adds a real 생활 활용 entry point (2x2 on mobile) without inventing lessons for it', () => {
+  assert.match(script, /id:'life',\s*\n\s*icon:'🏡',\s*\n\s*image:'assets\/senior-learning\/material-life\.svg',\s*\n\s*title:'생활 활용',\s*\n\s*description:'생활에 필요한 디지털 기능을 배워보세요\.',/);
+  assert.match(script, /lessons:\[\]\s*\n\s*\}\s*\n\s*\];/);
+  assert.equal(fs.existsSync(path.join(root, 'assets', 'senior-learning', 'material-life.svg')), true);
+  // Existing categories keep their lessons untouched -- only 'life' is empty.
+  assert.doesNotMatch(script, /id:'smartphone-textbook-fake'|id:'life-lesson/);
+  // Empty categories get a real, non-fake empty state instead of a placeholder lesson/link.
+  assert.match(script, /if \(!category\.lessons\.length\) \{/);
+  assert.match(script, /class="senior-empty-category">교재를 준비하고 있어요/);
+  assert.match(css, /\.senior-empty-category \{/);
+  // 4 categories still lay out 2x2 on mobile via the existing 2-column grid rule.
+  assert.match(css, /@media \(max-width:620px\)[\s\S]*?\.senior-category-grid,\.senior-mini-app-grid \{ grid-template-columns:repeat\(2,minmax\(0,1fr\)\);/);
+  // Mobile-only further compaction is scoped to .senior-category-card alone, so
+  // the mini-apps screen (still 1 card) is not affected by this round's shrink.
+  assert.match(css, /@media \(max-width:620px\)[\s\S]*?\.senior-category-grid \{ gap:8px; \} \.senior-category-card \{ padding:9px;/);
+  assert.doesNotMatch(css, /\.senior-mini-app-card \{ padding:9px;/);
+});

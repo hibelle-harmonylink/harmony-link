@@ -13,7 +13,7 @@
   <link rel="manifest" href="/manifest.webmanifest">
   <script>
     (() => {
-      const pageVersion = '20260905-7';
+    const pageVersion = '20260916-29';
       fetch(`version.json?t=${Date.now()}`, { cache: 'no-store' })
         .then(response => response.ok ? response.json() : null)
         .then(release => {
@@ -49,8 +49,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=20260909-15">
-  <link rel="stylesheet" href="homepage-ui.css?v=20260911-42">
+  <link rel="stylesheet" href="styles.css?v=20260916-23">
+  <link rel="stylesheet" href="homepage-ui.css?v=20260920-1">
 </head>
 <body>
   <a class="skip-link" href="#main" data-ko="본문으로 이동" data-en="Skip to content">본문으로 이동</a>
@@ -63,8 +63,9 @@
       <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
       <nav class="primary-nav" id="primary-nav" aria-label="주 메뉴">
         <a href="#digital-why" data-ko="프로그램" data-en="Programs">프로그램</a>
+        <a href="senior-learning.html" data-ko="시니어 배움터" data-en="Senior Learning">시니어 배움터</a>
         <a href="#events" data-ko="강좌·행사" data-en="Classes & Events">강좌·행사</a>
-        <a class="header-partner-link" href="#partner-center" data-ko="파트너" data-en="Partners">파트너</a>
+        <a class="header-partner-link" href="#partner-center" data-ko="파트너" data-en="Partner Center">파트너</a>
         <a class="nav-community" href="community.html" data-ko="커뮤니티" data-en="Community">커뮤니티</a>
         <a href="#about" data-ko="소개" data-en="About">소개</a>
         <a href="#contact" data-ko="문의" data-en="Contact">문의</a>
@@ -75,27 +76,33 @@
     </div>
   </header>
 
-  <div class="app-install-banner" id="appInstallBanner" role="region" aria-label="앱 설치 안내">
+  <div class="app-install-banner" id="appInstallBanner" role="region" data-ko-aria-label="앱 설치 안내" data-en-aria-label="App installation" aria-label="앱 설치 안내">
     <div class="container app-install-banner-inner">
       <span class="app-install-icon" aria-hidden="true">📲</span>
       <p><strong data-ko="Harmony Link 앱으로 더 편하게" data-en="Enjoy Harmony Link as an app">Harmony Link 앱으로 더 편하게</strong><span data-ko="홈 화면에 추가하고 새 소식도 빠르게 받아보세요." data-en="Add it to your home screen for quick, easy access.">홈 화면에 추가하고 새 소식도 빠르게 받아보세요.</span><span class="app-install-status" id="appInstallStatus" role="status" hidden></span></p>
       <button class="app-install-banner-cta" id="appInstallButton" type="button" data-ko="앱 설치하기" data-en="Install App">앱 설치하기</button>
-      <button class="app-install-banner-close" id="appInstallBannerClose" type="button" aria-label="닫기">×</button>
+      <button class="app-install-banner-close" id="appInstallBannerClose" type="button" data-ko-aria-label="닫기" data-en-aria-label="Close" aria-label="닫기">×</button>
     </div>
   </div>
 
   <div class="pwa-install-help" id="pwaInstallHelp" hidden role="dialog" aria-modal="true" aria-labelledby="pwaInstallHelpTitle">
-    <button class="pwa-install-help-backdrop" type="button" data-pwa-help-close aria-label="닫기"></button>
+    <button class="pwa-install-help-backdrop" type="button" data-pwa-help-close data-ko-aria-label="닫기" data-en-aria-label="Close" aria-label="닫기"></button>
     <div class="pwa-install-help-panel">
-      <button class="pwa-install-help-close" type="button" data-pwa-help-close aria-label="닫기">×</button>
+      <button class="pwa-install-help-close" type="button" data-pwa-help-close data-ko-aria-label="닫기" data-en-aria-label="Close" aria-label="닫기">×</button>
       <h2 id="pwaInstallHelpTitle" data-ko="Harmony Link 앱 설치 안내" data-en="Install Harmony Link">Harmony Link 앱 설치 안내</h2>
       <p id="pwaInstallHelpMessage"></p>
-      <button class="pwa-chrome-open" id="pwaChromeOpen" type="button" hidden>Chrome에서 열기</button>
+      <div class="pwa-ios-senior-guide" id="pwaIosSeniorGuide" hidden>
+        <div class="pwa-ios-step"><span class="pwa-ios-step-number">1</span><div><strong data-ko="아래 공유 버튼을 누르세요" data-en="Tap the Share button below">아래 공유 버튼을 누르세요</strong><span class="pwa-ios-share-symbol" aria-hidden="true">□<b>↑</b></span><small data-ko="Safari 화면 아래쪽 가운데에 있습니다." data-en="It is near the bottom of Safari.">Safari 화면 아래쪽 가운데에 있습니다.</small></div></div>
+        <div class="pwa-ios-step"><span class="pwa-ios-step-number">2</span><div><strong data-ko="메뉴를 아래로 내려주세요" data-en="Scroll down in the menu">메뉴를 아래로 내려주세요</strong><small data-ko="‘홈 화면에 추가’가 보일 때까지 천천히 내리세요." data-en="Scroll until you see “Add to Home Screen”.">‘홈 화면에 추가’가 보일 때까지 천천히 내리세요.</small></div></div>
+        <div class="pwa-ios-step pwa-ios-step-primary"><span class="pwa-ios-step-number">3</span><div><strong data-ko="‘홈 화면에 추가’를 누르세요" data-en="Tap “Add to Home Screen”">‘홈 화면에 추가’를 누르세요</strong><small data-ko="안 보이면 맨 아래 ‘동작 편집’을 눌러 찾아주세요." data-en="If it is missing, open Edit Actions at the bottom.">안 보이면 맨 아래 ‘동작 편집’을 눌러 찾아주세요.</small></div></div>
+        <p class="pwa-ios-final" data-ko="마지막 화면에서 오른쪽 위 ‘추가’를 누르면 설치가 끝납니다." data-en="On the last screen, tap Add in the top-right corner to finish.">마지막 화면에서 오른쪽 위 ‘추가’를 누르면 설치가 끝납니다.</p>
+      </div>
+      <button class="pwa-chrome-open" id="pwaChromeOpen" type="button" hidden data-ko="Chrome에서 열기" data-en="Open in Chrome">Chrome에서 열기</button>
       <div class="pwa-chrome-fallback" id="pwaChromeFallback" hidden>
-        <ol><li>아래 주소 복사</li><li>Chrome 앱 열기</li><li>위 주소창에 붙여넣기</li></ol>
+        <ol><li data-ko="아래 주소 복사" data-en="Copy the address below">아래 주소 복사</li><li data-ko="Chrome 앱 열기" data-en="Open the Chrome app">Chrome 앱 열기</li><li data-ko="위 주소창에 붙여넣기" data-en="Paste it into Chrome's address bar">위 주소창에 붙여넣기</li></ol>
         <code id="pwaCurrentUrl"></code>
-        <button id="pwaCopyUrl" type="button">홈페이지 주소 복사</button>
-        <strong id="pwaCopyComplete" role="status" hidden>주소가 복사되었습니다</strong>
+        <button id="pwaCopyUrl" type="button" data-ko="홈페이지 주소 복사" data-en="Copy website address">홈페이지 주소 복사</button>
+        <strong id="pwaCopyComplete" role="status" hidden data-ko="주소가 복사되었습니다" data-en="Address copied">주소가 복사되었습니다</strong>
       </div>
     </div>
   </div>
@@ -126,11 +133,11 @@
       <div class="container hero-grid">
         <div class="hero-copy reveal">
           <p class="eyebrow" data-ko="HARMONY LINK · 이음문화센터" data-en="HARMONY LINK · E-EUM CULTURE CENTER">HARMONY LINK · 이음문화센터</p>
-          <h1 data-ko="배우고 싶은 사람과<br><em>가르치는 사람을 연결합니다.</em>" data-en="Connecting people who want to learn<br><em>with people ready to teach.</em>">배우고 싶은 사람과<br><em>가르치는 사람을 연결합니다.</em></h1>
+          <h1 data-ko="배우고 싶은 사람과<br><em>가르치는 사람을 연결합니다.</em>" data-en="Connecting people who want to learn <em>with people ready to teach.</em>">배우고 싶은 사람과<br><em>가르치는 사람을 연결합니다.</em></h1>
           <p class="hero-desc" data-ko="디지털 · 음악 · 언어 · 건강 · 문화 · 생활교육까지<br>필요한 교육을 찾고 전문 강사와 연결하세요." data-en="From digital skills, music, and language to wellness, culture, and everyday learning,<br>find the education you need and connect with expert instructors.">디지털 · 음악 · 언어 · 건강 · 문화 · 생활교육까지<br>필요한 교육을 찾고 전문 강사와 연결하세요.</p>
           <div class="hero-actions">
             <a class="btn btn-explore" href="#digital-why"><span data-ko="교육 프로그램 찾기" data-en="Find Programs">교육 프로그램 찾기</span><b aria-hidden="true">→</b></a>
-            <a class="btn hero-partner-cta" href="#partner-center"><span data-ko="강사·업체로 참여하기" data-en="Join as an Instructor or Provider">강사·업체로 참여하기</span></a>
+            <a class="btn hero-partner-cta" href="#partner-application"><span data-ko="강사·업체로 참여하기" data-en="Join as an Instructor or Provider">강사·업체로 참여하기</span></a>
           </div>
           <div class="trust-row" hidden aria-hidden="true">
             <div><strong>98%</strong><span data-ko="참여자 만족도" data-en="Satisfaction">참여자 만족도</span></div>
@@ -140,7 +147,7 @@
         </div>
         <div class="hero-visual reveal delay-1" aria-label="Harmony Link program highlights">
           <div class="hero-learning-image">
-            <img src="assets/specialty/hibelle-digital.jpg" alt="전문 강사와 함께 스마트 기기를 배우는 성인 학습자들" data-ko-alt="전문 강사와 함께 스마트 기기를 배우는 성인 학습자들" data-en-alt="Adult learners exploring smart devices with an expert instructor">
+            <img src="assets/home/harmony-community-learning.png?v=20260915-1" alt="함께 배우고 대화하는 Harmony Link 학습 공동체" data-ko-alt="함께 배우고 대화하는 Harmony Link 학습 공동체" data-en-alt="Harmony Link learning community studying and talking together">
           </div>
           <div class="hero-topics" aria-label="교육 분야">
             <span style="--i:0">💻 <b data-ko="디지털" data-en="Digital">디지털</b></span><span style="--i:1">🎵 <b data-ko="음악" data-en="Music">음악</b></span><span style="--i:2">🌍 <b data-ko="언어" data-en="Language">언어</b></span><span style="--i:3">🧘 <b data-ko="건강·운동" data-en="Wellness">건강·운동</b></span><span style="--i:4">🎨 <b data-ko="미술·공예" data-en="Art">미술·공예</b></span><span style="--i:5">🍳 <b data-ko="생활·취미" data-en="Lifestyle">생활·취미</b></span><span style="--i:6">💰 <b data-ko="금융·생활" data-en="Finance">금융·생활</b></span><span style="--i:7">🧠 <b data-ko="인지" data-en="Cognitive">인지</b></span><span style="--i:8">👨‍👩‍👧 <b data-ko="가족" data-en="Family">가족</b></span><span style="--i:9">🎭 <b data-ko="문화·공연" data-en="Culture">문화·공연</b></span><span style="--i:10">💼 <b data-ko="직업교육" data-en="Career">직업교육</b></span>
@@ -156,22 +163,22 @@
       <div class="container">
         <div class="section-heading centered reveal">
           <p class="eyebrow">PROGRAM CATEGORIES</p>
-          <h2 data-ko="무엇을 배우고 싶으세요?" data-en="What would you like to learn?">무엇을 배우고 싶으세요?</h2>
+          <h2 data-ko="배움과 서비스를 만나보세요" data-en="Discover Learning & Services">배움과 서비스를 만나보세요</h2>
           <p data-ko="관심 있는 분야를 선택해 다양한 교육 프로그램을 만나보세요." data-en="Choose an area of interest and explore available learning programs.">관심 있는 분야를 선택해 다양한 교육 프로그램을 만나보세요.</p>
         </div>
         <div class="program-category-grid" aria-label="교육 분야">
-          <a class="program-category-card is-linked reveal" href="digital-classes/index.html"><span class="program-category-icon" aria-hidden="true">💻</span><strong data-ko="디지털" data-en="Digital">디지털</strong></a>
-          <a class="program-category-card is-linked reveal" href="#specialty-banners"><span class="program-category-icon" aria-hidden="true">🎵</span><strong data-ko="음악" data-en="Music">음악</strong></a>
-          <a class="program-category-card is-linked reveal" href="#specialty-banners"><span class="program-category-icon" aria-hidden="true">🌍</span><strong data-ko="언어" data-en="Language">언어</strong></a>
-          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">🧘</span><strong data-ko="건강" data-en="Health">건강</strong></article>
-          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">🎨</span><strong data-ko="미술" data-en="Art">미술</strong></article>
-          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">🍳</span><strong data-ko="생활" data-en="Lifestyle">생활</strong></article>
-          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">💰</span><strong data-ko="금융" data-en="Finance">금융</strong></article>
-          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">🧠</span><strong data-ko="인지" data-en="Cognitive">인지</strong></article>
-          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">👨‍👩‍👧</span><strong data-ko="가족" data-en="Family">가족</strong></article>
-          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">🎭</span><strong data-ko="문화" data-en="Culture">문화</strong></article>
-          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">💼</span><strong data-ko="직업" data-en="Career">직업</strong></article>
-          <article class="program-category-card reveal"><span class="program-category-icon" aria-hidden="true">🧩</span><strong data-ko="취미" data-en="Hobby">취미</strong></article>
+          <a class="program-category-card is-linked reveal" href="digital-classes/index.html"><span class="program-category-status is-available" data-ko="운영중" data-en="Available">운영중</span><span class="program-category-icon" aria-hidden="true">💻</span><strong data-ko="디지털" data-en="Digital">디지털</strong></a>
+          <a class="program-category-card is-linked reveal" href="online-english/index.html"><span class="program-category-status is-available" data-ko="운영중" data-en="Available">운영중</span><span class="program-category-icon" aria-hidden="true">🌍</span><strong data-ko="언어" data-en="Language">언어</strong></a>
+          <a class="program-category-card is-linked reveal" href="meeran-melody/index.html"><span class="program-category-status is-available" data-ko="운영중" data-en="Available">운영중</span><span class="program-category-icon" aria-hidden="true">🎵</span><strong data-ko="음악" data-en="Music">음악</strong></a>
+          <button class="program-category-card is-coming-soon reveal" type="button" data-program-coming-soon><span class="program-category-status is-preparing" data-ko="준비중" data-en="Coming soon">준비중</span><span class="program-category-icon" aria-hidden="true">🎨</span><strong data-ko="미술" data-en="Art">미술</strong></button>
+          <button class="program-category-card is-coming-soon reveal" type="button" data-program-coming-soon><span class="program-category-status is-preparing" data-ko="준비중" data-en="Coming soon">준비중</span><span class="program-category-icon" aria-hidden="true">🧘</span><strong data-ko="건강" data-en="Health">건강</strong></button>
+          <button class="program-category-card is-coming-soon reveal" type="button" data-program-coming-soon><span class="program-category-status is-preparing" data-ko="준비중" data-en="Coming soon">준비중</span><span class="program-category-icon" aria-hidden="true">🍳</span><strong data-ko="생활" data-en="Lifestyle">생활</strong></button>
+          <button class="program-category-card is-coming-soon reveal" type="button" data-program-coming-soon><span class="program-category-status is-preparing" data-ko="준비중" data-en="Coming soon">준비중</span><span class="program-category-icon" aria-hidden="true">👨‍👩‍👧</span><strong data-ko="가족" data-en="Family">가족</strong></button>
+          <button class="program-category-card is-coming-soon reveal" type="button" data-program-coming-soon><span class="program-category-status is-preparing" data-ko="준비중" data-en="Coming soon">준비중</span><span class="program-category-icon" aria-hidden="true">💰</span><strong data-ko="금융" data-en="Finance">금융</strong></button>
+          <button class="program-category-card is-coming-soon reveal" type="button" data-program-coming-soon><span class="program-category-status is-preparing" data-ko="준비중" data-en="Coming soon">준비중</span><span class="program-category-icon" aria-hidden="true">🎭</span><strong data-ko="문화" data-en="Culture">문화</strong></button>
+          <button class="program-category-card is-coming-soon reveal" type="button" data-program-coming-soon><span class="program-category-status is-preparing" data-ko="준비중" data-en="Coming soon">준비중</span><span class="program-category-icon" aria-hidden="true">🧩</span><strong data-ko="취미" data-en="Hobby">취미</strong></button>
+          <a class="program-category-card is-linked reveal" href="career.html"><span class="program-category-status is-available" data-ko="운영중" data-en="Available">운영중</span><span class="program-category-icon" aria-hidden="true">💼</span><strong data-ko="직업" data-en="Career">직업</strong></a>
+          <a class="program-category-card is-linked reveal" href="us-admissions.html"><span class="program-category-status is-available" data-ko="운영중" data-en="Available">운영중</span><span class="program-category-icon" aria-hidden="true">🎓</span><strong data-ko="진학" data-en="Admissions">진학</strong></a>
         </div>
       </div>
     </section>
@@ -481,15 +488,8 @@
 
     <section class="events section" id="events">
       <div class="container">
-        <div class="section-heading centered reveal"><p class="eyebrow">NEWS &amp; EVENTS</p><h2 data-ko="하모니링크 소식 · 행사" data-en="Harmony Link News &amp; Events">하모니링크 소식 · 행사</h2><p data-ko="무료 수업부터 지역 행사, 세미나와 특별 문화행사까지 하모니링크의 새로운 소식을 확인하세요." data-en="Discover Harmony Link's latest news, from free classes and community events to seminars and special cultural events.">무료 수업부터 지역 행사, 세미나와 특별 문화행사까지 하모니링크의 새로운 소식을 확인하세요.</p></div>
-        <div class="event-grid">
-          <article class="event-card special-event-card reveal" data-event-category="featured" data-event-start="2026-12-09" data-event-end="2026-12-13"><a class="event-poster" href="assets/events/meeran-melody-messiah-20261209.png" data-ko-href="assets/events/meeran-melody-messiah-20261209.png" data-en-href="assets/events/meeran-melody-messiah-20261209-en.png" target="_blank" aria-label="미란멜로디와 함께하는 헨델의 메시아 전단지 크게 보기"><img src="assets/events/meeran-melody-messiah-20261209.png" data-ko-src="assets/events/meeran-melody-messiah-20261209.png" data-en-src="assets/events/meeran-melody-messiah-20261209-en.png" alt="미란 멜로디와 함께하는 헨델의 메시아 전단지 미리보기"></a><div class="event-info"><span class="event-badge special" data-ko="특별 행사" data-en="SPECIAL EVENT">특별 행사</span><h3 data-ko="미란멜로디와 함께하는 헨델의 메시아" data-en="Handel's Messiah with Meeran Melody">미란멜로디와 함께하는 헨델의 메시아</h3><p data-ko="뉴욕 필하모닉의 웅장한 연주로 만나는 헨델의 메시아" data-en="Experience Handel's masterpiece Messiah in a magnificent New York Philharmonic performance.">뉴욕 필하모닉의 웅장한 연주로 만나는 헨델의 메시아</p><dl><div><dt data-ko="일정" data-en="DATES">일정</dt><dd data-ko="2026년 12월 9일(수)~13일(일)" data-en="December 9–13, 2026">2026년 12월 9일(수)~13일(일)</dd></div><div><dt data-ko="장소" data-en="LOCATION">장소</dt><dd><strong data-ko="David Geffen Hall at Lincoln Center" data-en="David Geffen Hall at Lincoln Center">David Geffen Hall at Lincoln Center</strong><small>10 Lincoln Center Plaza, New York, NY 10023</small></dd></div><div><dt data-ko="문의" data-en="CONTACT">문의</dt><dd><a href="tel:+18179053468">817-905-3468</a></dd></div></dl><a class="btn event-detail-button" href="special-event-messiah.html"><span data-ko="자세히 보기" data-en="View Details">자세히 보기</span><b>→</b></a></div></article>
-          <article class="event-card hole19-event-card reveal" data-event-category="local" data-event-start="2026-09-30" data-event-end="2026-10-19"><a class="event-poster" href="assets/events/hole19-screen-golf-tournament-20260930.png" data-ko-href="assets/events/hole19-screen-golf-tournament-20260930.png" data-en-href="assets/events/hole19-screen-golf-tournament-20260930-en.png" target="_blank" aria-label="HOLE19 스크린골프 토너먼트 전단지 크게 보기"><img src="assets/events/hole19-screen-golf-tournament-20260930.png" data-ko-src="assets/events/hole19-screen-golf-tournament-20260930.png" data-en-src="assets/events/hole19-screen-golf-tournament-20260930-en.png" alt="제1회 HOLE19배 팀대항 스크린골프 토너먼트 전단지"></a><div class="event-info"><span class="event-badge" data-ko="지역 행사" data-en="LOCAL EVENT">지역 행사</span><h3 data-ko="제1회 HOLE19배 팀대항 스크린골프 토너먼트" data-en="1st HOLE19 Team Screen Golf Tournament">제1회 HOLE19배 팀대항 스크린골프 토너먼트</h3><p data-ko="뉴욕·뉴저지 지역 4인 팀이 참가하는 스크린골프 대회입니다." data-en="A four-player team screen-golf tournament for the New York and New Jersey community.">뉴욕·뉴저지 지역 4인 팀이 참가하는 스크린골프 대회입니다.</p><dl><div><dt data-ko="일정" data-en="DATES">일정</dt><dd data-ko="9월 30일 접수 마감 · 10월 19일 예선 시작" data-en="Registration closes Sep. 30 · Qualifying begins Oct. 19">9월 30일 접수 마감 · 10월 19일 예선 시작</dd></div><div><dt data-ko="장소" data-en="LOCATION">장소</dt><dd><strong>HOLE19 Golf Lounge</strong><small>154-05 Northern Blvd, 2F, Flushing, NY 11354</small><a class="event-map-link" href="https://www.google.com/maps/search/?api=1&amp;query=154-05%20Northern%20Blvd%2C%20Flushing%2C%20NY%2011354" target="_blank" rel="noopener noreferrer" data-ko="Google 지도에서 위치 보기 ↗" data-en="View on Google Maps ↗">Google 지도에서 위치 보기 ↗</a></dd></div><div><dt data-ko="문의" data-en="CONTACT">문의</dt><dd><a href="tel:+19297660088">929-766-0088</a></dd></div></dl><a class="btn event-detail-button" href="special-event-hole19.html"><span data-ko="자세히 보기" data-en="View Details">자세히 보기</span><b>→</b></a></div></article>
-          <article class="event-card reveal delay-1" data-event-category="free" data-event-start="2026-08-22" data-event-end="2026-11-22"><a class="event-poster" href="assets/events/free-music-class-20260822.png?v=20260817-325" data-ko-href="assets/events/free-music-class-20260822.png?v=20260817-325" data-en-href="assets/events/free-music-class-20260822-en.png" target="_blank" aria-label="3개월 무료 음악 클래스 전단지 크게 보기"><img src="assets/events/free-music-class-20260822.png?v=20260817-325" data-ko-src="assets/events/free-music-class-20260822.png?v=20260817-325" data-en-src="assets/events/free-music-class-20260822-en.png" alt="미란멜로디 3개월 무료 음악 클래스 전단지"></a><div class="event-info"><span class="event-badge purple" data-ko="무료 수업" data-en="FREE CLASS">무료 수업</span><h3 data-ko="무료 음악 클래스" data-en="Free Music Class">무료 음악 클래스</h3><p data-ko="노래를 배우며 즐거움과 따뜻한 교제를 나누는 음악 수업입니다." data-en="A joyful music class combining singing and warm fellowship.">노래를 배우며 즐거움과 따뜻한 교제를 나누는 음악 수업입니다.</p><dl><div><dt data-ko="일시" data-en="DATE">일시</dt><dd data-ko="8월 22일부터 매주 토요일 오전 10시" data-en="Every Saturday 10 AM, from Aug. 22">8월 22일부터 매주 토요일 오전 10시</dd></div><div><dt data-ko="장소" data-en="LOCATION">장소</dt><dd><strong data-ko="할렐루야 교회" data-en="Hallelujah Church">할렐루야 교회</strong><small>149-65 45th Ave, Flushing, NY 11355</small></dd></div><div><dt data-ko="문의" data-en="CONTACT">문의</dt><dd><a href="tel:+18179053468">817-905-3468</a></dd></div></dl><a class="btn event-detail-button" href="special-event-music-class.html"><span data-ko="자세히 보기" data-en="View Details">자세히 보기</span><b>→</b></a></div></article>
-          <article class="event-card reveal" data-event-category="free" data-event-start="2026-08-01" data-event-end="2026-08-01"><a class="event-poster" href="assets/events/one-day-class.jpg?v=20260720-36" target="_blank" aria-label="1일 체험 클래스 전단지 크게 보기"><img src="assets/events/one-day-class.jpg?v=20260720-36" alt="음악과 디지털 1일 무료 체험 클래스 전단지"></a><div class="event-info"><span class="event-badge purple" data-ko="지난 무료 체험" data-en="PAST FREE TRIAL">지난 무료 체험</span><h3 data-ko="음악과 디지털 1일 체험 클래스" data-en="Music & Digital One-Day Experience">음악과 디지털 1일 체험 클래스</h3><p data-ko="미란멜로디 음악 수업과 AI·스마트폰 디지털 수업을 함께 체험한 프로그램입니다." data-en="A one-day experience combining music with practical AI and smartphone learning.">미란멜로디 음악 수업과 AI·스마트폰 디지털 수업을 함께 체험한 프로그램입니다.</p><dl><div><dt data-ko="일시" data-en="DATE">일시</dt><dd data-ko="2026년 8월 1일 오전 11시" data-en="August 1, 2026 at 11 AM">2026년 8월 1일 오전 11시</dd></div><div><dt data-ko="장소" data-en="LOCATION">장소</dt><dd><strong data-ko="할렐루야 교회" data-en="Hallelujah Church">할렐루야 교회</strong><small>149-65 45th Ave, Flushing, NY 11355</small></dd></div></dl></div></article>
-          <article class="event-card reveal" data-event-category="special" data-event-start="2026-07-10" data-event-end="2026-07-24"><a class="event-poster" href="assets/events/finance-ai-seminar.jpg" target="_blank" aria-label="재정과 AI 세미나 전단지 크게 보기"><img src="assets/events/finance-ai-seminar.jpg" alt="재정과 AI의 협력 무료 세미나 전단지"></a><div class="event-info"><span class="event-badge" data-ko="지난 무료 세미나" data-en="PAST FREE SEMINAR">지난 무료 세미나</span><h3 data-ko="재정과 AI의 협력, 더 나은 미래 설계" data-en="Finance and AI: Designing a Better Future">재정과 AI의 협력, 더 나은 미래 설계</h3><p data-ko="AI와 재정의 가능성을 실생활 중심으로 소개한 무료 세미나입니다." data-en="A practical free seminar on AI and personal finance.">AI와 재정의 가능성을 실생활 중심으로 소개한 무료 세미나입니다.</p><dl><div><dt data-ko="일시" data-en="DATE">일시</dt><dd data-ko="2026년 7월 10일·24일 오후 4시" data-en="July 10 & 24, 2026 at 4 PM">2026년 7월 10일·24일 오후 4시</dd></div><div><dt data-ko="장소" data-en="LOCATION">장소</dt><dd><strong data-ko="파인 데이케어" data-en="Pine Daycare">파인 데이케어</strong><small>37-10 149th Pl 1A, Flushing, NY 11354</small></dd></div></dl></div></article>
-          <article class="event-card event-coming reveal delay-2" data-event-category="special" hidden><div class="event-coming-icon">✦</div><div class="event-info"><span class="event-badge" data-ko="세미나·특강" data-en="SEMINARS & SPECIAL TALKS">세미나·특강</span><h3 data-ko="새로운 세미나와 특별 강좌 소식을 준비하고 있습니다" data-en="New seminars and special classes are on the way">새로운 세미나와 특별 강좌 소식을 준비하고 있습니다</h3><p data-ko="일정이 확정되는 즉시 이곳과 앱에서<br>가장 먼저 안내해 드립니다." data-en="Confirmed dates will be announced here and<br>in the app first.">일정이 확정되는 즉시 이곳과 앱에서<br>가장 먼저 안내해 드립니다.</p><dl><div><dt data-ko="일정" data-en="DATE">일정</dt><dd data-ko="확정 후 안내" data-en="To be announced">확정 후 안내</dd></div><div><dt data-ko="장소" data-en="LOCATION">장소</dt><dd data-ko="추후 안내" data-en="To be announced">추후 안내</dd></div><div><dt data-ko="문의" data-en="CONTACT">문의</dt><dd data-ko="하모니링크 문의" data-en="Contact Harmony Link">하모니링크 문의</dd></div></dl><a class="btn event-detail-button" href="#contact"><span data-ko="관련 정보 보기" data-en="View Information">관련 정보 보기</span><b>→</b></a></div></article>
-        </div>
+        <div class="section-heading centered reveal"><p class="eyebrow">NEWS &amp; EVENTS</p><h2 data-ko="강좌 · 행사" data-en="Classes &amp; Events">강좌 · 행사</h2><p data-ko="무료 수업부터 지역 행사, 세미나와 특별 문화행사까지 하모니링크의 새로운 소식을 확인하세요." data-en="Discover Harmony Link's latest news, from free classes and community events to seminars and special cultural events.">무료 수업부터 지역 행사, 세미나와 특별 문화행사까지 하모니링크의 새로운 소식을 확인하세요.</p></div>
+        <div class="event-grid"></div>
       </div>
     </section>
 
@@ -511,12 +511,15 @@
     </section>
   </main>
 
-  <footer><div class="container footer-top"><a class="logo logo-light" href="#top"><span class="logo-mark brand-image footer-brand-image"><img src="assets/harmony-logo.png" alt=""></span><span class="logo-name">Harmony <b>Link</b><small data-ko="이음문화센터" data-en="E-eum Culture Center">이음문화센터</small></span></a><p data-ko="하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다." data-en="A cultural and educational project operated<br class='mobile-en-only-break'>by Hibelle Consulting.">하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다.</p><div class="footer-nav"><a href="#about" data-ko="회사 소개" data-en="About">회사 소개</a><a href="#digital-why" data-ko="전문 교육" data-en="Specialty Programs">전문 교육</a><a href="#events" data-ko="강좌·행사" data-en="Classes & Events">강좌·행사</a><a href="community.html" data-ko="커뮤니티" data-en="Community">커뮤니티</a><a href="#contact" data-ko="문의하기" data-en="Contact">문의하기</a></div></div><div class="container footer-bottom"><span>© 2026 Hibelle Consulting · Harmony Link / 이음문화센터</span><div><a href="#" data-ko="개인정보처리방침" data-en="Privacy Policy">개인정보처리방침</a><a href="#" data-ko="이용약관" data-en="Terms">이용약관</a><button id="footerDeleteAccount" type="button" class="auth-delete footer-account-delete" data-ko="회원 탈퇴" data-en="Delete Account">회원 탈퇴</button></div></div></footer>
+  <footer><div class="container footer-top"><a class="logo logo-light" href="#top"><span class="logo-mark brand-image footer-brand-image"><img src="assets/harmony-logo.png" alt=""></span><span class="logo-name">Harmony <b>Link</b><small data-ko="이음문화센터" data-en="E-eum Culture Center">이음문화센터</small></span></a><p data-ko="하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다." data-en="A cultural and educational project operated<br class='mobile-en-only-break'>by Hibelle Consulting.">하이벨컨설팅이 운영하는 문화·교육 프로젝트입니다.</p><div class="footer-nav"><a href="#about" data-ko="회사 소개" data-en="About">회사 소개</a><a href="#digital-why" data-ko="전문 교육" data-en="Specialty Programs">전문 교육</a><a href="#events" data-ko="강좌·행사" data-en="Classes & Events">강좌·행사</a><a href="community.html" data-ko="커뮤니티" data-en="Community">커뮤니티</a><a href="#contact" data-ko="문의하기" data-en="Contact">문의하기</a></div></div><div class="container footer-bottom"><span data-ko="© 2026 Hibelle Consulting · Harmony Link / 이음문화센터" data-en="© 2026 Hibelle Consulting · Harmony Link / E-eum Culture Center">© 2026 Hibelle Consulting · Harmony Link / 이음문화센터</span><div><a href="#" data-ko="개인정보처리방침" data-en="Privacy Policy">개인정보처리방침</a><a href="#" data-ko="이용약관" data-en="Terms">이용약관</a><button id="footerDeleteAccount" type="button" class="auth-delete footer-account-delete" data-ko="회원 탈퇴" data-en="Delete Account">회원 탈퇴</button></div></div></footer>
   <button class="to-top" type="button" aria-label="맨 위로">↑</button>
-  <script src="script.js?v=20260909-22"></script>
+  <script src="shared/data/businesses.js?v=1"></script>
+  <script src="shared/data/events.js?v=1"></script>
+  <script src="shared/data/programs.js?v=1"></script>
+  <script src="script.js?v=20260920-2"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="access-control.js?v=20260904-1"></script>
-  <script src="auth.js?v=20260909-4"></script>
+  <script src="auth.js?v=20260916-15"></script>
   <script>
     document.addEventListener('click', function (event) {
       var toggle = event.target.closest('.lang-toggle, .mobile-lang-toggle');

@@ -54,6 +54,30 @@ if (heroTopics) {
 const heroCenterNote=document.querySelector('.center-note');
 if(heroCenterNote)heroCenterNote.innerHTML=`<div class="connection-visual" aria-hidden="true"><span>🎓</span><i>↔</i><span>👥</span></div><strong data-ko="교육과 사람을 잇다" data-en="Connecting Learning & People">교육과 사람을 잇다</strong><small>HARMONY LINK</small>`;
 
+const programComingSoonModal = document.createElement('div');
+programComingSoonModal.className = 'program-coming-soon-modal';
+programComingSoonModal.hidden = true;
+programComingSoonModal.innerHTML = `<div class="program-coming-soon-backdrop" data-program-coming-soon-close></div><section class="program-coming-soon-panel" role="dialog" aria-modal="true" aria-labelledby="programComingSoonTitle"><button class="program-coming-soon-close" type="button" data-program-coming-soon-close aria-label="닫기">×</button><h2 id="programComingSoonTitle" data-ko="준비중입니다" data-en="Coming soon">준비중입니다</h2><p data-ko="더 좋은 프로그램으로 곧 찾아뵙겠습니다." data-en="We will be back soon with an even better program.">더 좋은 프로그램으로 곧 찾아뵙겠습니다.</p><button class="program-coming-soon-confirm" type="button" data-program-coming-soon-close data-ko="확인" data-en="OK">확인</button></section>`;
+document.body.appendChild(programComingSoonModal);
+let programComingSoonReturnFocus = null;
+const closeProgramComingSoonModal = () => {
+  programComingSoonModal.hidden = true;
+  document.body.classList.remove('modal-open');
+  programComingSoonReturnFocus?.focus();
+};
+const openProgramComingSoonModal = trigger => {
+  programComingSoonReturnFocus = trigger;
+  programComingSoonModal.hidden = false;
+  document.body.classList.add('modal-open');
+  setLanguage(currentLanguage);
+  programComingSoonModal.querySelector('.program-coming-soon-close')?.focus();
+};
+document.querySelectorAll('[data-program-coming-soon]').forEach(card => card.addEventListener('click', () => openProgramComingSoonModal(card)));
+programComingSoonModal.querySelectorAll('[data-program-coming-soon-close]').forEach(control => control.addEventListener('click', closeProgramComingSoonModal));
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !programComingSoonModal.hidden) closeProgramComingSoonModal();
+});
+
 document.body.insertAdjacentHTML('beforeend', `
   <div class="digital-gallery-modal" id="digitalGallery" hidden role="dialog" aria-modal="true" aria-labelledby="digitalGalleryTitle">
     <div class="digital-gallery-backdrop" data-gallery-close></div>
@@ -123,12 +147,14 @@ document.querySelectorAll('[data-program]').forEach(link => {
 });
 document.querySelectorAll('.digital-request-btn').forEach(link => connectForm(link, digitalFormUrl));
 
+const usesCompactHeader = () => window.innerWidth <= 760 || (currentLanguage === 'en' && window.innerWidth <= 1200);
+
 function closeMenu() {
   menuButton.classList.remove('open');
   nav.classList.remove('open');
   document.querySelector('.site-header')?.classList.remove('menu-open');
   menuButton.setAttribute('aria-expanded', 'false');
-  if (window.innerWidth <= 760) nav.setAttribute('aria-hidden', 'true');
+  if (usesCompactHeader()) nav.setAttribute('aria-hidden', 'true');
   else nav.removeAttribute('aria-hidden');
   document.body.classList.remove('mobile-menu-open');
   document.body.style.overflow = '';
@@ -145,7 +171,7 @@ menuButton.addEventListener('click', () => {
   document.body.style.overflow = open ? 'hidden' : '';
 });
 
-if (window.innerWidth <= 760) nav.setAttribute('aria-hidden', 'true');
+if (usesCompactHeader()) nav.setAttribute('aria-hidden', 'true');
 nav.addEventListener('click', event => {
   const link = event.target.closest('a');
   if (!link || !nav.contains(link)) return;
@@ -168,7 +194,7 @@ document.addEventListener('keydown', event => {
 });
 
 window.addEventListener('resize', () => {
-  if (window.innerWidth > 760) {
+  if (!usesCompactHeader()) {
     if (nav.classList.contains('open')) closeMenu();
     nav.removeAttribute('aria-hidden');
   } else if (!nav.classList.contains('open')) {
@@ -202,14 +228,16 @@ function setLanguage(language) {
   langButton.setAttribute('aria-label', language === 'ko' ? 'Switch to English' : '한국어로 전환');
   menuButton.setAttribute('aria-label', language === 'ko' ? '메뉴 열기' : 'Open menu');
   toTop.setAttribute('aria-label', language === 'ko' ? '맨 위로' : 'Back to top');
-  document.getElementById('appInstallBannerClose')?.setAttribute('aria-label', language === 'ko' ? '닫기' : 'Close');
   document.title = language === 'ko' ? 'Harmony Link | 배움으로 이어지는 우리' : 'Harmony Link | Connected through learning';
   localStorage.setItem('harmonyLanguage', language);
+  if (!nav.classList.contains('open')) {
+    nav.toggleAttribute('aria-hidden', usesCompactHeader());
+  }
 }
 
 langButton.onclick=()=>{
   setLanguage(currentLanguage==='ko'?'en':'ko');
-  window.setTimeout(()=>renderAdvertisingCarousel?.(),0);
+  window.setTimeout(renderBusinessSpotlights,0);
 };
 
 window.addEventListener('scroll', () => {
@@ -228,6 +256,7 @@ const pwaInstallHelpMessage = document.getElementById('pwaInstallHelpMessage');
 const pwaInstallHelpTitle = document.getElementById('pwaInstallHelpTitle');
 const pwaInstallHelpBackdrop = document.querySelector('.pwa-install-help-backdrop');
 const pwaInstallHelpClose = document.querySelector('.pwa-install-help-close');
+const pwaIosSeniorGuide = document.getElementById('pwaIosSeniorGuide');
 const pwaChromeOpen = document.getElementById('pwaChromeOpen');
 const pwaChromeFallback = document.getElementById('pwaChromeFallback');
 const pwaCurrentUrl = document.getElementById('pwaCurrentUrl');
@@ -322,16 +351,20 @@ const pwaInstallDiagnostics = async () => {
 const closePwaInstallHelp = () => {
   if (!pwaInstallHelp) return;
   pwaInstallHelp.hidden = true;
-  pwaInstallHelp.classList.remove('in-app-browser');
+  pwaInstallHelp.classList.remove('in-app-browser', 'ios-senior-guide');
+  if (pwaIosSeniorGuide) pwaIosSeniorGuide.hidden = true;
   document.body.style.overflow = '';
 };
 const openPwaInstallHelp = () => {
   if (!pwaInstallHelp || !pwaInstallHelpMessage) return;
+  const isEnglish = document.documentElement.lang === 'en';
   pwaInstallHelp.classList.remove('in-app-browser');
+  pwaInstallHelp.classList.add('ios-senior-guide');
   pwaInstallHelpBackdrop.disabled = false;
   pwaInstallHelpClose.hidden = false;
-  pwaInstallHelpTitle.textContent = document.documentElement.lang === 'en' ? 'Install Harmony Link' : 'Harmony Link 앱 설치 안내';
-  pwaInstallHelpMessage.textContent = pwaInstallFallbackMessage();
+  pwaInstallHelpTitle.textContent = isEnglish ? 'Install Harmony Link on iPhone' : '아이폰에 Harmony Link 설치';
+  pwaInstallHelpMessage.textContent = isEnglish ? 'Just follow these 3 large steps.' : '아래 3가지만 차례대로 눌러주세요.';
+  if (pwaIosSeniorGuide) pwaIosSeniorGuide.hidden = false;
   pwaChromeOpen.hidden = true;
   pwaChromeFallback.hidden = true;
   pwaInstallHelp.hidden = false;
@@ -339,11 +372,17 @@ const openPwaInstallHelp = () => {
 };
 const openInAppChromeGuide = (showFallback = false) => {
   if (!pwaInstallHelp) return;
+  pwaInstallHelp.classList.remove('ios-senior-guide');
+  if (pwaIosSeniorGuide) pwaIosSeniorGuide.hidden = true;
   pwaInstallHelp.classList.add('in-app-browser');
   pwaInstallHelpBackdrop.disabled = true;
   pwaInstallHelpClose.hidden = true;
-  pwaInstallHelpTitle.textContent = showFallback ? 'Chrome으로 자동 이동하지 않았어요.' : '앱 설치는 Chrome에서 가능합니다';
-  pwaInstallHelpMessage.textContent = showFallback ? '' : '아래 버튼을 누르면 현재 홈페이지를 Chrome으로 엽니다.';
+  pwaInstallHelpTitle.textContent = showFallback
+    ? (currentLanguage === 'en' ? 'Chrome did not open automatically.' : 'Chrome으로 자동 이동하지 않았어요.')
+    : (currentLanguage === 'en' ? 'App installation is available in Chrome.' : '앱 설치는 Chrome에서 가능합니다');
+  pwaInstallHelpMessage.textContent = showFallback ? '' : (currentLanguage === 'en'
+    ? 'Use the button below to open this page in Chrome.'
+    : '아래 버튼을 누르면 현재 홈페이지를 Chrome으로 엽니다.');
   pwaChromeOpen.hidden = showFallback;
   pwaChromeFallback.hidden = !showFallback;
   pwaCurrentUrl.textContent = location.href;
@@ -390,7 +429,9 @@ const copyCurrentPageUrl = async () => {
     copied = document.execCommand('copy');
     input.remove();
   }
-  pwaCopyComplete.textContent = copied ? '주소가 복사되었습니다' : '주소를 길게 눌러 복사해 주세요';
+  pwaCopyComplete.textContent = copied
+    ? (currentLanguage === 'en' ? 'Address copied' : '주소가 복사되었습니다')
+    : (currentLanguage === 'en' ? 'Press and hold the address to copy it.' : '주소를 길게 눌러 복사해 주세요');
   pwaCopyComplete.hidden = false;
 };
 
@@ -581,22 +622,41 @@ promotionModal.querySelector('.promotion-action').addEventListener('click', () =
 // The advertising carousel replaces the former automatic promotion popup.
 setLanguage(currentLanguage);
 
-const specialtyPrograms = [
-  {id:'digital',titleKo:'하이벨 디지털',titleEn:'Hibelle Digital',descriptionKo:'스마트폰과 AI를 일상에서 활용하는 실용 디지털 교육',descriptionEn:'Practical digital learning for smartphones and AI',operationKo:'직영',operationEn:'DIRECTLY OPERATED',image:'assets/specialty/hibelle-digital-20260718.jpg',teacherImage:'assets/teachers/noh-hyekyung.png',teacherKo:'노혜경',teacherEn:'Hyekyung Noh',teacherRoleKo:'디지털 교육 대표 강사',teacherRoleEn:'Lead Digital Instructor',form:'https://docs.google.com/forms/d/1DWtn1FQD86E4EHzABxeoEpHDuVeoFH_Smak4_C1RU7M/viewform',tone:'blue'},
-  {id:'english',titleKo:'하이벨 화상영어',titleEn:'Hibelle Online English',descriptionKo:'목표와 수준에 맞춘 1:1 실용 화상영어',descriptionEn:'Practical one-to-one online English for every level',operationKo:'직영',operationEn:'DIRECTLY OPERATED',image:'assets/specialty/hibelle-online-english-20260718.jpg',teacherImage:'assets/teachers/rachel.png',teacherKo:'하이벨 화상영어 강사진',teacherEn:'Hibelle Online English Team',teacherRoleKo:'1:1 화상영어 전문 강사',teacherRoleEn:'1:1 Online English Instructors',form:'https://docs.google.com/forms/d/1kN5-d09smqU_UO9rUO91SdQqco7ABYDzWTgpv74EUsc/viewform',tone:'orange'},
-  {id:'melody',titleKo:'미란멜로디',titleEn:'Meeran Melody',descriptionKo:'노래와 문화로 마음과 공동체를 잇는 음악 프로그램',descriptionEn:'Music programs connecting hearts and community',operationKo:'공동운영',operationEn:'CO-OPERATED',image:'assets/specialty/meeran-melody.png',teacherImage:'assets/teachers/kim-miran.jpg',teacherKo:'김미란',teacherEn:'Meeran Kim',teacherRoleKo:'합창·음악 교육 대표 강사',teacherRoleEn:'Lead Choir & Music Instructor',form:null,tone:'pink'}
-];
+// Teacher bio / application-form fields for the (currently unreachable --
+// no [data-specialty] trigger exists in index.html) specialty detail modal
+// below. Kept local to the website since shared/data/programs.js's canonical
+// schema only carries fields both the website and the app actually consume.
+const specialtyWebExtras = {
+  digital: {teacherImage:'assets/teachers/noh-hyekyung.png',teacherKo:'노혜경',teacherEn:'Hyekyung Noh',teacherRoleKo:'디지털 교육 대표 강사',teacherRoleEn:'Lead Digital Instructor',form:'https://docs.google.com/forms/d/1DWtn1FQD86E4EHzABxeoEpHDuVeoFH_Smak4_C1RU7M/viewform'},
+  english: {teacherImage:'assets/teachers/rachel.png',teacherKo:'하이벨 화상영어 강사진',teacherEn:'Hibelle Online English Team',teacherRoleKo:'1:1 화상영어 전문 강사',teacherRoleEn:'1:1 Online English Instructors',form:'https://docs.google.com/forms/d/1kN5-d09smqU_UO9rUO91SdQqco7ABYDzWTgpv74EUsc/viewform'},
+  melody: {teacherImage:'assets/teachers/kim-miran.jpg',teacherKo:'김미란',teacherEn:'Meeran Kim',teacherRoleKo:'합창·음악 교육 대표 강사',teacherRoleEn:'Lead Choir & Music Instructor',form:null}
+};
+// Adapts a canonical shared/data/programs.js entry into the {id,titleKo,...}
+// shape this file's specialty-banner renderer and detail modal already expect
+// (id here is the website's own short slug, e.g. 'digital', not the canonical
+// stable id 'hibelle-digital' -- it drives the existing specialty-${id} CSS
+// class and specialtyDetails[id] lookup unchanged).
+function programToWebModel(program){
+  return {id:program.slug,titleKo:program.titleKo,titleEn:program.titleEn,descriptionKo:program.descriptionKo,descriptionEn:program.descriptionEn,operationKo:program.statusKo,operationEn:program.statusEn,image:program.image,url:program.url,tone:program.tone,...specialtyWebExtras[program.slug]};
+}
+const specialtyPrograms = (window.HARMONY_LINK_PROGRAMS||[]).map(programToWebModel);
+
+// DMS Care Training Center is an outside 입점 파트너 program, not one of the 3
+// canonical specialty programs above -- kept out of shared/data/programs.js
+// (whose schema/semantics are 직영/공동운영 + teacher-bio only) and hand-appended
+// here so it reuses the same card visuals via career/partner.html?partner=dms,
+// the existing Production DMS partner page (see career/data.js).
+const dmsPartnerCard = `<article class="specialty-banner-card specialty-dms reveal delay-2"><div class="specialty-partner-logo"><img src="assets/images/dms-care-logo.webp" alt="DMS Care Training Center 로고"></div><div class="specialty-banner-info"><span class="specialty-operation-badge" data-ko="입점 파트너" data-en="PARTNER">입점 파트너</span><h3 data-ko="DMS Care Training Center" data-en="DMS Care Training Center">DMS Care Training Center</h3><p class="specialty-card-description" data-ko="미국 Healthcare 분야의 실무와 자격시험을 준비하는 직업교육 프로그램" data-en="Career training that prepares students for hands-on Healthcare work and certification exams in the U.S.">미국 Healthcare 분야의 실무와 자격시험을 준비하는 직업교육 프로그램</p><a class="btn specialty-programs-link" href="career/partner.html?partner=dms"><span data-ko="프로그램 보기" data-en="View Program">프로그램 보기</span></a></div></article>`;
 
 const oldSpecialtyStart = document.getElementById('digital-why');
 if (oldSpecialtyStart) {
   const specialtySection = document.createElement('section');
   specialtySection.className = 'specialty-banners section';
   specialtySection.id = 'specialty-banners';
-  specialtySection.innerHTML = `<div class="container"><div class="section-heading centered reveal"><p class="eyebrow">PROFESSIONAL EDUCATION PROGRAMS</p><h2 data-ko="전문 교육 프로그램" data-en="Specialty Programs">전문 교육 프로그램</h2><p data-ko="Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요." data-en="Explore specialty programs operated directly or jointly by Harmony Link.">Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요.</p></div><div class="specialty-banner-grid">${specialtyPrograms.map((program,index)=>{
-    const programRoutes = {digital:'digital-classes/index.html',english:'online-english/',melody:'meeran-melody/'};
-    const actionHtml = `<a class="btn specialty-programs-link" href="${programRoutes[program.id]}"><span data-ko="프로그램 보기" data-en="View Program">프로그램 보기</span></a>`;
+  specialtySection.innerHTML = `<div class="container"><div class="section-heading centered reveal"><p class="eyebrow">EDUCATION PROGRAMS</p><h2 data-ko="교육 프로그램" data-en="Education Programs">교육 프로그램</h2><p data-ko="Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요." data-en="Explore specialty programs operated directly or jointly by Harmony Link.">Harmony Link가 직접 운영하거나 공동으로 운영하는 전문 프로그램을 만나보세요.</p></div><div class="specialty-banner-grid">${specialtyPrograms.map((program,index)=>{
+    const actionHtml = `<a class="btn specialty-programs-link" href="${program.url}"><span data-ko="프로그램 보기" data-en="View Program">프로그램 보기</span></a>`;
     return `<article class="specialty-banner-card ${program.tone} specialty-${program.id} reveal delay-${Math.min(index,2)}"><a class="specialty-poster-preview" href="${program.image}" aria-label="${program.titleKo} 전단지 크게 보기"><img src="${program.image}" alt="${program.titleKo} 프로그램 전단지"><span data-ko="전단지 크게 보기" data-en="View Flyer">전단지 크게 보기</span></a><div class="specialty-banner-info"><span class="specialty-operation-badge" data-ko="${program.operationKo}" data-en="${program.operationEn}">${program.operationKo}</span><h3 data-ko="${program.titleKo}" data-en="${program.titleEn}">${program.titleKo}</h3><p class="specialty-card-description" data-ko="${program.descriptionKo}" data-en="${program.descriptionEn}">${program.descriptionKo}</p>${actionHtml}</div></article>`;
-  }).join('')}</div></div>`;
+  }).join('')}${dmsPartnerCard}</div></div>`;
   oldSpecialtyStart.before(specialtySection);
   specialtySection.querySelectorAll('.reveal').forEach(item=>item.classList.add('visible'));
   document.querySelectorAll('#digital-why, .english-feature, .choir-feature').forEach(section=>section.remove());
@@ -713,8 +773,28 @@ const aboutCopy=document.querySelector('.about-copy');
 aboutCopy?.classList.add('about-copy-card');
 const contactWrap=document.querySelector('.contact-wrap');
 contactWrap?.insertAdjacentHTML('afterbegin','<div class="contact-illustration" aria-hidden="true"><span>✉</span><i></i><b></b><em>♥</em></div>');
+// Events (강좌 · 행사) now render from the canonical shared/data/events.js instead of
+// being hand-authored HTML here, so a data change (new event, edited date/phone/flyer)
+// only needs to happen in that one file. This reproduces the exact article markup the
+// grid previously had, so none of the code below it (current/past date migration,
+// Google Maps auto-link injection, detail/flyer-button injection, the flyer modal's
+// delegated click handler, and setLanguage()'s data-ko/data-ko-href/data-ko-src
+// attribute swapping) needed to change.
+if (!window.HARMONY_LINK_EVENTS) {
+  console.warn('[events] shared/data/events.js did not load; the events grid will be empty.');
+}
+function eventToWebHtml(event) {
+  const cardClass = ['event-card', event.cardClass, 'reveal', event.revealDelay].filter(Boolean).join(' ');
+  const hasSeparateEnFlyer = event.flyerEn && event.flyerEn !== event.flyerKo;
+  const posterLangAttrs = hasSeparateEnFlyer ? ` data-ko-href="${event.flyerKo}" data-en-href="${event.flyerEn}"` : '';
+  const imgLangAttrs = hasSeparateEnFlyer ? ` data-ko-src="${event.flyerKo}" data-en-src="${event.flyerEn}"` : '';
+  const badgeClass = ['event-badge', event.badgeClass].filter(Boolean).join(' ');
+  const detailButton = event.detailUrl ? `<a class="btn event-detail-button" href="${event.detailUrl}"><span data-ko="자세히 보기" data-en="View Details">자세히 보기</span><b>→</b></a>` : '';
+  return `<article class="${cardClass}" data-event-category="${event.category || ''}" data-event-start="${event.dateStart}" data-event-end="${event.dateEnd}"><a class="event-poster" href="${event.flyerKo}"${posterLangAttrs} target="_blank" aria-label="${event.posterAriaLabel}"><img src="${event.flyerKo}"${imgLangAttrs} alt="${event.posterAlt}"></a><div class="event-info"><span class="${badgeClass}" data-ko="${event.badgeKo}" data-en="${event.badgeEn}">${event.badgeKo}</span><h3 data-ko="${event.titleKo}" data-en="${event.titleEn}">${event.titleKo}</h3><p data-ko="${event.descriptionKo}" data-en="${event.descriptionEn}">${event.descriptionKo}</p><dl>${event.detailRowsHtml}</dl>${detailButton}</div></article>`;
+}
 const eventGrid=document.querySelector('.event-grid');
 if(eventGrid){
+  eventGrid.innerHTML=(window.HARMONY_LINK_EVENTS||[]).map(eventToWebHtml).join('');
   eventGrid.querySelectorAll('.reveal').forEach(item=>item.classList.add('visible'));
 }
 setLanguage(currentLanguage);
@@ -920,9 +1000,21 @@ if (currentEventGrid) {
     .filter(card => card.dataset.eventEnd < todayKey)
     .sort((a, b) => b.dataset.eventEnd.localeCompare(a.dataset.eventEnd))
     .forEach(card => pastGrid.appendChild(card));
-  // Past events intentionally have no 자세히 보기 button -- only the
-  // Google Maps link (added above) and the poster/lightbox stay, so this
-  // only runs on the still-upcoming cards in currentEventGrid.
+  // Past events expose their existing poster assets through the same flyer
+  // modal. No event data or storage is needed for this static archive.
+  [...pastGrid.querySelectorAll('.event-card')].forEach(card => {
+    const info = card.querySelector('.event-info');
+    const poster = card.querySelector('.event-poster');
+    const title = card.querySelector('h3')?.textContent.trim();
+    if (!info || !poster || !title || info.querySelector('.event-flyer-button')) return;
+    const button = document.createElement('a');
+    button.className = 'btn event-flyer-button';
+    button.href = poster.href;
+    button.setAttribute('aria-label', `${title} 전단지 보기`);
+    button.innerHTML = '<span data-ko="전단지 보기" data-en="View Flyer">전단지 보기</span><b>↗</b>';
+    info.appendChild(button);
+  });
+  // Keep the existing details action for current events.
   [...currentEventGrid.querySelectorAll('.event-card:not(.event-coming):not(.special-event-card)')].forEach(card => {
     const info = card.querySelector('.event-info');
     const poster = card.querySelector('.event-poster');
@@ -940,7 +1032,7 @@ if (currentEventGrid) {
 
 const contactSectionForAds = document.getElementById('specialty-banners');
 if (contactSectionForAds) {
-  contactSectionForAds.insertAdjacentHTML('beforebegin', `<section class="advertising section" id="advertising"><div class="container"><div class="section-heading centered reveal visible"><p class="eyebrow">HARMONY LINK PARTNERS</p><h2 data-ko="함께하는 지역 파트너" data-en="Community Partners">함께하는 지역 파트너</h2><p data-ko="Harmony Link와 함께 지역사회를 연결하는 파트너를 만나보세요." data-en="Meet local partners connecting and supporting our community with Harmony Link.">Harmony Link와 함께 지역사회를 연결하는 파트너를 만나보세요.</p></div><div class="ad-inline-carousel" aria-live="polite"><button type="button" class="ad-carousel-prev" aria-label="이전 업체">‹</button><div class="ad-carousel-track"></div><button type="button" class="ad-carousel-next" aria-label="다음 업체">›</button></div><div class="ad-carousel-dots"></div></div></section>`);
+  contactSectionForAds.insertAdjacentHTML('beforebegin', `<section class="advertising section" id="advertising"><div class="container"><div class="section-heading centered reveal visible"><p class="eyebrow">BUSINESS SPOTLIGHT</p><h2 data-ko="비즈니스 스포트라이트" data-en="Business Spotlight">비즈니스 스포트라이트</h2><p data-ko="지역의 다양한 비즈니스와 서비스를 만나보세요." data-en="Discover local businesses and services.">지역의 다양한 비즈니스와 서비스를 만나보세요.</p></div><div class="business-region-filters" role="group" aria-label="지역 필터"></div><div class="business-spotlight-grid" aria-live="polite"></div></div></section>`);
 }
 setLanguage(currentLanguage);
 
@@ -1061,7 +1153,7 @@ if (contactNavLink) {
   const partnerCenterNav = document.querySelector('#primary-nav a[href="#partner-center"]') || document.createElement('a');
   partnerCenterNav.href = '#partner-center';
   partnerCenterNav.dataset.ko = '파트너';
-  partnerCenterNav.dataset.en = 'Partners';
+  partnerCenterNav.dataset.en = 'Partner Center';
   partnerCenterNav.textContent = currentLanguage === 'ko' ? partnerCenterNav.dataset.ko : partnerCenterNav.dataset.en;
   if (!partnerCenterNav.isConnected) contactNavLink.before(partnerCenterNav);
 }
@@ -1070,15 +1162,40 @@ const partnerCenter = document.createElement('section');
 partnerCenter.className = 'partner-center section';
 partnerCenter.id = 'partner-center';
 partnerCenter.innerHTML = `<div class="container"><div class="partner-center-card"><div class="partner-center-shell"><div class="partner-center-copy"><p class="eyebrow">PARTNER CENTER</p><h2 data-ko="입점 파트너 전용 자료실" data-en="Partner Resource Center">입점 파트너 전용 자료실</h2><p data-ko="HarmonyLink 입점 강사와 교육업체를 위한 운영 정책 및 파트너 자료를 제공합니다." data-en="Policies and resources for approved HarmonyLink instructors and education providers.">HarmonyLink 입점 강사와 교육업체를 위한 운영 정책 및 파트너 자료를 제공합니다.</p></div><div class="partner-access-card"><form id="partnerAccessForm"><label for="partnerAccessCode" data-ko="파트너 접근코드" data-en="Partner Access Code">파트너 접근코드</label><div><input id="partnerAccessCode" type="password" autocomplete="current-password" required data-placeholder-ko="접근코드를 입력하세요" data-placeholder-en="Enter access code" placeholder="접근코드를 입력하세요"><button class="btn btn-primary" type="submit"><span data-ko="잠금 해제" data-en="Unlock">잠금 해제</span><b>→</b></button></div><p class="partner-access-status" role="status"></p></form><div class="partner-downloads" hidden><span class="unlocked-badge" data-ko="접근 승인됨" data-en="ACCESS GRANTED">접근 승인됨</span><article><div><b>DOCX</b></div><section><h3 data-ko="입점 파트너 플랫폼 이용 및 운영 정책" data-en="Partner Platform Use & Operations Policy">입점 파트너 플랫폼 이용 및 운영 정책</h3><p>Version 1.0 · Hibelle Consulting Inc.</p><small data-ko="멤버십, 15% 이용수수료, 수업 절차와 운영 원칙" data-en="Memberships, 15% platform fee, class process, and operating principles">멤버십, 15% 이용수수료, 수업 절차와 운영 원칙</small></section><a class="btn btn-primary" href="downloads/HarmonyLink_Partner_Policy_v1.0.docx" download><span data-ko="문서 다운로드" data-en="Download Policy">문서 다운로드</span><b>↓</b></a></article><p class="partner-download-warning" data-ko="이 자료는 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다." data-en="This resource is for approved partners only. External sharing or unauthorized distribution is prohibited.">이 자료는 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다.</p></div></div></div></div></div>`;
-partnerCenter.querySelector('.partner-center-card').insertAdjacentHTML('beforeend', `<div class="partner-upgrade-guide"><button class="partner-guide-toggle" type="button" aria-expanded="false" aria-controls="partnerGuideDetails"><span><small>PARTNER START GUIDE</small><strong data-ko="로그인부터 파트너 등급 이용까지" data-en="From sign-in to partner access">로그인부터 파트너 등급 이용까지</strong></span><b aria-hidden="true">＋</b></button><div class="partner-guide-details" id="partnerGuideDetails" hidden><p data-ko="아래 순서대로 진행하면 신청과 승인 상태를 쉽게 확인할 수 있습니다." data-en="Follow these steps to apply, receive approval, and access your partner resources.">아래 순서대로 진행하면 신청과 승인 상태를 쉽게 확인할 수 있습니다.</p><ol><li><b>01</b><span data-ko="가입·로그인" data-en="Join or sign in">가입·로그인</span><small data-ko="Google 또는 카카오 계정으로 가입하고 로그인합니다." data-en="Join and sign in with Google or Kakao.">Google 또는 카카오 계정으로 가입하고 로그인합니다.</small></li><li><b>02</b><span data-ko="입점 파트너 신청" data-en="Partner application">입점 파트너 신청</span><small data-ko="업체 또는 개인 강사 신청서를 작성합니다." data-en="Complete the company or instructor application.">업체 또는 개인 강사 신청서를 작성합니다.</small></li><li><b>03</b><span data-ko="관리자 검토·승인" data-en="Review and approval">관리자 검토·승인</span><small data-ko="승인되면 무료 파트너 등급과 안내메일을 받습니다." data-en="Once approved, you receive Free Partner status and an email.">승인되면 무료 파트너 등급과 안내메일을 받습니다.</small></li><li><b>04</b><span data-ko="등급 선택·변경" data-en="Choose or upgrade tier">등급 선택·변경</span><small data-ko="$20 BASIC 또는 $50 PREMIUM을 문의하고 관리자가 등급을 변경합니다." data-en="Request $20 BASIC or $50 PREMIUM and the administrator updates your tier.">$20 BASIC 또는 $50 PREMIUM을 문의하고 관리자가 등급을 변경합니다.</small></li><li><b>05</b><span data-ko="다시 로그인·자료 이용" data-en="Sign in again and access">다시 로그인·자료 이용</span><small data-ko="로그아웃 후 다시 로그인하면 변경된 등급의 자료와 혜택이 표시됩니다." data-en="Sign out and back in to see resources and benefits for the new tier.">로그아웃 후 다시 로그인하면 변경된 등급의 자료와 혜택이 표시됩니다.</small></li></ol><div class="partner-guide-actions"><a class="btn btn-primary" href="https://forms.gle/pF4xy5Jz4ycVouKo9" target="_blank" rel="noopener noreferrer"><span data-ko="파트너 신청서 작성" data-en="Apply as a Partner">파트너 신청서 작성</span><b>✓</b></a></div></div></div>`);
+partnerCenter.querySelector('.partner-center-card').insertAdjacentHTML('beforeend', `<div class="partner-upgrade-guide"><button class="partner-guide-toggle" type="button" aria-expanded="false" aria-controls="partnerGuideDetails"><span><small>PARTNER START GUIDE</small><strong data-ko="로그인부터 파트너 등급 이용까지" data-en="From sign-in to partner access">로그인부터 파트너 등급 이용까지</strong></span><b aria-hidden="true">＋</b></button><div class="partner-guide-details" id="partnerGuideDetails" hidden><p data-ko="아래 순서대로 진행하면 신청과 승인 상태를 쉽게 확인할 수 있습니다." data-en="Follow these steps to apply, receive approval, and access your partner resources.">아래 순서대로 진행하면 신청과 승인 상태를 쉽게 확인할 수 있습니다.</p><ol><li><b>01</b><span data-ko="가입·로그인" data-en="Join or sign in">가입·로그인</span><small data-ko="Google · Kakao 계정으로&lt;br&gt;간편하게 로그인합니다." data-en="Start with Google or Kakao.">Google · Kakao 계정으로<br>간편하게 로그인합니다.</small></li><li><b>02</b><span data-ko="입점 파트너 신청" data-en="Partner application">입점 파트너 신청</span><small data-ko="신청서를 작성하고&lt;br&gt;정보를 제출합니다." data-en="Submit a company or instructor application.">신청서를 작성하고<br>정보를 제출합니다.</small></li><li><b>03</b><span data-ko="관리자 검토·승인" data-en="Review and approval">관리자 검토·승인</span><small data-ko="승인 후 안내 메일로&lt;br&gt;이용 방법을 확인합니다." data-en="Receive Free Partner status and an email after approval.">승인 후 안내 메일로<br>이용 방법을 확인합니다.</small></li><li><b>04</b><span data-ko="등급 선택·변경" data-en="Choose or upgrade tier">등급 선택·변경</span><small data-ko="FREE·BASIC·PREMIUM&lt;br&gt;등급을 선택합니다." data-en="Choose BASIC or PREMIUM as needed.">FREE·BASIC·PREMIUM<br>등급을 선택합니다.</small></li><li><b>05</b><span data-ko="다시 로그인·자료 이용" data-en="Sign in again and access">다시 로그인·자료 이용</span><small data-ko="승인된 파트너는&lt;br&gt;등급별 자료를 이용합니다." data-en="Sign in again to access tier resources.">승인된 파트너는<br>등급별 자료를 이용합니다.</small></li></ol><div class="partner-guide-actions"><a class="btn btn-primary" href="https://forms.gle/pF4xy5Jz4ycVouKo9" target="_blank" rel="noopener noreferrer"><span data-ko="파트너 신청서 작성" data-en="Apply as a Partner">파트너 신청서 작성</span><b>✓</b></a></div></div></div>`);
 const partnerGuideToggle=partnerCenter.querySelector('.partner-guide-toggle');
 const partnerGuideDetails=partnerCenter.querySelector('#partnerGuideDetails');
+const partnerGuide=partnerCenter.querySelector('.partner-upgrade-guide');
+const partnerApplicationButton=partnerCenter.querySelector('.partner-guide-actions a');
+if(partnerApplicationButton)partnerApplicationButton.id='partner-application';
+const setPartnerGuideExpanded=expanded=>{
+  partnerGuideToggle?.setAttribute('aria-expanded',String(expanded));
+  if(partnerGuideDetails)partnerGuideDetails.hidden=!expanded;
+  const guideSymbol=partnerGuideToggle?.querySelector('b');
+  if(guideSymbol)guideSymbol.textContent=expanded?'−':'＋';
+};
 partnerGuideToggle?.addEventListener('click',()=>{
-  const expanded=partnerGuideToggle.getAttribute('aria-expanded')==='true';
-  partnerGuideToggle.setAttribute('aria-expanded',String(!expanded));
-  partnerGuideDetails.hidden=expanded;
-  partnerGuideToggle.querySelector('b').textContent=expanded?'＋':'−';
+  setPartnerGuideExpanded(partnerGuideToggle.getAttribute('aria-expanded')!=='true');
 });
+const showPartnerApplication=({behavior='smooth',updateHash=false}={})=>{
+  if(!partnerApplicationButton)return;
+  partnerGuide?.classList.add('partner-application-focus');
+  setPartnerGuideExpanded(true);
+  window.requestAnimationFrame(()=>window.requestAnimationFrame(()=>{
+    partnerApplicationButton.scrollIntoView({behavior,block:'center'});
+    partnerApplicationButton.classList.add('partner-application-highlight');
+    window.setTimeout(()=>partnerApplicationButton.classList.remove('partner-application-highlight'),1600);
+  }));
+  if(updateHash&&window.location.hash!=='#partner-application')window.history.pushState(null,'','#partner-application');
+};
+document.querySelector('.hero-partner-cta')?.addEventListener('click',event=>{
+  event.preventDefault();
+  showPartnerApplication({updateHash:true});
+});
+window.addEventListener('hashchange',()=>{
+  if(window.location.hash==='#partner-application')showPartnerApplication({behavior:'auto'});
+});
+if(window.location.hash==='#partner-application')window.setTimeout(()=>showPartnerApplication({behavior:'auto'}),0);
 const partnerCenterHeading=partnerCenter.querySelector('.partner-center-copy h2');
 partnerCenterHeading.dataset.ko='입점 파트너 전용 자료실';partnerCenterHeading.dataset.en='Partner Resource Center';partnerCenterHeading.textContent=partnerCenterHeading.dataset[currentLanguage];
 const partnerCenterDescription=partnerCenter.querySelector('.partner-center-copy>p:not(.eyebrow)');
@@ -1268,7 +1385,7 @@ document.querySelectorAll('.contact-form-open').forEach(button => button.addEven
 const advertisingArea = document.getElementById('advertising');
 if (advertisingArea) {
   const adHeading=advertisingArea.querySelector('.section-heading h2');
-  if(adHeading){adHeading.dataset.ko='함께하는 지역 파트너';adHeading.dataset.en='Community Partners';adHeading.textContent=currentLanguage==='en'?adHeading.dataset.en:adHeading.dataset.ko;}
+  if(adHeading){adHeading.dataset.ko='비즈니스 스포트라이트';adHeading.dataset.en='Business Spotlight';adHeading.textContent=currentLanguage==='en'?adHeading.dataset.en:adHeading.dataset.ko;}
   const adGrid=advertisingArea.querySelector('.ad-grid');
   if(adGrid){
     adGrid.innerHTML=`<button type="button" data-ad-room="premium"><span>AD 01</span><b data-ko="프리미엄 광고" data-en="Premium Advertising">프리미엄 광고</b><small data-ko="업체 둘러보기 →" data-en="View businesses →">업체 둘러보기 →</small></button><button type="button" data-ad-room="community"><span>PARTNERS</span><b data-ko="협력 업체" data-en="Community Partners">협력 업체</b><small data-ko="협력 업체 둘러보기 →" data-en="View partners →">협력 업체 둘러보기 →</small></button><button type="button" data-ad-room="culture"><span>AD 03</span><b data-ko="문화·교육 제휴" data-en="Culture & Education">문화·교육 제휴</b><small data-ko="제휴 업체 둘러보기 →" data-en="View partners →">제휴 업체 둘러보기 →</small></button>`;
@@ -1302,49 +1419,119 @@ const adRooms={
   ]},
   culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',label:'CULTURE & EDUCATION PARTNER',slots:4,items:[]}
 };
-const advertisingCarouselItems=Object.values(adRooms).flatMap(room=>room.items.map(item=>({...item,roomLabelKo:room.labelKo,roomLabelEn:room.labelEn})));
-advertisingCarouselItems.forEach(item=>{if(item.image){const image=new Image();image.src=item.image;}});
-let advertisingCarouselIndex=0;
-let advertisingCarouselTimer;
-let advertisingCarouselTransition;
-function renderAdvertisingCarousel(){
-  const track=document.querySelector('.ad-carousel-track');
-  const dots=document.querySelector('.ad-carousel-dots');
-  if(!track||!dots||!advertisingCarouselItems.length)return;
-  const item=advertisingCarouselItems[advertisingCarouselIndex];
-  const english=currentLanguage==='en';
-  const name=english?(item.displayNameEn||item.name):(item.displayNameKo||item.name);
-  const summary=english?(item.summaryEn||item.copyEn||item.copy):(item.summaryKo||item.copy);
-  const contact=english?(item.contactEn||''):(item.contactKo||'');
-  const target=item.brokerUrl||item.url||item.chatUrl||'#contact';
-  const logo=item.logoVariant==='highline'?`<div class="ad-highline-logo"><img src="${item.image}" alt="HL"><small>HIGH LINE RESIDENTIAL</small></div>`:`<img src="${item.image}" alt="${name} logo">`;
-  const roomLabel=english?item.roomLabelEn:item.roomLabelKo;
-  const cardMarkup=`<article class="ad-carousel-card"><div class="ad-carousel-logo">${logo}</div><div class="ad-carousel-copy"><span>${roomLabel}</span><h3>${name}</h3><p class="ad-carousel-summary">${summary}</p><p class="ad-carousel-contact">${contact}</p><a href="${target}" ${target.startsWith('http')?'target="_blank" rel="noopener noreferrer"':''}>${english?'View details':'자세히 보기'} →</a></div></article>`;
-  const currentCard=track.querySelector('.ad-carousel-card:last-child');
-  if(!currentCard){
-    track.innerHTML=cardMarkup;
-  }else{
-    const holder=document.createElement('div');
-    holder.innerHTML=cardMarkup;
-    const nextCard=holder.firstElementChild;
-    nextCard.classList.add('ad-carousel-enter');
-    track.appendChild(nextCard);
-    window.clearTimeout(advertisingCarouselTransition);
-    window.requestAnimationFrame(()=>window.requestAnimationFrame(()=>{
-      currentCard.classList.add('ad-carousel-leave');
-      nextCard.classList.remove('ad-carousel-enter');
-    }));
-    advertisingCarouselTransition=window.setTimeout(()=>{
-      track.querySelectorAll('.ad-carousel-card').forEach(card=>{if(card!==nextCard)card.remove();});
-    },540);
-  }
-  dots.innerHTML=advertisingCarouselItems.map((_,index)=>`<button type="button" class="${index===advertisingCarouselIndex?'active':''}" data-ad-carousel-index="${index}" aria-label="${index+1}번 업체"></button>`).join('');
-  dots.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{advertisingCarouselIndex=Number(button.dataset.adCarouselIndex);renderAdvertisingCarousel();restartAdvertisingCarousel();}));
+const businessRegions = [
+  {id:'all',labelKo:'전체',labelEn:'All'},
+  {id:'ny',labelKo:'NEW YORK',labelEn:'NEW YORK'},
+  {id:'tx',labelKo:'TEXAS',labelEn:'TEXAS'},
+  {id:'va',labelKo:'VIRGINIA',labelEn:'VIRGINIA'}
+];
+const renderBusinessPhone = contact => String(contact || '').replace(/(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g, number => `<a class="business-phone-link" href="tel:${number.replace(/[^\d+]/g, '')}">${number}</a>`);
+// Business Spotlight companies come from the canonical shared/data/businesses.js
+// (single source of truth for web + app) instead of being hand-duplicated here. This
+// reshapes each canonical entry into the {region,item,categoryKo,...} shape the existing
+// renderBusinessSpotlights()/openBusinessFlyer() below already expect, so neither of
+// those functions needed to change. adRooms/dmsCareBusiness are not sources for this
+// array anymore, but adRooms itself is untouched -- it still separately powers the
+// Premium/Community/Culture partner-directory modal.
+if (!window.HARMONY_LINK_BUSINESSES) {
+  console.warn('[businesses] shared/data/businesses.js did not load; Business Spotlight will show no businesses.');
 }
-function restartAdvertisingCarousel(){window.clearInterval(advertisingCarouselTimer);advertisingCarouselTimer=window.setInterval(()=>{advertisingCarouselIndex=(advertisingCarouselIndex+1)%advertisingCarouselItems.length;renderAdvertisingCarousel();},2800);}
-document.querySelector('.ad-carousel-prev')?.addEventListener('click',()=>{advertisingCarouselIndex=(advertisingCarouselIndex-1+advertisingCarouselItems.length)%advertisingCarouselItems.length;renderAdvertisingCarousel();restartAdvertisingCarousel();});
-document.querySelector('.ad-carousel-next')?.addEventListener('click',()=>{advertisingCarouselIndex=(advertisingCarouselIndex+1)%advertisingCarouselItems.length;renderAdvertisingCarousel();restartAdvertisingCarousel();});
-renderAdvertisingCarousel();restartAdvertisingCarousel();
+const businessSpotlights = (window.HARMONY_LINK_BUSINESSES || []).map(business => ({
+  region: business.region,
+  item: {
+    name: business.nameEn,
+    displayNameKo: business.nameKo,
+    displayNameEn: business.nameEn,
+    summaryKo: business.summaryKo,
+    summaryEn: business.summaryEn,
+    copy: business.copyKo,
+    copyEn: business.copyEn,
+    contactKo: business.phoneKo ? `전화 ${business.phoneKo}` : '',
+    contactEn: business.phoneEn ? `Phone ${business.phoneEn}` : '',
+    image: business.spotlightImage || business.logo,
+    brokerUrl: business.websiteUrl || ''
+  },
+  categoryKo: business.categoryKo,
+  categoryEn: business.categoryEn,
+  locationKo: business.locationKo,
+  locationEn: business.locationEn,
+  address: business.address || undefined,
+  mapUrl: business.mapUrl || undefined,
+  flyers: business.flyers && business.flyers.length ? business.flyers : [],
+  snsUrl: business.snsUrl || undefined,
+  socialLinks: business.socialLinks || [],
+  logo: business.logo,
+  websiteCtaKo: business.websiteCtaKo,
+  websiteCtaEn: business.websiteCtaEn
+}));
+const businessFlyerModal=document.createElement('div');
+businessFlyerModal.className='business-flyer-modal';businessFlyerModal.hidden=true;
+businessFlyerModal.innerHTML=`<div class="business-flyer-backdrop" data-business-flyer-close></div><section class="business-flyer-panel" role="dialog" aria-modal="true" aria-labelledby="businessFlyerTitle"><header class="business-flyer-head"><div><p>BUSINESS SPOTLIGHT</p><h2 id="businessFlyerTitle"></h2></div><button type="button" class="business-flyer-close" data-business-flyer-close aria-label="닫기">×</button></header><div class="business-flyer-scroll"><div class="business-flyer-navigation" aria-label="전단지 이동" hidden><button type="button" data-business-flyer-previous data-ko="이전" data-en="Previous">이전</button><span class="business-flyer-position" aria-live="polite"></span><button type="button" data-business-flyer-next data-ko="다음" data-en="Next">다음</button></div><div class="business-flyer-images"></div></div><footer class="business-flyer-actions"><div class="business-flyer-external-links"></div><button type="button" class="business-flyer-dismiss" data-business-flyer-close data-ko="닫기" data-en="Close">닫기</button></footer></section>`;
+document.body.appendChild(businessFlyerModal);
+let businessFlyerReturnFocus=null;
+const closeBusinessFlyer=()=>{if(businessFlyerModal.hidden)return;businessFlyerModal.hidden=true;document.body.classList.remove('modal-open');businessFlyerReturnFocus?.focus();};
+const openBusinessFlyer=(business,trigger)=>{
+  closeMessagePanel?.();
+  const {item,flyers=[]}=business;const name=currentLanguage==='en'?(item.displayNameEn||item.name):(item.displayNameKo||item.name);
+  const website=item.brokerUrl||item.url||'';const sns=business.snsUrl||item.instagramUrl||'';
+  const websiteLabelKo=business.websiteCtaKo||'홈페이지 보기';
+  const websiteLabelEn=business.websiteCtaEn||'Visit website';
+  let info=businessFlyerModal.querySelector('.business-flyer-info');
+  if(!info){info=document.createElement('div');info.className='business-flyer-info';businessFlyerModal.querySelector('.business-flyer-scroll').prepend(info);}
+  info.hidden=!business.socialLinks?.length;
+  info.innerHTML=info.hidden?'':`<img src="${business.logo}" alt="${name} logo"><div><p>${currentLanguage==='en'?business.categoryEn:business.categoryKo}</p><p>${business.address||''}</p><p>${currentLanguage==='en'?item.summaryEn:item.summaryKo}</p></div>`;
+  businessFlyerReturnFocus=trigger;
+  const navigation=businessFlyerModal.querySelector('.business-flyer-navigation');const images=businessFlyerModal.querySelector('.business-flyer-images');const previous=navigation.querySelector('[data-business-flyer-previous]');const next=navigation.querySelector('[data-business-flyer-next]');const position=navigation.querySelector('.business-flyer-position');let flyerIndex=0;
+  const showFlyer=index=>{flyerIndex=Math.max(0,Math.min(index,flyers.length-1));images.innerHTML=flyers.length?`<img src="${flyers[flyerIndex]}" alt="${name} ${currentLanguage==='en'?'advertising flyer':'광고 전단지'}${flyers.length>1?` ${flyerIndex+1}`:''}">`:`<p class="business-flyer-pending" data-ko="전단지 이미지 준비 중" data-en="Flyer image coming soon">${currentLanguage==='en'?'Flyer image coming soon':'전단지 이미지 준비 중'}</p>`;position.textContent=`${flyerIndex+1} / ${flyers.length}`;previous.disabled=flyerIndex===0;next.disabled=flyerIndex===flyers.length-1;};
+  businessFlyerModal.querySelector('#businessFlyerTitle').textContent=name;
+  navigation.hidden=flyers.length<2;previous.onclick=()=>showFlyer(flyerIndex-1);next.onclick=()=>showFlyer(flyerIndex+1);showFlyer(0);
+  businessFlyerModal.querySelector('.business-flyer-external-links').innerHTML=`${website?`<a class="business-flyer-website" href="${website}" target="_blank" rel="noopener noreferrer" data-ko="${websiteLabelKo}" data-en="${websiteLabelEn}">${currentLanguage==='en'?websiteLabelEn:websiteLabelKo}</a>`:''}${business.socialLinks?.length?business.socialLinks.map(link=>`<a class="business-flyer-sns" href="${link.url}" target="_blank" rel="noopener noreferrer"><img src="${link.icon}" alt="">${link.label}</a>`).join(''):sns?`<a class="business-flyer-sns" href="${sns}" target="_blank" rel="noopener noreferrer" data-ko="SNS 보기" data-en="View social media">${currentLanguage==='en'?'View social media':'SNS 보기'}</a>`:''}`;
+  businessFlyerModal.hidden=false;document.body.classList.add('modal-open');setLanguage(currentLanguage);businessFlyerModal.querySelector('.business-flyer-close')?.focus();
+};
+businessFlyerModal.querySelectorAll('[data-business-flyer-close]').forEach(control=>control.addEventListener('click',closeBusinessFlyer));
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!businessFlyerModal.hidden)closeBusinessFlyer();});
+const messageCopy={ko:{close:'닫기',title:'무엇이든 물어보세요',description:'궁금한 내용을 남겨주세요.',placeholder:'메시지를 입력하세요.',send:'보내기',sending:'보내는 중...',required:'메시지를 입력해주세요.',success:'메시지가 전송되었습니다.',failure:'전송하지 못했습니다. 다시 시도해주세요.',trigger:'메시지 보내기'},en:{close:'Close',title:'Ask us anything',description:'Leave us a message.',placeholder:'Type your message.',send:'Send',sending:'Sending...',required:'Please enter a message.',success:'Your message has been sent.',failure:'We could not send your message. Please try again.',trigger:'Send Message'}};
+const messageWidget=document.createElement('aside');messageWidget.className='floating-message';
+messageWidget.innerHTML=`<section class="floating-message-panel" hidden aria-labelledby="floatingMessageTitle"><button type="button" class="floating-message-close" data-ko-aria-label="${messageCopy.ko.close}" data-en-aria-label="${messageCopy.en.close}" aria-label="${messageCopy.ko.close}">×</button><p>HARMONY LINK</p><h2 id="floatingMessageTitle" data-ko="${messageCopy.ko.title}" data-en="${messageCopy.en.title}">${messageCopy.ko.title}</h2><span data-ko="${messageCopy.ko.description}" data-en="${messageCopy.en.description}">${messageCopy.ko.description}</span><form><textarea name="message" required data-placeholder-ko="${messageCopy.ko.placeholder}" data-placeholder-en="${messageCopy.en.placeholder}" placeholder="${messageCopy.ko.placeholder}"></textarea><button type="submit" data-ko="${messageCopy.ko.send}" data-en="${messageCopy.en.send}">${messageCopy.ko.send}</button><small role="status"></small></form></section><button type="button" class="floating-message-trigger" data-ko-aria-label="${messageCopy.ko.trigger}" data-en-aria-label="${messageCopy.en.trigger}" aria-label="${messageCopy.ko.trigger}"><span aria-hidden="true">💬</span><span data-ko="${messageCopy.ko.trigger}" data-en="${messageCopy.en.trigger}">${messageCopy.ko.trigger}</span></button>`;document.body.appendChild(messageWidget);
+const messagePanel=messageWidget.querySelector('.floating-message-panel'),messageTrigger=messageWidget.querySelector('.floating-message-trigger');
+const resetMessagePanel=()=>{const form=messagePanel.querySelector('form');form.reset();form.querySelector('small').textContent='';const button=form.querySelector('button');button.disabled=false;button.textContent=messageCopy[currentLanguage].send;};
+const closeMessagePanel=()=>{messagePanel.hidden=true;resetMessagePanel();messageTrigger.focus();};messageTrigger.addEventListener('click',()=>{if(!messagePanel.hidden){closeMessagePanel();return;}resetMessagePanel();messagePanel.hidden=false;messagePanel.querySelector('textarea').focus();});messageWidget.querySelector('.floating-message-close').addEventListener('click',closeMessagePanel);
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!messagePanel.hidden)closeMessagePanel();});
+messagePanel.querySelector('form').addEventListener('submit',async event=>{event.preventDefault();const form=event.currentTarget,status=form.querySelector('small'),button=form.querySelector('button'),message=form.message.value.trim(),copy=messageCopy[currentLanguage];if(button.disabled)return;if(!message){status.textContent=copy.required;form.message.focus();return;}button.disabled=true;button.textContent=copy.sending;status.textContent='';try{const data=new FormData();data.set('문의 유형','홈페이지 메시지');data.set('문의사항',message);data.set('_subject','Harmony Link 홈페이지 메시지');data.set('_captcha','false');const response=await fetch('https://formsubmit.co/ajax/hibelle@hibelleconsulting.com',{method:'POST',headers:{Accept:'application/json'},body:data});if(!response.ok)throw new Error('send failed');status.textContent=copy.success;form.reset();}catch{status.textContent=copy.failure;}finally{button.disabled=false;button.textContent=copy.send;}});
+let selectedBusinessRegion = 'all';
+function renderBusinessSpotlights(selectedRegion=selectedBusinessRegion) {
+  selectedBusinessRegion = selectedRegion;
+  const filters=advertisingArea?.querySelector('.business-region-filters');
+  const grid=advertisingArea?.querySelector('.business-spotlight-grid');
+  if(!filters||!grid)return;
+  filters.innerHTML=businessRegions.map(region=>`<button type="button" class="${region.id===selectedRegion?'is-active':''}" data-business-region="${region.id}" aria-pressed="${region.id===selectedRegion}"><span data-ko="${region.labelKo}" data-en="${region.labelEn}">${currentLanguage==='en'?region.labelEn:region.labelKo}</span></button>`).join('');
+  const businesses=selectedRegion==='all'?businessSpotlights:businessSpotlights.filter(business=>business.region===selectedRegion);
+  if(!businesses.length){
+    const region=businessRegions.find(candidate=>candidate.id===selectedRegion);
+    grid.innerHTML=`<p class="business-spotlight-empty" data-ko="${region?.labelKo||''} 지역의 비즈니스 정보는 준비 중입니다." data-en="Business listings for ${region?.labelEn||''} are coming soon.">${currentLanguage==='en'?`Business listings for ${region?.labelEn||''} are coming soon.`:`${region?.labelKo||''} 지역의 비즈니스 정보는 준비 중입니다.`}</p>`;
+  }else{
+    grid.innerHTML=businesses.map((business,index)=>{const {region,item,categoryKo,categoryEn,locationKo,locationEn,address,mapUrl}=business;
+      const name=currentLanguage==='en'?(item.displayNameEn||item.name):(item.displayNameKo||item.name);
+      const summary=currentLanguage==='en'?(item.summaryEn||item.copyEn):(item.summaryKo||item.copy);
+      const contact=currentLanguage==='en'?item.contactEn:item.contactKo;
+      const regionLabel=businessRegions.find(candidate=>candidate.id===region)?.labelKo||region.toUpperCase();
+      const contactMarkup=`<p class="business-contact">${renderBusinessPhone(contact)}</p>`;
+      const displayLocation=currentLanguage==='en'?locationEn:locationKo;
+      const addressMarkup=address?(mapUrl?`<a class="business-address" href="${mapUrl}" target="_blank" rel="noopener noreferrer">${address}</a>`:`<p class="business-address" data-ko="${address}" data-en="${address}">${address}</p>`):`<p class="business-address" data-ko="${locationKo}" data-en="${locationEn}">${displayLocation}</p>`;
+      return `<article class="business-spotlight-card" tabindex="0" role="button" data-business-spotlight-index="${index}" aria-label="${name} ${currentLanguage==='en'?'advertising details':'광고 상세 보기'}"><span class="business-state-badge">${regionLabel}</span><div class="business-spotlight-logo"><img src="${item.image}" alt="${name} logo"></div><div class="business-spotlight-copy"><p class="business-category" data-ko="${categoryKo}" data-en="${categoryEn}">${currentLanguage==='en'?categoryEn:categoryKo}</p><h3>${name}</h3><p class="business-summary">${summary}</p>${contactMarkup}${addressMarkup}<div class="business-detail-actions"><button type="button" class="business-detail-link" data-business-flyer-open><span data-ko="자세히 보기" data-en="View details">${currentLanguage==='en'?'View details':'자세히 보기'}</span> <b aria-hidden="true">→</b></button></div></div></article>`;
+    }).join('');
+    grid.querySelectorAll('.business-spotlight-card').forEach(card=>{
+      const business=businesses[Number(card.dataset.businessSpotlightIndex)];
+      const open=()=>openBusinessFlyer(business,card);
+      card.addEventListener('click',event=>{if(!event.target.closest('a,button'))open();});
+      card.addEventListener('keydown',event=>{if((event.key==='Enter'||event.key===' ')&&event.target===card){event.preventDefault();open();}});
+      card.querySelector('[data-business-flyer-open]')?.addEventListener('click',open);
+    });
+  }
+  filters.querySelectorAll('[data-business-region]').forEach(button=>button.addEventListener('click',()=>renderBusinessSpotlights(button.dataset.businessRegion)));
+  setLanguage(currentLanguage);
+}
+renderBusinessSpotlights();
 
 const hole19Advertiser=adRooms.premium.items.find(item=>item.name==='HOLE19 Golf Lounge');
 if(hole19Advertiser){
@@ -1393,34 +1580,103 @@ if (partnerPlans) {
     </button>
     <div class="partner-plan-benefits free-benefits" id="freeBenefits" hidden>
       <h3>FREE 파트너 혜택</h3>
-      <p class="plan-benefit-lead">비용 없이 입점하여 기본 정보를 알리고 플랫폼을 시작하는 단계입니다.</p>
-      <ul><li>업체·강사 기본 프로필 등록</li><li>교육 카테고리 1개 기본 노출</li><li>기본 프로그램 1개 등록</li><li>프로그램 정보 분기별 1회 수정</li><li>기관·수강 의뢰 매칭 가능 시 안내</li><li>플랫폼 공지와 뉴스레터 제공</li></ul>
+      <p class="plan-benefit-lead">비용 없이 기본 등록과 플랫폼 이용을 시작합니다.</p>
+      <article class="partner-tier-panel">
+        <button class="partner-tier-panel-toggle" type="button" aria-expanded="false" aria-controls="freeGettingStarted"><span><strong>시작하기</strong><small>기본 등록과 프로그램 운영을 준비합니다.</small></span><b>열기</b></button>
+        <div class="partner-tier-panel-body" id="freeGettingStarted" hidden><p>기본 등록에 필요한 혜택을 확인하세요.</p><button class="partner-tier-detail-toggle" type="button" aria-expanded="false" aria-controls="freeGettingStartedDetails">확인</button><ul class="partner-tier-detail" id="freeGettingStartedDetails" hidden><li><strong>시작하기</strong><span>기본 프로필을 등록해 파트너 활동을 시작합니다.</span></li><li><strong>카테고리 노출</strong><span>교육 카테고리 1개에 기본으로 노출됩니다.</span></li><li><strong>프로그램 등록</strong><span>기본 프로그램 1개를 등록할 수 있습니다.</span></li></ul></div>
+      </article>
+      <article class="partner-tier-panel">
+        <button class="partner-tier-panel-toggle" type="button" aria-expanded="false" aria-controls="freeOperations"><span><strong>운영 안내</strong><small>수정, 매칭, 공지 혜택을 확인합니다.</small></span><b>열기</b></button>
+        <div class="partner-tier-panel-body" id="freeOperations" hidden><p>운영 중 필요한 지원 내용을 확인하세요.</p><button class="partner-tier-detail-toggle" type="button" aria-expanded="false" aria-controls="freeOperationsDetails">확인</button><ul class="partner-tier-detail" id="freeOperationsDetails" hidden><li><strong>정보 수정</strong><span>프로그램 정보는 분기별 1회 수정합니다.</span></li><li><strong>매칭</strong><span>가능한 기관·수강 의뢰 매칭을 안내합니다.</span></li><li><strong>공지사항</strong><span>플랫폼 공지와 뉴스레터를 받아봅니다.</span></li></ul></div>
+      </article>
     </div>
     <button type="button" class="partner-plan-toggle basic" aria-expanded="false" aria-controls="basicBenefits">
       <i>홍보·매칭 강화</i><span>BASIC PARTNER</span><strong>$20<small> / 월</small></strong><p>꾸준한 노출과 매칭 안내</p><em>혜택 보기 ＋</em>
     </button>
     <div class="partner-plan-benefits" id="basicBenefits" hidden>
       <h3>BASIC 회원 혜택</h3>
-      <p class="plan-benefit-lead">직접 만든 홍보물과 프로그램으로 정기적인 노출과 매칭 안내를 받는 단계입니다.</p>
-      <ul><li>FREE 파트너의 모든 혜택</li><li>강화된 업체·강사 프로필</li><li>교육 카테고리 최대 3개 노출</li><li>프로그램 최대 3개 등록</li><li>프로그램 정보 월 1회 수정</li><li>기관·수강 의뢰 정기 매칭 안내</li><li>소형 배너 및 검색 우선 노출</li><li>이메일 기본 운영 상담</li></ul>
+      <p class="plan-benefit-lead">정기 노출과 매칭 안내를 강화합니다.</p>
+      <article class="partner-tier-panel">
+        <button class="partner-tier-panel-toggle" type="button" aria-expanded="false" aria-controls="basicGettingStarted"><span><strong>시작하기</strong><small>프로필과 프로그램 노출을 강화합니다.</small></span><b>열기</b></button>
+        <div class="partner-tier-panel-body" id="basicGettingStarted" hidden><p>기본 등록과 강화된 노출 혜택을 확인하세요.</p><button class="partner-tier-detail-toggle" type="button" aria-expanded="false" aria-controls="basicGettingStartedDetails">확인</button><ul class="partner-tier-detail" id="basicGettingStartedDetails" hidden><li><strong>FREE 혜택</strong><span>FREE 파트너의 모든 혜택을 이용합니다.</span></li><li><strong>프로필 강화</strong><span>업체·강사 프로필을 더 풍부하게 소개합니다.</span></li><li><strong>카테고리 노출</strong><span>교육 카테고리 최대 3개에 노출됩니다.</span></li><li><strong>프로그램 등록</strong><span>프로그램을 최대 3개까지 등록합니다.</span></li></ul></div>
+      </article>
+      <article class="partner-tier-panel">
+        <button class="partner-tier-panel-toggle" type="button" aria-expanded="false" aria-controls="basicOperations"><span><strong>운영·성장 지원</strong><small>정기 안내와 홍보 지원을 확인합니다.</small></span><b>열기</b></button>
+        <div class="partner-tier-panel-body" id="basicOperations" hidden><p>운영과 성장을 위한 혜택을 확인하세요.</p><button class="partner-tier-detail-toggle" type="button" aria-expanded="false" aria-controls="basicOperationsDetails">확인</button><ul class="partner-tier-detail" id="basicOperationsDetails" hidden><li><strong>정보 수정</strong><span>프로그램 정보는 월 1회 수정합니다.</span></li><li><strong>매칭</strong><span>기관·수강 의뢰 매칭을 정기 안내합니다.</span></li><li><strong>홍보·노출</strong><span>소형 배너와 검색 우선 노출을 제공합니다.</span></li><li><strong>운영 상담</strong><span>이메일로 기본 운영 상담을 제공합니다.</span></li></ul></div>
+      </article>
     </div>
     <button type="button" class="partner-plan-toggle premium" aria-expanded="false" aria-controls="premiumBenefits">
       <i>가장 강력한 성장 지원</i><span>PREMIUM PARTNER</span><strong>$50<small> / 월</small></strong><p>전문 디자인·최우선 홍보·매칭</p><em>혜택 보기 ＋</em>
     </button>
     <div class="partner-plan-benefits premium-benefits" id="premiumBenefits" hidden>
       <h3>PREMIUM 회원 혜택</h3>
-      <p class="plan-benefit-lead">홍보 디자인부터 최우선 노출과 매칭까지 적극 지원하는 프리미엄 단계입니다.</p>
-      <ul><li>BASIC 파트너의 모든 혜택</li><li>홍보 전단·배너 디자인 지원</li><li>전체 교육 카테고리와 추천 영역 노출</li><li>프로그램 등록 및 수정 제한 없음</li><li>전문교육 섹션 프리미엄 배너 노출</li><li>메인 페이지·추천 강사 우선 노출</li><li>신규 기관 의뢰 최우선 매칭</li><li>입점·프로그램 심사 우선 처리</li><li>디지털 스토어 판매 수수료 할인</li><li>우선 운영 상담·특별 프로모션 초청</li></ul>
+      <p class="plan-benefit-lead">디자인·노출·매칭을 최우선으로 지원합니다.</p>
+      <article class="partner-tier-panel">
+        <button class="partner-tier-panel-toggle" type="button" aria-expanded="false" aria-controls="premiumGettingStarted"><span><strong>시작하기</strong><small>전체 노출과 디자인 지원을 준비합니다.</small></span><b>열기</b></button>
+        <div class="partner-tier-panel-body" id="premiumGettingStarted" hidden><p>최우선 노출과 등록 혜택을 확인하세요.</p><button class="partner-tier-detail-toggle" type="button" aria-expanded="false" aria-controls="premiumGettingStartedDetails">확인</button><ul class="partner-tier-detail" id="premiumGettingStartedDetails" hidden><li><strong>BASIC 혜택</strong><span>BASIC 파트너의 모든 혜택을 이용합니다.</span></li><li><strong>디자인 지원</strong><span>홍보 전단과 배너 디자인을 지원합니다.</span></li><li><strong>카테고리 노출</strong><span>전체 교육 카테고리와 추천 영역에 노출됩니다.</span></li><li><strong>프로그램 등록</strong><span>프로그램 등록과 수정 횟수에 제한이 없습니다.</span></li></ul></div>
+      </article>
+      <article class="partner-tier-panel">
+        <button class="partner-tier-panel-toggle" type="button" aria-expanded="false" aria-controls="premiumGrowth"><span><strong>홍보·성장 지원</strong><small>우선 노출과 전담 지원을 확인합니다.</small></span><b>열기</b></button>
+        <div class="partner-tier-panel-body" id="premiumGrowth" hidden><p>성장을 위한 우선 지원 내용을 확인하세요.</p><button class="partner-tier-detail-toggle" type="button" aria-expanded="false" aria-controls="premiumGrowthDetails">확인</button><ul class="partner-tier-detail" id="premiumGrowthDetails" hidden><li><strong>홍보·노출</strong><span>전문교육 섹션 프리미엄 배너에 노출됩니다.</span></li><li><strong>우선 노출</strong><span>메인 페이지와 추천 강사 영역에 우선 노출됩니다.</span></li><li><strong>매칭</strong><span>신규 기관 의뢰를 최우선으로 연결합니다.</span></li><li><strong>우선 심사</strong><span>입점과 프로그램 심사를 우선 처리합니다.</span></li><li><strong>스토어 혜택</strong><span>디지털 스토어 판매 수수료를 할인합니다.</span></li><li><strong>운영 지원</strong><span>우선 상담과 특별 프로모션에 초대합니다.</span></li></ul></div>
+      </article>
     </div>`;
-  partnerPlans.querySelectorAll('.partner-plan-toggle').forEach(button => button.addEventListener('click', () => {
-    const panel = document.getElementById(button.getAttribute('aria-controls'));
-    const willOpen = panel.hidden;
-    partnerPlans.querySelectorAll('.partner-plan-benefits').forEach(item => { item.hidden = true; });
-    partnerPlans.querySelectorAll('.partner-plan-toggle').forEach(item => { item.setAttribute('aria-expanded', 'false'); item.querySelector('em').textContent = '혜택 보기 ＋'; });
-    panel.hidden = !willOpen;
-    button.setAttribute('aria-expanded', String(willOpen));
-    button.querySelector('em').textContent = willOpen ? '혜택 닫기 −' : '혜택 보기 ＋';
-  }));
+  const resetTierPanels = scope => {
+    scope.querySelectorAll('.partner-tier-panel').forEach(panel => {
+      panel.classList.remove('is-open');
+      const panelToggle = panel.querySelector('.partner-tier-panel-toggle');
+      panelToggle?.setAttribute('aria-expanded', 'false');
+      const panelToggleLabel = panelToggle?.querySelector('b');
+      if (panelToggleLabel) panelToggleLabel.textContent = '열기';
+      const panelBody = panel.querySelector('.partner-tier-panel-body');
+      if (panelBody) panelBody.hidden = true;
+      const detailButton = panel.querySelector('.partner-tier-detail-toggle');
+      detailButton?.setAttribute('aria-expanded', 'false');
+      if (detailButton) detailButton.textContent = '확인';
+      const detail = panel.querySelector('.partner-tier-detail');
+      if (detail) detail.hidden = true;
+    });
+  };
+  const selectPartnerPlan = button => {
+    const panel = partnerPlans.querySelector(`#${button.getAttribute('aria-controls')}`);
+    if (!panel) return;
+    partnerPlans.querySelectorAll('.partner-plan-benefits').forEach(item => {
+      item.hidden = true;
+      resetTierPanels(item);
+    });
+    partnerPlans.querySelectorAll('.partner-plan-toggle').forEach(item => {
+      item.classList.toggle('active', item === button);
+      item.setAttribute('aria-expanded', String(item === button));
+      item.querySelector('em').textContent = item === button ? '선택됨' : '혜택 보기';
+    });
+    panel.hidden = false;
+  };
+  partnerPlans.querySelectorAll('.partner-plan-toggle').forEach(button => button.addEventListener('click', () => selectPartnerPlan(button)));
+  partnerPlans.addEventListener('click', event => {
+    const panelToggle = event.target.closest('.partner-tier-panel-toggle');
+    if (panelToggle) {
+      const panel = panelToggle.closest('.partner-tier-panel');
+      const benefitPanel = panel.closest('.partner-plan-benefits');
+      const shouldOpen = !panel.classList.contains('is-open');
+      resetTierPanels(benefitPanel);
+      if (shouldOpen) {
+        panel.classList.add('is-open');
+        panelToggle.setAttribute('aria-expanded', 'true');
+        panel.querySelector('.partner-tier-panel-body').hidden = false;
+        panelToggle.querySelector('b').textContent = '닫기';
+      }
+      return;
+    }
+    const detailToggle = event.target.closest('.partner-tier-detail-toggle');
+    if (detailToggle) {
+      const detail = partnerPlans.querySelector(`#${detailToggle.getAttribute('aria-controls')}`);
+      if (!detail) return;
+      const shouldShow = detail.hidden;
+      detail.hidden = !shouldShow;
+      detailToggle.setAttribute('aria-expanded', String(shouldShow));
+      detailToggle.textContent = shouldShow ? '닫기' : '확인';
+    }
+  });
+  selectPartnerPlan(partnerPlans.querySelector('.partner-plan-toggle.free'));
 }
 
 // Reusable volunteer program area; new opportunities can be appended as cards later.
@@ -1447,58 +1703,86 @@ document.querySelectorAll('.contact-form-open').forEach(button => button.addEven
 }));
 
 // Partner-only resource library. Available files download immediately; planned files are clearly labeled.
-// Twelve fixed categories, each gated by the tier it first unlocks at
-// (cumulative, same as before: a section shows once selectedTier >= its
-// tier). This is deliberately built so the counts fall out exactly right
-// without any per-tier special-casing: FREE (selected=0) keeps only the
-// two tier:0 entries, BASIC (selected=20) adds the four tier:20 entries
-// (6 total), PREMIUM (selected=50) adds the six tier:50 entries (12
-// total). Card numbers are NOT stored here -- setAccessTier() below
-// renumbers whichever cards are currently visible from 01, so switching
-// tiers always restarts the count instead of keeping each card's fixed
-// position in this full list.
+// Twelve fixed categories are grouped by the tier that first unlocks them.
+// BASIC and PREMIUM retain the established cumulative partner access:
+// FREE = 2 categories, BASIC = 6, PREMIUM = all 12.
+const partnerResourceTranslations={
+  '시작하기':'Getting Started','입점 후 가장 먼저 확인하는 필수 안내 자료':'Essential guidance to review first after joining','시작 안내서':'Getting Started Guide','플랫폼 운영 정책':'Platform Operations Policy','파트너 계약서':'Partner Agreement','강사 활동 안내':'Instructor Activity Guide',
+  '공지사항':'Announcements','Harmony Link 운영 공지 및 주요 업데이트':'Harmony Link operating notices and key updates','최신 공지':'Latest notices','바로가기':'Open','파트너 공지':'Partner notices','행사 일정':'Event schedule','자료실 업데이트':'Resource updates',
+  '운영 매뉴얼':'Operations Manual','기관 출강과 실제 수업 운영을 위한 기본 가이드':'Core guidance for institutional classes and delivery','기관 수업 진행':'Running institutional classes','출강 체크':'Teaching visit checklist','첫 수업 준비':'First class preparation','수업 마무리':'Closing a class','강사 매너·복장':'Instructor etiquette and attire','안전 수칙':'Safety guidelines',
+  '수업 자료':'Class Resources','수업 준비와 진행에 활용할 수 있는 교육 자료':'Resources for class preparation and delivery','수업계획서 양식':'Lesson plan template','출석부':'Attendance sheet','만족도 조사':'Satisfaction survey','수료증 양식':'Certificate template','강의 노트 양식':'Lecture notes template','PPT 템플릿':'PPT template','스마트폰 교안':'Smartphone lesson materials','컴퓨터 교안':'Computer lesson materials','영상편집 교안':'Video editing lesson materials','합창곡':'Choir music','반주 자료':'Accompaniment materials','발성 자료':'Voice training materials','음악 활동지':'Music activity sheets','악보':'Sheet music',
+  '홍보 자료':'Promotional Resources','Harmony Link 브랜드 홍보 및 프로그램 안내 자료':'Harmony Link branding and program information resources','브랜드 로고':'Brand logo','전단지 예시':'Flyer examples','컬러 가이드':'Color guide','SNS 카드뉴스':'Social media cards','배너':'Banner','명함 디자인':'Business card design','프로필 템플릿':'Profile template',
+  '서식 · 템플릿':'Forms & Templates','강사 운영에 필요한 기본 문서와 실무 양식':'Core documents and working templates for instructors','강사 프로필 양식':'Instructor profile template','강의계획서':'Course plan','일정표':'Schedule','기관 소개서':'Organization profile','PDF 템플릿':'PDF template',
+  'Canva 디자인 자료':'Canva Design Resources','전단지·배너·SNS 제작에 활용하는 디자인 자료':'Design resources for flyers, banners, and social media','Canva 템플릿':'Canva templates','Canva 사용법':'Using Canva',
+  '기관 제안 · 영업 자료':'Institutional Proposals & Outreach','기관 제안과 프로그램 영업에 활용하는 실전 자료':'Practical resources for institutional proposals and program outreach','프로그램 제안서':'Program proposal','견적서':'Quote template','기관 계약 방법':'Institutional contracts','마케팅 방법':'Marketing methods',
+  'AI 수업 활용 자료':'AI Teaching Resources','AI·ChatGPT 등을 교육에 활용하기 위한 강의 자료':'Teaching materials for using AI and ChatGPT in education','ChatGPT 자료':'ChatGPT resources','AI 활용 자료':'AI usage resources','ChatGPT 활용법':'Using ChatGPT',
+  'SNS · 콘텐츠 자료':'Social Media & Content','SNS 홍보와 콘텐츠 제작에 활용하는 운영 자료':'Operational resources for social promotion and content creation','디지털 이미지':'Digital images','화상영어 이미지':'Online English images','멜로디 이미지':'Melody images','모집 포스터':'Recruitment posters',
+  '프로그램 기획 자료':'Program Planning Resources','새로운 강좌와 프로그램을 설계하기 위한 기획 자료':'Planning resources for new classes and programs','프로그램 예시':'Program examples','강의 잘하는 방법':'Effective teaching','시니어 수업 노하우':'Senior class guidance',
+  '파트너 성장 자료':'Partner Growth Resources','수업 확대·기관 확보·브랜드 성장에 활용하는 자료':'Resources for class expansion, institutional outreach, and brand growth','홍보 디자인':'Promotional design','추천 노출 신청':'Featured placement request','프로그램 등록':'Program registration',
+  '준비 중':'Coming soon','자료 준비 중':'Resource coming soon','자료 보기 →':'View resource →','다운로드 ↓':'Download ↓','열기':'Open','닫기':'Close','접근 승인됨':'Access granted','필요한 영역을 선택하면 다운로드 가능한 파일과 준비 중인 자료를 확인할 수 있습니다.':'Select an area to view available downloads and resources in preparation.','이 자료는 승인된 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다.':'These resources are for approved partners only. External sharing and unauthorized distribution are prohibited.'
+};
+const partnerResourceText=ko=>({ko,en:partnerResourceTranslations[ko]||ko});
+const partnerResourceMarkup=(tag,ko,className='')=>{const text=partnerResourceText(ko),attribute=className?` class="${className}"`:'';return `<${tag}${attribute} data-ko="${text.ko}" data-en="${text.en}">${currentLanguage==='en'?text.en:text.ko}</${tag}>`;};
 const partnerResourceSections = [
-  {tier:0,icon:'🚀',title:'시작하기',copy:'입점 후 가장 먼저 확인하는 필수 안내 자료',items:[['입점 파트너 시작 안내서','downloads/HarmonyLink_Partner_Getting_Started.pdf','PDF'],['플랫폼 이용 및 운영 정책','downloads/HarmonyLink_Partner_Policy_v1.0.pdf','PDF'],['입점 파트너 계약서','downloads/HarmonyLink_Partner_Agreement_v2.0.pdf','PDF'],['강사 활동 가이드','downloads/HarmonyLink_Instructor_Activity_Guide_v1.0.pdf','PDF'],['자주 묻는 질문 (FAQ)','downloads/HarmonyLink_Partner_FAQ_v1.0.pdf','PDF']]},
-  {tier:0,icon:'📌',title:'공지사항',copy:'Harmony Link 운영 공지 및 주요 업데이트',items:[['최신 공지사항 보기','https://hibelleharmony.com/community.html?refresh=20260815-301&category=notice','바로가기','view'],['파트너 공지사항 안내','downloads/HarmonyLink_Partner_Notice_Guide_v1.0.pdf','PDF'],['교육·행사 일정'],['자료실 업데이트']]},
-  {tier:20,icon:'📘',title:'운영 매뉴얼',copy:'기관 출강과 실제 수업 운영을 위한 기본 가이드',items:[['기관 수업 진행 방법'],['출강 체크리스트'],['첫 수업 준비 방법'],['수업 종료 후 해야 할 일'],['강사 매너·복장 가이드'],['안전 수칙']]},
+  {tier:0,icon:'🚀',title:'시작하기',copy:'입점 후 가장 먼저 확인하는 필수 안내 자료',items:[['시작 안내서','downloads/HarmonyLink_Partner_Getting_Started.pdf','PDF'],['플랫폼 운영 정책','downloads/HarmonyLink_Partner_Policy_v1.0.pdf','PDF'],['파트너 계약서','downloads/HarmonyLink_Partner_Agreement_v2.0.pdf','PDF'],['강사 활동 안내','downloads/HarmonyLink_Instructor_Activity_Guide_v1.0.pdf','PDF'],['FAQ','downloads/HarmonyLink_Partner_FAQ_v1.0.pdf','PDF']]},
+  {tier:0,icon:'📌',title:'공지사항',copy:'Harmony Link 운영 공지 및 주요 업데이트',items:[['최신 공지','https://hibelleharmony.com/community.html?refresh=20260815-301&category=notice','바로가기','view'],['파트너 공지','downloads/HarmonyLink_Partner_Notice_Guide_v1.0.pdf','PDF'],['행사 일정'],['자료실 업데이트']]},
+  {tier:20,icon:'📘',title:'운영 매뉴얼',copy:'기관 출강과 실제 수업 운영을 위한 기본 가이드',items:[['기관 수업 진행'],['출강 체크'],['첫 수업 준비'],['수업 마무리'],['강사 매너·복장'],['안전 수칙']]},
   {tier:20,icon:'🗂️',title:'수업 자료',copy:'수업 준비와 진행에 활용할 수 있는 교육 자료',items:[['수업계획서 양식'],['출석부'],['만족도 조사'],['수료증 양식'],['강의 노트 양식'],['PPT 템플릿'],['스마트폰 교안'],['컴퓨터 교안'],['영상편집 교안'],['합창곡'],['반주 자료'],['발성 자료'],['음악 활동지'],['악보']]},
-  {tier:20,icon:'📣',title:'홍보 자료',copy:'Harmony Link 브랜드 홍보 및 프로그램 안내 자료',items:[['Harmony Link 로고','assets/harmony-logo.png','PNG'],['전단지 예시','assets/partners/partner-recruitment.png','PNG'],['브랜드 컬러 가이드'],['SNS 카드뉴스'],['배너'],['명함 디자인'],['프로필 이미지 템플릿']]},
-  {tier:20,icon:'🗒️',title:'서식 · 템플릿',copy:'강사 운영에 필요한 기본 문서와 실무 양식',items:[['강사 프로필 양식'],['강의계획서'],['일정표'],['기관 소개서'],['PowerPoint 템플릿'],['PDF 템플릿']]},
+  {tier:20,icon:'📣',title:'홍보 자료',copy:'Harmony Link 브랜드 홍보 및 프로그램 안내 자료',items:[['브랜드 로고','assets/harmony-logo.png','PNG'],['전단지 예시','assets/partners/partner-recruitment.png','PNG'],['컬러 가이드'],['SNS 카드뉴스'],['배너'],['명함 디자인'],['프로필 템플릿']]},
+  {tier:20,icon:'🗒️',title:'서식 · 템플릿',copy:'강사 운영에 필요한 기본 문서와 실무 양식',items:[['강사 프로필 양식'],['강의계획서'],['일정표'],['기관 소개서'],['PPT 템플릿'],['PDF 템플릿']]},
   {tier:50,premium:true,icon:'🎨',title:'Canva 디자인 자료',copy:'전단지·배너·SNS 제작에 활용하는 디자인 자료',items:[['Canva 템플릿'],['Canva 디자인 자료'],['Canva 사용법']]},
   {tier:50,premium:true,icon:'🏢',title:'기관 제안 · 영업 자료',copy:'기관 제안과 프로그램 영업에 활용하는 실전 자료',items:[['프로그램 제안서'],['견적서'],['기관 계약 방법'],['마케팅 방법']]},
   {tier:50,premium:true,icon:'🤖',title:'AI 수업 활용 자료',copy:'AI·ChatGPT 등을 교육에 활용하기 위한 강의 자료',items:[['ChatGPT 자료'],['AI 활용 자료'],['ChatGPT 활용법']]},
-  {tier:50,premium:true,icon:'📱',title:'SNS · 콘텐츠 자료',copy:'SNS 홍보와 콘텐츠 제작에 활용하는 운영 자료',items:[['하이벨 디지털 이미지','assets/brands/hibelle-digital.jpg','JPG'],['하이벨 화상영어 이미지','assets/brands/hibelle-online-english.jpg','JPG'],['Meeran Melody 이미지','assets/brands/meeran-melody.jpg','JPG'],['입점 파트너 모집 포스터','assets/partners/partner-recruitment.png','PNG']]},
+  {tier:50,premium:true,icon:'📱',title:'SNS · 콘텐츠 자료',copy:'SNS 홍보와 콘텐츠 제작에 활용하는 운영 자료',items:[['디지털 이미지','assets/brands/hibelle-digital.jpg','JPG'],['화상영어 이미지','assets/brands/hibelle-online-english.jpg','JPG'],['멜로디 이미지','assets/brands/meeran-melody.jpg','JPG'],['모집 포스터','assets/partners/partner-recruitment.png','PNG']]},
   {tier:50,premium:true,icon:'🧭',title:'프로그램 기획 자료',copy:'새로운 강좌와 프로그램을 설계하기 위한 기획 자료',items:[['프로그램 예시'],['강의 잘하는 방법'],['시니어 수업 노하우']]},
-  {tier:50,premium:true,icon:'📈',title:'파트너 성장 자료',copy:'수업 확대·기관 확보·브랜드 성장에 활용하는 자료',items:[['홍보 디자인 신청'],['홈페이지 추천 노출 신청'],['프로그램 등록 신청'],['배너 제작 신청']]}
+  {tier:50,premium:true,icon:'📈',title:'파트너 성장 자료',copy:'수업 확대·기관 확보·브랜드 성장에 활용하는 자료',items:[['홍보 디자인'],['추천 노출 신청'],['프로그램 등록'],['배너 제작']]}
 ];
 if (downloads) {
   const resourceMarkup = partnerResourceSections.map((section,index) => `<article class="partner-resource-group${section.premium?' premium-resource':''}" data-resource-tier="${section.tier}">
-    <button type="button" class="partner-resource-toggle" aria-expanded="false" aria-controls="partnerResource${index}"><span class="resource-number"></span><b>${section.icon}</b><div><h3>${section.title}<em class="resource-tier-label">$${section.tier}</em></h3><p>${section.copy}</p></div><i>＋</i></button>
-    <div class="partner-resource-items" id="partnerResource${index}" hidden>${section.items.map(item=>`<div class="partner-resource-item"><span>${item[2]||'준비 중'}</span><strong>${item[0]}</strong>${item[1]?(item[3]==='view'?`<a href="${item[1]}">자료 보기 →</a>`:`<a href="${item[1]}" download>다운로드 ↓</a>`):'<small>자료 준비 중</small>'}</div>`).join('')}</div>
+    <button type="button" class="partner-resource-toggle" aria-expanded="false" aria-controls="partnerResource${index}"><span class="resource-number"></span><div class="partner-resource-summary"><h3>${partnerResourceMarkup('span',section.title)}<em class="resource-tier-label">$${section.tier}</em></h3>${partnerResourceMarkup('p',section.copy)}</div>${partnerResourceMarkup('span','열기','partner-resource-action')}</button>
+    <div class="partner-resource-items" id="partnerResource${index}" hidden>${partnerResourceMarkup('p',section.copy,'partner-resource-detail-copy')}${section.items.map(item=>`<div class="partner-resource-item">${partnerResourceMarkup('span',item[2]||'준비 중')}${partnerResourceMarkup('strong',item[0])}${item[1]?(item[3]==='view'?partnerResourceMarkup('a','자료 보기 →') .replace('>',` href="${item[1]}">`):partnerResourceMarkup('a','다운로드 ↓').replace('>',` href="${item[1]}" download>`)):partnerResourceMarkup('small','자료 준비 중')}</div>`).join('')}</div>
   </article>`).join('');
-  downloads.innerHTML = `<div class="partner-library-head"><div class="partner-library-status"><span class="unlocked-badge">접근 승인됨</span><p>필요한 영역을 선택하면 다운로드 가능한 파일과 준비 중인 자료를 확인할 수 있습니다.</p></div><div class="partner-tier-guide" aria-label="파트너 등급"><button type="button" data-tier="0"><strong>$0</strong><b>FREE</b></button><button type="button" data-tier="20"><strong>$20</strong><b>BASIC</b></button><button type="button" data-tier="50"><strong>$50</strong><b>PREMIUM</b></button></div><p class="partner-tier-benefit" aria-live="polite"></p></div><div class="partner-resource-library">${resourceMarkup}</div><p class="partner-download-warning">이 자료는 승인된 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다.</p>`;
-  const benefitText={0:'FREE · 2개 시작 자료를 이용할 수 있습니다.',20:'BASIC · FREE 포함 총 6개 자료를 이용할 수 있습니다.',50:'PREMIUM · 전체 12개 자료를 모두 이용할 수 있습니다.'};
+  downloads.innerHTML = `<div class="partner-library-head"><div class="partner-library-status">${partnerResourceMarkup('span','접근 승인됨','unlocked-badge')}${partnerResourceMarkup('p','필요한 영역을 선택하면 다운로드 가능한 파일과 준비 중인 자료를 확인할 수 있습니다.')}</div><div class="partner-tier-guide" aria-label="Partner tiers"><button type="button" data-tier="0"><strong>$0</strong><b>FREE</b></button><button type="button" data-tier="20"><strong>$20</strong><b>BASIC</b></button><button type="button" data-tier="50"><strong>$50</strong><b>PREMIUM</b></button></div><p class="partner-tier-benefit" aria-live="polite"></p></div><div class="partner-resource-library">${resourceMarkup}</div>${partnerResourceMarkup('p','이 자료는 승인된 입점 파트너 전용입니다. 외부 공유 및 무단 배포를 금지합니다.','partner-download-warning')}`;
+  const benefitText={0:{ko:'FREE · 2개 시작 자료를 이용할 수 있습니다.',en:'FREE · Access 2 starter resource groups.'},20:{ko:'BASIC · FREE 포함 총 6개 자료를 이용할 수 있습니다.',en:'BASIC · Access 6 resource groups including FREE.'},50:{ko:'PREMIUM · 전체 12개 자료를 모두 이용할 수 있습니다.',en:'PREMIUM · Access all 12 resource groups.'}};
   const library = downloads.querySelector('.partner-resource-library');
-  const setAccessTier=(maxTier=0,selectedTier=maxTier)=>{
+  const closeResource = button => {
+    const panel = downloads.querySelector(`#${button.getAttribute('aria-controls')}`);
+    if (!panel) return;
+    panel.hidden = true;
+    button.setAttribute('aria-expanded', 'false');
+    const action=button.querySelector('.partner-resource-action');action.textContent=currentLanguage==='en'?'Open':'열기';
+  };
+  const setAccessTier=(maxTier=0,selectedTier=null)=>{
     const allowed=[0,20,50].filter(tier=>tier<=maxTier);
-    const selected=allowed.includes(Number(selectedTier))?Number(selectedTier):Math.max(...allowed);
-    downloads.querySelectorAll('.partner-tier-guide button').forEach(button=>{const tier=Number(button.dataset.tier);button.disabled=tier>maxTier;button.classList.toggle('active',tier===selected);button.setAttribute('aria-pressed',String(tier===selected));});
-    const benefit=downloads.querySelector('.partner-tier-benefit');benefit.textContent=benefitText[selected];benefit.hidden=!benefitText[selected];
+    const requestedTier=Number(selectedTier);
+    const selected=selectedTier!==null&&allowed.includes(requestedTier)?requestedTier:null;
+    downloads.querySelectorAll('.partner-resource-toggle').forEach(closeResource);
+    downloads.querySelectorAll('.partner-tier-guide button').forEach(button=>{
+      const tier=Number(button.dataset.tier);
+      button.disabled=tier>maxTier;
+      button.classList.toggle('active',tier===selected);
+      button.setAttribute('aria-pressed',String(tier===selected));
+    });
+    const benefit=downloads.querySelector('.partner-tier-benefit'),benefitCopy=selected===null?null:benefitText[selected];if(benefitCopy){benefit.dataset.ko=benefitCopy.ko;benefit.dataset.en=benefitCopy.en;}benefit.textContent=benefitCopy?(currentLanguage==='en'?benefitCopy.en:benefitCopy.ko):'';benefit.hidden=!benefitCopy;
     const sections=[...downloads.querySelectorAll('[data-resource-tier]')];
     let visibleCount=0;
     sections.forEach(section=>{
-      const visible=Number(section.dataset.resourceTier)<=selected;
+      const visible=selected!==null&&Number(section.dataset.resourceTier)<=selected;
       section.hidden=!visible;
       if(visible){visibleCount+=1;section.querySelector('.resource-number').textContent=String(visibleCount).padStart(2,'0');}
     });
     if(library) library.dataset.count=String(visibleCount);
   };
   downloads.querySelectorAll('.partner-tier-guide button').forEach(button=>button.addEventListener('click',()=>setAccessTier(Number(downloads.dataset.maxTier||0),Number(button.dataset.tier))));
-  window.HarmonyPartnerResources={setAccessTier:(maxTier,selectedTier=maxTier)=>{downloads.dataset.maxTier=String(maxTier);setAccessTier(maxTier,selectedTier);}};
-  setAccessTier(0,0);
+  window.HarmonyPartnerResources={setAccessTier:(maxTier,selectedTier=null)=>{downloads.dataset.maxTier=String(maxTier);setAccessTier(maxTier,selectedTier);}};
+  setAccessTier(0);
+  document.querySelector('#primary-nav a[href="#partner-center"]')?.addEventListener('click',()=>{
+    setAccessTier(Number(downloads.dataset.maxTier||0));
+  });
   downloads.querySelectorAll('.partner-resource-toggle').forEach(button=>button.addEventListener('click',()=>{
     const panel=downloads.querySelector(`#${button.getAttribute('aria-controls')}`);const open=panel.hidden;
-    panel.hidden=!open;button.setAttribute('aria-expanded',String(open));button.querySelector('i').textContent=open?'−':'＋';
+    downloads.querySelectorAll('.partner-resource-toggle').forEach(other=>{if(other!==button)closeResource(other);});
+    panel.hidden=!open;button.setAttribute('aria-expanded',String(open));button.querySelector('.partner-resource-action').textContent=currentLanguage==='en'?(open?'Close':'Open'):(open?'닫기':'열기');
   }));
 }
 document.querySelectorAll('#events .event-card:not(.event-coming)').forEach(card=>{
@@ -1574,6 +1858,13 @@ document.addEventListener('click',event=>{
   eventFlyerModal.querySelector('.event-flyer-close')?.focus();
 });
 eventFlyerModal.querySelectorAll('[data-event-flyer-close]').forEach(button=>button.addEventListener('click',closeEventFlyer));
+// The backdrop is an absolutely positioned sibling of the flyer panel. Close
+// only when a click lands outside that panel, whether the browser reports the
+// empty modal root or the backdrop as the target.
+const eventFlyerPanel=eventFlyerModal.querySelector('.event-flyer-panel');
+eventFlyerModal.addEventListener('click',event=>{
+  if(!eventFlyerPanel.contains(event.target))closeEventFlyer();
+});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!eventFlyerModal.hidden)closeEventFlyer();});
 setLanguage(currentLanguage);
 document.querySelectorAll('.volunteer-contact-link').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();openInquiryModal(link.dataset.contactType);}));
@@ -1624,7 +1915,7 @@ if (!document.querySelector('.mobile-lang-toggle')) {
   mobileLanguageButton.setAttribute('aria-label','한국어와 영어 전환');
   mobileLanguageButton.onclick=()=>{
     setLanguage(currentLanguage==='ko'?'en':'ko');
-    renderAdvertisingCarousel?.();
+    renderBusinessSpotlights();
   };
   document.querySelector('.nav-wrap')?.insertBefore(mobileLanguageButton,document.querySelector('.menu-toggle'));
   setLanguage(currentLanguage);

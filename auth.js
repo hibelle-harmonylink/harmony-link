@@ -37,6 +37,23 @@
   let activeMemberName = '';
   let activeMemberType = 'student';
   let activeMembership = 'free';
+  let easyHanjaRedirectStarted = false;
+
+  const requestedEasyHanjaReturn = () => {
+    const fromUrl = new URLSearchParams(location.search).get('return');
+    if (['easy-hanja.html', 'senior-learning.html', 'senior-learning-materials.html', 'senior-mini-apps.html', 'community.html'].includes(fromUrl)) return fromUrl;
+    const fromStorage = localStorage.getItem('harmonyAuthReturn');
+    return ['easy-hanja.html', 'senior-learning.html', 'senior-learning-materials.html', 'senior-mini-apps.html', 'community.html'].includes(fromStorage) ? fromStorage : '';
+  };
+
+  const returnToEasyHanjaIfRequested = session => {
+    const returnTarget = requestedEasyHanjaReturn();
+    if (!session || easyHanjaRedirectStarted || !returnTarget) return false;
+    easyHanjaRedirectStarted = true;
+    localStorage.removeItem('harmonyAuthReturn');
+    window.location.replace(returnTarget);
+    return true;
+  };
 
   const authSlot = document.createElement('div');
   authSlot.className = 'auth-nav-slot';
@@ -277,7 +294,9 @@
       accessBadge.classList.toggle('basic-tier-badge', isBasicPartner);
     }
     const resourceTier = isAdmin || isPremiumPartner ? 50 : isBasicPartner ? 20 : 0;
-    if (approvedPartner) window.HarmonyPartnerResources?.setAccessTier(resourceTier, resourceTier);
+    // Membership establishes the highest tier a partner may open and shows
+    // the established cumulative material set for that membership.
+    if (approvedPartner) window.HarmonyPartnerResources?.setAccessTier(resourceTier);
     if (lock) {
       lock.textContent = approvedPartner ? '✓' : signedIn ? '⏳' : '🔒';
       lock.classList.toggle('partner-lock-action', approvedPartner);
@@ -458,16 +477,15 @@
     signupRecord.set('기록 유형', '회원가입');
     signupRecord.set('회원 ID', user.id);
     signupRecord.set('가입 시각', user.created_at || new Date().toISOString());
-    // Keep the legacy single display name for compatibility, while forwarding
-    // only provider-declared identity values into their distinct roster fields.
     const providerMetadata = user.user_metadata || {};
     const signupProvider = user.app_metadata?.provider || '';
-    const fullName = signupProvider === 'google'
-      ? (providerMetadata.full_name || providerMetadata.name || '')
-      : '';
+    const fullName = signupProvider === 'google' ? (providerMetadata.full_name || providerMetadata.name || '') : '';
     const nickname = providerMetadata.nickname || '';
     signupRecord.set('닉네임', nickname);
     signupRecord.set('이름', fullName);
+    // Only a previously verified profile display name is a Korean-name
+    // source. OAuth provider names remain full_name data.
+    signupRecord.set('display_name', activeMemberName || '');
     signupRecord.set('표시 이름', profile.name);
     signupRecord.set('이메일', profile.email);
     signupRecord.set('가입 방식', user.app_metadata?.provider || 'social');
@@ -495,6 +513,42 @@
     } catch (error) {
       localStorage.removeItem(notificationKey);
       console.error('New signup notification could not be sent.', error);
+    }
+  };
+
+  // Member-number issuance stays inside Apps Script, which holds the Sheet
+  // lock and registers the exact issued value in Supabase.  Run this once per
+  // browser tab for every completed login, not only the first five minutes of
+  // an account: a transient failed signup POST therefore self-heals on the
+  // next login without the browser creating or guessing any number.
+  const ensureMemberRosterRegistration = async user => {
+    if (!user?.id || !user?.email || !signupAutomationUrl) return;
+    const requestKey = `harmony-member-number-requested:${user.id}`;
+    if (sessionStorage.getItem(requestKey)) return;
+    sessionStorage.setItem(requestKey, 'pending');
+    const profile = getProfile(user);
+    const providerMetadata = user.user_metadata || {};
+    const signupProvider = user.app_metadata?.provider || '';
+    const record = new FormData();
+    record.set('기록 유형', '회원가입');
+    record.set('회원 ID', user.id);
+    record.set('가입 시각', user.created_at || new Date().toISOString());
+    record.set('닉네임', providerMetadata.nickname || '');
+    record.set('이름', signupProvider === 'google' ? (providerMetadata.full_name || providerMetadata.name || '') : '');
+    record.set('display_name', activeMemberName || '');
+    record.set('표시 이름', profile.name);
+    record.set('이메일', profile.email);
+    record.set('가입 방식', signupProvider || 'social');
+    record.set('회원 유형', activeMemberType === 'partner' ? '파트너' : '수강생');
+    record.set('파트너 등급', '');
+    record.set('회원 구분', activeMemberType === 'partner' ? '파트너' : '수강생');
+    record.set('가입 경로', 'Harmony Link 홈페이지');
+    try {
+      await fetch(signupAutomationUrl, { method: 'POST', mode: 'no-cors', body: record });
+      sessionStorage.setItem(requestKey, 'sent');
+    } catch (error) {
+      sessionStorage.removeItem(requestKey);
+      console.error('Member-number registration could not be requested.', error);
     }
   };
 
@@ -532,11 +586,12 @@
       return;
     }
     status.textContent = t('로그인 화면으로 이동합니다…', 'Opening secure sign-in…');
-    localStorage.setItem('harmonyAuthReturn', 'partner-center');
+    const requestedReturn = requestedEasyHanjaReturn();
+    localStorage.setItem('harmonyAuthReturn', requestedReturn || 'partner-center');
     // New social signups always start as students. Partner status remains an
     // administrator-managed user_type change after registration.
     if (activeAuthMode === 'signup') localStorage.setItem('harmonyPendingMemberType', 'student');
-    const redirectTo = `${window.location.origin}${window.location.pathname}`;
+    const redirectTo = `${window.location.origin}${window.location.pathname}${requestedReturn ? `?return=${encodeURIComponent(requestedReturn)}` : ''}`;
     const oauthOptions = { redirectTo };
     if (provider === 'kakao') {
       oauthOptions.scopes = 'profile_nickname profile_image';
@@ -649,7 +704,10 @@
     render(data.session);
     await applyPendingMemberType(data.session);
     await refreshMemberAccess(data.session);
-    if (data.session && localStorage.getItem('harmonyAuthReturn') === 'partner-center') {
+    await ensureMemberRosterRegistration(data.session?.user);
+    if (returnToEasyHanjaIfRequested(data.session)) return;
+    const returnTarget = localStorage.getItem('harmonyAuthReturn');
+    if (data.session && returnTarget === 'partner-center') {
       localStorage.removeItem('harmonyAuthReturn');
       window.setTimeout(() => partnerCenter.scrollIntoView({ behavior: 'smooth', block: 'start' }), 350);
     }
@@ -668,7 +726,9 @@
     if (event === 'SIGNED_IN') setModalOpen(false);
     await applyPendingMemberType(session);
     await refreshMemberAccess(session);
+    await ensureMemberRosterRegistration(session?.user);
     if (event === 'SIGNED_IN') await notifyAdminOfNewSignup(session?.user);
+    if (event === 'SIGNED_IN') returnToEasyHanjaIfRequested(session);
   });
 
   let accessRefreshRunning = false;

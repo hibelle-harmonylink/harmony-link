@@ -22,14 +22,19 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .member-dialog::backdrop{background:rgba(5,25,50,.62);backdrop-filter:blur(3px)}
 .member-dialog-head{display:flex;align-items:center;justify-content:space-between;padding:21px 24px;border-bottom:1px solid var(--admin-line)}
 .member-dialog-head h2{margin:3px 0 0;color:var(--admin-navy)}.member-dialog-head button{border:0;background:#edf4fb;border-radius:50%;width:36px;height:36px;font-size:24px;cursor:pointer}
-.member-detail{padding:23px;display:grid;gap:20px}.member-detail-summary{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.member-detail-summary strong{width:100%;font-size:20px;color:var(--admin-navy)}
-.member-edit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.member-edit-grid label{display:grid;gap:6px;font-size:11px;font-weight:800;color:#49627f}.member-edit-grid select{min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px}
+.member-detail{padding:23px;display:grid;gap:20px}.member-detail-summary{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.member-detail-summary strong{width:100%;font-size:20px;color:var(--admin-navy)}.member-detail-summary strong+span{max-width:100%;overflow-wrap:anywhere}
+.member-detail-groups{display:grid;gap:14px}
+.member-group{border:1px solid var(--admin-line);border-radius:14px;padding:16px;background:#fbfdff}
+.member-group h3{margin:0 0 12px;font-size:13px;font-weight:900;color:var(--admin-navy)}
+.member-group-grid{display:grid;grid-template-columns:1fr;gap:12px}.member-group-grid label{display:grid;gap:6px;font-size:11px;font-weight:800;color:#49627f}.member-group-grid label[hidden]{display:none!important}.member-group-grid select{min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px}
+.member-readonly{display:grid;gap:4px;min-width:0}.member-readonly span{font-size:11px;font-weight:800;color:#49627f}.member-readonly strong{font-size:13px;font-weight:700;color:var(--admin-ink);white-space:normal;overflow-wrap:anywhere}
+.member-readonly-truncate strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;min-width:0}
 .feature-columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}.feature-box{border:1px solid var(--admin-line);border-radius:14px;padding:15px}.feature-box h3{margin:0 0 10px;font-size:13px}.feature-box ul{list-style:none;padding:0;margin:0;display:grid;gap:7px;font-size:11px}.feature-box.allowed li::before{content:'✓';color:#168153;font-weight:900;margin-right:7px}.feature-box.denied li::before{content:'—';color:#a54755;font-weight:900;margin-right:7px}
 .member-detail-actions{display:flex;justify-content:flex-end;gap:9px}.member-detail-actions button{min-height:42px}.member-protected-copy{padding:12px;border-radius:10px;background:#e8f2ff;color:#175694;font-size:11px;font-weight:800}
-.member-edit-grid input{min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px;color:var(--admin-ink);font:inherit}.member-core-fields{grid-template-columns:repeat(4,1fr)}.member-core-fields dd{white-space:normal;overflow-wrap:anywhere}.member-save-feedback{min-height:0;font-size:13px;font-weight:800;text-align:center}.member-save-feedback.success{padding:11px;border:1px solid #9bd6b1;border-radius:10px;background:#eaf8ef;color:#176944}.member-save-feedback.error{padding:11px;border:1px solid #f0b5bf;border-radius:10px;background:#fff0f2;color:#a82d41}
+.member-group-grid input{min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px;color:var(--admin-ink);font:inherit}.member-save-feedback{min-height:0;font-size:13px;font-weight:800;text-align:center}.member-save-feedback.success{padding:11px;border:1px solid #9bd6b1;border-radius:10px;background:#eaf8ef;color:#176944}.member-save-feedback.error{padding:11px;border:1px solid #f0b5bf;border-radius:10px;background:#fff0f2;color:#a82d41}
+.partner-region{display:grid;gap:14px;padding:16px;border:1px solid #c8dff3;border-radius:14px;background:#f8fbff}.partner-region[hidden]{display:none}.partner-region-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.partner-region h3,.partner-region h4{margin:0;color:var(--admin-navy)}.partner-region h3{font-size:15px}.partner-region h4{font-size:12px}.partner-region-heading p,.partner-service-area p{margin:4px 0 0;color:#59718c;font-size:11px}.partner-region-note{flex:0 0 auto;border-radius:999px;background:#e8f2ff;color:#175694;padding:4px 7px;font-size:10px;font-weight:800}.partner-region-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.partner-region-grid label{display:grid;gap:6px;color:#49627f;font-size:11px;font-weight:800}.partner-region-grid input,.partner-region-grid select,.partner-service-area-controls input{box-sizing:border-box;min-width:0;min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px;color:var(--admin-ink);font:inherit}.partner-region-grid select:disabled{background:#edf3fa;color:#72849a}.partner-service-area{display:grid;gap:10px}.partner-service-area-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.member-region-add{border:1px solid #90b8df;border-radius:10px;background:#fff;color:#0c5eb7;padding:8px 11px;font:inherit;font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer}.partner-service-area-chips{display:flex;flex-wrap:wrap;gap:7px;min-height:0}.partner-service-area-chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:#e8f2ff;color:#175694;padding:5px 7px 5px 9px;font-size:11px;font-weight:800;max-width:100%;overflow-wrap:anywhere}.partner-service-area-chip button{width:18px;height:18px;border:0;border-radius:50%;background:#c8dff3;color:#174f91;font:inherit;font-size:15px;line-height:1;cursor:pointer}.partner-region-options{display:flex;flex-wrap:wrap;gap:10px}.partner-region-switch{display:inline-flex;align-items:center;gap:8px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:10px 12px;color:#365672;font-size:12px;font-weight:800;cursor:pointer}.partner-region-switch input{width:17px;height:17px;accent-color:#0b5fc2}.partner-region-save{display:flex;align-items:center;justify-content:flex-end;gap:12px;min-height:42px}.partner-region-save p{margin:0;color:#176944;font-size:12px;font-weight:800}.partner-region-save p.error{color:#a82d41}.partner-region-save p.success{color:#176944}.partner-region-save button{min-height:42px;white-space:nowrap}.partner-region-save button:disabled{cursor:not-allowed;opacity:.58}
 @media(max-width:1000px){.admin-toolbar{grid-template-columns:1fr 1fr}.admin-toolbar label:first-child{grid-column:1/3}}
-@media(max-width:680px){.admin-summary{grid-template-columns:1fr 1fr}.admin-toolbar,.member-edit-grid,.feature-columns{grid-template-columns:1fr}.admin-toolbar label:first-child{grid-column:auto}.member-table-wrap{border-radius:13px}.member-table{min-width:0}.member-table thead{display:none}.member-table,.member-table tbody,.member-table tr,.member-table td{display:block}.member-table tr{padding:14px;border-top:1px solid var(--admin-line)}.member-table tr:first-child{border-top:0}.member-table td{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border:0;text-align:right}.member-table td::before{content:attr(data-label);font-weight:800;color:#73849a;text-align:left}.member-table td:last-child{padding-top:10px}.member-detail{padding:17px}.member-dialog-head{padding:17px}.member-detail-actions{flex-direction:column}.member-detail-actions button{width:100%}}
-@media(max-width:680px){.member-core-fields{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){.admin-summary{grid-template-columns:1fr 1fr}.admin-toolbar,.feature-columns,.partner-region-grid{grid-template-columns:1fr}.member-group-grid{grid-template-columns:minmax(0,1fr)}.admin-toolbar label:first-child{grid-column:auto}.member-table-wrap{border-radius:13px}.member-table{min-width:0}.member-table thead{display:none}.member-table,.member-table tbody,.member-table tr,.member-table td{display:block}.member-table tr{padding:14px;border-top:1px solid var(--admin-line)}.member-table tr:first-child{border-top:0}.member-table td{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border:0;text-align:right}.member-table td::before{content:attr(data-label);font-weight:800;color:#73849a;text-align:left}.member-table td:last-child{padding-top:10px}.member-detail{padding:17px}.member-dialog-head{padding:17px}.member-detail-actions{flex-direction:column}.member-detail-actions button{width:100%}.partner-region{padding:14px}.partner-service-area-controls{grid-template-columns:1fr}.member-region-add{min-height:42px}.partner-region-options{display:grid;grid-template-columns:1fr}.partner-region-switch{min-width:0}.partner-region-save{display:grid;grid-template-columns:1fr}.partner-region-save p{min-height:0}.partner-region-save button{width:100%;min-height:46px}}
 .admin-page main{padding-top:34px}.admin-title-row h1{font-size:36px}.admin-title-row>div>p:last-child{font-size:13px}.admin-summary{grid-template-columns:repeat(5,minmax(105px,138px));justify-content:start;gap:9px;margin:24px 0 18px}.admin-summary article{padding:12px 14px;border-radius:13px}.admin-summary span{font-size:12px;font-weight:700}.admin-summary strong{font-size:24px}.admin-toolbar label>span,.member-actions label>span{font-size:12px}.admin-toolbar input,.admin-toolbar select,.member-actions select{font-size:13px}.admin-message{font-size:13px}.member-email{font-size:17px}.member-id{font-size:10px}.member-role-badge{font-size:11px}.member-dates dt{font-size:10px;font-weight:700}.member-dates dd{font-size:12px}.member-actions .member-save,.member-status-button{font-size:12px}.member-protected-copy{font-size:12px}.admin-header nav a,.admin-header nav button{font-size:13px}@media(max-width:680px){.admin-title-row h1{font-size:27px}.admin-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.admin-summary article{padding:11px}.admin-summary span{font-size:11px}.admin-summary strong{font-size:22px}.member-email{font-size:16px}.member-dates dt{font-size:10px}.member-dates dd{font-size:12px}}
 
 .admin-shell{padding:0 18px 30px}
@@ -154,9 +159,18 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
    span it correctly via their own rules above. */
 @media(min-width:1001px){.admin-toolbar .btn{grid-column:1/-1;width:100%;margin-top:2px}}
 .admin-message:not(.error){margin:8px 8px 16px}
-.member-table th{padding:15px 16px;font-size:12.5px}
-.member-table td{padding:17px 16px;font-size:14px}
-.member-badge{font-size:11px;padding:6px 11px}
+.member-table th{padding:10px 12px;font-size:12px}
+.member-table td{padding:12px 12px;font-size:13px}
+.member-badge{font-size:10px;padding:4px 8px}
+.member-manage{padding:6px 9px;font-size:11px;line-height:1.2}
+.member-pagination{display:flex;align-items:center;justify-content:space-between;gap:clamp(10px,1.5vw,18px);margin:14px 0 0;padding:clamp(11px,1.5vw,15px) clamp(12px,1.8vw,20px);border:1px solid #1768d5;border-radius:12px;background:linear-gradient(135deg,#0f5cae,#1768d5);box-shadow:0 7px 18px rgba(18,85,168,.17);color:#fff}
+.member-pagination-summary{margin:0;font-size:clamp(13px,1.2vw,14px);font-weight:750;letter-spacing:-.01em;white-space:nowrap}
+.member-pagination-controls{display:flex;align-items:center;justify-content:flex-end;gap:clamp(6px,.8vw,8px);min-width:0}
+.member-page-button{min-width:clamp(42px,4.5vw,54px);height:clamp(34px,3.2vw,38px);padding:0 clamp(9px,1.2vw,13px);border:1px solid #d7e6f8;border-radius:8px;background:#fff;color:#0d4f96;font-size:clamp(11px,1vw,12px);font-weight:800;cursor:pointer;box-shadow:0 1px 2px rgba(10,48,95,.12)}
+.member-page-button:hover:not(:disabled){border-color:#fff;background:#eaf4ff;color:#073f7d}
+.member-page-button.is-current{border-color:#084b9c;background:#084b9c;color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+.member-page-button:disabled{opacity:1;border-color:#b7c0cc;background:#d9dee5;color:#4b5563;cursor:not-allowed;box-shadow:none}
+.member-page-ellipsis{padding:0 2px;color:#fff;font-size:13px;font-weight:800}
 
 /* 2026-09: badge colors carry meaning per column -- 회원유형 (role),
    멤버십 (paid tier), 상태 (account status) each get their own vivid,
@@ -211,10 +225,18 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   border-color:#c99700;
 }
 @media(max-width:680px){
+  .member-pagination{gap:8px;margin-top:10px;padding:10px 11px}
+  .member-pagination-summary{font-size:clamp(12px,3.1vw,13px)}
+  .member-pagination-controls{gap:5px}
+  .member-page-button{min-width:clamp(38px,10vw,42px);height:34px;padding:0 7px;font-size:11px}
   .admin-summary article{min-height:72px;display:grid;place-content:center}
   .admin-summary span{font-size:10px!important;font-weight:800!important}
   .admin-summary strong{font-size:24px!important;font-weight:900!important}
   .admin-message:not(.error){padding:12px!important;font-size:20px!important;line-height:1.3}
+}
+@media(max-width:440px){
+  .member-pagination{align-items:flex-start;flex-direction:column}
+  .member-pagination-controls{width:100%;flex-wrap:wrap;justify-content:flex-end;align-items:center;row-gap:6px;column-gap:6px}
 }
 
 /* Table-only member number display.  This is deliberately compact so the
@@ -225,43 +247,17 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 @media(min-width:681px){
   .member-table{min-width:0;table-layout:fixed;border-spacing:0}
   .member-table th:first-child,.member-table td:first-child{width:82px}
-  .member-table th:nth-child(2),.member-table td:nth-child(2){width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .member-table th:nth-child(3),.member-table td:nth-child(3){width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-table th:nth-child(2),.member-table td:nth-child(2),.member-table th:nth-child(3),.member-table td:nth-child(3){width:100px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-table th:nth-child(4),.member-table td:nth-child(4){width:155px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .member-table th:nth-child(5),.member-table td:nth-child(5){width:135px;white-space:nowrap;text-align:center}
   .member-table th:nth-child(6),.member-table td:nth-child(6){width:82px;text-align:center}
   .member-table th:nth-child(7),.member-table td:nth-child(7){width:108px;text-align:center}
   .member-table th:nth-child(8),.member-table td:nth-child(8){width:60px;text-align:center}
   .member-table th:nth-child(9),.member-table td:nth-child(9){width:100px;white-space:nowrap;text-align:center}
   .member-table th:nth-child(10),.member-table td:nth-child(10){width:98px;white-space:nowrap;text-align:center}
-  .member-table td:nth-child(4){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 }
-.member-number{display:inline-block;color:var(--admin-navy);font-size:12px;font-weight:900;letter-spacing:.02em}
-/* Laptop widths keep member details dense without reverting to the tall
-   one-field-per-line phone layout.  The 10-column table becomes a compact
-   two-row card; phones retain the existing stacked presentation below 681px. */
-@media(min-width:681px) and (max-width:1150.99px){
-  .member-table-wrap{overflow:visible}
-  .member-table{min-width:0;table-layout:auto}
-  .member-table thead{display:none}
-  .member-table,.member-table tbody,.member-table tr,.member-table td{display:block}
-  .member-table tr{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:5px 12px;align-items:center;padding:10px 14px;border-top:1px solid var(--admin-line)}
-  .member-table tr:first-child{border-top:0}
-  .member-table tr>td{display:flex;width:auto!important;min-width:0;align-items:center;gap:5px;padding:0;border:0;text-align:left}
-  .member-table td::before{content:attr(data-label);flex:0 0 auto;font-size:10px;font-weight:800;color:#73849a;white-space:nowrap}
-  .member-table td:nth-child(1),.member-table td:nth-child(2),.member-table td:nth-child(3){grid-column:span 2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .member-table td:nth-child(4),.member-table td:nth-child(5){grid-column:span 3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .member-table td:nth-child(6){grid-column:span 2}
-  .member-table td:nth-child(7){grid-column:span 3}
-  .member-table td:nth-child(8),.member-table td:nth-child(9){grid-column:span 2;white-space:nowrap}
-  .member-table td:nth-child(10){grid-column:span 3;justify-content:flex-end}
-  .member-table td:nth-child(10)::before{display:none}
-}
-@media(min-width:681px) and (max-width:850px){
-  .member-table tr{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px;padding:11px 14px}
-  .member-table td:nth-child(n){grid-column:auto;justify-content:flex-start;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .member-table td:nth-child(4){grid-column:1/-1}
-  .member-table td:nth-child(10){justify-content:flex-end;overflow:visible}
-}
+.member-number{display:inline-block;color:#111827;font-size:12px;font-weight:900;letter-spacing:.02em}
+.member-number.member-number-pending{color:#dc2626}
 @media(max-width:680px){
   .member-table td{width:auto!important}
   .member-table th:first-child,.member-table td:first-child{width:auto;text-align:right}
@@ -271,108 +267,318 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   .member-table td::before{flex:0 0 76px;white-space:nowrap;word-break:keep-all}
 }
 
-/* 2026-09: member detail dialog -- wider two-column layout on desktop so
-   the summary/edit fields/dates sit beside the feature-access panel
-   instead of stacking five sections full-height, which is what pushed
-   the dialog past typical PC viewport heights and forced an internal
-   scroll. .member-detail keeps a capped, scrollable max-height as a
-   fallback for unusually short viewports, but the two-column layout
-   means that fallback should rarely if ever engage on a normal PC. */
-.member-dialog{width:min(940px,calc(100% - 24px));overflow:hidden}
-.member-detail{max-height:calc(90vh - 56px);overflow-y:auto;gap:12px}
+/* 2026-09: member detail dialog -- a 2-column grid of labeled groups
+   (기본 정보 / 회원·파트너 정보, side by side) with 지역·권한 spanning full
+   width below, instead of a read-only summary list followed by a
+   separately-scrolling edit form that repeated most of the same fields.
+   Restore the 780px / 90vh envelope used by the compact dialog in #276.
+   Only the information groups scroll; the summary, X, and actions stay visible. */
+.member-dialog{width:min(780px,calc(100% - 28px));max-height:90vh;overflow:hidden}
+.member-dialog[open]{display:flex;flex-direction:column}
+.member-dialog-head{flex-shrink:0}
+.member-detail{display:flex;flex-direction:column;min-height:0;overflow:hidden;gap:10px}
+.member-detail-summary,.member-detail-actions{flex-shrink:0}
+.member-detail-groups{min-height:0;overflow-y:auto;overflow-x:hidden;align-content:start}
+/* Old edit-form spans must not create implicit narrow tracks on mobile. */
+.member-group-grid>.member-name-field{grid-column:auto}
+.member-group-grid>.partner-metadata,.member-group-grid>.student-metadata{grid-column:1/-1}
 /* .eyebrow carries a 22px bottom margin sized for full-page hero
    sections site-wide -- inside this compact dialog header it was most
    of the "too much top padding" the header appeared to have. */
 .member-dialog-head{padding:12px 22px}
 .member-dialog-head .eyebrow{margin:0 0 2px}
-.member-dialog-head h2{font-size:20px;margin:0}
-.member-detail-summary .member-badge{font-size:12.5px;padding:7px 13px}
+.member-dialog-head h2{font-size:19px;margin:0}
+.member-detail-summary .member-badge{font-size:11px;padding:5px 10px}
 /* Keeps its own light-blue accent background (an info notice, not a
    plain field box) but matches the same border-radius/padding rhythm. */
-.member-protected-copy{border-radius:12px;padding:14px 18px;font-size:13px;line-height:1.5}
+.member-protected-copy{border-radius:12px;padding:12px 16px;font-size:12px;line-height:1.5}
 .member-resend{background:#fff;color:var(--admin-blue);border:1.5px solid var(--admin-blue)}
 .member-resend:disabled{cursor:wait;opacity:.6}
+.member-resend.is-sending{cursor:wait}
+.member-save-feedback.success,.member-save-feedback.error{display:grid;gap:3px;justify-items:center;margin:0;text-align:center}
+.member-save-feedback.success strong{font-size:13px;line-height:1.25}
+.member-save-feedback.success span{font-size:11px;font-weight:700;overflow-wrap:anywhere}
+.member-save-disabled,.member-detail-actions .member-save-disabled:disabled{background:#e5e7eb!important;border:1px solid #cbd5e1!important;color:#64748b!important;cursor:not-allowed!important;opacity:1!important}
+.partner-region{gap:9px;padding:12px 14px}
+.partner-region-heading{align-items:center}.partner-region-heading p{margin-top:3px;font-size:12px;font-weight:750}.partner-region-services{color:#59718c!important;font-size:11px!important;font-weight:650!important;line-height:1.45}
+.partner-region-actions{display:flex;justify-content:flex-end}.member-region-manage{min-height:34px;border:1px solid #90b8df;border-radius:9px;background:#fff;color:#0c5eb7;padding:7px 11px;font:inherit;font-size:11px;font-weight:850;white-space:nowrap;cursor:pointer}
+.partner-region-dialog{width:min(640px,calc(100vw - 32px));max-height:80vh;box-sizing:border-box;border:0;border-radius:16px;padding:0;color:var(--admin-ink);box-shadow:0 24px 80px rgba(3,25,57,.3);overflow:hidden}.partner-region-dialog::backdrop{background:rgba(5,25,50,.62);backdrop-filter:blur(3px)}.partner-region-dialog-shell{display:grid;max-height:80vh}.partner-region-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;border-bottom:1px solid var(--admin-line)}.partner-region-dialog-head .eyebrow{margin:0 0 3px}.partner-region-dialog-head h2{margin:0;color:var(--admin-navy);font-size:18px}.partner-region-dialog-head button{display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:50%;background:#edf4fb;color:var(--admin-navy);font-size:20px;line-height:1;cursor:pointer}.partner-region-dialog-body{display:grid;gap:12px;max-height:calc(80vh - 83px);overflow-y:auto;padding:15px 18px 17px}.partner-region-member{margin:0;color:var(--admin-navy);font-size:14px;font-weight:850}.partner-region-dialog-body .partner-region-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.partner-region-dialog-body .partner-region-city{grid-column:1/-1}.partner-region-dialog-body .partner-region-grid label{gap:5px}.partner-region-dialog-body .partner-region-grid input,.partner-region-dialog-body .partner-region-grid select,.partner-region-dialog-body .partner-service-area-controls input{min-height:38px;padding:7px 9px}.partner-region-dialog-body .partner-service-area{gap:8px}.partner-region-dialog-body .partner-service-area h3{margin:0;color:var(--admin-navy);font-size:12px}.partner-region-dialog-body .partner-region-options{gap:8px}.partner-region-dialog-body .partner-region-switch{padding:8px 10px}.partner-region-dialog-actions{display:flex;justify-content:flex-end;gap:8px;padding-top:2px}.partner-region-dialog-actions .btn{min-height:34px;padding:7px 13px;font-size:12px}.partner-region-feedback{min-height:0;margin:0;color:#a82d41;font-size:12px;font-weight:800}.admin-toast{position:fixed;left:50%;bottom:24px;z-index:60;max-width:calc(100vw - 32px);transform:translateX(-50%);border:1px solid #9bd6b1;border-radius:10px;background:#eaf8ef;color:#176944;padding:10px 14px;font-size:13px;font-weight:850;box-shadow:0 10px 26px rgba(3,25,57,.2)}.admin-toast.error{border-color:#f0b5bf;background:#fff0f2;color:#a82d41}
 @media(min-width:681px){
-  .member-detail{padding:14px 28px}
-  /* Visual order only (DOM order is unchanged): 날짜정보 sits right
-     after 기본정보, with 기능 access moved down below both instead of
-     between them. */
-  .member-detail-summary{order:1}
-  .member-edit-grid,.member-protected-copy{order:2}
-  .member-dates{order:3}
-  #detailFeatures{order:4}
-  .member-detail-actions{order:5}
+  .member-detail{padding:14px 26px 18px}
   /* Identity line: name (left, own natural width) -- email (center,
      grows to fill the middle since it's the only flexible item, so
      text-align:center lands it in the middle of that space) -- role/
      membership/status badges (pushed to the right edge because the
      email already absorbed the slack between them). */
   .member-detail-summary{display:flex;align-items:center;flex-wrap:nowrap;gap:14px}
-  .member-detail-summary strong{width:auto;flex:0 1 auto;font-size:22px;font-weight:900;color:var(--admin-navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .member-detail-summary strong + span{flex:1 1 auto;min-width:0;text-align:center;font-size:17px;font-weight:700;color:var(--admin-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .member-detail-summary strong{width:auto;flex:0 1 auto;font-size:20px;font-weight:900;color:var(--admin-navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .member-detail-summary strong + span{flex:1 1 auto;min-width:0;text-align:center;font-size:14px;font-weight:700;color:var(--admin-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .member-detail-summary .member-badge{flex:0 0 auto}
-  /* 기본정보/날짜정보 as thin single-line strips (label and value share
-     one line) instead of tall boxed cards, each strip's fields sitting
-     in one row. */
-  .member-edit-grid,.member-dates{border:1px solid var(--admin-line);border-radius:12px;padding:10px 18px;background:#fbfdff}
-  .member-edit-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 16px;align-items:center}
-  .member-edit-grid label{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;color:#3c5876;white-space:nowrap}
-  .member-edit-grid .member-name-field{grid-column:auto}
-  .member-edit-grid select,.member-edit-grid input{font-size:13px;font-weight:600;min-height:34px;padding:5px 9px;flex:1;min-width:0}
-  /* Three zones -- 가입일 (left) / 파트너 승인일 (center) / 최근 로그인
-     + 마지막 변경일 stacked (right, flush against the box's right edge).
-     DOM order is unchanged (가입일, 최근 로그인, 파트너 승인일, 마지막
-     변경일) -- each item is re-placed into its zone via grid-column/
-     grid-row rather than reordering markup. */
-  .member-dates{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:auto auto;gap:7px 16px;align-items:center}
-  .member-dates div{display:flex;align-items:center;gap:8px;min-width:0}
-  .member-dates dt{font-size:12px;font-weight:800;color:#7c8ba0;letter-spacing:.02em;white-space:nowrap;margin:0}
-  .member-dates dd{font-size:13px;font-weight:700;color:#233a58;margin:0;white-space:nowrap}
-  .member-dates div{grid-column:auto!important;grid-row:auto!important;justify-self:auto!important;flex-direction:row!important;align-items:center!important;gap:8px!important;text-align:left!important}
-  /* Feature access set apart with a divider and larger, darker text;
-     each list wraps into two columns so a long denied list doesn't run
-     tall down the page. */
-  #detailFeatures{border-top:1px solid var(--admin-line);padding-top:10px}
-  .feature-box{padding:14px 18px}
-  .feature-box h3{font-size:16px;font-weight:800;color:var(--admin-navy);margin:0 0 8px}
-  .feature-box ul{display:grid;grid-template-columns:1fr 1fr;font-size:14px;font-weight:600;color:#233045;gap:7px 14px;line-height:1.4}
+  /* 기본 정보 and 회원·파트너 정보 sit side by side; 지역·권한 (which holds
+     both the partner region block and the feature-access lists, so it runs
+     longer) spans the full width beneath them. */
+  .member-detail-groups{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
+  .member-detail-groups>.member-group:nth-child(3){grid-column:1/-1}
+  .member-group{padding:10px 14px}
+  .member-group h3{font-size:12px;margin-bottom:8px}
+  .member-group-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}
+  .member-group-grid label{font-size:11px;gap:4px}
+  .member-group-grid select,.member-group-grid input{font-size:12.5px;font-weight:600;min-height:32px;padding:5px 8px}
+  .member-readonly span{font-size:10px}
+  .member-readonly strong{font-size:12px}
+  /* 활동 지역 and 기능 access sit side by side (flexbox, not grid, so that
+     when 활동 지역 is [hidden] for a non-partner member #detailFeatures still
+     naturally fills the full row instead of leaving an empty fixed track). */
+  .member-region-access-row{display:flex;gap:14px;align-items:flex-start}
+  .member-region-access-row .partner-region{flex:0 0 300px;max-width:300px;margin:0}
+  #detailFeatures{flex:1 1 auto;min-width:0}
+  /* Feature access set apart with a divider; each allowed/denied list
+     wraps into two columns so a long list doesn't run tall down the page. */
+  .feature-box{padding:10px 14px}
+  .feature-box h3{font-size:13px;font-weight:800;color:var(--admin-navy);margin:0 0 6px}
+  .feature-box ul{display:grid;grid-template-columns:1fr 1fr;font-size:11.5px;font-weight:600;color:#233045;gap:5px 12px;line-height:1.35}
   .member-detail-actions{border-top:1px solid var(--admin-line);padding-top:10px}
-  .member-detail-actions .btn{min-height:36px;padding:8px 16px;font-size:13px}
-}
-
-/* Final compact detail pass: a regular desktop viewport shows the complete
-   modal and its action row without creating a nested scroll surface. */
-.member-dialog{width:min(900px,calc(100% - 28px));max-height:calc(100vh - 28px);overflow-x:hidden}
-.member-detail{overflow-x:hidden}
-.member-save-disabled,.member-detail-actions .member-save-disabled:disabled{background:#e5e7eb!important;border:1px solid #cbd5e1!important;color:#64748b!important;cursor:not-allowed!important;opacity:1!important}
-@media(min-width:681px){
-  .member-dialog{max-height:none}
-  .member-dialog-head{padding:9px 18px}
-  .member-dialog-head h2{font-size:18px}
-  .member-dialog-head button{width:30px;height:30px;font-size:20px}
-  .member-detail{max-height:none;overflow:visible;padding:10px 18px;gap:7px}
-  .member-detail-summary{gap:9px}
-  .member-detail-summary strong{font-size:18px}
-  .member-detail-summary strong + span{font-size:13px}
-  .member-detail-summary .member-badge{font-size:10px;padding:5px 9px}
-  .member-edit-grid,.member-dates{padding:7px 12px;border-radius:10px;gap:5px 10px}
-  .member-edit-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-  .member-edit-grid label{gap:5px;font-size:10.5px}
-  .member-edit-grid select,.member-edit-grid input{min-height:30px;padding:4px 7px;font-size:11px}
-  .member-dates{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px 10px}
-  .member-dates dt{font-size:10px}
-  .member-dates dd{font-size:11px}
-  #detailFeatures{padding-top:7px}
-  .feature-columns{gap:8px}
-  .feature-box{padding:8px 11px;border-radius:10px}
-  .feature-box h3{margin-bottom:4px;font-size:12px}
-  .feature-box ul{font-size:10.5px;gap:3px 10px;line-height:1.25}
-  .member-protected-copy{padding:8px 11px;border-radius:10px;font-size:11px;line-height:1.35}
-  .member-detail-actions{padding-top:7px}
-  .member-detail-actions .btn{min-height:32px;padding:6px 13px;font-size:11px}
+  .member-detail-actions .btn{min-height:34px;padding:7px 15px;font-size:13px}
 }
 @media(max-width:680px){
-  .member-dialog{width:calc(100% - 18px);max-height:92vh;overflow-x:hidden}
-  .member-detail{overflow-x:hidden}
+  .member-dialog{width:calc(100% - 18px);max-height:90vh;overflow:hidden}
+  .member-detail{overflow-x:hidden;padding:17px}
   .member-detail input,.member-detail select{max-width:100%;box-sizing:border-box}
+  .member-dialog-head{padding:17px}
+  .member-detail-actions{flex-direction:column}
+  .member-detail-actions button{width:100%}
+  .partner-region{padding:14px}
+  .partner-region-dialog{width:calc(100vw - 24px);max-height:calc(100vh - 24px)}.partner-region-dialog-shell{max-height:calc(100vh - 24px)}.partner-region-dialog-head{padding:13px 14px}.partner-region-dialog-body{max-height:calc(100vh - 80px);padding:14px}.partner-region-dialog-body .partner-region-grid{grid-template-columns:1fr}.partner-region-dialog-body .partner-region-city{grid-column:auto}.partner-region-dialog-body .partner-service-area-controls{grid-template-columns:1fr}.partner-region-dialog-actions .btn{min-height:42px;flex:1}.admin-toast{bottom:14px;width:calc(100vw - 28px);text-align:center}
+  .partner-service-area-controls{grid-template-columns:1fr}
+  .member-region-add{min-height:42px}
+  .partner-region-options{display:grid;grid-template-columns:1fr}
+  .partner-region-switch{min-width:0}
+  .partner-region-save{display:grid;grid-template-columns:1fr}
+  .partner-region-save p{min-height:0}
+  .partner-region-save button{width:100%;min-height:46px}
 }
+
+/* Every grid/flex child shrinks within the dialog instead of establishing a
+   track minimum wider than it (e.g. a long email), which previously made
+   .member-detail scroll horizontally. */
+@media(min-width:681px){
+  .member-detail>*,
+  .member-detail-summary>*,
+  .member-detail-groups>*,
+  .member-group-grid>*,
+  .feature-columns>*,
+  .member-detail-actions>*{min-width:0;max-width:100%;box-sizing:border-box}
+  .member-group-grid input,.member-group-grid select{width:100%;max-width:100%;box-sizing:border-box}
+}
+
+/* Member-admin overview: the title, totals, and refresh action used to share
+   a single flex row with fixed minimum card tracks.  Let the title banner own
+   the responsive grid instead, so the six cards can reflow before they ever
+   compete with the heading or extend beyond the page. */
+html{overflow-x:hidden}
+body.admin-page{overflow-x:hidden}
+.admin-page main,.admin-shell,.admin-title-row,.admin-summary,.admin-toolbar{box-sizing:border-box}
+.admin-title-row{
+  display:grid;
+  grid-template-columns:minmax(240px,.85fr) minmax(0,1.7fr) max-content;
+  align-items:center;
+  gap:clamp(10px,1.4vw,20px);
+  min-width:0;
+}
+.admin-title-row>div:first-child{min-width:0}
+.admin-title-row>div:first-child>p:last-child{overflow-wrap:anywhere}
+.admin-title-row .admin-summary{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:clamp(6px,1vw,12px);
+  min-width:0;
+  width:100%;
+  margin:0;
+  justify-content:stretch;
+}
+.admin-summary article{width:100%;min-width:0;padding:clamp(9px,1.1vw,14px);box-sizing:border-box}
+.admin-summary span{font-size:clamp(11px,.9vw,14px);overflow-wrap:anywhere}
+.admin-summary strong{font-size:clamp(22px,2.1vw,30px)}
+.admin-title-row .admin-refresh{min-width:0;margin:0;white-space:nowrap}
+
+/* Three cards per row on compact desktops and laptops. */
+@media(max-width:1399px){
+  .admin-title-row{grid-template-columns:minmax(0,1fr) max-content;align-items:start}
+  .admin-title-row .admin-summary{grid-column:1/-1;grid-row:2;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .admin-title-row .admin-refresh{grid-column:2;grid-row:1;align-self:center}
+}
+
+/* Two cards per row on tablets; title and refresh button remain independent. */
+@media(max-width:899px){
+  .admin-title-row .admin-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .admin-toolbar{grid-template-columns:repeat(2,minmax(0,1fr));margin-inline:0}
+  .admin-toolbar>label:first-child,.admin-toolbar .btn{grid-column:1/-1}
+}
+
+/* Compact cards retain two information-dense rows on laptops instead of
+   reusing the tall phone-only label/value stack. */
+@media(min-width:681px) and (max-width:1150.99px){
+  .member-table-wrap{overflow:visible}
+  .member-table{min-width:0;table-layout:auto}
+  .member-table thead{display:none}
+  .member-table,.member-table tbody,.member-table tr,.member-table td{display:block}
+  .member-table tr{
+    display:grid;
+    grid-template-columns:repeat(12,minmax(0,1fr));
+    gap:5px 12px;
+    align-items:center;
+    padding:10px 14px;
+    border-top:1px solid var(--admin-line)
+  }
+  .member-table tr:first-child{border-top:0}
+  .member-table tr>td{display:flex;width:auto!important;min-width:0;align-items:center;gap:5px;padding:0;border:0;text-align:left}
+  .member-table td::before{content:attr(data-label);flex:0 0 auto;font-size:10px;font-weight:800;color:#73849a;white-space:nowrap}
+  .member-table td:nth-child(1){grid-column:span 2}
+  .member-table td:nth-child(2),.member-table td:nth-child(3){grid-column:span 2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-table td:nth-child(4),.member-table td:nth-child(5){grid-column:span 3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-table td:nth-child(6){grid-column:span 2}
+  .member-table td:nth-child(7){grid-column:span 3}
+  .member-table td:nth-child(8),.member-table td:nth-child(9){grid-column:span 2;white-space:nowrap}
+  .member-table td:nth-child(10){grid-column:span 3;justify-content:flex-end}
+  .member-table td:nth-child(10)::before{display:none}
+}
+
+/* Tablets keep the same compact fields but use two balanced columns so the
+   labels and role badge never collapse into vertical fragments. */
+@media(min-width:681px) and (max-width:850px){
+  .member-table tr{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 16px;padding:11px 14px}
+  .member-table td:nth-child(n){grid-column:auto;justify-content:flex-start;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-table td:nth-child(4){grid-column:1/-1}
+  .member-table td:nth-child(10){justify-content:flex-end;overflow:visible}
+}
+
+/* Phone cards may stay vertically stacked, but labels and values remain close
+   together and the late desktop cell padding cannot make each row oversized. */
+@media(max-width:680px){
+  .member-table tr{padding:10px 12px!important}
+  .member-table td{justify-content:flex-start!important;gap:8px!important;padding:4px 0!important;min-width:0}
+  .member-table td::before{flex:0 0 70px!important;font-size:10px!important;white-space:nowrap!important}
+  .member-table td>*{min-width:0}
+  .member-table td:nth-child(2),.member-table td:nth-child(3),.member-table td:nth-child(4){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-table td:nth-child(5),.member-table td:nth-child(6),.member-table td:nth-child(7),.member-table td:nth-child(8){overflow:visible}
+  .member-table td:nth-child(10){justify-content:flex-end!important;padding-top:6px!important}
+}
+
+/* Phone-sized layouts stack the title, refresh action, filters, and cards
+   without relying on fixed card widths. */
+@media(max-width:680px){
+  .admin-title-row{grid-template-columns:minmax(0,1fr);gap:14px}
+  .admin-title-row .admin-summary{grid-column:1;grid-row:auto;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px}
+  .admin-title-row .admin-refresh{grid-column:1;grid-row:auto;width:100%}
+  .admin-summary article{padding:11px 9px}
+  .admin-summary span{font-size:11px}
+  .admin-summary strong{font-size:22px}
+  .admin-toolbar{grid-template-columns:minmax(0,1fr)}
+  .admin-toolbar>label:first-child,.admin-toolbar .btn{grid-column:auto}
+  .admin-toolbar .btn{width:100%}
+}
+
+/* Keep the member totals compact and comparable at every viewport size.
+   These final rules intentionally supersede the older 3/2-card breakpoints:
+   six totals always share one shrinkable row, while the title and refresh
+   action may move independently without obscuring the summary. */
+.admin-title-row{
+  grid-template-columns:minmax(0,1fr) minmax(300px,620px) max-content;
+  gap:clamp(6px,1vw,12px);
+  padding:clamp(10px,1.2vw,15px) clamp(12px,1.5vw,20px);
+}
+.admin-title-row>div:first-child>p:last-child{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  overflow-wrap:normal;
+  font-size:clamp(9px,1vw,13px);
+}
+.admin-title-row .admin-summary{
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:clamp(2px,.55vw,6px);
+  min-height:clamp(58px,5vw,68px);
+}
+.admin-summary article{
+  min-height:clamp(58px,5vw,68px);
+  padding:clamp(4px,.55vw,8px);
+  display:grid;
+  place-content:center;
+}
+.admin-summary span{
+  font-size:clamp(7px,.76vw,12px)!important;
+  line-height:1.12;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  overflow-wrap:normal;
+}
+.admin-summary strong{
+  margin-top:2px;
+  font-size:clamp(20px,1.7vw,24px)!important;
+  line-height:1;
+}
+.admin-title-row .admin-refresh{
+  padding:clamp(7px,.7vw,10px) clamp(8px,.9vw,12px);
+  font-size:clamp(9px,.82vw,12px);
+}
+
+@media(max-width:720px){
+  .admin-title-row{
+    grid-template-columns:minmax(0,1fr) max-content;
+    gap:8px;
+    padding:10px;
+  }
+  .admin-title-row .admin-summary{
+    grid-column:1/-1;
+    grid-row:2;
+    grid-template-columns:repeat(6,minmax(0,1fr))!important;
+    min-height:clamp(58px,14vw,64px);
+  }
+  .admin-title-row .admin-refresh{
+    grid-column:2;
+    grid-row:1;
+    width:auto;
+  }
+  .admin-summary article{min-height:clamp(58px,14vw,64px);padding:3px 1px}
+  .admin-summary span{font-size:clamp(7px,2vw,10px)!important}
+  .admin-summary strong{font-size:clamp(18px,5.4vw,22px)!important}
+}
+
+/* Member-detail feedback stays inside the action row. Its compact, fixed
+   desktop slot prevents resend states from adding a fourth layout block and
+   reintroducing an internal dialog scrollbar. */
+.member-save-feedback{margin:0;min-width:0;font-size:12px;font-weight:800;line-height:1.25}
+.member-save-feedback.success{color:#176944}.member-save-feedback.error{color:#a82d41}.member-save-feedback.pending{color:#175694}
+.member-editable-note{display:inline-block;margin-left:6px;border-radius:999px;background:#eaf2ff;color:#1a34ac;padding:2px 6px;font-size:9px;font-weight:850;letter-spacing:0;vertical-align:middle}
+.admin-editable-field.field-source-direct>input{border:2px solid #1a34ac!important;background:#f4f8ff!important}
+.field-source-manual>input{border:1px solid #c8d8ea!important;background:#f8fafc!important}
+.field-source-setting>select{border:1px solid #a9bfd6!important;background:#f8fbff!important}
+.member-system-field>span{display:flex;align-items:center;gap:5px}.member-system-field em{font-style:normal;color:#718198;font-size:9px;font-weight:750}
+.member-synced-field{min-width:0;border:1px solid #d5e0ea;border-radius:10px;background:#f4f7fa;padding:9px;box-sizing:border-box}.member-synced-field>span{display:flex;align-items:center;gap:5px;color:#61758b;font-size:11px;font-weight:800}.member-synced-field em{font-style:normal;color:#657b91;font-size:9px;font-weight:750}.member-synced-field strong{display:block;min-width:0;margin-top:5px;color:#42586f;font-size:13px;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
+
+@media(min-width:681px){
+  .member-detail-actions{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:9px;min-height:36px}
+  .member-save-feedback{display:block;min-height:15px;max-height:15px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:left}
+  .member-save-feedback.success,.member-save-feedback.error,.member-save-feedback.pending{display:block;padding:0;border:0;background:transparent}
+  /* Region, allowed features, and denied features have equal desktop tracks. */
+  .member-region-access-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:stretch}
+  .member-region-access-row .partner-region{display:grid;flex:none;min-width:0;max-width:100%;min-height:144px;padding:10px 7px;box-sizing:border-box}
+  .member-region-access-row .partner-region[hidden]{display:none}
+  .member-region-access-row:has(>.partner-region[hidden]){grid-template-columns:repeat(2,minmax(0,1fr))}
+  .member-region-access-row .partner-region-heading,.member-region-access-row .partner-region-heading>div,.member-region-access-row .partner-region-actions{min-width:0;max-width:100%;box-sizing:border-box}
+  .member-region-access-row .partner-region-heading{display:block;position:relative;width:100%}
+  .member-region-access-row .partner-region-heading>div,.member-region-access-row .partner-region-actions{width:100%}
+  .member-region-access-row .partner-region-note{position:absolute;top:0;right:0}
+  #detailFeatures,.feature-columns{display:contents}
+  .member-region-access-row .feature-box{min-width:0;max-width:100%;min-height:144px;padding:8px 14px;box-sizing:border-box}
+  .member-region-access-row .feature-box ul{min-width:0;max-width:100%;grid-template-columns:minmax(0,1fr);gap:3px 8px;font-size:12px}
+  .member-region-access-row .feature-box li{min-width:0;max-width:100%;white-space:normal;word-break:keep-all;overflow-wrap:break-word}
+  .feature-box .feature-learning{grid-column:1/-1}
+  .partner-region-services{white-space:normal;word-break:keep-all;overflow-wrap:break-word;font-size:11px!important}
+}
+
+/* Keep labels readable without changing their source badges or field values. */
+.member-synced-field>span,.member-system-field>span{flex-wrap:wrap}
+.member-synced-field em,.member-system-field em{white-space:nowrap}
+.member-group-grid>.partner-metadata strong,.member-group-grid>.student-metadata strong{word-break:keep-all;overflow-wrap:break-word}

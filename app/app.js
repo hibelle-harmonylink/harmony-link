@@ -1,3 +1,86 @@
+// App document diagnostics: local-only observations, never navigation or recovery.
+(() => {
+  const storageKey="harmony-link-app-diagnostics", limit=20;
+  const screens=["home","about","programs","events","contact"];
+  const queryValues={source:["pwa"],popup:["off"],debugApp:["1"],install:["1"],contact:["volunteer"],topic:["partner"]};
+  let memory=[],storageAvailable=true;
+  function safeUrl(value,worker=false){
+    try{
+      if(typeof value!=="string")return null;
+      const url=new URL(value,location.origin);
+      if(url.origin!==location.origin)return null;
+      const allowedPath=worker?/^\/(?:app\/)?service-worker(?:-v\d+)?\.js$/.test(url.pathname):["/app/","/app/index.html"].includes(url.pathname);
+      const pathname=allowedPath?url.pathname:"/[redacted]";
+      const params=new URLSearchParams();
+      if(!worker&&allowedPath){
+        for(const [key,values] of Object.entries(queryValues)){
+          const selected=url.searchParams.get(key);
+          if(values.includes(selected))params.set(key,selected);
+        }
+        const version=url.searchParams.get("v");
+        if(/^\d{1,6}$/.test(version||""))params.set("v",version);
+      }
+      const search=params.size?`?${params}`:"";
+      const hash=!worker&&screens.includes(url.hash.slice(1))?url.hash:"";
+      return {href:url.origin+pathname+search+hash,pathname,search,hash};
+    }catch{return null;}
+  }
+  // Also sanitize stored records before reading/re-saving: never trust arbitrary storage content.
+  function safeRecord(raw){
+    if(!raw||!["pageshow","pagehide","popstate"].includes(raw.event)||!Number.isSafeInteger(raw.timestamp))return null;
+    const url=safeUrl(raw.href);
+    if(!url)return null;
+    const state=raw.historyState;
+    const historyState=state&&typeof state==="object"?{
+      screen:screens.includes(state.screen)?state.screen:null,
+      contactMode:["general","volunteer"].includes(state.contactMode)?state.contactMode:null
+    }:null;
+    const shellVersion=/^\d{4}-\d{2}-\d{2}-\d{1,3}$/.test(raw.shellVersion||"")?raw.shellVersion:"legacy-or-unknown";
+    const controllerUrl=raw.controllerPresent===true?safeUrl(raw.controllerScriptURL,true):null;
+    const size=value=>Number.isFinite(value)&&value>=0?value:null;
+    return {
+      event:raw.event,timestamp:raw.timestamp,shellVersion,markerPresent:raw.markerPresent===true,
+      ...url,visibilityState:["visible","hidden","prerender"].includes(raw.visibilityState)?raw.visibilityState:null,
+      historyState,navigationType:["navigate","reload","back_forward","prerender"].includes(raw.navigationType)?raw.navigationType:null,
+      persisted:raw.event==="popstate"?null:raw.persisted===true,
+      controllerPresent:raw.controllerPresent===true,controllerScriptURL:controllerUrl?.href||null,
+      transferSize:size(raw.transferSize),encodedBodySize:size(raw.encodedBodySize),workerStart:size(raw.workerStart)
+    };
+  }
+  function recent(){
+    if(!storageAvailable)return memory.slice();
+    try{
+      const saved=localStorage.getItem(storageKey);
+      const parsed=saved&&saved.length<=64000?JSON.parse(saved):[];
+      if(Array.isArray(parsed))return parsed.slice(-limit).map(safeRecord).filter(Boolean);
+    }catch{ /* Storage may be blocked; diagnostics must not break the app. */ }
+    return memory.slice();
+  }
+  function record(event){
+    try{
+      const marker=document.documentElement.getAttribute("data-app-shell-version");
+      const navigation=performance.getEntriesByType("navigation")[0];
+      const controller=navigator.serviceWorker?.controller;
+      const entry=safeRecord({
+        event:event.type,timestamp:Date.now(),shellVersion:marker,markerPresent:marker!==null,
+        href:location.href,visibilityState:document.visibilityState,
+        historyState:event.type==="popstate"?event.state:history.state,
+        navigationType:navigation?.type,persisted:event.persisted,
+        controllerPresent:!!controller,controllerScriptURL:controller?.scriptURL||null,
+        transferSize:navigation?.transferSize,encodedBodySize:navigation?.encodedBodySize,workerStart:navigation?.workerStart
+      });
+      if(!entry)return;
+      memory=[...recent(),entry].slice(-limit);
+      try{localStorage.setItem(storageKey,JSON.stringify(memory));}catch{storageAvailable=false; /* Keep a bounded in-memory fallback. */ }
+    }catch{ /* Observation must never interfere with navigation/auth/UI. */ }
+  }
+  for(const type of ["pageshow","pagehide","popstate"])window.addEventListener(type,record);
+  Object.defineProperty(window,"HARMONY_APP_DIAGNOSTICS",{value:Object.freeze({
+    read:()=>Object.freeze(recent().map(entry=>Object.freeze({...entry,historyState:entry.historyState?Object.freeze({...entry.historyState}):null})))
+  }),writable:false,configurable:false});
+})();
+// End app document diagnostics.
+
 const basePrograms = [
   {id:"digital",emoji:"💻",ko:"디지털 교육",en:"Digital Learning",category:"디지털",tagsKo:"스마트폰 · 키오스크 · AI 활용",tagsEn:"Smartphones · Kiosks · AI",color:"#dbeaff"},
   {id:"english",emoji:"🌍",ko:"언어 교육",en:"Language Education",category:"언어",tagsKo:"영어 · 생활 회화 · 일본어",tagsEn:"English · Conversation · Japanese",color:"#bcd9e8"},
@@ -13,7 +96,45 @@ const basePrograms = [
   {id:"career",emoji:"💼",ko:"자격증·직업교육",en:"Career & Certification",category:"직업",tagsKo:"자격증 · 취업 · 창업",tagsEn:"Certificates · Employment · Business",color:"#cbd8e5"}
 ];
 const sharedContent=window.HARMONY_LINK_SHARED_CONTENT||{};
-const programs=[...(sharedContent.featuredPrograms||[]),...basePrograms];
+if(!window.HARMONY_LINK_BUSINESSES){
+  console.warn("[businesses] shared/data/businesses.js did not load; Business Spotlight will show no businesses.");
+}
+// Adapts a canonical shared/data/businesses.js entry into the {kind,titleKo,...} shape
+// this file's promotion renderers (renderPartners, the home news popup) already expect.
+// The app-specific title/text/badge/logo/CTA-label copy is preserved byte-for-byte from
+// the app's own previously-hardcoded values (now stored on the canonical entry as
+// appTitleKo/appTextKo/etc. instead of duplicated here); only the CTA link target is
+// resolved from the canonical field appCtaField points at, so that URL is never
+// duplicated as a second literal string.
+function businessToPromotion(business){
+  const ctaUrl=business.appCtaField==="phone"?(business.phoneHref?`tel:${business.phoneHref}`:""):(business[business.appCtaField]||"");
+  return{kind:business.kind,titleKo:business.appTitleKo,titleEn:business.appTitleEn,textKo:business.appTextKo,textEn:business.appTextEn,badgeKo:business.appBadgeKo,badgeEn:business.appBadgeEn,image:business.appLogo,url:ctaUrl,actionKo:business.appCtaKo,actionEn:business.appCtaEn};
+}
+const businessPromotions=(window.HARMONY_LINK_BUSINESSES||[]).map(businessToPromotion);
+if(!window.HARMONY_LINK_PROGRAMS){
+  console.warn("[programs] shared/data/programs.js did not load; Programs Preview/list will show no featured programs.");
+}
+// Adapts a canonical shared/data/programs.js entry into the {id,ko,en,tagsKo,...}
+// shape this file's program renderers (programCard, specialtyCards) already expect
+// -- the same {ko,en,tagsKo,tagsEn,color,image,url,category} shape basePrograms
+// below already uses. The app-specific tag copy/image/link (appTagsKo/appImage/
+// appUrl) are preserved byte-for-byte from the app's own previously-hardcoded
+// values instead of duplicated here; the website's own poster image/description
+// are read directly off the canonical entry only inside specialtyCards(), which
+// needs them for the Programs Preview's larger poster art.
+function programToAppModel(program){
+  return{id:program.id,ko:program.titleKo,en:program.titleEn,tagsKo:program.appTagsKo,tagsEn:program.appTagsEn,color:program.appColor,image:program.appImage,url:program.appUrl,category:program.category};
+}
+// Adapts a canonical shared/data/programs.js entry into the {kind,titleKo,...}
+// shape this file's promotion renderers (the home news popup) already expect,
+// mirroring businessToPromotion() above. badge/action copy is identical across
+// all 3 programs on Production, so it is not duplicated per-entry.
+function programToPromotion(program){
+  return{kind:"program",badgeKo:"전문 수업 안내",badgeEn:"SPECIALTY PROGRAM",titleKo:program.titleKo,titleEn:program.titleEn,textKo:program.appPromoTextKo,textEn:program.appPromoTextEn,image:program.appImage,url:program.appUrl,actionKo:"수업 보기",actionEn:"View Program"};
+}
+const featuredPrograms=(window.HARMONY_LINK_PROGRAMS||[]).map(programToAppModel);
+const programPromotions=(window.HARMONY_LINK_PROGRAMS||[]).map(programToPromotion);
+const programs=[...featuredPrograms,...basePrograms];
 const categoryNames={전체:"All",디지털:"Digital",언어:"Language",음악:"Music"};
 const currentBasePrograms=basePrograms.filter(program=>Object.hasOwn(categoryNames,program.category));
 const fallbackPopupNews=[
@@ -21,22 +142,28 @@ const fallbackPopupNews=[
   {badgeKo:"지역사회 봉사",badgeEn:"COMMUNITY SUPPORT",titleKo:"무료 방문 디지털 지원",titleEn:"Free in-home digital support",textKo:"스마트폰과 디지털 기기 사용이 어려운 이웃을<br>직접 찾아가 친절하게 도와드립니다.",textEn:"Friendly volunteers visit neighbors who need help<br>using smartphones and digital devices.",image:"../assets/volunteer/digital-volunteer.png",actionKo:"신청하기",actionEn:"Apply",screen:"contact"},
   {badgeKo:"파트너 모집",badgeEn:"PARTNER RECRUITMENT",titleKo:"입점 파트너 모집",titleEn:"Partner Recruitment",textKo:"전문 강사와 교육업체의 좋은 프로그램이 더 많은<br>사람과 만날 수 있도록 연결합니다.",textEn:"We connect trusted instructors and education providers<br>with more learners and organizations.",image:"../assets/partners/partner-recruitment.png",actionKo:"문의하기",actionEn:"Contact us",screen:"contact"}
 ];
-const popupNews=sharedContent.promotions?.length?sharedContent.promotions:fallbackPopupNews;
-const messiahEvent={id:"messiah",date:"2026-12-09",endDate:"2026-12-13",categoryKo:"특별 행사",categoryEn:"SPECIAL EVENT",badgeKo:"특별 행사",badgeEn:"SPECIAL EVENT",titleKo:"미란멜로디와 함께하는 헨델의 메시아",titleEn:"Handel's Messiah with Meeran Melody",textKo:"2026년 12월 9일(수)~13일(일)<br>David Geffen Hall at Lincoln Center<br>문의 817-905-3468",textEn:"December 9–13, 2026<br>David Geffen Hall at Lincoln Center<br>Contact 817-905-3468",image:"../assets/events/meeran-melody-messiah-20261209.png",url:"../special-event-messiah.html"};
-const sharedEvents=(sharedContent.events?.length?sharedContent.events:[
-  {id:"free-music-class",date:"2026-08-22",endDate:"2026-11-22",badgeKo:"무료 체험",badgeEn:"FREE TRIAL",titleKo:"3개월 무료 음악 클래스",titleEn:"Three-Month Free Music Class",textKo:"매주 토요일 오전 10시, 할렐루야 교회에서 진행합니다.",textEn:"Every Saturday at 10 AM at Hallelujah Church.",image:"../assets/events/free-music-class-20260822.png"},
-  {id:"one-day-class",date:"2026-08-01",endDate:"2026-08-01",badgeKo:"지난 무료 체험",badgeEn:"PAST FREE TRIAL",titleKo:"음악과 디지털 1일 체험 클래스",titleEn:"Music & Digital One-Day Experience",textKo:"2026년 8월 1일 진행된 무료 체험 클래스입니다.",textEn:"A free trial class held on August 1, 2026.",image:"../assets/events/one-day-class.jpg"},
-  {id:"finance-ai-seminar",date:"2026-07-10",endDate:"2026-07-24",badgeKo:"지난 무료 세미나",badgeEn:"PAST FREE SEMINAR",badgeDark:true,titleKo:"재정과 AI의 협력, 더 나은 미래 설계",titleEn:"Finance and AI: Designing a Better Future",textKo:"2026년 7월에 진행된 무료 세미나입니다.",textEn:"A free seminar held in July 2026.",image:"../assets/events/finance-ai-seminar.jpg"}
-]);
-const events=[messiahEvent,...sharedEvents.filter(item=>!item.isPlaceholder)];
+const popupNews=sharedContent.promotions?.length?[...sharedContent.promotions,...programPromotions,...businessPromotions]:fallbackPopupNews;
+if(!window.HARMONY_LINK_EVENTS){
+  console.warn("[events] shared/data/events.js did not load; the events screen will be empty.");
+}
+// Adapts a canonical shared/data/events.js entry into the {id,date,endDate,...} shape
+// eventCard() already expects. The app's existing pre-formatted card text/image path
+// is preserved byte-for-byte (stored as appText*/appImage on the canonical entry
+// instead of duplicated here); titleKo/titleEn fall back to the shared title unless
+// the canonical entry carries an app-specific override (see events.js's header
+// comment -- currently only free-music-class, whose app copy predates and differs
+// slightly from the web's current title). detailUrl is resolved into the app's own
+// "../"-relative path instead of storing a second literal URL.
+function eventToAppModel(event){
+  return{id:event.id,date:event.dateStart,endDate:event.dateEnd,badgeKo:event.badgeKo,badgeEn:event.badgeEn,badgeDark:event.appBadgeDark,titleKo:event.appTitleKo||event.titleKo,titleEn:event.appTitleEn||event.titleEn,textKo:event.appTextKo,textEn:event.appTextEn,image:event.appImage,url:event.detailUrl?`../${event.detailUrl}`:""};
+}
+const events=(window.HARMONY_LINK_EVENTS||[]).map(eventToAppModel);
 let language=localStorage.getItem("hl-language")||"ko";
 let activeCategory="전체";
 let saved=new Set(JSON.parse(localStorage.getItem("hl-saved")||"[]"));
 let installPrompt=null;
 let popupIndex=Math.floor(Math.random()*popupNews.length);
 let popupTimer=null;
-let partnerIndex=0;
-let partnerTimer=null;
 let activeContactMode="general";
 let pastEventsOpen=false;
 let appAuthClient=null;
@@ -55,49 +182,91 @@ function programCard(program){
     <div><h3>${title}</h3><p>${tags}</p></div>
   </article>`;
 }
-function specialtyCards(){
-  const featured=sharedContent.featuredPrograms||[];
+// DMS Care Training Center is an outside 입점 파트너 program, not one of the 3
+// canonical specialty programs above -- kept out of shared/data/programs.js and
+// hand-appended here (mirroring script.js's dmsPartnerCard on the website) so it
+// reuses the same app-specialty-card visuals via ../career/partner.html?partner=dms,
+// the existing Production DMS partner page (see career/data.js). It reuses
+// app-specialty-poster (the same poster container the other 3 cards use) with
+// DMS's own existing program flyer (shared/data/businesses.js's flyers[0] for
+// dms-care, already Production's DMS representative image) instead of the small
+// square brand-mark logo, so the card reads the same as the other 3 instead of
+// standing out with a different image format.
+function dmsAppCard(){
   const viewLabel=language==="ko"?"프로그램 보기":"View Program";
-  const homepageFlyers={
-    "hibelle-digital":"../assets/specialty/hibelle-digital-20260718.jpg",
-    "hibelle-english":"../assets/specialty/hibelle-online-english-20260718.jpg",
-    "meeran-melody":"../assets/specialty/meeran-melody.png"
-  };
+  const url="../career/partner.html?partner=dms";
+  return `<article class="app-specialty-card"><a class="app-specialty-poster" href="${url}" aria-label="DMS Care Training Center ${viewLabel}"><img src="../assets/images/dms-care-flyer-en.png" alt="DMS Care Training Center 전단지"></a><div class="app-specialty-copy"><span class="app-specialty-badge" data-ko="입점 파트너" data-en="Partner">${language==="ko"?"입점 파트너":"Partner"}</span><h3>DMS Care Training Center</h3><p>${language==="ko"?"미국 Healthcare 분야의 실무와 자격시험을 준비하는 직업교육 프로그램":"Career training that prepares students for hands-on Healthcare work and certification exams in the U.S."}</p><a class="app-specialty-link" href="${url}">${viewLabel}</a></div></article>`;
+}
+function specialtyCards(){
+  const featured=featuredPrograms;
+  const viewLabel=language==="ko"?"프로그램 보기":"View Program";
+  // The Programs Preview's poster art reuses the website's own banner image
+  // (shared/data/programs.js's canonical "image" field, "../"-prefixed) rather
+  // than the app's small square brand-mark (appImage/featured.image above),
+  // matching this card's larger poster-style layout.
+  const posterImages=Object.fromEntries((window.HARMONY_LINK_PROGRAMS||[]).map(p=>[p.id,`../${p.image}`]));
   return featured.map(p=>{
     const title=language==="ko"?p.ko:p.en;
     const description=language==="ko"?p.tagsKo:p.tagsEn;
-    const image=homepageFlyers[p.id]||p.image;
+    const image=posterImages[p.id]||p.image;
     return `<article class="app-specialty-card"><a class="app-specialty-poster" href="${p.url}" target="_blank" rel="noopener noreferrer" aria-label="${title} ${viewLabel}"><img src="${image}" alt="${title} 전단지"></a><div class="app-specialty-copy"><h3>${title}</h3><p>${description}</p><a class="app-specialty-link" href="${p.url}" target="_blank" rel="noopener noreferrer">${viewLabel}</a></div></article>`;
-  }).join("");
+  }).join("")+dmsAppCard();
 }
 function renderRecommended(){
   $("#recommendedPrograms").innerHTML=specialtyCards();
 }
+// 배움과 서비스: reuses shared/data/categories.js, the same 12-category data
+// (icon, Korean/English title, 운영중/준비중 status, link) index.html's existing
+// static #program-categories section already renders on the website -- no second,
+// separately hardcoded 12-item list. "../" prefixes each relative web URL since
+// this app lives one directory below the site root.
+function categoryCard(category){
+  const title=language==="ko"?category.titleKo:category.titleEn;
+  if(category.status==="available"&&category.url){
+    return `<a class="app-category-card is-linked" href="../${category.url}"><span class="app-category-status is-available" data-ko="운영중" data-en="Available">${language==="ko"?"운영중":"Available"}</span><span class="app-category-icon" aria-hidden="true">${category.icon}</span><strong data-ko="${category.titleKo}" data-en="${category.titleEn}">${title}</strong></a>`;
+  }
+  return `<button type="button" class="app-category-card is-preparing" data-category-coming-soon><span class="app-category-status is-preparing" data-ko="준비중" data-en="Coming soon">${language==="ko"?"준비중":"Coming soon"}</span><span class="app-category-icon" aria-hidden="true">${category.icon}</span><strong data-ko="${category.titleKo}" data-en="${category.titleEn}">${title}</strong></button>`;
+}
+function renderCategories(){
+  const container=$("#appCategoryGrid");
+  if(!container)return;
+  container.innerHTML=(window.HARMONY_LINK_CATEGORIES||[]).map(categoryCard).join("");
+}
 function renderPartners(){
   const container=$("#partnerPrograms");
   if(!container)return;
-  const partners=(sharedContent.promotions||[]).filter(item=>item.kind==="advertising"||item.kind==="community");
-  if(!partners.length){container.innerHTML="";return}
-  partnerIndex=(partnerIndex+partners.length)%partners.length;
-  const visible=Array.from({length:Math.min(3,partners.length)},(_,offset)=>partners[(partnerIndex+offset)%partners.length]);
-  container.innerHTML=visible.map(item=>{
-    const title=language==="ko"?item.titleKo:item.titleEn;
-    const details=language==="ko"?item.textKo:item.textEn;
-    const action=language==="ko"?item.actionKo:item.actionEn;
+  const partners=businessPromotions;
+  // Home-only presentation: keep the canonical data and popup promotions intact.
+  // Render every business once; native scrolling replaces timed/arrow paging.
+  container.innerHTML=partners.map((item,index)=>{
+    const business=window.HARMONY_LINK_BUSINESSES[index];
+    let title=language==="ko"?item.titleKo:item.titleEn;
+    if(business.id==="dms-care")title='<span class="business-name-line">DMS</span><span class="business-name-line business-name-secondary">Care Training Center</span>';
+    if(business.id==="aaleac")title='<span class="business-name-line">아시안 아메리칸</span><span class="business-name-line">사법 경찰자문위원회</span>';
+    const details=(language==="ko"?item.textKo:item.textEn).replace(/<br\s*\/?\s*>/gi," ");
+    const url=business.id==="hole19"?business.websiteUrl:item.url;
+    const action=business.appCtaField==="phone"?(language==="ko"?item.actionKo:item.actionEn):(language==="ko"?"업체 바로가기":"Visit Business");
     const isYura=item.image?.includes("highline-hl-symbol");
-    return `<article class="app-partner-card"><div class="app-partner-logo${isYura?" yura-mini-logo":""}">${isYura?"":`<img src="${item.image}" alt="${title.replace(/<[^>]*>/g,"")}">`}</div><div class="app-partner-copy"><h3>${title}</h3><p>${details}</p><a href="${item.url}" target="_blank" rel="noopener noreferrer">${action}</a></div></article>`;
+    const image=business.spotlightImage?"/"+business.spotlightImage:item.image;
+    const imageMarkup=isYura?"":`<img src="${image}" alt="${title.replace(/<[^>]*>/g," ").trim()}">`;
+    const media=business.socialLinks?.length?`<button type="button" class="app-partner-logo app-partner-details-open" data-business-detail="${business.id}" aria-label="${language==="ko"?business.nameKo+" 상세 보기":business.nameEn+" details"}">${imageMarkup}</button>`:`<div class="app-partner-logo${isYura?" yura-mini-logo":""}">${imageMarkup}</div>`;
+    return `<article class="app-partner-card" data-business-id="${business.id}">${media}<div class="app-partner-copy"><h3>${title}</h3><p>${details}</p><a href="${url}" target="_blank" rel="noopener noreferrer">${action}</a></div></article>`;
   }).join("");
 }
 function eventCard(item){
   const title=language==="ko"?item.titleKo:item.titleEn;
   const text=language==="ko"?item.textKo:item.textEn;
   const badge=language==="ko"?item.badgeKo:item.badgeEn;
-  const zoomLabel=language==="ko"?"이미지 클릭 시 크게 보기":"Tap image to enlarge";
+  const zoomLabel=language==="ko"?"이미지 크게 보기":"View larger image";
+  const detailLabel=language==="ko"?"자세히 보기":"View Details";
   const category=language==="ko"?(item.categoryKo||badge):(item.categoryEn||badge);
-  const media=item.isPlaceholder?`<div class="event-placeholder-art" aria-hidden="true">✦</div>`:`<button class="event-image-open" type="button" data-event-image="${item.image}" data-event-alt="${title}" aria-label="${zoomLabel}"><img src="${item.image}" alt="${title}"><span>${zoomLabel}</span></button>`;
+  const media=item.isPlaceholder?`<div class="event-placeholder-art" aria-hidden="true">✦</div>`:`<button class="event-image-open" type="button" data-event-image="${item.image}" data-event-alt="${title}" aria-label="${zoomLabel}"><img src="${item.image}" alt="${title}"></button>`;
   const detailUrl=item.url||({"hole19-tournament":"../special-event-hole19.html","free-music-class":"../special-event-music-class.html"}[item.id]||"");
-  const detail=detailUrl?`<a class="event-detail-link" href="${detailUrl}">${language==="ko"?"자세히 보기":"View Details"}</a>`:"";
-  return `<article class="event-card${item.isPlaceholder?" event-placeholder":""}">${media}<div><span class="badge${item.badgeDark?" dark":""}">${category}</span><h2>${title}</h2><p>${text}</p>${detail}</div></article>`;
+  // One button per card. Events with a dedicated detail page link to it (unchanged); events
+  // without one reuse the same imageLightbox as the thumbnail instead of a second button.
+  const detail=item.isPlaceholder?"":(detailUrl?`<a class="event-detail-link" href="${detailUrl}">${detailLabel}</a>`:`<button class="event-detail-link" type="button" data-event-image="${item.image}" data-event-alt="${title}">${detailLabel}</button>`);
+  const actions=detail?`<div class="event-card-actions">${detail}</div>`:"";
+  return `<article class="event-card${item.isPlaceholder?" event-placeholder":""}">${media}<div><span class="badge${item.badgeDark?" dark":""}">${category}</span><h2>${title}</h2><p>${text}</p>${actions}</div></article>`;
 }
 function renderEvents(){
   const today=new Date().toISOString().slice(0,10);
@@ -107,15 +276,32 @@ function renderEvents(){
   $("#upcomingEventsList").innerHTML=upcoming.map(eventCard).join("");
   const toggle=$("#pastEventsToggle");
   toggle.hidden=past.length===0;
-  toggle.classList.toggle("open",pastEventsOpen);
+  if(!past.length)pastEventsOpen=false;
+  toggle.setAttribute("aria-pressed",String(pastEventsOpen));
+  $("#upcomingEventsToggle").setAttribute("aria-pressed",String(!pastEventsOpen));
+  $("#upcomingEventsList").hidden=pastEventsOpen;
   $("#pastEventsList").innerHTML=past.map(eventCard).join("");
   $("#pastEventsList").hidden=!pastEventsOpen;
+}
+// Compact flyer-first card for the HOME "강좌·행사" gallery: poster + a short
+// title only, no badge/description paragraph (those stay on the full #events
+// screen's eventCard()). Reuses eventCard()'s own data-event-image lightbox
+// button and detail-page URL resolution so zoom and "자세히 보기" behavior
+// (including DMS AI 특강's dedicated detail page) is unchanged, just restyled.
+function homeEventCard(item){
+  const title=language==="ko"?item.titleKo:item.titleEn;
+  const zoomLabel=language==="ko"?"이미지 크게 보기":"View larger image";
+  const detailLabel=language==="ko"?"자세히 보기":"View Details";
+  const media=item.isPlaceholder?`<div class="event-placeholder-art" aria-hidden="true">✦</div>`:`<button class="event-image-open" type="button" data-event-image="${item.image}" data-event-alt="${title}" aria-label="${zoomLabel}"><img src="${item.image}" alt="${title}"></button>`;
+  const detailUrl=item.url||({"hole19-tournament":"../special-event-hole19.html","free-music-class":"../special-event-music-class.html"}[item.id]||"");
+  const detail=item.isPlaceholder?"":(detailUrl?`<a class="app-home-event-link" href="${detailUrl}">${detailLabel}</a>`:`<button class="app-home-event-link" type="button" data-event-image="${item.image}" data-event-alt="${title}">${detailLabel}</button>`);
+  return `<article class="app-home-event-card${item.isPlaceholder?" event-placeholder":""}">${media}<h3>${title}</h3>${detail}</article>`;
 }
 function renderHomeEvents(){
   const container=$("#homeEvents");
   if(!container)return;
   const today=new Date().toISOString().slice(0,10);
-  container.innerHTML=events.filter(item=>(item.endDate||item.date)>=today).slice(0,3).map(eventCard).join("");
+  container.innerHTML=events.filter(item=>(item.endDate||item.date)>=today).map(homeEventCard).join("");
 }
 function renderFilters(){
   if(!$("#categoryFilters"))return;
@@ -178,8 +364,8 @@ function setContactMode(mode="general"){
     submitLabel.dataset.ko="신청하기";
     submitLabel.dataset.en="Apply";
   }else{
-    title.dataset.ko="궁금한 점을 편하게 남겨주세요";
-    title.dataset.en="Tell us how we can help";
+    title.dataset.ko="궁금한 점이 있으신가요?";
+    title.dataset.en="Have a question?";
     description.dataset.ko="프로그램, 강사·파트너 입점 문의를 주시면 확인 후 연락드립니다.";
     description.dataset.en="Send us your program, instructor, or partner inquiry and we will get back to you.";
     select.innerHTML='<option value="수업 신청 문의" data-ko="수업 신청 문의" data-en="Class inquiry">수업 신청 문의</option><option value="입점 파트너 문의" data-ko="입점 파트너 문의" data-en="Partner inquiry">입점 파트너 문의</option><option value="기타 문의" data-ko="기타 문의" data-en="Other inquiry">기타 문의</option>';
@@ -205,13 +391,14 @@ function applyLanguage(){
   $$("[data-ko-placeholder]").forEach(el=>{el.placeholder=el.dataset[`${language}Placeholder`]});
   $$("[data-ko-src]").forEach(el=>{el.src=el.dataset[`${language}Src`]});
   $$("[data-ko-alt]").forEach(el=>{el.alt=el.dataset[`${language}Alt`]});
+  $$("[data-ko-aria-label]").forEach(el=>{el.setAttribute("aria-label",el.dataset[`${language}AriaLabel`])});
   $$('[data-language]').forEach(button=>{
     const selected=button.dataset.language===language;
     button.classList.toggle('active',selected);
     button.setAttribute('aria-pressed',String(selected));
   });
   localStorage.setItem("hl-language",language);
-  renderRecommended();renderPartners();renderFilters();renderPrograms();renderSaved();renderEvents();renderHomeEvents();renderPopup();
+  renderCategories();renderRecommended();renderPartners();renderFilters();renderPrograms();renderSaved();renderEvents();renderHomeEvents();renderPopup();
   renderAppAuthCopy();
 }
 function navigate(screen,contactMode="general",historyAction="push"){
@@ -232,15 +419,30 @@ function toggleSaved(id){
 }
 
 document.addEventListener("click",event=>{
-  if(event.target.closest('.app-partner-prev')){
-    partnerIndex-=1;renderPartners();restartPartnerTimer();return;
-  }
-  if(event.target.closest('.app-partner-next')){
-    partnerIndex+=1;renderPartners();restartPartnerTimer();return;
-  }
   const eventImage=event.target.closest("[data-event-image]");
   if(eventImage){
     openImageLightbox(eventImage.dataset.eventImage,eventImage.dataset.eventAlt||"");
+    return;
+  }
+  const scrollTile=event.target.closest("[data-scroll]");
+  if(scrollTile){
+    $(`#${scrollTile.dataset.scroll}`)?.scrollIntoView({behavior:"smooth",block:"start"});
+    return;
+  }
+  const actionTile=event.target.closest("[data-action]");
+  if(actionTile){
+    if(actionTile.dataset.action==="install") $("#installButton").click();
+    if(actionTile.dataset.action==="account") $("#appAuthButton").click();
+    return;
+  }
+  if(event.target.closest("[data-category-coming-soon]")){
+    $("#categoryComingSoonModal").hidden=false;
+    document.body.style.overflow="hidden";
+    return;
+  }
+  if(event.target.closest("[data-category-coming-soon-close]")){
+    $("#categoryComingSoonModal").hidden=true;
+    document.body.style.overflow="";
     return;
   }
   const go=event.target.closest("[data-go]");
@@ -262,24 +464,40 @@ document.addEventListener("click",event=>{
   if(mini){const program=programs.find(p=>p.id===mini.dataset.openProgram);if(program.url){window.open(program.url,"_blank","noopener,noreferrer")}else{activeCategory="전체";navigate("programs");$("#programSearch").value=language==="ko"?program.ko:program.en;renderFilters();renderPrograms()}}
 });
 
-function restartPartnerTimer(){
-  clearInterval(partnerTimer);
-  partnerTimer=setInterval(()=>{partnerIndex+=1;renderPartners()},5000);
+const appMenuToggle=$("#appMenuToggle");
+const appPrimaryNav=$("#appPrimaryNav");
+function closeAppMenu(){
+  appMenuToggle.classList.remove("open");
+  appPrimaryNav.classList.remove("open");
+  appMenuToggle.setAttribute("aria-expanded","false");
+  document.body.classList.remove("app-menu-open");
 }
+appMenuToggle.addEventListener("click",()=>{
+  const open=!appPrimaryNav.classList.contains("open");
+  appMenuToggle.classList.toggle("open",open);
+  appPrimaryNav.classList.toggle("open",open);
+  appMenuToggle.setAttribute("aria-expanded",String(open));
+  document.body.classList.toggle("app-menu-open",open);
+});
+appPrimaryNav.addEventListener("click",event=>{
+  if(event.target.closest("a,button")) closeAppMenu();
+});
 document.addEventListener("keydown",event=>{
   const eventImage=event.target.closest?.("[data-event-image]");
   if(eventImage&&(event.key==="Enter"||event.key===" ")){
     event.preventDefault();
     openImageLightbox(eventImage.dataset.eventImage,eventImage.dataset.eventAlt||"");
   }
+  if(event.key==="Escape"&&appPrimaryNav.classList.contains("open")) closeAppMenu();
 });
 $("#programSearch")?.addEventListener("input",renderPrograms);
-$("#pastEventsToggle").addEventListener("click",()=>{pastEventsOpen=!pastEventsOpen;renderEvents()});
+$("#pastEventsToggle").addEventListener("click",()=>{pastEventsOpen=true;renderEvents()});
+$("#upcomingEventsToggle").addEventListener("click",()=>{pastEventsOpen=false;renderEvents()});
 $$('[data-language]').forEach(button=>button.addEventListener('click',()=>{
   language=button.dataset.language;
   applyLanguage();
 }));
-function openImageLightbox(src,alt,action){
+function openImageLightbox(src,alt,action,business){
   $("#lightboxImage").src=src;
   $("#lightboxImage").alt=alt;
   const actionButton=$("#lightboxAction");
@@ -288,11 +506,28 @@ function openImageLightbox(src,alt,action){
     actionButton.querySelector("span").textContent=action.label;
     actionButton.onclick=action.onClick;
   }
+  const info=$("#lightboxBusinessInfo");
+  info.hidden=!business;
+  $("#imageLightbox").classList.toggle("has-business-details",!!business);
+  if(business){
+    const name=language==="ko"?business.nameKo:business.nameEn;
+    info.innerHTML=`<header><img class="business-detail-logo" src="/${business.logo}" alt="${name} logo"><div><h2>${name}</h2><p>${business.address||""}</p><p>${language==="ko"?business.summaryKo:business.summaryEn}</p></div></header><div class="business-image-choices">${business.flyers.map((image,index)=>`<button type="button" data-business-image="/${image}" data-business-image-alt="${name} ${index+1}">${language==="ko"?"이미지":"Image"} ${index+1}</button>`).join("")}</div><nav class="app-contact-social" aria-label="${name} links"><a href="${business.websiteUrl}" target="_blank" rel="noopener noreferrer">${language==="ko"?business.appCtaKo:business.appCtaEn}</a>${business.socialLinks.map(link=>`<a href="${link.url}" target="_blank" rel="noopener noreferrer"><img src="/${link.icon}" alt="">${link.label}</a>`).join("")}</nav>`;
+  }else info.innerHTML="";
   $("#imageLightbox").hidden=false;
 }
 function closeImageLightbox(){
   $("#imageLightbox").hidden=true;
 }
+$("#partnerPrograms").addEventListener("click",event=>{
+  const trigger=event.target.closest("[data-business-detail]");
+  if(!trigger)return;
+  const business=window.HARMONY_LINK_BUSINESSES.find(item=>item.id===trigger.dataset.businessDetail);
+  if(business)openImageLightbox("/"+(business.spotlightImage||business.logo),language==="ko"?business.nameKo:business.nameEn,null,business);
+});
+$("#lightboxBusinessInfo").addEventListener("click",event=>{
+  const trigger=event.target.closest("[data-business-image]");
+  if(trigger){$("#lightboxImage").src=trigger.dataset.businessImage;$("#lightboxImage").alt=trigger.dataset.businessImageAlt;}
+});
 $("#newsPopupImage").addEventListener("click",()=>openImageLightbox($("#newsPopupImage").src,$("#newsPopupImage").alt));
 $("#newsPopupImage").addEventListener("keydown",event=>{
   if(event.key==="Enter"||event.key===" "){
@@ -511,6 +746,7 @@ function closeInstallHelp(){
 }
 $("#installHelpModal").querySelectorAll("[data-install-help-close]").forEach(button=>button.addEventListener("click",closeInstallHelp));
 document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!$("#installHelpModal").hidden)closeInstallHelp();});
+document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!$("#categoryComingSoonModal").hidden){$("#categoryComingSoonModal").hidden=true;document.body.style.overflow=""}});
 window.addEventListener("beforeinstallprompt",event=>{
   event.preventDefault();
   installPrompt=event;
@@ -533,7 +769,7 @@ window.addEventListener("appinstalled",()=>{$("#installButton").hidden=true;clos
 if("serviceWorker" in navigator){
   if(location.protocol==="https:"){
     window.addEventListener("load",async()=>{
-      const registration=await navigator.serviceWorker.register("service-worker-v93.js",{updateViaCache:"none"});
+      const registration=await navigator.serviceWorker.register("service-worker-v104.js",{updateViaCache:"none"});
       await registration.update();
     });
     let refreshing=false;
@@ -548,7 +784,6 @@ if("serviceWorker" in navigator){
   }
 }
 applyLanguage();
-restartPartnerTimer();
 const initialParams=new URLSearchParams(location.search);
 if(initialParams.get("install")==="1"){
   const installButton=$("#installButton");
@@ -571,6 +806,14 @@ const initialContactMode=initialParams.get("contact")==="volunteer"?"volunteer":
 navigate(initialScreen,initialContactMode,"none");
 const initialBase=`${location.pathname}${location.search}`;
 history.replaceState({screen:"home",contactMode:"general"},"",`${initialBase}#home`);
+window.scrollTo(0,0);
+if(initialScreen==="home"){
+  let allowAutoScrollLock=true;
+  const lockScrollTop=()=>{if(allowAutoScrollLock&&document.scrollingElement.scrollTop!==0)window.scrollTo(0,0)};
+  ["pointerdown","wheel","touchstart","keydown"].forEach(type=>window.addEventListener(type,()=>{allowAutoScrollLock=false},{once:true,passive:true}));
+  window.addEventListener("scroll",lockScrollTop,{passive:true});
+  setTimeout(()=>window.removeEventListener("scroll",lockScrollTop),1500);
+}
 if(initialScreen!=="home"){
   history.pushState({screen:initialScreen,contactMode:initialContactMode},"",`${initialBase}#${initialScreen}`);
 }

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-labelledby="title desc">
+  <title id="title">스마트폰과 학습 자료</title>
+  <desc id="desc">스마트폰과 열린 책이 놓인 친근한 학습 그림</desc>
+  <rect width="320" height="180" rx="28" fill="#e8f5ed"/>
+  <circle cx="71" cy="50" r="26" fill="#b8dec6"/>
+  <circle cx="255" cy="132" r="34" fill="#cde9d8"/>
+  <path d="M65 123c0-22 18-40 40-40h50v66H99c-19 0-34-11-34-26Z" fill="#fff" stroke="#6fae85" stroke-width="5"/>
+  <path d="M155 83h50c22 0 40 18 40 40 0 15-15 26-34 26h-56V83Z" fill="#f8fffa" stroke="#6fae85" stroke-width="5"/>
+  <path d="M155 89v54" stroke="#6fae85" stroke-width="5"/>
+  <rect x="191" y="33" width="68" height="104" rx="13" fill="#fff" stroke="#286a47" stroke-width="6"/>
+  <rect x="202" y="47" width="46" height="58" rx="7" fill="#bfe7cf"/>
+  <circle cx="225" cy="120" r="5" fill="#286a47"/>
+  <path d="M110 104h28M110 118h28" stroke="#9ac9aa" stroke-width="5" stroke-linecap="round"/>
+</svg>

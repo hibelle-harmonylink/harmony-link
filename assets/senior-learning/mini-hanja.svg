@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 190" role="img" aria-label="한자 변환기 그림">
+  <rect width="320" height="190" rx="28" fill="#fff4e7"/>
+  <rect x="66" y="28" width="188" height="132" rx="18" fill="#f4b25e"/>
+  <rect x="78" y="40" width="164" height="108" rx="10" fill="#fff"/>
+  <text x="112" y="109" fill="#9e5c1e" font-family="sans-serif" font-size="54" font-weight="700">漢</text>
+  <path d="M178 95h34m-12-12 12 12-12 12" fill="none" stroke="#79c5a0" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

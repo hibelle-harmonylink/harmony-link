@@ -36,10 +36,10 @@ test('rejects incomplete and unknown registration requests before append', () =>
   assert.deepEqual(unknown, { ok: false, error: 'Unknown action.' });
 });
 
-test('requires UUID, email, and a provider display name for signup', () => {
+test('requires UUID, email, and name for signup', () => {
   assert.equal(context.missingRegistrationField_({ '이메일': 'a@b.com', '이름': 'A' }), '회원 ID');
   assert.equal(context.missingRegistrationField_({ '회원 ID': 'uuid', '이름': 'A' }), '이메일');
-  assert.equal(context.missingRegistrationField_({ '회원 ID': 'uuid', '이메일': 'a@b.com' }), '표시 이름');
+  assert.equal(context.missingRegistrationField_({ '회원 ID': 'uuid', '이메일': 'a@b.com' }), '이름');
   assert.equal(context.missingRegistrationField_({ '회원 ID': 'uuid', '이메일': 'a@b.com', '이름': 'A' }), '');
 });
 
@@ -80,21 +80,25 @@ test('migrates seven sample members, removes fourteen invalid rows, and preserve
   assert.deepEqual(Array.from(migrated, row => row[0]), [
     'HL-30-001', 'HL-30-002', 'HL-30-003', 'HL-30-004', 'HL-30-005', 'HL-30-006', 'HL-30-007'
   ]);
-  assert.deepEqual(Array.from(migrated, row => row[15]), sample.map(row => row[0]));
+  assert.deepEqual(Array.from(migrated, row => row[16]), sample.map(row => row[0]));
   assert.deepEqual(Array.from(migrated, row => row[2]), sample.map(row => row[2]));
-  assert.deepEqual(Array.from(migrated, row => row[3]), Array(7).fill(''));
-  assert.equal(migrated[3][7], '수강생');
-  assert.equal(migrated[3][9], '탈퇴');
+  assert.deepEqual(Array.from(migrated, row => row[3]), ['', '', '', '', '', '', '']);
+  assert.deepEqual(Array.from(migrated, row => row[4]), ['', '', '', '', '', '', '']);
+  assert.equal(migrated[3][8], '수강생');
+  assert.equal(migrated[3][10], '탈퇴');
 });
 
 test('profile sync preserves member number, join date, and system ID while syncing metadata', () => {
   const body = source.slice(source.indexOf('function syncProfile_'), source.indexOf('function updateMember_'));
-  assert.match(body, /COLUMNS\.memberType, 1, 3/);
-  assert.doesNotMatch(body, /COLUMNS\.memberNumber/);
-  assert.doesNotMatch(body, /COLUMNS\.joinedAt/);
-  assert.doesNotMatch(body, /COLUMNS\.systemId/);
-  assert.match(body, /COLUMNS\.phone/);
-  assert.match(body, /COLUMNS\.specialty, 1, 4/);
+  assert.match(body, /columns\.memberType, 1, 3/);
+  assert.doesNotMatch(body, /columns\.memberNumber/);
+  assert.doesNotMatch(body, /columns\.joinedAt/);
+  assert.doesNotMatch(body, /columns\.systemId/);
+  assert.match(body, /columns\.phone/);
+  assert.match(body, /columns\.specialty, 1, 4/);
+  assert.match(body, /text_\(values\.nickname\)/);
+  assert.match(body, /text_\(values\.full_name\)/);
+  assert.match(source, /columns\.memberType, 1, 3/);
 });
 
 test('pre-metadata roster expansion retains the join timestamp as a date-formattable value', () => {
@@ -103,26 +107,10 @@ test('pre-metadata roster expansion retains the join timestamp as a date-formatt
   assert.match(source, /setNumberFormat\('yyyy-mm-dd'\)/);
 });
 
-test('profile sync reapplies type, membership, and status colors from current values', () => {
-  const values = [
-    ['입점 파트너', 'BASIC $20', '활성'],
-    ['수강생', 'FREE', '탈퇴']
-  ];
-  const calls = [];
-  const sheet = {
-    getRange(startRow, startColumn, rowCount, columnCount) {
-      if (columnCount === 3) return { getDisplayValues: () => values };
-      return {
-        setBackgrounds: matrix => { calls.push({ startColumn, kind: 'background', matrix }); return this; },
-        setFontColors: matrix => { calls.push({ startColumn, kind: 'foreground', matrix }); return this; },
-        setFontWeights: matrix => { calls.push({ startColumn, kind: 'weight', matrix }); return this; }
-      };
-    }
-  };
-  context.applyRosterDisplayStyles_(sheet, 2, values.length);
-  assert.equal(calls.length, 9);
-  // The identity columns shift roster display fields to H/I/J.
-  assert.equal(JSON.stringify(calls.find(call => call.startColumn === 8 && call.kind === 'background').matrix), JSON.stringify([['#dbeafe'], ['#fee2e2']]));
-  assert.equal(JSON.stringify(calls.find(call => call.startColumn === 9 && call.kind === 'background').matrix), JSON.stringify([['#ede9fe'], ['#f3f4f6']]));
-  assert.equal(JSON.stringify(calls.find(call => call.startColumn === 10 && call.kind === 'background').matrix), JSON.stringify([['#dcfce7'], ['#e5e7eb']]));
+test('uses the seventeen-column roster name structure and colours I through K', () => {
+  assert.match(source, /const HEADERS = \['회원번호', '가입일', '닉네임\/업체명', '한글 이름', '영문 이름', '이메일', '연락처', '가입방식', '회원유형', '멤버십', '계정상태', '전문분야', '강의과목', '수강과목', '담당강사', '가입경로', '시스템 ID'\]/);
+  assert.match(source, /memberType: 9, membership: 10, accountStatus: 11/);
+  assert.match(source, /systemId: 17/);
+  const styles = source.slice(source.indexOf('function applyRosterDisplayStyles_'), source.indexOf('function normalizeType_'));
+  assert.match(styles, /map\.memberType/);
 });

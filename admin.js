@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const BUILD = '20260904-1';
+  const BUILD = '20260917-3';
   console.log(`[admin] admin.js loaded — build ${BUILD}`);
   // Visible without opening devtools -- if this text is missing, blank, or
   // shows an older build number than the one just shipped, the browser (or
@@ -33,14 +33,34 @@
   const signOutButton = document.getElementById('adminSignOut');
   const dialog = document.getElementById('memberDialog');
   const detail = document.getElementById('memberDetail');
+  const regionDialog = document.getElementById('partnerRegionDialog');
+  const regionDialogBody = document.getElementById('partnerRegionDialogBody');
+  const regionDialogClose = document.getElementById('partnerRegionDialogClose');
+  const adminToast = document.getElementById('adminToast');
+  const pagination = document.getElementById('memberPagination');
+  const paginationSummary = document.getElementById('memberPaginationSummary');
+  const paginationControls = document.getElementById('memberPaginationControls');
 
   const TYPE_LABELS = { student: '수강생', partner: '파트너' };
   const MEMBERSHIP_LABELS = { free: 'FREE', basic: 'BASIC $20', premium: 'PREMIUM $50' };
   const STATUS_LABELS = { active: '활성', expiring: '만료 예정', expired: '만료', suspended: '중지', withdrawn: '탈퇴' };
   const TYPE_BADGE_CLASS = { student: 'type-student', partner: 'type-partner' };
+  // Only currently supported operational choices are shown in the form.
+  // Keep the data objects (rather than hard-coded option markup) so future
+  // country/state additions do not change the save payload contract.
+  const COUNTRY_OPTIONS = [{ code: 'US', name: 'United States' }];
+  const STATE_OPTIONS = {
+    US: [
+      { code: 'NY', name: 'New York' },
+      { code: 'TX', name: 'Texas' }
+    ]
+  };
   let currentUserId = '';
   let currentUserName = '';
   let allMembers = [];
+  let currentPage = 1;
+  let toastTimer = null;
+  const MEMBERS_PER_PAGE = 20;
 
   // Postgrest/Supabase errors carry more than .message -- .code, .details
   // and .hint often say exactly what's wrong (missing function, RLS
@@ -93,6 +113,17 @@
     message.textContent = text;
     message.classList.toggle('error', isError);
   };
+  const showToast = (text, isError = false) => {
+    window.clearTimeout(toastTimer);
+    adminToast.textContent = text;
+    adminToast.className = `admin-toast${isError ? ' error' : ''}`;
+    adminToast.hidden = false;
+    toastTimer = window.setTimeout(() => {
+      adminToast.hidden = true;
+      adminToast.textContent = '';
+      adminToast.className = 'admin-toast';
+    }, 2600);
+  };
   // window.confirm() is used only here, for the save flow's "are you sure"
   // step. After a user dismisses several native confirm()/alert() dialogs
   // on the same page in a row, Chrome offers to (and once checked, will)
@@ -120,24 +151,75 @@
     overlay.querySelector('.admin-confirm-ok').focus();
   });
   const formatDate = value => value ? new Intl.DateTimeFormat('ko-KR', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(value)) : '없음';
+  // Normalize only an unambiguous US 10-digit number (with an optional +1).
+  // Korean and other international numbers remain exactly as supplied.
   const formatPhone = value => {
-    const text = String(value || '').trim();
-    const digits = text.replace(/\D/g, '');
-    return digits.length === 10 ? `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}` : text;
+    const original = String(value || '').trim();
+    const digits = original.replace(/\D/g, '');
+    const usDigits = digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits;
+    return usDigits.length === 10
+      ? `${usDigits.slice(0, 3)}-${usDigits.slice(3, 6)}-${usDigits.slice(6)}`
+      : original;
   };
   const deny = text => { loading.hidden = true; app.hidden = true; denied.hidden = false; deniedMessage.textContent = text; };
   const normalize = member => access.normalizeUser({ ...member, is_admin: member.is_admin || member.role === 'admin' });
   // The admin account's stored display_name is a leftover site-brand
   // placeholder ("Harmony Link") from setup, not this admin's own name.
   // The database value is left untouched -- only what's rendered changes.
-  const resolveDisplayName = member => {
+  const fallbackMemberName = member => {
     const raw = (member.display_name || '').trim();
     if (member.is_admin && raw === 'Harmony Link') return '하이벨';
     return raw || (member.email || '').split('@')[0] || '이름 없음';
   };
-  const memberNickname = member => String(member.nickname || '').trim();
-  const memberFullName = member => String(member.full_name || '').trim();
+  // Identity metadata is optional for people who have finished site signup
+  // but have not submitted an application yet.  Never leave those rows
+  // anonymous in the admin UI: use the existing display name, then email.
+  const memberNickname = member => String(member.nickname || '').trim() || fallbackMemberName(member);
+  const memberFullName = member => String(member.full_name || '').trim() || fallbackMemberName(member);
+  // A person's public/admin-facing name is not a business nickname.  Keep
+  // the administrator-confirmed profile name first, then the application
+  // name for legacy rows that have no display_name yet.
+  const memberPersonName = member => {
+    const raw = String(member.display_name || '').trim();
+    if (member.is_admin && raw === 'Harmony Link') return '하이벨';
+    return raw || String(member.full_name || '').trim() || fallbackMemberName(member);
+  };
+  // The detail header and the administrator-confirmed Korean-name input are
+  // both the public profile name.  Keep the application-provided full name
+  // separate for its own field; otherwise a successful display_name save is
+  // hidden again as soon as the detail dialog is reopened.
+  const resolveDisplayName = member => memberPersonName(member);
+  const memberNumberClass = member => member.member_number && member.application_completed === false
+    ? 'member-number member-number-pending'
+    : 'member-number';
   const escapeHtml = value => String(value || '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+  const normalizeServiceAreas = values => {
+    const seen = new Set();
+    return (Array.isArray(values) ? values : []).reduce((areas, value) => {
+      const area = String(value || '').trim();
+      const key = area.toLocaleLowerCase('en-US');
+      if (area && !seen.has(key)) { seen.add(key); areas.push(area); }
+      return areas;
+    }, []);
+  };
+  const normalizePartnerRegion = region => ({
+    country_code: String(region?.country_code || '').trim().toUpperCase(),
+    country_name: String(region?.country_name || '').trim(),
+    state_code: String(region?.state_code || '').trim().toUpperCase(),
+    state_name: String(region?.state_name || '').trim(),
+    city: String(region?.city || '').trim(),
+    service_area: normalizeServiceAreas(region?.service_area),
+    online_available: Boolean(region?.online_available),
+    nationwide_available: Boolean(region?.nationwide_available)
+  });
+  const samePartnerRegion = (left, right) => {
+    const a = normalizePartnerRegion(left);
+    const b = normalizePartnerRegion(right);
+    return a.country_code === b.country_code && a.country_name === b.country_name &&
+      a.state_code === b.state_code && a.state_name === b.state_name && a.city === b.city &&
+      a.online_available === b.online_available && a.nationwide_available === b.nationwide_available &&
+      a.service_area.length === b.service_area.length && a.service_area.every((area, index) => area === b.service_area[index]);
+  };
   const badge = (label, className = '') => `<span class="member-badge ${className}">${label}</span>`;
   const typeBadge = member => badge(member.is_admin ? '관리자' : TYPE_LABELS[member.user_type], member.is_admin ? 'type-admin' : TYPE_BADGE_CLASS[member.user_type]);
   const membershipBadge = member => member.is_admin ? badge('관리자', 'type-admin') : badge(MEMBERSHIP_LABELS[member.membership], member.membership);
@@ -177,16 +259,61 @@
     });
   };
 
+  // Keep the client-side page math separate from filtering/rendering so the
+  // source can later switch to a server-page request without changing the
+  // member-row renderer or filter UI.
+  const getPage = (members, page) => {
+    const totalPages = Math.max(1, Math.ceil(members.length / MEMBERS_PER_PAGE));
+    const safePage = Math.min(Math.max(page, 1), totalPages);
+    const start = (safePage - 1) * MEMBERS_PER_PAGE;
+    return { page: safePage, totalPages, start, members: members.slice(start, start + MEMBERS_PER_PAGE) };
+  };
+
+  const pageNumbers = (page, totalPages) => {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, index) => index + 1);
+    const pages = [1];
+    if (page > 4) pages.push('…');
+    for (let value = Math.max(2, page - 1); value <= Math.min(totalPages - 1, page + 1); value += 1) pages.push(value);
+    if (page < totalPages - 3) pages.push('…');
+    pages.push(totalPages);
+    return pages;
+  };
+
+  const renderPagination = (members, pageData) => {
+    const { page, totalPages, start } = pageData;
+    pagination.hidden = members.length === 0;
+    if (members.length === 0) return;
+    const end = Math.min(start + MEMBERS_PER_PAGE, members.length);
+    paginationSummary.textContent = `전체 ${members.length}명 · 현재 ${start + 1}–${end}`;
+    paginationControls.replaceChildren();
+    const appendButton = (label, targetPage, disabled = false, current = false) => {
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'member-page-button'; button.textContent = label;
+      button.disabled = disabled; button.dataset.page = String(targetPage);
+      if (current) { button.classList.add('is-current'); button.setAttribute('aria-current', 'page'); }
+      paginationControls.appendChild(button);
+    };
+    appendButton('이전', page - 1, page === 1);
+    pageNumbers(page, totalPages).forEach(value => {
+      if (value === '…') {
+        const ellipsis = document.createElement('span'); ellipsis.className = 'member-page-ellipsis'; ellipsis.textContent = value;
+        paginationControls.appendChild(ellipsis);
+      } else appendButton(String(value), value, false, value === page);
+    });
+    appendButton('다음', page + 1, page === totalPages);
+  };
+
   const renderMembers = members => {
-    list.replaceChildren(...members.map(raw => {
+    const pageData = getPage(members, currentPage);
+    currentPage = pageData.page;
+    list.replaceChildren(...pageData.members.map(raw => {
       const member = normalize(raw);
       const row = document.createElement('tr');
-      const name = resolveDisplayName(member);
       const memberNumber = member.member_number || '—';
       const cells = [
-        ['회원번호', `<span class="member-number">${escapeHtml(memberNumber)}</span>`],
+        ['회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(memberNumber)}</span>`],
         ['닉네임', escapeHtml(memberNickname(member))],
-        ['이름', escapeHtml(memberFullName(member)) + (member.access_migration_review ? '<span class="member-review">검토 필요</span>' : '')],
+        ['이름', escapeHtml(memberPersonName(member)) + (member.access_migration_review ? '<span class="member-review">검토 필요</span>' : '')],
         ['이메일', escapeHtml(member.email || '이메일 없음')],
         ['연락처', escapeHtml(formatPhone(member.phone))],
         ['회원유형', typeBadge(member)],
@@ -208,7 +335,8 @@
       return row;
     }));
     empty.hidden = members.length > 0;
-    console.log('[admin] rendered rows', { count: members.length });
+    renderPagination(members, pageData);
+    console.log('[admin] rendered rows', { count: pageData.members.length, total: members.length, page: currentPage });
   };
 
   const loadMembers = async () => {
@@ -231,7 +359,8 @@
     setMessage(`최근 가입 순서로 ${allMembers.length}명의 회원을 표시합니다.`);
   };
 
-  const applyFilters = () => {
+  const applyFilters = ({ resetPage = true } = {}) => {
+    if (resetPage) currentPage = 1;
     const term = search.value.trim().toLowerCase();
     renderMembers(allMembers.filter(raw => {
       const member = normalize(raw);
@@ -247,12 +376,40 @@
     }));
   };
 
+  paginationControls.addEventListener('click', event => {
+    const button = event.target.closest('[data-page]');
+    if (!button || button.disabled) return;
+    currentPage = Number(button.dataset.page);
+    applyFilters({ resetPage: false });
+  });
+
+  const delay = milliseconds => new Promise(resolve => window.setTimeout(resolve, milliseconds));
+  const isTransientFetchError = error => /failed to fetch|networkerror|network request failed/i.test(String(error?.message || error || ''));
+  // The email must be queued only once.  A transient browser-to-PostgREST
+  // failure while polling its delivery status must therefore retry only the
+  // read, never admin_queue_role_email(), which would create a second email.
+  const getRoleEmailStatusWithRetry = async notificationId => {
+    let lastError;
+    for (let retry = 0; retry < 3; retry += 1) {
+      try {
+        const result = await client.rpc('admin_get_role_email_status', { p_notification_id: notificationId });
+        if (!result.error || !isTransientFetchError(result.error) || retry === 2) return result;
+        lastError = result.error;
+      } catch (error) {
+        if (!isTransientFetchError(error) || retry === 2) throw error;
+        lastError = error;
+      }
+      await delay(400 * (retry + 1));
+    }
+    throw lastError || new Error('메일 발송 상태를 확인하지 못했습니다.');
+  };
+
   const sendRoleNotification = async member => {
     const { data: notificationId, error } = await client.rpc('admin_queue_role_email', { p_member_id: member.id });
     if (error) throw new Error(error.message || '메일 발송 대기열 등록에 실패했습니다.');
     for (let attempt = 0; attempt < 15; attempt += 1) {
-      await new Promise(resolve => window.setTimeout(resolve, 1000));
-      const { data: rows, error: statusError } = await client.rpc('admin_get_role_email_status', { p_notification_id: notificationId });
+      await delay(1000);
+      const { data: rows, error: statusError } = await getRoleEmailStatusWithRetry(notificationId);
       if (statusError) throw new Error(statusError.message || '메일 발송 상태를 확인하지 못했습니다.');
       const delivery = rows?.[0];
       if (delivery?.processed_at) return;
@@ -306,8 +463,14 @@
 
   const featureHtml = member => {
     const features = access.getFeatureAccess(member);
-    const renderList = allowed => features.filter(item => item.allowed === allowed).map(item => `<li>${item.label}</li>`).join('') || '<li>없음</li>';
+    const renderList = allowed => features.filter(item => item.allowed === allowed).map(item => `<li class="feature-${item.feature}">${item.label}</li>`).join('') || '<li>없음</li>';
     return `<div class="feature-columns"><section class="feature-box allowed"><h3>이용 가능한 기능</h3><ul>${renderList(true)}</ul></section><section class="feature-box denied"><h3>이용 불가능한 기능</h3><ul>${renderList(false)}</ul></section></div>`;
+  };
+
+  const partnerRegionSummary = region => {
+    const value = normalizePartnerRegion(region);
+    const place = [value.state_name, value.city].filter(Boolean).join(' · ') || value.country_name;
+    return place || '지역 미등록';
   };
 
   const openDetail = raw => {
@@ -315,76 +478,230 @@
     const withdrawn = member.is_withdrawn || member.account_status === 'withdrawn';
     const protectedAccount = member.is_admin || member.id === currentUserId;
     const name = resolveDisplayName(member);
+    const editable = !withdrawn && !protectedAccount;
+    const editableClass = editable ? ' admin-editable-field' : '';
+    const directFieldClass = `field-source-direct${editableClass}`;
+    const manualFieldClass = `field-source-manual${editableClass}`;
+    const settingFieldClass = `field-source-setting${editableClass}`;
+    const editableDisabled = editable ? '' : ' disabled aria-disabled="true"';
     detail.className = 'member-detail';
-    const metadataFields = `<div class="member-edit-grid member-metadata-grid"><label>닉네임<input id="detailNickname" type="text" maxlength="80" autocomplete="nickname"></label><label>이름<input id="detailFullName" type="text" maxlength="80" autocomplete="name"></label><label>연락처<input id="detailPhone" type="tel" maxlength="30" autocomplete="tel"></label><label class="partner-metadata">전문분야<input id="detailSpecialty" type="text" maxlength="120"></label><label class="partner-metadata">강의과목<input id="detailTeachingSubjects" type="text" maxlength="240"></label><label class="student-metadata">수강과목<input id="detailEnrolledSubject" type="text" maxlength="120"></label><label class="student-metadata">담당강사<input id="detailAssignedInstructor" type="text" maxlength="120"></label></div>`;
-    const summary = `<dl class="member-dates member-core-fields"><div><dt>회원번호</dt><dd>${escapeHtml(member.member_number || '—')}</dd></div><div><dt>닉네임</dt><dd>${escapeHtml(memberNickname(member))}</dd></div><div><dt>이름</dt><dd>${escapeHtml(memberFullName(member))}</dd></div><div><dt>이메일</dt><dd>${escapeHtml(member.email || '')}</dd></div><div><dt>연락처</dt><dd>${escapeHtml(formatPhone(member.phone))}</dd></div><div><dt>회원유형</dt><dd>${escapeHtml(member.is_admin ? '관리자' : TYPE_LABELS[member.user_type])}</dd></div><div><dt>멤버십</dt><dd>${escapeHtml(member.is_admin ? '관리자' : MEMBERSHIP_LABELS[member.membership])}</dd></div><div><dt>계정상태</dt><dd>${escapeHtml(STATUS_LABELS[member.account_status] || member.account_status || '')}</dd></div><div><dt>가입일</dt><dd>${formatDate(member.created_at)}</dd></div></dl>`;
-    const accessFields = withdrawn || protectedAccount ? `<div class="member-protected-copy">${withdrawn ? '탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다.' : '관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.'}</div>` : `<div class="member-edit-grid"><label>회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label>멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label>계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label></div>`;
+    // Compact one-screen layout (2026-09): three labeled groups instead of a
+    // read-only summary list followed by a separately-scrolling edit form
+    // repeating most of the same fields. 회원번호/이메일/가입일 have no
+    // editable counterpart and stay read-only chips; every other field that
+    // used to appear twice (닉네임/이름/연락처/회원유형/멤버십/계정상태) now
+    // renders exactly once, as its live input/select, which is what removed
+    // the internal scrollbar on common desktop viewports (1366x768+).
+    const readonlyField = (label, valueHtml, truncate = false) => `<div class="member-readonly member-system-field${truncate ? ' member-readonly-truncate' : ''}"><span>${label}<em>자동 관리</em></span><strong${truncate ? ` title="${escapeHtml(member.email || '')}"` : ''}>${valueHtml}</strong></div>`;
+    const syncedReadonlyField = (label, value) => `<div class="member-readonly member-synced-field" title="신청서 자동연동 · 신청서 재동기화로 갱신됩니다"><span>${label}<em>신청서 자동연동</em></span><strong>${escapeHtml(value || '—')}</strong></div>`;
+    const basicInfoFields = `<section class="member-group"><h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시</small></h3><div class="member-group-grid">${readonlyField('회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>`)}${readonlyField('이메일', escapeHtml(member.email || ''), true)}${readonlyField('가입일', formatDate(member.created_at))}<label class="${manualFieldClass}" title="일반 수정 · 사업체명 또는 활동명">닉네임/업체명<input id="detailNickname" type="text" maxlength="80" autocomplete="nickname"${editableDisabled}></label>${syncedReadonlyField('영문 이름', memberFullName(member))}${syncedReadonlyField('연락처', formatPhone(member.phone ?? ''))}</div></section>`;
+    const protectedNotice = withdrawn || protectedAccount ? `<div class="member-protected-copy">${withdrawn ? '탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다.' : '관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.'}</div>` : '';
+    const accessInputs = withdrawn || protectedAccount ? '' : `<label class="member-name-field ${directFieldClass}" title="관리자 직접 관리 · 신청서 재동기화로 변경되지 않음">한글 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label>`;
+    const roleMetadataInputs = `<div class="partner-metadata">${syncedReadonlyField('전문분야', member.specialty)}</div><div class="partner-metadata">${syncedReadonlyField('강의과목', member.teaching_subjects)}</div><div class="student-metadata">${syncedReadonlyField('수강과목', member.enrolled_subject)}</div><div class="student-metadata">${syncedReadonlyField('담당강사', member.assigned_instructor)}</div>`;
+    const roleInfoFields = `<section class="member-group"><h3>회원·파트너 정보 <small class="member-editable-note">관리 설정 · 자동연동 정보</small></h3>${protectedNotice}<div class="member-group-grid">${accessInputs}${roleMetadataInputs}</div></section>`;
+    const partnerRegionFields = `<section class="partner-region partner-metadata" hidden aria-labelledby="detailPartnerRegionTitle"><div class="partner-region-heading"><div><h3 id="detailPartnerRegionTitle">활동 지역</h3><p id="detailPartnerRegionSummary">지역 정보를 불러오는 중…</p><p id="detailPartnerRegionServices" class="partner-region-services" hidden></p></div><span class="partner-region-note">파트너 전용</span></div><div class="partner-region-actions"><button id="detailManagePartnerRegion" type="button" class="member-region-manage">지역정보 관리</button></div></section>`;
+    const regionAccessFields = `<section class="member-group"><h3>지역·권한</h3><div class="member-region-access-row">${partnerRegionFields}<div id="detailFeatures">${withdrawn ? '' : featureHtml(member)}</div></div></section>`;
+    const feedback = '<p class="member-save-feedback" id="detailSaveFeedback" role="status" aria-live="polite"></p>';
     const actions = withdrawn
-      ? '<div class="member-detail-actions"><button type="button" class="btn member-save-disabled" id="detailSave" disabled>변경 불가</button></div>'
+      ? `<div class="member-detail-actions">${feedback}<button type="button" class="btn member-save-disabled" id="detailSave" disabled>변경 불가</button></div>`
       : protectedAccount ? ''
-        : '<div class="member-detail-actions"><button type="button" class="btn member-resend">안내메일 다시 보내기</button><button type="button" class="btn btn-primary" id="detailSave">변경 저장</button></div>';
-    detail.innerHTML = `<div class="member-detail-summary"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(member.email || '')}</span>${typeBadge(member)}${member.is_admin ? '' : membershipBadge(member)}${badge(STATUS_LABELS[member.account_status], member.account_status)}</div>${summary}${accessFields}${metadataFields}<div id="detailFeatures">${withdrawn ? '' : featureHtml(member)}</div><div class="member-save-feedback" id="detailSaveFeedback" role="status" aria-live="polite"></div>${actions}`;
+        : `<div class="member-detail-actions">${feedback}<button type="button" class="btn member-resend">안내메일 다시 보내기</button><button type="button" class="btn btn-primary" id="detailSave">변경 저장</button></div>`;
+    detail.innerHTML = `<div class="member-detail-summary"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(member.email || '')}</span>${typeBadge(member)}${member.is_admin ? '' : membershipBadge(member)}${badge(STATUS_LABELS[member.account_status], member.account_status)}</div><div class="member-detail-groups">${basicInfoFields}${roleInfoFields}${regionAccessFields}</div>${actions}`;
+    const nameInput = detail.querySelector('#detailName');
     const nicknameInput = detail.querySelector('#detailNickname');
-    const fullNameInput = detail.querySelector('#detailFullName');
     const type = detail.querySelector('#detailType');
     const membership = detail.querySelector('#detailMembership');
     const status = detail.querySelector('#detailStatus');
-    const phone = detail.querySelector('#detailPhone');
-    const specialty = detail.querySelector('#detailSpecialty');
-    const teachingSubjects = detail.querySelector('#detailTeachingSubjects');
-    const enrolledSubject = detail.querySelector('#detailEnrolledSubject');
-    const assignedInstructor = detail.querySelector('#detailAssignedInstructor');
-    [nicknameInput, fullNameInput, phone, specialty, teachingSubjects, enrolledSubject, assignedInstructor].forEach((input, index) => { if (input) input.value = [memberNickname(member), memberFullName(member), formatPhone(member.phone), member.specialty, member.teaching_subjects, member.enrolled_subject, member.assigned_instructor][index] || ''; });
-    if (withdrawn) [nicknameInput, fullNameInput, phone, specialty, teachingSubjects, enrolledSubject, assignedInstructor].forEach(input => { if (input) input.disabled = true; });
+    const regionSummary = detail.querySelector('#detailPartnerRegionSummary');
+    const regionServices = detail.querySelector('#detailPartnerRegionServices');
+    const manageRegionButton = detail.querySelector('#detailManagePartnerRegion');
+    let partnerRegion = normalizePartnerRegion();
+    const renderPartnerRegion = region => {
+      partnerRegion = normalizePartnerRegion(region);
+      regionSummary.textContent = `지역: ${partnerRegionSummary(partnerRegion)}`;
+      const detail = [
+        partnerRegion.city || partnerRegion.service_area.length ? '방문 가능' : '',
+        partnerRegion.online_available ? '온라인 수업 가능' : '',
+        partnerRegion.nationwide_available ? '미국 전역 가능' : ''
+      ].filter(Boolean).join(' · ');
+      regionServices.textContent = detail ? `수업 범위: ${detail}` : '';
+      regionServices.hidden = !detail;
+    };
+    const readPartnerRegion = async () => {
+      const { data, error } = await client.rpc('admin_get_partner_region', { p_member_id: member.id });
+      if (error) throw error;
+      return Array.isArray(data) ? data[0] : data;
+    };
+    const openRegionManager = () => {
+      if (withdrawn || protectedAccount || member.user_type !== 'partner') return;
+      regionDialogBody.innerHTML = `<p class="partner-region-member">${escapeHtml(name)}</p><div class="partner-region-grid"><label>국가<select id="regionCountryCode"><option value="">선택하세요</option>${COUNTRY_OPTIONS.map(country => `<option value="${country.code}">${country.name}</option>`).join('')}</select></label><label>주(State)<select id="regionStateCode"><option value="">선택하세요</option></select></label><label class="partner-region-city">도시<input id="regionCity" type="text" maxlength="120" autocomplete="address-level2" placeholder="예: Dallas"></label></div><div class="partner-service-area"><div><h3>서비스 가능 지역</h3><p>여러 지역을 추가할 수 있습니다.</p></div><div class="partner-service-area-controls"><input id="regionServiceAreaInput" type="text" maxlength="120" placeholder="예: Dallas–Fort Worth"><button id="regionAddServiceArea" type="button" class="member-region-add">+ 지역 추가</button></div><div id="regionServiceAreaChips" class="partner-service-area-chips" aria-live="polite"></div></div><div class="partner-region-options"><label class="partner-region-switch"><input id="regionOnlineAvailable" type="checkbox"><span>온라인 수업 가능</span></label><label class="partner-region-switch"><input id="regionNationwideAvailable" type="checkbox"><span>미국 전역 가능</span></label></div><p id="regionDialogFeedback" class="partner-region-feedback" role="status" aria-live="polite"></p><div class="partner-region-dialog-actions"><button id="regionDialogCancel" type="button" class="btn">취소</button><button id="regionDialogSave" type="button" class="btn btn-primary" disabled>저장</button></div>`;
+      const countryCode = regionDialogBody.querySelector('#regionCountryCode');
+      const stateCode = regionDialogBody.querySelector('#regionStateCode');
+      const city = regionDialogBody.querySelector('#regionCity');
+      const serviceAreaInput = regionDialogBody.querySelector('#regionServiceAreaInput');
+      const addServiceArea = regionDialogBody.querySelector('#regionAddServiceArea');
+      const serviceAreaChips = regionDialogBody.querySelector('#regionServiceAreaChips');
+      const onlineAvailable = regionDialogBody.querySelector('#regionOnlineAvailable');
+      const nationwideAvailable = regionDialogBody.querySelector('#regionNationwideAvailable');
+      const saveButton = regionDialogBody.querySelector('#regionDialogSave');
+      const feedback = regionDialogBody.querySelector('#regionDialogFeedback');
+      let serviceAreas = [...partnerRegion.service_area];
+      let saving = false;
+      const setStateOptions = selectedCountry => {
+        const states = STATE_OPTIONS[selectedCountry] || [];
+        const selected = stateCode.value;
+        stateCode.innerHTML = `<option value="">선택하세요</option>${states.map(state => `<option value="${state.code}">${state.name}</option>`).join('')}`;
+        stateCode.disabled = states.length === 0;
+        stateCode.value = states.some(state => state.code === selected) ? selected : '';
+      };
+      const regionFromControls = () => {
+        const country = COUNTRY_OPTIONS.find(option => option.code === countryCode.value);
+        const state = (STATE_OPTIONS[countryCode.value] || []).find(option => option.code === stateCode.value);
+        return normalizePartnerRegion({ country_code: country?.code, country_name: country?.name, state_code: state?.code, state_name: state?.name, city: city.value, service_area: serviceAreas, online_available: onlineAvailable.checked, nationwide_available: nationwideAvailable.checked });
+      };
+      const updateSaveButton = () => { saveButton.disabled = saving || samePartnerRegion(regionFromControls(), partnerRegion); };
+      const renderServiceAreas = () => serviceAreaChips.replaceChildren(...serviceAreas.map(area => {
+        const chip = document.createElement('span');
+        chip.className = 'partner-service-area-chip';
+        chip.textContent = area;
+        const remove = document.createElement('button');
+        remove.type = 'button'; remove.setAttribute('aria-label', `${area} 제거`); remove.textContent = '×';
+        remove.addEventListener('click', () => { serviceAreas = serviceAreas.filter(value => value !== area); renderServiceAreas(); updateSaveButton(); });
+        chip.appendChild(remove);
+        return chip;
+      }));
+      const closeRegionManager = () => { if (!saving && regionDialog.open) regionDialog.close(); };
+      countryCode.value = partnerRegion.country_code;
+      setStateOptions(partnerRegion.country_code);
+      stateCode.value = partnerRegion.state_code;
+      city.value = partnerRegion.city;
+      onlineAvailable.checked = partnerRegion.online_available;
+      nationwideAvailable.checked = partnerRegion.nationwide_available;
+      renderServiceAreas();
+      updateSaveButton();
+      countryCode.addEventListener('change', () => { setStateOptions(countryCode.value); updateSaveButton(); });
+      [stateCode, onlineAvailable, nationwideAvailable].forEach(control => control.addEventListener('change', updateSaveButton));
+      city.addEventListener('input', updateSaveButton);
+      const addServiceAreaValue = () => { serviceAreas = normalizeServiceAreas([...serviceAreas, serviceAreaInput.value]); serviceAreaInput.value = ''; renderServiceAreas(); updateSaveButton(); };
+      addServiceArea.addEventListener('click', addServiceAreaValue);
+      serviceAreaInput.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); addServiceAreaValue(); } });
+      regionDialogClose.onclick = closeRegionManager;
+      regionDialogBody.querySelector('#regionDialogCancel').addEventListener('click', closeRegionManager);
+      regionDialog.oncancel = event => { if (saving) event.preventDefault(); };
+      regionDialog.onclick = event => { if (event.target === regionDialog) closeRegionManager(); };
+      saveButton.addEventListener('click', async () => {
+        if (saveButton.disabled) return;
+        const requested = regionFromControls();
+        saving = true; saveButton.disabled = true; saveButton.textContent = '저장 중…'; feedback.textContent = ''; feedback.className = 'partner-region-feedback';
+        try {
+          const { error } = await client.rpc('admin_update_partner_region', { p_member_id: member.id, p_country_code: requested.country_code, p_country_name: requested.country_name, p_state_code: requested.state_code, p_state_name: requested.state_name, p_city: requested.city, p_service_area: requested.service_area, p_online_available: requested.online_available, p_nationwide_available: requested.nationwide_available });
+          if (error) throw error;
+          const saved = await readPartnerRegion();
+          if (!samePartnerRegion(saved, requested)) throw new Error('저장 후 지역 정보를 다시 확인하지 못했습니다.');
+          renderPartnerRegion(saved);
+          saving = false;
+          regionDialog.close();
+          showToast('지역정보가 저장되었습니다.');
+        } catch (error) {
+          saving = false;
+          feedback.textContent = `지역정보 저장에 실패했습니다: ${describeError(error)}`;
+          feedback.className = 'partner-region-feedback error';
+          saveButton.textContent = '저장';
+          updateSaveButton();
+        }
+      });
+      regionDialog.showModal();
+    };
+    manageRegionButton.addEventListener('click', openRegionManager);
+    if (nicknameInput) nicknameInput.value = memberNickname(member);
+    if (withdrawn && nicknameInput) nicknameInput.disabled = true;
     const showRoleMetadata = selectedType => {
       detail.querySelectorAll('.partner-metadata').forEach(field => { field.hidden = selectedType !== 'partner'; });
       detail.querySelectorAll('.student-metadata').forEach(field => { field.hidden = selectedType !== 'student'; });
     };
     showRoleMetadata(withdrawn ? 'student' : (member.is_admin ? 'admin' : member.user_type));
     if (type) {
+      nameInput.value = name;
       type.value = member.user_type; membership.value = member.membership; status.value = member.account_status;
       const preview = () => { detail.querySelector('#detailFeatures').innerHTML = featureHtml({ ...member, user_type: type.value, membership: membership.value, account_status: status.value }); };
       [type, membership, status].forEach(select => select.addEventListener('change', preview));
       type.addEventListener('change', () => showRoleMetadata(type.value));
-      detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, type.value, membership.value, status.value, { nickname: nicknameInput.value, fullName: fullNameInput.value, phone: phone.value, specialty: specialty.value, teachingSubjects: teachingSubjects.value, enrolledSubject: enrolledSubject.value, assignedInstructor: assignedInstructor.value }));
+      detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, nameInput.value, type.value, membership.value, status.value, { nickname: nicknameInput.value }, partnerRegion, partnerRegion));
       detail.querySelector('.member-resend').addEventListener('click', event => resendNotification(raw, event.currentTarget));
     } else if (!protectedAccount && !withdrawn) {
-      detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, member.user_type, member.membership, member.account_status, { nickname: nicknameInput.value, fullName: fullNameInput.value, phone: phone.value, specialty: specialty.value, teachingSubjects: teachingSubjects.value, enrolledSubject: enrolledSubject.value, assignedInstructor: assignedInstructor.value }));
+      detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, name, member.user_type, member.membership, member.account_status, { nickname: nicknameInput.value }, partnerRegion, partnerRegion));
+    }
+    if (!withdrawn && member.user_type === 'partner') {
+      readPartnerRegion().then(renderPartnerRegion).catch(() => { regionSummary.textContent = '지역 정보를 불러오지 못했습니다.'; });
+    } else {
+      renderPartnerRegion();
     }
     dialog.showModal();
   };
 
   const resendNotification = async (member, button) => {
+    if (button.disabled) return;
+    const feedback = detail.querySelector('#detailSaveFeedback');
     button.disabled = true;
     button.textContent = '메일 보내는 중…';
+    button.classList.add('is-sending');
+    if (feedback) { feedback.textContent = '안내메일 전송 중…'; feedback.className = 'member-save-feedback pending'; }
     setMessage(`${member.email} 회원에게 등급 안내메일을 보내고 있습니다.`);
     try {
       await sendRoleNotification(member);
       setMessage(`${member.email} 회원에게 안내메일을 보냈습니다.`);
+      if (feedback) {
+        feedback.textContent = '안내메일을 성공적으로 보냈습니다.';
+        feedback.className = 'member-save-feedback success';
+      }
     } catch (error) {
-      setMessage(`안내메일 전송 실패: ${error.message}`, true);
+      const errorText = '안내메일 발송에 실패했습니다. 잠시 후 다시 시도해주세요.';
+      console.error('[admin] resend notification failed', { memberId: member.id, error: describeError(error) });
+      setMessage(errorText, true);
+      if (feedback) {
+        feedback.textContent = errorText;
+        feedback.className = 'member-save-feedback error';
+      }
     } finally {
       button.disabled = false;
       button.textContent = '안내메일 다시 보내기';
+      button.classList.remove('is-sending');
     }
   };
 
-  const updateMember = async (raw, nextUserType, nextMembership, nextStatus, nextMetadata = {}) => {
+  const updateMember = async (raw, requestedName, nextUserType, nextMembership, nextStatus, nextMetadata = {}, nextRegion = null, currentRegion = null) => {
     const member = normalize(raw);
+    const nextName = requestedName.trim();
+    const nameChanged = nextName !== (member.display_name || '');
     const accessChanged = nextUserType !== member.user_type || nextMembership !== member.membership || nextStatus !== member.account_status;
-    const metadata = { nickname: String(nextMetadata.nickname || '').trim(), fullName: String(nextMetadata.fullName || '').trim(), phone: formatPhone(nextMetadata.phone), specialty: String(nextMetadata.specialty || '').trim(), teachingSubjects: String(nextMetadata.teachingSubjects || '').trim(), enrolledSubject: String(nextMetadata.enrolledSubject || '').trim(), assignedInstructor: String(nextMetadata.assignedInstructor || '').trim() };
-    const metadataChanged = metadata.nickname !== memberNickname(member) || metadata.fullName !== memberFullName(member) || metadata.phone !== (member.phone || '') || metadata.specialty !== (member.specialty || '') || metadata.teachingSubjects !== (member.teaching_subjects || '') || metadata.enrolledSubject !== (member.enrolled_subject || '') || metadata.assignedInstructor !== (member.assigned_instructor || '');
-    if (!accessChanged && !metadataChanged) {
-      setMessage('변경된 내용이 없습니다.', true);
+    // Nickname/업체명 is operationally distinct from application data and
+    // remains the one general metadata field an administrator may edit here.
+    // The synchronized fields are display-only and are deliberately sourced
+    // from the loaded member rather than from editable controls.
+    const metadata = { nickname: String(nextMetadata.nickname || '').trim() };
+    const metadataChanged = metadata.nickname !== memberNickname(member);
+    // Region metadata is independent from the normal member metadata. Only
+    // save it when the member is (or is becoming) a partner; changing a
+    // partner back to another type deliberately leaves the stored region
+    // untouched for a later return to partner status.
+    const regionChanged = nextUserType === 'partner' && nextRegion !== null && !samePartnerRegion(nextRegion, currentRegion);
+    if (!nameChanged && !accessChanged && !metadataChanged) {
+      if (!regionChanged) {
+        setMessage('변경된 내용이 없습니다.', true);
+        return;
+      }
+    }
+    if (nameChanged && (nextName.length < 2 || nextName.length > 50)) {
+      setMessage('한글 이름은 2자 이상 50자 이하로 입력해 주세요.', true);
       return;
     }
     const detailLines = [
-      metadata.nickname !== memberNickname(member) ? `닉네임 → ${metadata.nickname || '(없음)'}` : '',
-      metadata.fullName !== memberFullName(member) ? `이름 → ${metadata.fullName || '(없음)'}` : '',
+      nameChanged ? `한글 이름 → ${nextName}` : '',
       nextUserType !== member.user_type ? `회원유형: ${TYPE_LABELS[member.user_type]} → ${TYPE_LABELS[nextUserType]}` : '',
       nextMembership !== member.membership ? `멤버십: ${MEMBERSHIP_LABELS[member.membership]} → ${MEMBERSHIP_LABELS[nextMembership]}` : '',
       nextStatus !== member.account_status ? `계정 상태: ${STATUS_LABELS[member.account_status]} → ${STATUS_LABELS[nextStatus]}` : '',
-      metadataChanged ? '관리 정보 변경' : ''
+      metadataChanged ? '관리 정보 변경' : '',
+      regionChanged ? '활동 지역 변경' : ''
     ].filter(Boolean).join('\n');
     console.log('[admin] asking for confirmation', { memberId: member.id, detailLines });
     const confirmed = await askConfirm(`${member.email} 회원을 다음과 같이 변경할까요?\n\n${detailLines}`);
@@ -399,7 +716,7 @@
     if (saveButton) { saveButton.disabled = true; saveButton.textContent = '저장 중…'; }
     if (feedback) { feedback.textContent = ''; feedback.className = 'member-save-feedback'; }
     setMessage(`${member.email} 회원 정보를 변경하고 있습니다.`);
-    console.log('[admin] updateMember start', { memberId: member.id, email: member.email, metadataChanged, accessChanged, nextUserType, nextMembership, nextStatus });
+    console.log('[admin] updateMember start', { memberId: member.id, email: member.email, nameChanged, accessChanged, nextUserType, nextMembership, nextStatus });
 
     // Diagnostic wrapper: logs every RPC call and its result, and makes
     // sure setMessage is always reached even if an RPC call rejects
@@ -425,24 +742,53 @@
       // key used by the post-save verification step below; `label` is
       // just display text.
       const results = [];
+      if (nameChanged) {
+        const { error } = await callRpc('admin_update_member_name', { p_member_id: member.id, p_display_name: nextName });
+        results.push({ field: 'name', label: '한글 이름', ok: !error, error });
+      }
       const accessChangedAt = new Date(Date.now() - 2000).toISOString();
       const roleChanged = deriveRole(nextUserType, nextMembership, member.is_admin) !== member.role;
+      let regionAccessSaved = !accessChanged;
       if (accessChanged) {
         const { error } = await callRpc('admin_update_member_access', { p_member_id: member.id, p_user_type: nextUserType, p_membership: nextMembership, p_account_status: nextStatus });
         results.push({ field: 'access', label: '회원유형/멤버십/계정 상태', ok: !error, error });
+        regionAccessSaved = !error;
       }
       if (metadataChanged) {
         const { error } = await callRpc('admin_update_member_metadata', {
           p_member_id: member.id,
           p_nickname: metadata.nickname,
-          p_full_name: metadata.fullName,
-          p_phone: metadata.phone,
-          p_specialty: metadata.specialty,
-          p_teaching_subjects: metadata.teachingSubjects,
-          p_enrolled_subject: metadata.enrolledSubject,
-          p_assigned_instructor: metadata.assignedInstructor
+          // The deployed RPC has an eight-argument signature. Preserve the
+          // authoritative synchronized values verbatim; none are read from
+          // or editable through this Admin form.
+          p_full_name: memberFullName(member),
+          p_phone: member.phone || '',
+          p_specialty: member.specialty || '',
+          p_teaching_subjects: member.teaching_subjects || '',
+          p_enrolled_subject: member.enrolled_subject || '',
+          p_assigned_instructor: member.assigned_instructor || ''
         });
         results.push({ field: 'metadata', label: '관리 정보', ok: !error, error });
+      }
+      let savedRegion = null;
+      if (regionChanged) {
+        if (!regionAccessSaved) {
+          results.push({ field: 'region', label: '활동 지역', ok: false, error: { message: '회원유형 변경이 저장되지 않아 활동 지역을 저장하지 않았습니다.' } });
+        } else {
+          const { data, error } = await callRpc('admin_update_partner_region', {
+            p_member_id: member.id,
+            p_country_code: nextRegion.country_code,
+            p_country_name: nextRegion.country_name,
+            p_state_code: nextRegion.state_code,
+            p_state_name: nextRegion.state_name,
+            p_city: nextRegion.city,
+            p_service_area: nextRegion.service_area,
+            p_online_available: nextRegion.online_available,
+            p_nationwide_available: nextRegion.nationwide_available
+          });
+          savedRegion = Array.isArray(data) ? data[0] : data;
+          results.push({ field: 'region', label: '활동 지역', ok: !error && samePartnerRegion(savedRegion, nextRegion), error: error || (!samePartnerRegion(savedRegion, nextRegion) ? { message: '활동 지역이 DB에 실제로 반영되지 않았습니다.' } : null) });
+        }
       }
 
       // Never trust an RPC's { error: null } alone as proof the value
@@ -465,6 +811,9 @@
           result.error = { message: '저장 후 회원 정보를 다시 불러오지 못해 DB 반영 여부를 확인할 수 없습니다.' };
         });
       } else {
+        if (nameChanged && freshMember.display_name !== nextName) {
+          markUnverified('name', `DB에 실제로 반영되지 않았습니다 (요청값: ${nextName}, 실제값: ${freshMember.display_name || '(없음)'})`);
+        }
         if (accessChanged) {
           if (freshMember.user_type !== nextUserType) {
             markUnverified('access', `회원유형이 DB에 실제로 반영되지 않았습니다 (요청값: ${TYPE_LABELS[nextUserType]}, 실제값: ${TYPE_LABELS[freshMember.user_type]})`);
@@ -475,15 +824,15 @@
           }
         }
         if (metadataChanged && (
-          memberNickname(freshMember) !== metadata.nickname ||
-          memberFullName(freshMember) !== metadata.fullName ||
-          (freshMember.phone || '') !== metadata.phone ||
-          (freshMember.specialty || '') !== metadata.specialty ||
-          (freshMember.teaching_subjects || '') !== metadata.teachingSubjects ||
-          (freshMember.enrolled_subject || '') !== metadata.enrolledSubject ||
-          (freshMember.assigned_instructor || '') !== metadata.assignedInstructor
+          memberNickname(freshMember) !== metadata.nickname
         )) {
           markUnverified('metadata', '관리 정보가 DB에 실제로 반영되지 않았습니다.');
+        }
+        // admin_list_members deliberately has no region columns. The
+        // dedicated region RPC returns the saved record, which is the
+        // equivalent post-save proof without widening the existing list RPC.
+        if (regionChanged && !samePartnerRegion(savedRegion, nextRegion)) {
+          markUnverified('region', '활동 지역이 DB에 실제로 반영되지 않았습니다.');
         }
       }
 
@@ -491,37 +840,38 @@
       const succeeded = results.filter(result => result.ok);
       console.log('[admin] updateMember results (after DB verification)', results);
       let resultMessage;
-      let resultIsError;
       if (failed.length === 0) {
         resultMessage = '저장되었습니다. (DB 재조회로 확인함)';
-        resultIsError = false;
       } else {
         const failureText = failed.map(result => `${result.label}: ${describeError(result.error)}`).join(' / ');
-        resultIsError = true;
         resultMessage = succeeded.length === 0
           ? `저장에 실패했습니다. ${failureText}`
           : `일부 항목만 저장되었습니다 (${succeeded.map(result => result.label).join(', ')}). 실패: ${failureText}`;
       }
 
-      // Show the completion notification right now, based only on the DB
-      // verification above. The automatic-email confirmation (polls for up
-      // to 20s) and the Sheet sync webhook (no timeout of its own) are
-      // both best-effort follow-ups; gating the notification on either of
-      // them finishing means any hang or slow response -- e.g. a slow/cold
-      // Apps Script deployment -- silently swallows the "저장되었습니다"
-      // message entirely, even though the DB save itself had already
-      // succeeded and been verified. Each follow-up appends its own note
-      // to the same banner once (and only once) it resolves, instead of
-      // gating whether the banner appears at all.
-      let emailNote = '';
-      let sheetSyncNote = '';
-      const renderResult = () => setMessage(`${resultMessage}${emailNote}${sheetSyncNote}`, resultIsError);
-      renderResult();
-      if (feedback) {
-        feedback.textContent = failed.length === 0 ? '변경사항이 저장되었습니다.' : resultMessage;
-        feedback.className = `member-save-feedback ${failed.length === 0 ? 'success' : 'error'}`;
-        if (failed.length === 0) window.setTimeout(() => { if (feedback) { feedback.textContent = ''; feedback.className = 'member-save-feedback'; } }, 3000);
+      // The database verification above is the user-visible save boundary.
+      // Roster sync and role-email confirmation are follow-up work: never
+      // keep the dialog in "saving" while an Apps Script execution is cold
+      // or slow, and never reclassify a verified database save as failed.
+      if (failed.length > 0) {
+        setMessage(resultMessage, true);
+        if (feedback) {
+          feedback.textContent = resultMessage;
+          feedback.className = 'member-save-feedback error';
+        }
+        if (saveButton) { saveButton.disabled = false; saveButton.textContent = '변경 저장'; }
+        return;
       }
+
+      setMessage('변경사항이 저장되었습니다.');
+      if (feedback) {
+        feedback.textContent = '변경사항이 저장되었습니다.';
+        feedback.className = 'member-save-feedback success';
+      }
+      if (saveButton) { saveButton.disabled = false; saveButton.textContent = '변경 저장'; }
+      window.setTimeout(() => {
+        if (dialog.open) dialog.close();
+      }, 1000);
 
       // A follow-up step can't be allowed to hang forever and keep the
       // notification from ever picking up its note -- bound it so a dead
@@ -532,25 +882,22 @@
       ]);
 
       const accessSaved = results.some(result => result.field === 'access' && result.ok);
-      const emailTask = (roleChanged && accessSaved) ? (async () => {
+      if (roleChanged && accessSaved) void (async () => {
         console.log('[admin] waiting for the automatic role-change email', { memberId: member.id, accessChangedAt });
         try {
           await withTimeout(waitForAutomaticRoleEmail(member.id, accessChangedAt), 25000, '메일 발송 확인이 시간 초과되었습니다.');
           console.log('[admin] automatic role-change email confirmed sent', { memberId: member.id });
-          emailNote = ' 안내메일도 정상 발송되었습니다.';
         } catch (automaticError) {
           console.error('[admin] automatic role-change email was not confirmed; falling back to a direct send', { memberId: member.id, error: automaticError.message });
           try {
             await withTimeout(sendDirectRoleNotification({ ...member, role: deriveRole(nextUserType, nextMembership, member.is_admin) }, member.role), 10000, '안내메일 직접 발송이 시간 초과되었습니다.');
             console.log('[admin] direct role-change email sent', { memberId: member.id });
-            emailNote = ' 안내메일도 정상 발송되었습니다.';
           } catch (directError) {
             console.error('[admin] direct role-change email also failed', { memberId: member.id, error: directError.message });
-            emailNote = ` 다만 안내메일 발송에는 실패했습니다: ${directError.message}`;
+            setMessage(`변경사항은 저장되었습니다. 다만 안내메일 발송에는 실패했습니다: ${directError.message}`, true);
           }
         }
-        renderResult();
-      })() : Promise.resolve();
+      })();
 
       // Sync the (now-verified) member profile to the existing member
       // roster Google Sheet -- reusing the same notify-role-change Edge
@@ -560,7 +907,7 @@
       // runs after a save actually succeeded, and its own failure is
       // reported as a separate, additional note.
       const anyFieldSaved = results.some(result => result.ok);
-      const sheetTask = anyFieldSaved ? (async () => {
+      if (anyFieldSaved) void (async () => {
         console.log('[admin] syncing profile to member roster sheet', { memberId: member.id });
         try {
           const { error: syncError } = await withTimeout(
@@ -577,21 +924,15 @@
               status: syncError.context?.status,
               detail
             });
-            sheetSyncNote = ` 회원 정보는 저장되었지만 회원 명단 시트 업데이트에 실패했습니다: ${detail}`;
+            setMessage('변경사항은 저장되었습니다. 명단 시트 동기화는 계속 진행 중입니다.');
           } else {
             console.log('[admin] roster sheet sync succeeded', { memberId: member.id });
-            sheetSyncNote = ' 회원 명단 시트에도 반영되었습니다.';
           }
         } catch (syncTimeoutError) {
           console.error('[admin] roster sheet sync timed out or threw', { memberId: member.id, error: syncTimeoutError.message });
-          sheetSyncNote = ` 회원 정보는 저장되었지만 회원 명단 시트 업데이트에 실패했습니다: ${syncTimeoutError.message}`;
+          setMessage('변경사항은 저장되었습니다. 명단 시트 동기화는 계속 진행 중입니다.');
         }
-        renderResult();
-      })() : Promise.resolve();
-
-      await Promise.all([emailTask, sheetTask]);
-      if (saveButton) { saveButton.disabled = false; saveButton.textContent = '변경 저장'; }
-      if (failed.length === 0 && !metadataChanged) dialog.close();
+      })();
     } catch (unexpected) {
       console.error('[admin] updateMember failed unexpectedly', unexpected);
       setMessage(`예기치 않은 오류로 저장하지 못했습니다: ${describeError(unexpected)}`, true);

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 190" role="img" aria-label="컴퓨터 교재 그림">
+  <rect width="320" height="190" rx="28" fill="#edf8f2"/>
+  <rect x="73" y="31" width="174" height="109" rx="12" fill="#285f96"/>
+  <rect x="84" y="42" width="152" height="86" rx="6" fill="#fff"/>
+  <path d="M112 72h96M112 90h66" stroke="#7ab0df" stroke-width="9" stroke-linecap="round"/>
+  <path d="M151 140h18l10 19h-38z" fill="#285f96"/>
+  <rect x="107" y="159" width="106" height="11" rx="5.5" fill="#79c5a0"/>
+</svg>

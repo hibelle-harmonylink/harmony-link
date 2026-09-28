@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" role="img" aria-labelledby="title desc">
+  <title id="title">생활 디지털 도구</title>
+  <desc id="desc">스마트폰 화면과 간단한 생활 도구를 표현한 친근한 그림</desc>
+  <rect width="320" height="180" rx="28" fill="#eaf3ff"/>
+  <circle cx="65" cy="130" r="34" fill="#cee3fb"/>
+  <circle cx="262" cy="45" r="25" fill="#bdd9f7"/>
+  <rect x="108" y="22" width="104" height="140" rx="19" fill="#fff" stroke="#2364a6" stroke-width="6"/>
+  <rect x="122" y="42" width="76" height="88" rx="10" fill="#d7ecff"/>
+  <rect x="135" y="57" width="50" height="12" rx="6" fill="#5aa0df"/>
+  <circle cx="147" cy="94" r="10" fill="#72ba91"/>
+  <circle cx="173" cy="94" r="10" fill="#f0b45a"/>
+  <circle cx="160" cy="146" r="6" fill="#2364a6"/>
+  <path d="M232 93h32M248 77v32" stroke="#5aa0df" stroke-width="7" stroke-linecap="round"/>
+</svg>

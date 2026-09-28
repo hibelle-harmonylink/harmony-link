@@ -77,7 +77,7 @@ test('a sample number registers identically in Sheet and metadata, then duplicat
   assert.equal(store.size, 1);
 });
 
-test('Sheet-success and metadata-failure recovery retries the same sample number without duplication', () => {
+test('Sheet-success and metadata-failure recovery retries a sample number without a duplicate row, number, or email', () => {
   const sheetRows = new Map();
   const metadataStore = new Map();
   let nextSequence = 108;
@@ -102,10 +102,10 @@ test('metadata registration failures are returned and log identifiers without lo
   assert.match(appsScript, /JSON\.stringify\(\{ memberId: memberId, memberNumber: memberNumber, status: metadataResult\.status \|\| 0 \}\)/);
   const retryLog = appsScript.slice(appsScript.indexOf('Member metadata registration needs retry:'), appsScript.indexOf('Member metadata registration needs retry:') + 240);
   assert.doesNotMatch(retryLog, /secret/i);
-  assert.match(appsScript, /if \(isNewRow && email\) sendSignupConfirmation_\(record\)/);
+  assert.match(appsScript, /if \(isNewRow && email\) sendSignupConfirmation_\(record, columns\)/);
 });
 
-test('sequential lock releases issue consecutive sample numbers with no duplicate', () => {
+test('sequential lock releases for two sample members issue unique numbers', () => {
   const issued = ['HL-30-101', 'HL-30-107'];
   const next = () => `HL-30-${String(Math.max(...issued.map(value => Number(value.slice(-3)))) + 1).padStart(3, '0')}`;
   const first = next(); issued.push(first);
@@ -117,7 +117,7 @@ test('sequential lock releases issue consecutive sample numbers with no duplicat
 test('existing sample IDs retain their issued numbers', () => {
   const existing = Array.from({ length: 7 }, (_, index) => `HL-30-${String(index + 101).padStart(3, '0')}`);
   const store = new Map(existing.map((memberNumber, index) => [`member-${index + 1}`, { memberNumber }]));
-  const retry = register(store, 'member-4', 'HL-30-999', '2030-01-15T12:00:00.000Z');
+  const retry = register(store, 'member-4', 'HL-30-999', '2030-01-01T00:00:00.000Z');
   assert.equal(retry.memberNumber, 'HL-30-104');
   assert.equal(store.size, 7);
 });
