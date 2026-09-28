@@ -1591,4 +1591,9 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
 .business-flyer-info>div{min-width:0}
 .business-flyer-info p{margin:3px 0;font-size:14px;overflow-wrap:anywhere}
 .business-flyer-external-links .business-flyer-sns img{width:20px;height:20px;margin-right:6px}
+/* Opt-in simultaneous flyers; the other businesses keep their existing carousel. */
+.business-flyer-modal.has-flyer-gallery .business-flyer-head p{display:none}
+.business-flyer-modal.has-flyer-gallery .business-flyer-images{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.business-flyer-modal.has-flyer-gallery .business-flyer-images img{width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;min-width:0;box-sizing:border-box}
+@media(max-width:639px){.business-flyer-modal.has-flyer-gallery .business-flyer-images{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:520px){.pwa-install-help.ios-senior-guide .pwa-install-help-panel{width:calc(100% - 20px);max-height:92vh;overflow:auto;padding:24px 18px}.pwa-install-help.ios-senior-guide h2{font-size:25px}.pwa-ios-step{grid-template-columns:42px 1fr;padding:14px 12px;gap:11px}.pwa-ios-step-number{width:42px;height:42px;font-size:21px}.pwa-ios-step strong{font-size:18px}.pwa-ios-step small{font-size:14px}}

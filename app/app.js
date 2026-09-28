@@ -509,7 +509,13 @@ function openImageLightbox(src,alt,action,business){
   const info=$("#lightboxBusinessInfo");
   info.hidden=!business;
   $("#imageLightbox").classList.toggle("has-business-details",!!business);
-  if(business){
+  const gallery=business?.detailMode==="gallery";
+  $("#imageLightbox").classList.toggle("has-flyer-gallery",gallery);
+  $("#lightboxImage").hidden=gallery;
+  if(gallery){
+    const name=language==="ko"?business.nameKo:business.nameEn;
+    info.innerHTML=`<header><h2>${name}</h2></header><div class="business-flyer-gallery">${business.flyers.map((image,index)=>`<img src="/${image}" alt="${name} ${language==="ko"?"전단지":"flyer"} ${index+1}">`).join("")}</div><div class="business-gallery-contact"><a href="tel:${business.phoneHref}">${language==="ko"?"전화":"Phone"} ${language==="ko"?business.phoneKo:business.phoneEn}</a><a href="${business.mapUrl}" target="_blank" rel="noopener noreferrer">${business.address}</a></div><nav class="app-contact-social" aria-label="${name} links"><a href="${business.websiteUrl}" target="_blank" rel="noopener noreferrer">${language==="ko"?business.websiteCtaKo:business.websiteCtaEn}</a>${business.socialLinks.map(link=>`<a href="${link.url}" target="_blank" rel="noopener noreferrer"><img src="/${link.icon}" alt="">${link.label}</a>`).join("")}</nav>`;
+  }else if(business){
     const name=language==="ko"?business.nameKo:business.nameEn;
     info.innerHTML=`<header><img class="business-detail-logo" src="/${business.logo}" alt="${name} logo"><div><h2>${name}</h2><p>${business.address||""}</p><p>${language==="ko"?business.summaryKo:business.summaryEn}</p></div></header><div class="business-image-choices">${business.flyers.map((image,index)=>`<button type="button" data-business-image="/${image}" data-business-image-alt="${name} ${index+1}">${language==="ko"?"이미지":"Image"} ${index+1}</button>`).join("")}</div><nav class="app-contact-social" aria-label="${name} links"><a href="${business.websiteUrl}" target="_blank" rel="noopener noreferrer">${language==="ko"?business.appCtaKo:business.appCtaEn}</a>${business.socialLinks.map(link=>`<a href="${link.url}" target="_blank" rel="noopener noreferrer"><img src="/${link.icon}" alt="">${link.label}</a>`).join("")}</nav>`;
   }else info.innerHTML="";

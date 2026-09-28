@@ -42,7 +42,11 @@ test('BOXD name, category, location, address and short bilingual descriptions ar
   assert.equal(boxd.appTextEn, boxd.summaryEn);
   assert.equal(boxd.summaryKo, '신선한 지중해식 보울 & 케이터링');
   assert.equal(boxd.appTextKo, boxd.summaryKo);
-  assert.equal(boxd.phoneHref, null);assert.equal(boxd.mapUrl, null);
+  assert.equal(boxd.phoneKo, '434-202-2749');assert.equal(boxd.phoneEn, '434-202-2749');
+  assert.equal(boxd.phoneHref, '+14342022749');
+  const maps=new URL(boxd.mapUrl);
+  assert.equal(maps.origin,'https://www.google.com');assert.equal(maps.pathname,'/maps/search/');
+  assert.equal(maps.searchParams.get('api'),'1');assert.equal(maps.searchParams.get('query'),boxd.address);
 });
 
 test('Toast, Instagram and Threads are distinct clean canonical URLs with no tracking parameters', () => {
@@ -70,15 +74,16 @@ test('all four authorized PNG originals exist unmodified and no substitute/gener
     assert.equal(bytes.subarray(1,4).toString(),'PNG');assert.equal(hash(bytes),sha,name);
   }
   assert.equal(boxd.logo,'assets/ads/boxd-kitchen/logo.png');
-  assert.equal(boxd.spotlightImage,'assets/ads/boxd-kitchen/flyer-2-1.png');
-  assert.equal(boxd.flyers.length,3);
+  assert.equal(boxd.spotlightImage,boxd.logo);
+  assert.deepEqual(boxd.flyers,['flyer-1-1.png','flyer-2-1.png','flyer-4-1.png'].map(file=>'assets/ads/boxd-kitchen/'+file));
 });
 
-test('both languages render seventh card using the representative image and Toast CTA in a safe new tab', () => {
+test('both languages render seventh compact card using only the logo and unchanged Toast CTA', () => {
   for(const language of ['ko','en']) {
     const cards=render(language);assert.equal(cards.length,7);
     assert.match(cards[6],/data-business-id="boxd-kitchen"/);
     assert.ok(cards[6].includes('/'+boxd.spotlightImage));
+    assert.doesNotMatch(cards[6],/flyer-[124]-1\.png|434-202-2749|909 West Main/);
     assert.ok(cards[6].includes(`href="${boxd.websiteUrl}" target="_blank" rel="noopener noreferrer"`));
     assert.ok(cards[6].includes(language==='ko'?'업체 바로가기':'Visit Business'));
     assert.match(cards[6],/type="button"[^>]+data-business-detail="boxd-kitchen"/);
@@ -97,17 +102,24 @@ test('mobile cards preserve native scrolling, snap, identical dimensions and kee
   assert.match(css,/\.has-business-details #lightboxImage\{[^}]*max-width:min\(100%,760px\)/);
 });
 
-test('app business detail reuses image lightbox, displays original logo and renders canonical SNS links', () => {
+test('app gallery reuses lightbox, shows three flyers without a summary or image choices, and restores normal event mode', () => {
   const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{hidden:true,innerHTML:'',classList:{toggle(){}},querySelector(){return{textContent:''}}});return nodes.get(id)};
   const context=vm.createContext({$:node,language:'ko',business:boxd});
   vm.runInContext(source('openImageLightbox')+'\nopenImageLightbox("/"+business.spotlightImage,business.nameKo,null,business)',context);
   assert.equal(node('#imageLightbox').hidden,false);assert.equal(node('#lightboxBusinessInfo').hidden,false);
   const html=node('#lightboxBusinessInfo').innerHTML;
-  assert.ok(html.includes('/'+boxd.logo));assert.ok(html.includes(boxd.address));
+  assert.doesNotMatch(html,/business-detail-logo|business-image-choices|data-business-image=|지중해식|신선한|업체 바로가기/);
+  assert.match(html,/<header><h2>BOX'D KITCHEN<\/h2><\/header><div class="business-flyer-gallery">/);
+  assert.equal(node('#lightboxImage').hidden,true);
+  assert.ok(html.includes(`href="tel:${boxd.phoneHref}"`));
+  assert.ok(html.includes(`href="${boxd.mapUrl}" target="_blank" rel="noopener noreferrer">${boxd.address}</a>`));
+  assert.ok(html.indexOf('business-gallery-contact')>html.indexOf(boxd.flyers[2]));
+  assert.match(html,/>홈페이지 보기<\/a>/);
   for(const social of boxd.socialLinks)assert.ok(html.includes(`href="${social.url}" target="_blank" rel="noopener noreferrer"`));
-  for(const file of boxd.flyers)assert.ok(html.includes(`data-business-image="/${file}"`));
+  for(const file of boxd.flyers)assert.ok(html.includes(`<img src="/${file}"`));
   vm.runInContext('openImageLightbox("event.png","Event")',context);
   assert.equal(node('#lightboxBusinessInfo').hidden,true);assert.equal(node('#lightboxBusinessInfo').innerHTML,'');
+  assert.equal(node('#lightboxImage').hidden,false);
 });
 
 test('website keeps its existing detail renderer while adapting optional shared images, logos and social links', () => {
@@ -127,4 +139,91 @@ test('HOLE19 website, DMS two-line name, police Korean display and Jangsu teleph
   assert.match(cards[4],/href="tel:\+17187990133"/);
   assert.match(cards[5],/>DMS<\/span>/);assert.match(cards[5],/Care Training Center<\/span>/);
   assert.match(cards[5],/href="https:\/\/dmscare.org\/ko"/);
+});
+
+// Execute the real website adapter/renderers with a minimal DOM surface.
+function websiteFixture(language='ko') {
+  const nodes=new Map();
+  const node=selector=>{
+    if(!nodes.has(selector))nodes.set(selector,{innerHTML:'',textContent:'',hidden:false,disabled:false,
+      classList:{values:new Set(),toggle(name,on){if(on)this.values.add(name);else this.values.delete(name)},add(){},remove(){}},
+      querySelector:node,querySelectorAll:()=>[],focus(){}});
+    return nodes.get(selector);
+  };
+  const context=vm.createContext({window:{HARMONY_LINK_BUSINESSES:businesses},currentLanguage:language,
+    businessFlyerModal:node('modal'),advertisingArea:node('advertising'),document:{body:node('body')},
+    closeMessagePanel(){},setLanguage(){},selectedBusinessRegion:'all',businessFlyerReturnFocus:null});
+  const adapter=web.slice(web.indexOf('const businessSpotlights ='),web.indexOf('const businessFlyerModal='));
+  const regions=web.match(/const businessRegions = \[[\s\S]*?\];/)[0];
+  const phone=web.match(/const renderBusinessPhone = [^\n]+/)[0];
+  const render=web.slice(web.indexOf('function renderBusinessSpotlights('),web.indexOf('\nrenderBusinessSpotlights();'));
+  const open=web.slice(web.indexOf('const openBusinessFlyer='),web.indexOf('\nbusinessFlyerModal.querySelectorAll'));
+  vm.runInContext(adapter+regions+phone+render+open,context);
+  return {node,context,render(){vm.runInContext('renderBusinessSpotlights()',context);return node('.business-spotlight-grid').innerHTML;},
+    open(index){vm.runInContext(`openBusinessFlyer(businessSpotlights[${index}],{})`,context);}};
+}
+
+test('website card uses the official logo, exact tel and encoded Maps address above its unchanged details button', () => {
+  for(const language of ['ko','en']){
+    const html=websiteFixture(language).render().match(/<article\b[\s\S]*?<\/article>/g).at(-1);
+    assert.ok(html.includes(`<img src="${boxd.logo}"`));assert.doesNotMatch(html,/flyer-[124]-1\.png/);
+    assert.ok(html.includes(`href="tel:+14342022749">434-202-2749</a>`));
+    assert.ok(html.includes(`href="${boxd.mapUrl}" target="_blank" rel="noopener noreferrer">${boxd.address}</a>`));
+    assert.ok(html.indexOf('tel:+14342022749')<html.indexOf('class="business-address"'));
+    assert.match(html,/data-business-flyer-open/);
+  }
+});
+
+test('gallery mode is opted into by BOXD alone, without business-name checks in either detail renderer', () => {
+  assert.deepEqual(businesses.filter(b=>b.detailMode==='gallery').map(b=>b.id),['boxd-kitchen']);
+  assert.doesNotMatch(source('openImageLightbox'),/boxd-kitchen|BOX.D KITCHEN/);
+  const open=web.slice(web.indexOf('const openBusinessFlyer='),web.indexOf('\nbusinessFlyerModal.querySelectorAll'));
+  assert.doesNotMatch(open,/boxd-kitchen|BOX.D KITCHEN/);
+});
+
+test('website BOXD gallery shows all three flyers at once, no summary, no active carousel or pagination', () => {
+  const f=websiteFixture();f.open(6);
+  assert.equal(f.node('modal').classList.values.has('has-flyer-gallery'),true);
+  assert.equal(f.node('.business-flyer-info').hidden,true);assert.equal(f.node('.business-flyer-info').innerHTML,'');
+  assert.equal(f.node('.business-flyer-navigation').hidden,true);
+  assert.equal(f.node('[data-business-flyer-previous]').onclick,null);
+  assert.equal(f.node('[data-business-flyer-next]').onclick,null);
+  assert.equal(f.node('.business-flyer-position').textContent,'');
+  const images=f.node('.business-flyer-images').innerHTML;
+  assert.deepEqual([...images.matchAll(/src="([^"]+)"/g)].map(m=>m[1]),boxd.flyers);
+  assert.doesNotMatch(images,/button|pagination|carousel|logo\.png/);
+});
+
+test('website gallery reset preserves all six existing businesses and HOLE19 next/previous behavior', () => {
+  const f=websiteFixture();f.open(6);
+  for(let index=0;index<6;index++){
+    f.open(index);const b=businesses[index];
+    assert.equal(f.node('modal').classList.values.has('has-flyer-gallery'),false);
+    assert.equal(f.node('.business-flyer-navigation').hidden,b.flyers.length<2);
+    assert.equal(f.node('.business-flyer-position').textContent,`1 / ${b.flyers.length}`);
+    assert.ok(f.node('.business-flyer-images').innerHTML.includes(b.flyers[0]));
+    if(b.flyers.length>1){f.node('[data-business-flyer-next]').onclick();assert.ok(f.node('.business-flyer-images').innerHTML.includes(b.flyers[1]));}
+  }
+  f.open(6);assert.equal(f.node('.business-flyer-navigation').hidden,true);
+});
+
+test('detail CTA is homepage only, then Instagram/Threads; card CTA and URLs stay unchanged', () => {
+  assert.equal(boxd.websiteCtaKo,'홈페이지 보기');assert.equal(boxd.appCtaKo,'업체 바로가기');
+  for(const language of ['ko','en']){
+    const f=websiteFixture(language);f.open(6);const links=f.node('.business-flyer-external-links').innerHTML;
+    assert.deepEqual([...links.matchAll(/href="([^"]+)"/g)].map(m=>m[1]),[boxd.websiteUrl,...boxd.socialLinks.map(s=>s.url)]);
+    assert.ok(links.includes(language==='ko'?'>홈페이지 보기</a>':'>Visit website</a>'));
+    assert.doesNotMatch(links,/업체 바로가기/);
+    assert.equal((links.match(/target="_blank" rel="noopener noreferrer"/g)||[]).length,3);
+  }
+});
+
+test('opt-in flyer frames use three equal PC columns and one mobile column with contain, not horizontal scrolling', () => {
+  const css=read('styles.css'),appCss=read('app/overrides.css');
+  assert.match(css,/\.has-flyer-gallery \.business-flyer-images\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\);gap:12px\}/);
+  assert.match(css,/@media\(max-width:639px\)\{\.business-flyer-modal\.has-flyer-gallery \.business-flyer-images\{grid-template-columns:minmax\(0,1fr\)\}\}/);
+  assert.match(css,/\.has-flyer-gallery \.business-flyer-images img\{[^}]*aspect-ratio:16\/9;object-fit:contain/);
+  assert.match(appCss,/\.business-flyer-gallery\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(appCss,/@media\(max-width:639px\)\{#lightboxBusinessInfo \.business-flyer-gallery\{grid-template-columns:minmax\(0,1fr\)\}\}/);
+  assert.match(appCss,/\.business-flyer-gallery img\{[^}]*aspect-ratio:16\/9;object-fit:contain/);
 });
