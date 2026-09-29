@@ -501,8 +501,7 @@ $$('[data-language]').forEach(button=>button.addEventListener('click',()=>{
   applyLanguage();
 }));
 function openImageLightbox(src,alt,action,business){
-  const isFlyerStack=business?.flyerLayout==="grid";
-  $("#lightboxImage").hidden=isFlyerStack;
+  $("#lightboxImage").hidden=!!business;
   $("#lightboxImage").src=src;
   $("#lightboxImage").alt=alt;
   const actionButton=$("#lightboxAction");
@@ -514,37 +513,25 @@ function openImageLightbox(src,alt,action,business){
   const info=$("#lightboxBusinessInfo");
   info.hidden=!business;
   $("#imageLightbox").classList.toggle("has-business-details",!!business);
-  $("#imageLightbox").classList.toggle("has-flyer-stack",isFlyerStack);
-  if(isFlyerStack){
-    // flyerLayout:"grid" businesses (BOX'D today) skip the single-image-plus-picker
-    // pattern below entirely: every flyer renders full width, stacked vertically,
-    // so the user scrolls down to see all of them -- never a left/right picker or
-    // horizontal scroll -- followed immediately by the same curated CTA row PC uses.
-    const name=language==="ko"?business.nameKo:business.nameEn;
-    const linkList=[{label:language==="ko"?(business.websiteCtaKo||"홈페이지 보기"):(business.websiteCtaEn||"View Homepage"),url:business.websiteUrl},...(business.socialLinks||[]).map(link=>({label:link.label,url:link.url,icon:link.icon}))];
-    info.innerHTML=`<header><h2>${name}</h2></header><div class="business-flyer-stack">${business.flyers.map((image,index)=>`<img src="/${image}" alt="${name} ${language==="ko"?"전단지":"flyer"} ${index+1}">`).join("")}</div><nav class="app-contact-social" aria-label="${name} links">${linkList.map(link=>`<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.icon?`<img src="/${link.icon}" alt="">`:""}${link.label}</a>`).join("")}</nav>`;
-    $("#imageLightbox").hidden=false;
-    return;
-  }
-  if(business){
-    const name=language==="ko"?business.nameKo:business.nameEn;
-    // The header used to repeat the card's own logo/address/summary here -- that
-    // duplicate intro is gone; a plain <h2> title is the only header (still lets
-    // the modal say what it's showing, per the "keep the modal title" rule).
-    // Businesses with a curated socialLinks array (currently just BOX'D) get their
-    // exact website+social CTA set; every other business instead gets whichever of
-    // website/Instagram(snsUrl)/phone/map its own data actually has -- never a
-    // fabricated link, and never BOX'D's fixed 3-button set forced onto them.
-    const linkList=business.socialLinks?.length
-      ?[{label:language==="ko"?(business.websiteCtaKo||"홈페이지 보기"):(business.websiteCtaEn||"View Homepage"),url:business.websiteUrl},...business.socialLinks.map(link=>({label:link.label,url:link.url,icon:link.icon}))]
-      :[
-          business.websiteUrl&&{label:language==="ko"?"홈페이지 보기":"View Homepage",url:business.websiteUrl},
-          business.snsUrl&&{label:"Instagram",url:business.snsUrl},
-          business.phoneHref&&{label:language==="ko"?"전화하기":"Call",url:`tel:${business.phoneHref}`},
-          business.mapUrl&&{label:language==="ko"?"지도 보기":"View Map",url:business.mapUrl}
-        ].filter(Boolean);
-    info.innerHTML=`<header><h2>${name}</h2></header><div class="business-image-choices">${business.flyers.map((image,index)=>`<button type="button" data-business-image="/${image}" data-business-image-alt="${name} ${index+1}">${language==="ko"?"이미지":"Image"} ${index+1}</button>`).join("")}</div><nav class="app-contact-social" aria-label="${name} links">${linkList.map(link=>`<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.icon?`<img src="/${link.icon}" alt="">`:""}${link.label}</a>`).join("")}</nav>`;
-  }else info.innerHTML="";
+  if(!business){info.innerHTML="";$("#imageLightbox").hidden=false;return;}
+  // Every business's mobile detail now shares the same structure: name, every
+  // registered flyer stacked full width (the user scrolls to see them all --
+  // never a left/right picker, never an "이미지" label/box), then only the CTA
+  // buttons its own data actually has. Instagram always gets the same icon
+  // whether it comes from a curated socialLinks entry (BOX'D) or the plain
+  // snsUrl field (HOLE19, OrganicOne), so no business's Instagram button looks
+  // different from another's.
+  const name=language==="ko"?business.nameKo:business.nameEn;
+  const igLink=business.socialLinks?.find(link=>link.label==="Instagram");
+  const threadsLink=business.socialLinks?.find(link=>link.label==="Threads");
+  const linkList=[
+    business.websiteUrl&&{label:language==="ko"?(business.websiteCtaKo||"홈페이지 보기"):(business.websiteCtaEn||"View Homepage"),url:business.websiteUrl},
+    igLink?{label:"Instagram",url:igLink.url,icon:igLink.icon}:business.snsUrl&&{label:"Instagram",url:business.snsUrl,icon:"assets/instagram.svg"},
+    threadsLink&&{label:"Threads",url:threadsLink.url,icon:threadsLink.icon},
+    business.phoneHref&&{label:language==="ko"?"전화하기":"Call",url:`tel:${business.phoneHref}`},
+    business.mapUrl&&{label:language==="ko"?"지도 보기":"View Map",url:business.mapUrl}
+  ].filter(Boolean);
+  info.innerHTML=`<header><h2>${name}</h2></header><div class="business-flyer-stack">${business.flyers.map((image,index)=>`<img src="/${image}" alt="${name} ${language==="ko"?"전단지":"flyer"} ${index+1}">`).join("")}</div><nav class="app-contact-social" aria-label="${name} links">${linkList.map(link=>`<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.icon?`<img src="/${link.icon}" alt="">`:""}${link.label}</a>`).join("")}</nav>`;
   $("#imageLightbox").hidden=false;
 }
 function closeImageLightbox(){
@@ -558,10 +545,6 @@ $("#partnerPrograms").addEventListener("click",event=>{
   // rather than the small card logo again, now that every business's card opens
   // this detail view -- the logo is already what the card itself shows.
   if(business)openImageLightbox("/"+(business.flyers?.[0]||business.spotlightImage||business.logo),language==="ko"?business.nameKo:business.nameEn,null,business);
-});
-$("#lightboxBusinessInfo").addEventListener("click",event=>{
-  const trigger=event.target.closest("[data-business-image]");
-  if(trigger){$("#lightboxImage").src=trigger.dataset.businessImage;$("#lightboxImage").alt=trigger.dataset.businessImageAlt;}
 });
 $("#newsPopupImage").addEventListener("click",()=>openImageLightbox($("#newsPopupImage").src,$("#newsPopupImage").alt));
 $("#newsPopupImage").addEventListener("keydown",event=>{

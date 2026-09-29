@@ -46,12 +46,12 @@ test('BOXD name, category, location, address, phone and map are exact (Business 
   assert.equal(boxd.appTextEn, boxd.summaryEn);
   assert.equal(boxd.summaryKo, '신선한 지중해식 보울 & 케이터링');
   assert.equal(boxd.appTextKo, boxd.summaryKo);
-  // The PC card now shows a phone number and a clickable map address (previously
-  // both null/none) -- the exact tel: target and a Google Maps *query* URL (no
-  // hand-verified Place ID exists yet for this address, unlike the other businesses).
+  // The PC card shows a phone number and a clickable map address using the exact
+  // tel: target and the hand-verified Google Maps Place URL (Business Spotlight
+  // 2nd UI round replaced the earlier maps/search/?api=1&query= fallback).
   assert.equal(boxd.phoneKo, '434-202-2749');assert.equal(boxd.phoneEn, '434-202-2749');
   assert.equal(boxd.phoneHref, '+14342022749');
-  assert.equal(boxd.mapUrl, 'https://www.google.com/maps/search/?api=1&query=909+West+Main+Street%2C+Charlottesville%2C+VA');
+  assert.equal(boxd.mapUrl, "https://www.google.com/maps/place/Box'd+Kitchen/@38.0326919,-78.4968453,17z/data=!3m1!4b1!4m6!3m5!1s0x89b38639a51e15c3:0xfdd3d48c782e4c7a!8m2!3d38.0326877!4d-78.4942704!16s%2Fg%2F11f2bdqz9g?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkyNy4xIKXMDSoASAFQAw%3D%3D");
 });
 
 test('Toast, Instagram and Threads are distinct clean canonical URLs with no tracking parameters', () => {
@@ -82,7 +82,9 @@ test('all four authorized PNG originals exist unmodified and no substitute/gener
   // No spotlightImage override any more -- the Spotlight card (web + app) falls
   // back to the official logo above instead of a flyer being used as a logo.
   assert.equal(boxd.spotlightImage,undefined);
-  assert.equal(boxd.flyerLayout,'grid');
+  // flyerLayout was removed in the 2nd UI round -- BOX'D's PC detail is back to
+  // the same single-image carousel every other business uses (see openBusinessFlyer()).
+  assert.equal(boxd.flyerLayout,undefined);
   assert.equal(boxd.flyers.length,3);
 });
 
@@ -110,12 +112,12 @@ test('mobile cards preserve native scrolling, snap, identical dimensions and kee
   assert.match(css,/\.has-business-details #lightboxImage\{[^}]*max-width:min\(100%,760px\)/);
 });
 
-test('app BOX\'D detail shows all 3 flyers stacked (never the single-image picker), exactly 3 curated CTAs, and no repeated logo/address/summary header', () => {
+test('app BOX\'D detail shows all 3 flyers stacked (never the single-image picker), exactly 5 real-data CTAs, and no repeated logo/address/summary header', () => {
   const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{hidden:true,innerHTML:'',classList:{toggle(){}},querySelector(){return{textContent:''}}});return nodes.get(id)};
   const context=vm.createContext({$:node,language:'ko',business:boxd});
   vm.runInContext(source('openImageLightbox')+'\nopenImageLightbox("/"+(business.flyers?.[0]||business.logo),business.nameKo,null,business)',context);
   assert.equal(node('#imageLightbox').hidden,false);assert.equal(node('#lightboxBusinessInfo').hidden,false);
-  // BOX'D (flyerLayout:"grid") hides the single #lightboxImage + picker entirely.
+  // Every business's detail (not just BOX'D any more) hides the single #lightboxImage + picker entirely.
   assert.equal(node('#lightboxImage').hidden,true);
   const html=node('#lightboxBusinessInfo').innerHTML;
   // No duplicate logo/address/summary intro -- just the business name as a title.
@@ -126,10 +128,14 @@ test('app BOX\'D detail shows all 3 flyers stacked (never the single-image picke
   assert.ok(!html.includes('business-image-choices'));
   assert.ok(html.includes('business-flyer-stack'));
   for(const file of boxd.flyers)assert.ok(html.includes(`src="/${file}"`));
-  // Exactly the 3 curated CTAs: 홈페이지 보기 + Instagram + Threads.
+  // Exactly the 5 CTAs BOX'D's own data actually has: 홈페이지 보기 + Instagram +
+  // Threads + 전화하기 + 지도 보기 (Business Spotlight 2nd UI round generalized the
+  // CTA builder so BOX'D now also gets phone/map buttons like other businesses).
   assert.ok(html.includes(`href="${boxd.websiteUrl}" target="_blank" rel="noopener noreferrer">${boxd.websiteCtaKo}`));
   for(const social of boxd.socialLinks)assert.ok(html.includes(`href="${social.url}" target="_blank" rel="noopener noreferrer"`));
-  assert.equal((html.match(/<a href=/g)||[]).length,3);
+  assert.ok(html.includes(`href="tel:${boxd.phoneHref}"`));
+  assert.ok(html.includes(`href="${boxd.mapUrl}"`));
+  assert.equal((html.match(/<a href=/g)||[]).length,5);
   vm.runInContext('openImageLightbox("event.png","Event")',context);
   assert.equal(node('#lightboxBusinessInfo').hidden,true);assert.equal(node('#lightboxBusinessInfo').innerHTML,'');
 });
@@ -152,7 +158,7 @@ test('website keeps its existing detail renderer while adapting optional shared 
   assert.match(web,/business\.socialLinks\.map\(link=>/);
   assert.match(web,/class="business-flyer-sns" href="\$\{link\.url\}" target="_blank" rel="noopener noreferrer"/);
   assert.match(web,/websiteLabelKo=business\.websiteCtaKo\|\|'홈페이지 보기'/);
-  assert.match(web,/id:'va',labelKo:'VIRGINIA',labelEn:'VIRGINIA'/);
+  assert.match(web,/id:'va',labelKo:'VA',labelEn:'VA'/);
   assert.match(read('styles.css'),/\.business-flyer-info>img\{[^}]*background:#000;object-fit:contain/);
 });
 

@@ -38,10 +38,11 @@ window.HARMONY_LINK_BUSINESSES = [
     summaryKo:"신선한 지중해식 보울 & 케이터링",summaryEn:"Fresh Mediterranean Bowls & Catering",
     copyKo:"신선한 지중해식 보울 & 케이터링",copyEn:"Fresh Mediterranean Bowls & Catering",
     phoneKo:"434-202-2749",phoneEn:"434-202-2749",phoneHref:"+14342022749",
-    // No hand-verified Google Maps Place ID for this address yet, so this uses the
-    // documented query-URL form (maps/search/?api=1&query=...) instead of a Place
-    // URL like the other businesses above -- see the schema note on mapUrl.
-    mapUrl:"https://www.google.com/maps/search/?api=1&query=909+West+Main+Street%2C+Charlottesville%2C+VA",
+    // The exact, hand-verified Google Maps Place URL for BOX'D KITCHEN's real
+    // location (replaces the earlier maps/search/?api=1&query= fallback now that
+    // a verified Place link exists), matching the Place-URL convention the other
+    // businesses above already use.
+    mapUrl:"https://www.google.com/maps/place/Box'd+Kitchen/@38.0326919,-78.4968453,17z/data=!3m1!4b1!4m6!3m5!1s0x89b38639a51e15c3:0xfdd3d48c782e4c7a!8m2!3d38.0326877!4d-78.4942704!16s%2Fg%2F11f2bdqz9g?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkyNy4xIKXMDSoASAFQAw%3D%3D",
     address:"909 West Main Street, Charlottesville, VA",
     locationKo:"Charlottesville, Virginia",locationEn:"Charlottesville, Virginia",
     websiteUrl:"https://order.toasttab.com/online/box-d-kitchen-charlottesville-909-w-main-st",
@@ -54,9 +55,6 @@ window.HARMONY_LINK_BUSINESSES = [
     logo:"assets/ads/boxd-kitchen/logo.png",
     // No spotlightImage override: the Business Spotlight card (web + app) now falls
     // back to the official black-background logo above, not a flyer image.
-    // flyerLayout:"grid" renders all 3 flyers side by side (no single-image
-    // carousel/arrows) in the detail view -- see openBusinessFlyer() in script.js.
-    flyerLayout:"grid",
     flyers:["assets/ads/boxd-kitchen/flyer-1-1.png","assets/ads/boxd-kitchen/flyer-2-1.png","assets/ads/boxd-kitchen/flyer-4-1.png"],
     appTitleKo:"BOX'D KITCHEN",appTitleEn:"BOX'D KITCHEN",
     appTextKo:"신선한 지중해식 보울 & 케이터링",appTextEn:"Fresh Mediterranean Bowls & Catering",
