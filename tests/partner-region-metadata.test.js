@@ -134,7 +134,7 @@ test('current admin metadata RPC remains untouched while business spotlight stay
   assert.match(homepageStyles, /\.business-flyer-modal\{position:fixed/);
   assert.match(homepageStyles, /\.business-flyer-scroll\{min-height:0;overflow-y:auto/);
   assert.match(homepageStyles, /\.business-flyer-navigation\{display:grid/);
-  assert.match(homepageStyles, /\.business-flyer-modal \.business-flyer-actions\{[\s\S]*?padding:16px 32px!important/);
+  assert.match(homepageStyles, /\.business-flyer-modal \.business-flyer-actions\{[\s\S]*?padding:14px 32px!important/);
   assert.match(homepageStyles, /@media\(max-width:540px\)\{[\s\S]*?\.business-flyer-modal \.business-flyer-actions\{[\s\S]*?padding:14px 20px!important/);
   assert.match(homepageStyles, /\.floating-message\{position:fixed;right:24px;bottom:24px;z-index:90\}/);
   assert.match(homepageStyles, /\.floating-message-panel\{position:absolute;right:0;bottom:60px;width:330px/);
