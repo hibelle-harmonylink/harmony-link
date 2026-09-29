@@ -108,11 +108,11 @@ test('mobile cards preserve native scrolling, snap, identical dimensions and kee
   assert.match(css,/@media\(min-width:640px\) and \(max-width:899px\)\{#partnerPrograms\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.doesNotMatch(source('renderPartners'),/slice\(|setInterval|boxd-kitchen/);
   assert.doesNotMatch(css,/\[data-business-id="boxd-kitchen"\]|last-child.*justify/);
-  assert.match(css,/#lightboxBusinessInfo \.app-contact-social a\{[^}]*min-height:44px;[^}]*white-space:nowrap/);
+  assert.match(css,/#lightboxBusinessInfo \.app-contact-social a,#lightboxBusinessInfo \.business-contact-actions a\{[^}]*min-height:44px;[^}]*white-space:nowrap/);
   assert.match(css,/\.has-business-details #lightboxImage\{[^}]*max-width:min\(100%,760px\)/);
 });
 
-test('app BOX\'D detail shows all 3 flyers stacked (never the single-image picker), exactly 5 real-data CTAs, and no repeated logo/address/summary header', () => {
+test('app BOX\'D detail shows all 3 flyers stacked (never the single-image picker), no website CTA, exactly 4 real-data CTAs split into an SNS row and a matched 2-column phone/map row, and no repeated logo/address/summary header', () => {
   const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{hidden:true,innerHTML:'',classList:{toggle(){}},querySelector(){return{textContent:''}}});return nodes.get(id)};
   const context=vm.createContext({$:node,language:'ko',business:boxd});
   vm.runInContext(source('openImageLightbox')+'\nopenImageLightbox("/"+(business.flyers?.[0]||business.logo),business.nameKo,null,business)',context);
@@ -128,14 +128,16 @@ test('app BOX\'D detail shows all 3 flyers stacked (never the single-image picke
   assert.ok(!html.includes('business-image-choices'));
   assert.ok(html.includes('business-flyer-stack'));
   for(const file of boxd.flyers)assert.ok(html.includes(`src="/${file}"`));
-  // Exactly the 5 CTAs BOX'D's own data actually has: 홈페이지 보기 + Instagram +
-  // Threads + 전화하기 + 지도 보기 (Business Spotlight 2nd UI round generalized the
-  // CTA builder so BOX'D now also gets phone/map buttons like other businesses).
-  assert.ok(html.includes(`href="${boxd.websiteUrl}" target="_blank" rel="noopener noreferrer">${boxd.websiteCtaKo}`));
+  // No 홈페이지 보기/website CTA any more -- the list card's own "업체 바로가기"
+  // link already covers that role (Business Spotlight 3rd UI round).
+  assert.ok(!html.includes(`href="${boxd.websiteUrl}"`));
+  // Exactly the 4 CTAs BOX'D's own data actually has: Instagram + Threads in the
+  // SNS row, 전화하기 + 지도 보기 in a matched 2-column row.
   for(const social of boxd.socialLinks)assert.ok(html.includes(`href="${social.url}" target="_blank" rel="noopener noreferrer"`));
   assert.ok(html.includes(`href="tel:${boxd.phoneHref}"`));
   assert.ok(html.includes(`href="${boxd.mapUrl}"`));
-  assert.equal((html.match(/<a href=/g)||[]).length,5);
+  assert.equal((html.match(/<a href=/g)||[]).length,4);
+  assert.match(html,/<div class="business-contact-actions has-two">/);
   vm.runInContext('openImageLightbox("event.png","Event")',context);
   assert.equal(node('#lightboxBusinessInfo').hidden,true);assert.equal(node('#lightboxBusinessInfo').innerHTML,'');
 });
