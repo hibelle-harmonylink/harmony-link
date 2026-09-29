@@ -1419,11 +1419,15 @@ const adRooms={
   ]},
   culture:{ko:'문화·교육 제휴 업체',en:'Culture & Education Partners',label:'CULTURE & EDUCATION PARTNER',slots:4,items:[]}
 };
+// Labels use USPS 2-letter state abbreviations (NY/TX/VA) instead of the full
+// state names -- keeps the filter tabs and each card's state badge compact and
+// on one line even on narrow mobile widths. 'all'/전체 is unaffected; the
+// filtering logic (region ids below) is unchanged, only these display labels.
 const businessRegions = [
   {id:'all',labelKo:'전체',labelEn:'All'},
-  {id:'ny',labelKo:'NEW YORK',labelEn:'NEW YORK'},
-  {id:'tx',labelKo:'TEXAS',labelEn:'TEXAS'},
-  {id:'va',labelKo:'VIRGINIA',labelEn:'VIRGINIA'}
+  {id:'ny',labelKo:'NY',labelEn:'NY'},
+  {id:'tx',labelKo:'TX',labelEn:'TX'},
+  {id:'va',labelKo:'VA',labelEn:'VA'}
 ];
 const renderBusinessPhone = contact => String(contact || '').replace(/(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g, number => `<a class="business-phone-link" href="tel:${number.replace(/[^\d+]/g, '')}">${number}</a>`);
 // Business Spotlight companies come from the canonical shared/data/businesses.js
@@ -1440,7 +1444,6 @@ const businessSpotlights = (window.HARMONY_LINK_BUSINESSES || []).map(business =
   id: business.id,
   region: business.region,
   phoneHref: business.phoneHref || undefined,
-  flyerLayout: business.flyerLayout || undefined,
   item: {
     name: business.nameEn,
     displayNameKo: business.nameKo,
@@ -1487,17 +1490,14 @@ const openBusinessFlyer=(business,trigger)=>{
   if(!info){info=document.createElement('div');info.className='business-flyer-info';businessFlyerModal.querySelector('.business-flyer-scroll').prepend(info);}
   info.hidden=true;info.innerHTML='';
   businessFlyerReturnFocus=trigger;
-  const isGridFlyers=business.flyerLayout==='grid';
-  businessFlyerModal.classList.toggle('business-flyer-modal--grid',isGridFlyers);
+  // PC/website detail always uses this single-image-at-a-time carousel (big
+  // image, contain, prev/next, "N / total" position) for every business,
+  // including BOX'D -- the same structure HOLE19 already used, reused as-is
+  // rather than building a second, BOX'D-only carousel.
   const navigation=businessFlyerModal.querySelector('.business-flyer-navigation');const images=businessFlyerModal.querySelector('.business-flyer-images');const previous=navigation.querySelector('[data-business-flyer-previous]');const next=navigation.querySelector('[data-business-flyer-next]');const position=navigation.querySelector('.business-flyer-position');let flyerIndex=0;
   const showFlyer=index=>{flyerIndex=Math.max(0,Math.min(index,flyers.length-1));images.innerHTML=flyers.length?`<img src="${flyers[flyerIndex]}" alt="${name} ${currentLanguage==='en'?'advertising flyer':'광고 전단지'}${flyers.length>1?` ${flyerIndex+1}`:''}">`:`<p class="business-flyer-pending" data-ko="전단지 이미지 준비 중" data-en="Flyer image coming soon">${currentLanguage==='en'?'Flyer image coming soon':'전단지 이미지 준비 중'}</p>`;position.textContent=`${flyerIndex+1} / ${flyers.length}`;previous.disabled=flyerIndex===0;next.disabled=flyerIndex===flyers.length-1;};
-  // flyerLayout:"grid" businesses (currently just BOX'D) show every flyer at once,
-  // side by side, with no carousel/pagination/horizontal scroll -- the opposite of
-  // showFlyer()'s one-at-a-time behavior every other business keeps using.
-  const showFlyerGrid=()=>{images.innerHTML=flyers.length?flyers.map((flyer,index)=>`<img src="${flyer}" alt="${name} ${currentLanguage==='en'?'advertising flyer':'광고 전단지'} ${index+1}">`).join(''):`<p class="business-flyer-pending" data-ko="전단지 이미지 준비 중" data-en="Flyer image coming soon">${currentLanguage==='en'?'Flyer image coming soon':'전단지 이미지 준비 중'}</p>`;};
   businessFlyerModal.querySelector('#businessFlyerTitle').textContent=name;
-  if(isGridFlyers){navigation.hidden=true;showFlyerGrid();}
-  else{navigation.hidden=flyers.length<2;previous.onclick=()=>showFlyer(flyerIndex-1);next.onclick=()=>showFlyer(flyerIndex+1);showFlyer(0);}
+  navigation.hidden=flyers.length<2;previous.onclick=()=>showFlyer(flyerIndex-1);next.onclick=()=>showFlyer(flyerIndex+1);showFlyer(0);
   businessFlyerModal.querySelector('.business-flyer-external-links').innerHTML=`${website?`<a class="business-flyer-website" href="${website}" target="_blank" rel="noopener noreferrer" data-ko="${websiteLabelKo}" data-en="${websiteLabelEn}">${currentLanguage==='en'?websiteLabelEn:websiteLabelKo}</a>`:''}${business.socialLinks?.length?business.socialLinks.map(link=>`<a class="business-flyer-sns" href="${link.url}" target="_blank" rel="noopener noreferrer"><img src="${link.icon}" alt="">${link.label}</a>`).join(''):sns?`<a class="business-flyer-sns" href="${sns}" target="_blank" rel="noopener noreferrer" data-ko="Instagram" data-en="Instagram">Instagram</a>`:''}`;
   businessFlyerModal.hidden=false;document.body.classList.add('modal-open');setLanguage(currentLanguage);businessFlyerModal.querySelector('.business-flyer-close')?.focus();
 };

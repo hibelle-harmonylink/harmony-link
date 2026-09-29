@@ -49,9 +49,10 @@ test('Google Maps policy is preserved: mapUrl only where Production had one, no 
   // synthesized "search by address" URL.
   assert.equal(byId('yura-kim').mapUrl, null);
   assert.equal(byId('aaleac').mapUrl, null);
-  // The 4 businesses that DO have a map link must keep the exact Place URL (not a
-  // generic maps/search?query= fallback).
-  ['organic-one', 'hole19', 'jangsu-daycare', 'dms-care'].forEach(id => {
+  // The 5 businesses that DO have a map link must keep the exact Place URL (not a
+  // generic maps/search?query= fallback). BOX'D joined this list in the Business
+  // Spotlight 2nd UI round once a hand-verified Place URL became available for it.
+  ['organic-one', 'hole19', 'jangsu-daycare', 'dms-care', 'boxd-kitchen'].forEach(id => {
     const business = byId(id);
     assert.ok(business.mapUrl, `${id} should have a mapUrl`);
     assert.match(business.mapUrl, /^https:\/\/www\.google\.com\/maps\/place\//, `${id} mapUrl should be an exact Place URL`);

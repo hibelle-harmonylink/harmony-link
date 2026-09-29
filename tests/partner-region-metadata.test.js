@@ -56,7 +56,7 @@ test('current admin metadata RPC remains untouched while business spotlight stay
   assert.match(homepageScript, /비즈니스 스포트라이트/);
   assert.match(homepageScript, /const businessRegions/);
   assert.match(homepageScript, /const businessSpotlights\s*=\s*\(window\.HARMONY_LINK_BUSINESSES\s*\|\|\s*\[\]\)\.map\(/);
-  assert.match(homepageScript, /\{id:'tx',labelKo:'TEXAS'/);
+  assert.match(homepageScript, /\{id:'tx',labelKo:'TX'/);
   assert.match(homepageScript, /Business listings for/);
   assert.doesNotMatch(homepageScript, /const dmsCareBusiness/);
   assert.match(businessesData, /nameKo:"DMS Care Training Center",nameEn:"DMS Care Training Center"/);

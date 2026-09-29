@@ -1071,18 +1071,15 @@ html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-si
 #lightboxBusinessInfo .business-detail-logo{width:76px;height:58px;flex:0 0 76px;object-fit:contain;background:#000;border-radius:4px;box-shadow:none}
 #lightboxBusinessInfo h2{margin:0 0 4px;font-size:18px}
 #lightboxBusinessInfo p{margin:3px 0;font-size:13px;overflow-wrap:anywhere}
-#lightboxBusinessInfo .business-image-choices{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-#lightboxBusinessInfo .business-image-choices button{min-height:44px;padding:6px 12px;border:1px solid #a9c8ee;border-radius:9px;background:#edf5ff;color:#0b54c2;font:inherit;cursor:pointer}
-/* Never wraps, even with 3 CTAs (BOX'D: 홈페이지 보기/Instagram/Threads) at the
-   narrowest supported width (320px) -- flex-shrink+min-width:0 let the buttons
-   themselves shrink (font/padding) instead of dropping to a second row. */
-#lightboxBusinessInfo .app-contact-social{display:flex;flex-wrap:nowrap;gap:6px;margin:10px 0 0;padding:0}
-#lightboxBusinessInfo .app-contact-social a{display:inline-flex;flex:1 1 0;min-width:0;align-items:center;justify-content:center;gap:4px;min-height:44px;padding:6px 4px;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 2-3 CTAs wrap naturally onto one row when they fit; 4-5 CTAs (BOX'D/HOLE19)
+   wrap onto a second row instead of shrinking font/padding to force one line. */
+#lightboxBusinessInfo .app-contact-social{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0;padding:0}
+#lightboxBusinessInfo .app-contact-social a{display:inline-flex;flex:1 1 auto;min-width:112px;align-items:center;justify-content:center;gap:5px;min-height:44px;padding:6px 10px;font-size:13.5px;white-space:nowrap}
 #lightboxBusinessInfo .app-contact-social img{width:16px;height:16px;flex:0 0 auto;box-shadow:none;border-radius:0}
-/* flyerLayout:"grid" businesses (BOX'D): every flyer stacks full width, vertically,
-   inside #lightboxBusinessInfo -- the single #lightboxImage + picker above is
-   hidden outright (needs this ID-scoped override since .image-lightbox img{display:
-   block} would otherwise beat the [hidden] attribute at equal specificity). */
-.image-lightbox.has-flyer-stack #lightboxImage{display:none}
+/* Every business's mobile detail shows all its flyers stacked -- the single
+   #lightboxImage + picker above is hidden outright (needs this ID-scoped
+   override since .image-lightbox img{display:block} would otherwise beat the
+   [hidden] attribute at equal specificity). */
+.image-lightbox.has-business-details #lightboxImage{display:none}
 #lightboxBusinessInfo .business-flyer-stack{display:flex;flex-direction:column;gap:12px;margin-top:4px}
 #lightboxBusinessInfo .business-flyer-stack img{display:block;width:100%;height:auto;max-width:100%;object-fit:contain;border-radius:10px;box-shadow:none}
