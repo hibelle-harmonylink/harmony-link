@@ -520,18 +520,26 @@ function openImageLightbox(src,alt,action,business){
   // buttons its own data actually has. Instagram always gets the same icon
   // whether it comes from a curated socialLinks entry (BOX'D) or the plain
   // snsUrl field (HOLE19, OrganicOne), so no business's Instagram button looks
-  // different from another's.
+  // different from another's. No website/홈페이지 CTA here -- the card's own
+  // "업체 바로가기" link (renderPartners()) already covers that role, so the
+  // detail below focuses on SNS, then phone/map.
   const name=language==="ko"?business.nameKo:business.nameEn;
   const igLink=business.socialLinks?.find(link=>link.label==="Instagram");
   const threadsLink=business.socialLinks?.find(link=>link.label==="Threads");
-  const linkList=[
-    business.websiteUrl&&{label:language==="ko"?(business.websiteCtaKo||"홈페이지 보기"):(business.websiteCtaEn||"View Homepage"),url:business.websiteUrl},
+  const snsList=[
     igLink?{label:"Instagram",url:igLink.url,icon:igLink.icon}:business.snsUrl&&{label:"Instagram",url:business.snsUrl,icon:"assets/instagram.svg"},
-    threadsLink&&{label:"Threads",url:threadsLink.url,icon:threadsLink.icon},
+    threadsLink&&{label:"Threads",url:threadsLink.url,icon:threadsLink.icon}
+  ].filter(Boolean);
+  const contactList=[
     business.phoneHref&&{label:language==="ko"?"전화하기":"Call",url:`tel:${business.phoneHref}`},
     business.mapUrl&&{label:language==="ko"?"지도 보기":"View Map",url:business.mapUrl}
   ].filter(Boolean);
-  info.innerHTML=`<header><h2>${name}</h2></header><div class="business-flyer-stack">${business.flyers.map((image,index)=>`<img src="/${image}" alt="${name} ${language==="ko"?"전단지":"flyer"} ${index+1}">`).join("")}</div><nav class="app-contact-social" aria-label="${name} links">${linkList.map(link=>`<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.icon?`<img src="/${link.icon}" alt="">`:""}${link.label}</a>`).join("")}</nav>`;
+  const linkButton=link=>`<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.icon?`<img src="/${link.icon}" alt="">`:""}${link.label}</a>`;
+  const snsMarkup=snsList.length?`<nav class="app-contact-social" aria-label="${name} social links">${snsList.map(linkButton).join("")}</nav>`:"";
+  // Phone+map render as a matched 2-column grid; a single button (phone-only
+  // or map-only, e.g. Yura Kim/OrganicOne) keeps its own natural width instead.
+  const contactMarkup=contactList.length?`<div class="business-contact-actions${contactList.length>1?" has-two":""}">${contactList.map(linkButton).join("")}</div>`:"";
+  info.innerHTML=`<header><h2>${name}</h2></header><div class="business-flyer-stack">${business.flyers.map((image,index)=>`<img src="/${image}" alt="${name} ${language==="ko"?"전단지":"flyer"} ${index+1}">`).join("")}</div>${snsMarkup}${contactMarkup}`;
   $("#imageLightbox").hidden=false;
 }
 function closeImageLightbox(){
