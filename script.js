@@ -1437,7 +1437,10 @@ if (!window.HARMONY_LINK_BUSINESSES) {
   console.warn('[businesses] shared/data/businesses.js did not load; Business Spotlight will show no businesses.');
 }
 const businessSpotlights = (window.HARMONY_LINK_BUSINESSES || []).map(business => ({
+  id: business.id,
   region: business.region,
+  phoneHref: business.phoneHref || undefined,
+  flyerLayout: business.flyerLayout || undefined,
   item: {
     name: business.nameEn,
     displayNameKo: business.nameKo,
@@ -1476,16 +1479,26 @@ const openBusinessFlyer=(business,trigger)=>{
   const website=item.brokerUrl||item.url||'';const sns=business.snsUrl||item.instagramUrl||'';
   const websiteLabelKo=business.websiteCtaKo||'홈페이지 보기';
   const websiteLabelEn=business.websiteCtaEn||'Visit website';
+  // The detail view no longer repeats the logo/category/description already shown
+  // on the Business Spotlight card itself -- this info block used to render that
+  // duplicate summary (only for businesses with socialLinks, i.e. BOX'D today) but
+  // is now always left empty so the detail starts straight at the flyer artwork.
   let info=businessFlyerModal.querySelector('.business-flyer-info');
   if(!info){info=document.createElement('div');info.className='business-flyer-info';businessFlyerModal.querySelector('.business-flyer-scroll').prepend(info);}
-  info.hidden=!business.socialLinks?.length;
-  info.innerHTML=info.hidden?'':`<img src="${business.logo}" alt="${name} logo"><div><p>${currentLanguage==='en'?business.categoryEn:business.categoryKo}</p><p>${business.address||''}</p><p>${currentLanguage==='en'?item.summaryEn:item.summaryKo}</p></div>`;
+  info.hidden=true;info.innerHTML='';
   businessFlyerReturnFocus=trigger;
+  const isGridFlyers=business.flyerLayout==='grid';
+  businessFlyerModal.classList.toggle('business-flyer-modal--grid',isGridFlyers);
   const navigation=businessFlyerModal.querySelector('.business-flyer-navigation');const images=businessFlyerModal.querySelector('.business-flyer-images');const previous=navigation.querySelector('[data-business-flyer-previous]');const next=navigation.querySelector('[data-business-flyer-next]');const position=navigation.querySelector('.business-flyer-position');let flyerIndex=0;
   const showFlyer=index=>{flyerIndex=Math.max(0,Math.min(index,flyers.length-1));images.innerHTML=flyers.length?`<img src="${flyers[flyerIndex]}" alt="${name} ${currentLanguage==='en'?'advertising flyer':'광고 전단지'}${flyers.length>1?` ${flyerIndex+1}`:''}">`:`<p class="business-flyer-pending" data-ko="전단지 이미지 준비 중" data-en="Flyer image coming soon">${currentLanguage==='en'?'Flyer image coming soon':'전단지 이미지 준비 중'}</p>`;position.textContent=`${flyerIndex+1} / ${flyers.length}`;previous.disabled=flyerIndex===0;next.disabled=flyerIndex===flyers.length-1;};
+  // flyerLayout:"grid" businesses (currently just BOX'D) show every flyer at once,
+  // side by side, with no carousel/pagination/horizontal scroll -- the opposite of
+  // showFlyer()'s one-at-a-time behavior every other business keeps using.
+  const showFlyerGrid=()=>{images.innerHTML=flyers.length?flyers.map((flyer,index)=>`<img src="${flyer}" alt="${name} ${currentLanguage==='en'?'advertising flyer':'광고 전단지'} ${index+1}">`).join(''):`<p class="business-flyer-pending" data-ko="전단지 이미지 준비 중" data-en="Flyer image coming soon">${currentLanguage==='en'?'Flyer image coming soon':'전단지 이미지 준비 중'}</p>`;};
   businessFlyerModal.querySelector('#businessFlyerTitle').textContent=name;
-  navigation.hidden=flyers.length<2;previous.onclick=()=>showFlyer(flyerIndex-1);next.onclick=()=>showFlyer(flyerIndex+1);showFlyer(0);
-  businessFlyerModal.querySelector('.business-flyer-external-links').innerHTML=`${website?`<a class="business-flyer-website" href="${website}" target="_blank" rel="noopener noreferrer" data-ko="${websiteLabelKo}" data-en="${websiteLabelEn}">${currentLanguage==='en'?websiteLabelEn:websiteLabelKo}</a>`:''}${business.socialLinks?.length?business.socialLinks.map(link=>`<a class="business-flyer-sns" href="${link.url}" target="_blank" rel="noopener noreferrer"><img src="${link.icon}" alt="">${link.label}</a>`).join(''):sns?`<a class="business-flyer-sns" href="${sns}" target="_blank" rel="noopener noreferrer" data-ko="SNS 보기" data-en="View social media">${currentLanguage==='en'?'View social media':'SNS 보기'}</a>`:''}`;
+  if(isGridFlyers){navigation.hidden=true;showFlyerGrid();}
+  else{navigation.hidden=flyers.length<2;previous.onclick=()=>showFlyer(flyerIndex-1);next.onclick=()=>showFlyer(flyerIndex+1);showFlyer(0);}
+  businessFlyerModal.querySelector('.business-flyer-external-links').innerHTML=`${website?`<a class="business-flyer-website" href="${website}" target="_blank" rel="noopener noreferrer" data-ko="${websiteLabelKo}" data-en="${websiteLabelEn}">${currentLanguage==='en'?websiteLabelEn:websiteLabelKo}</a>`:''}${business.socialLinks?.length?business.socialLinks.map(link=>`<a class="business-flyer-sns" href="${link.url}" target="_blank" rel="noopener noreferrer"><img src="${link.icon}" alt="">${link.label}</a>`).join(''):sns?`<a class="business-flyer-sns" href="${sns}" target="_blank" rel="noopener noreferrer" data-ko="Instagram" data-en="Instagram">Instagram</a>`:''}`;
   businessFlyerModal.hidden=false;document.body.classList.add('modal-open');setLanguage(currentLanguage);businessFlyerModal.querySelector('.business-flyer-close')?.focus();
 };
 businessFlyerModal.querySelectorAll('[data-business-flyer-close]').forEach(control=>control.addEventListener('click',closeBusinessFlyer));
@@ -1510,12 +1523,17 @@ function renderBusinessSpotlights(selectedRegion=selectedBusinessRegion) {
     const region=businessRegions.find(candidate=>candidate.id===selectedRegion);
     grid.innerHTML=`<p class="business-spotlight-empty" data-ko="${region?.labelKo||''} 지역의 비즈니스 정보는 준비 중입니다." data-en="Business listings for ${region?.labelEn||''} are coming soon.">${currentLanguage==='en'?`Business listings for ${region?.labelEn||''} are coming soon.`:`${region?.labelKo||''} 지역의 비즈니스 정보는 준비 중입니다.`}</p>`;
   }else{
-    grid.innerHTML=businesses.map((business,index)=>{const {region,item,categoryKo,categoryEn,locationKo,locationEn,address,mapUrl}=business;
+    grid.innerHTML=businesses.map((business,index)=>{const {id,region,item,categoryKo,categoryEn,locationKo,locationEn,address,mapUrl,phoneHref}=business;
       const name=currentLanguage==='en'?(item.displayNameEn||item.name):(item.displayNameKo||item.name);
       const summary=currentLanguage==='en'?(item.summaryEn||item.copyEn):(item.summaryKo||item.copy);
       const contact=currentLanguage==='en'?item.contactEn:item.contactKo;
       const regionLabel=businessRegions.find(candidate=>candidate.id===region)?.labelKo||region.toUpperCase();
-      const contactMarkup=`<p class="business-contact">${renderBusinessPhone(contact)}</p>`;
+      // BOX'D's single canonical number links to the exact tel: target from its data
+      // (phoneHref) instead of going through renderBusinessPhone()'s regex-based
+      // auto-link -- businesses like Jangsu Daycare display two numbers in one
+      // string, where that regex (correctly) links each one separately, so this
+      // explicit-href path only applies where a business has exactly one number.
+      const contactMarkup=id==='boxd-kitchen'&&phoneHref&&contact?`<p class="business-contact"><a class="business-phone-link" href="tel:${phoneHref}">${contact}</a></p>`:`<p class="business-contact">${renderBusinessPhone(contact)}</p>`;
       const displayLocation=currentLanguage==='en'?locationEn:locationKo;
       const addressMarkup=address?(mapUrl?`<a class="business-address" href="${mapUrl}" target="_blank" rel="noopener noreferrer">${address}</a>`:`<p class="business-address" data-ko="${address}" data-en="${address}">${address}</p>`):`<p class="business-address" data-ko="${locationKo}" data-en="${locationEn}">${displayLocation}</p>`;
       return `<article class="business-spotlight-card" tabindex="0" role="button" data-business-spotlight-index="${index}" aria-label="${name} ${currentLanguage==='en'?'advertising details':'광고 상세 보기'}"><span class="business-state-badge">${regionLabel}</span><div class="business-spotlight-logo"><img src="${item.image}" alt="${name} logo"></div><div class="business-spotlight-copy"><p class="business-category" data-ko="${categoryKo}" data-en="${categoryEn}">${currentLanguage==='en'?categoryEn:categoryKo}</p><h3>${name}</h3><p class="business-summary">${summary}</p>${contactMarkup}${addressMarkup}<div class="business-detail-actions"><button type="button" class="business-detail-link" data-business-flyer-open><span data-ko="자세히 보기" data-en="View details">${currentLanguage==='en'?'View details':'자세히 보기'}</span> <b aria-hidden="true">→</b></button></div></div></article>`;

@@ -29,11 +29,15 @@ test('BOXD is appended seventh; all six original canonical objects are byte-for-
   assert.equal(hash(JSON.stringify(businesses.slice(0,6))), '9cef8e790cec1a12d78d41a7711801acdb1d68d796aeef92ef6afcb393c14cc0');
 });
 
-test('original six app cards preserve their exact rendered markup, links, phone and order', () => {
-  assert.equal(hash(render().slice(0,6).join('')), '5bfb30f5a1e85923c8e818827f1962acb18fbe7fbe2641a08ade6a4ea00166ac');
+test('original six app cards keep identical data, links, phone and order -- now wrapped in the same tappable detail button BOX\'D already used (Business Spotlight mobile-detail unification round)', () => {
+  // The div-vs-button wrapper changed (every business card is now tappable to open
+  // its own detail view, not just BOX'D -- see openImageLightbox()), but this hash
+  // still pins the six businesses' actual content: names, order, phone numbers,
+  // hrefs and CTA text must be byte-for-byte the same as before that wrapper change.
+  assert.equal(hash(render().slice(0,6).join('')), 'ce49902f4fdf20b61df973352271bda67537ec51604207390ed85a1b06fbf410');
 });
 
-test('BOXD name, category, location, address and short bilingual descriptions are exact', () => {
+test('BOXD name, category, location, address, phone and map are exact (Business Spotlight PC card round)', () => {
   assert.equal(boxd.nameKo, "BOX'D KITCHEN");assert.equal(boxd.nameEn, "BOX'D KITCHEN");
   assert.equal(boxd.categoryEn, 'Restaurant / Catering');
   assert.equal(boxd.locationEn, 'Charlottesville, Virginia');
@@ -42,7 +46,12 @@ test('BOXD name, category, location, address and short bilingual descriptions ar
   assert.equal(boxd.appTextEn, boxd.summaryEn);
   assert.equal(boxd.summaryKo, '신선한 지중해식 보울 & 케이터링');
   assert.equal(boxd.appTextKo, boxd.summaryKo);
-  assert.equal(boxd.phoneHref, null);assert.equal(boxd.mapUrl, null);
+  // The PC card now shows a phone number and a clickable map address (previously
+  // both null/none) -- the exact tel: target and a Google Maps *query* URL (no
+  // hand-verified Place ID exists yet for this address, unlike the other businesses).
+  assert.equal(boxd.phoneKo, '434-202-2749');assert.equal(boxd.phoneEn, '434-202-2749');
+  assert.equal(boxd.phoneHref, '+14342022749');
+  assert.equal(boxd.mapUrl, 'https://www.google.com/maps/search/?api=1&query=909+West+Main+Street%2C+Charlottesville%2C+VA');
 });
 
 test('Toast, Instagram and Threads are distinct clean canonical URLs with no tracking parameters', () => {
@@ -70,15 +79,19 @@ test('all four authorized PNG originals exist unmodified and no substitute/gener
     assert.equal(bytes.subarray(1,4).toString(),'PNG');assert.equal(hash(bytes),sha,name);
   }
   assert.equal(boxd.logo,'assets/ads/boxd-kitchen/logo.png');
-  assert.equal(boxd.spotlightImage,'assets/ads/boxd-kitchen/flyer-2-1.png');
+  // No spotlightImage override any more -- the Spotlight card (web + app) falls
+  // back to the official logo above instead of a flyer being used as a logo.
+  assert.equal(boxd.spotlightImage,undefined);
+  assert.equal(boxd.flyerLayout,'grid');
   assert.equal(boxd.flyers.length,3);
 });
 
-test('both languages render seventh card using the representative image and Toast CTA in a safe new tab', () => {
+test('both languages render seventh card using the official black logo (not a flyer) and Toast CTA in a safe new tab', () => {
   for(const language of ['ko','en']) {
     const cards=render(language);assert.equal(cards.length,7);
     assert.match(cards[6],/data-business-id="boxd-kitchen"/);
-    assert.ok(cards[6].includes('/'+boxd.spotlightImage));
+    assert.ok(cards[6].includes('/'+boxd.logo));
+    assert.ok(!cards[6].includes('/'+boxd.flyers[0]) && !cards[6].includes('/'+boxd.flyers[1]) && !cards[6].includes('/'+boxd.flyers[2]), 'the card image must be the logo, never a flyer');
     assert.ok(cards[6].includes(`href="${boxd.websiteUrl}" target="_blank" rel="noopener noreferrer"`));
     assert.ok(cards[6].includes(language==='ko'?'업체 바로가기':'Visit Business'));
     assert.match(cards[6],/type="button"[^>]+data-business-detail="boxd-kitchen"/);
@@ -97,17 +110,40 @@ test('mobile cards preserve native scrolling, snap, identical dimensions and kee
   assert.match(css,/\.has-business-details #lightboxImage\{[^}]*max-width:min\(100%,760px\)/);
 });
 
-test('app business detail reuses image lightbox, displays original logo and renders canonical SNS links', () => {
+test('app BOX\'D detail shows all 3 flyers stacked (never the single-image picker), exactly 3 curated CTAs, and no repeated logo/address/summary header', () => {
   const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{hidden:true,innerHTML:'',classList:{toggle(){}},querySelector(){return{textContent:''}}});return nodes.get(id)};
   const context=vm.createContext({$:node,language:'ko',business:boxd});
-  vm.runInContext(source('openImageLightbox')+'\nopenImageLightbox("/"+business.spotlightImage,business.nameKo,null,business)',context);
+  vm.runInContext(source('openImageLightbox')+'\nopenImageLightbox("/"+(business.flyers?.[0]||business.logo),business.nameKo,null,business)',context);
   assert.equal(node('#imageLightbox').hidden,false);assert.equal(node('#lightboxBusinessInfo').hidden,false);
+  // BOX'D (flyerLayout:"grid") hides the single #lightboxImage + picker entirely.
+  assert.equal(node('#lightboxImage').hidden,true);
   const html=node('#lightboxBusinessInfo').innerHTML;
-  assert.ok(html.includes('/'+boxd.logo));assert.ok(html.includes(boxd.address));
+  // No duplicate logo/address/summary intro -- just the business name as a title.
+  assert.ok(html.includes(`<h2>${boxd.nameKo}</h2>`));
+  assert.ok(!html.includes(boxd.address));
+  assert.ok(!html.includes('business-detail-logo'));
+  // All 3 flyers render as full images in a vertical stack, not a picker.
+  assert.ok(!html.includes('business-image-choices'));
+  assert.ok(html.includes('business-flyer-stack'));
+  for(const file of boxd.flyers)assert.ok(html.includes(`src="/${file}"`));
+  // Exactly the 3 curated CTAs: 홈페이지 보기 + Instagram + Threads.
+  assert.ok(html.includes(`href="${boxd.websiteUrl}" target="_blank" rel="noopener noreferrer">${boxd.websiteCtaKo}`));
   for(const social of boxd.socialLinks)assert.ok(html.includes(`href="${social.url}" target="_blank" rel="noopener noreferrer"`));
-  for(const file of boxd.flyers)assert.ok(html.includes(`data-business-image="/${file}"`));
+  assert.equal((html.match(/<a href=/g)||[]).length,3);
   vm.runInContext('openImageLightbox("event.png","Event")',context);
   assert.equal(node('#lightboxBusinessInfo').hidden,true);assert.equal(node('#lightboxBusinessInfo').innerHTML,'');
+});
+
+test('app detail for a non-BOX\'D business (Jangsu Daycare) only shows the links its own data actually has -- phone and map, never a fabricated website/Instagram/Threads', () => {
+  const nodes=new Map();const node=id=>{if(!nodes.has(id))nodes.set(id,{hidden:true,innerHTML:'',classList:{toggle(){}},querySelector(){return{textContent:''}}});return nodes.get(id)};
+  const jangsu=businesses.find(b=>b.id==='jangsu-daycare');
+  assert.equal(jangsu.websiteUrl,null);assert.equal(jangsu.snsUrl,null);
+  const context=vm.createContext({$:node,language:'ko',business:jangsu});
+  vm.runInContext(source('openImageLightbox')+'\nopenImageLightbox("/"+business.flyers[0],business.nameKo,null,business)',context);
+  const html=node('#lightboxBusinessInfo').innerHTML;
+  assert.ok(html.includes(`href="tel:${jangsu.phoneHref}"`));
+  assert.ok(html.includes(`href="${jangsu.mapUrl}"`));
+  assert.equal((html.match(/<a href=/g)||[]).length,2);
 });
 
 test('website keeps its existing detail renderer while adapting optional shared images, logos and social links', () => {

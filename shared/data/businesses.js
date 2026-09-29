@@ -37,18 +37,26 @@ window.HARMONY_LINK_BUSINESSES = [
     categoryKo:"지중해식 레스토랑 · 케이터링",categoryEn:"Restaurant / Catering",
     summaryKo:"신선한 지중해식 보울 & 케이터링",summaryEn:"Fresh Mediterranean Bowls & Catering",
     copyKo:"신선한 지중해식 보울 & 케이터링",copyEn:"Fresh Mediterranean Bowls & Catering",
-    phoneKo:null,phoneEn:null,phoneHref:null,mapUrl:null,
+    phoneKo:"434-202-2749",phoneEn:"434-202-2749",phoneHref:"+14342022749",
+    // No hand-verified Google Maps Place ID for this address yet, so this uses the
+    // documented query-URL form (maps/search/?api=1&query=...) instead of a Place
+    // URL like the other businesses above -- see the schema note on mapUrl.
+    mapUrl:"https://www.google.com/maps/search/?api=1&query=909+West+Main+Street%2C+Charlottesville%2C+VA",
     address:"909 West Main Street, Charlottesville, VA",
     locationKo:"Charlottesville, Virginia",locationEn:"Charlottesville, Virginia",
     websiteUrl:"https://order.toasttab.com/online/box-d-kitchen-charlottesville-909-w-main-st",
-    websiteCtaKo:"업체 바로가기",websiteCtaEn:"Visit Business",
+    websiteCtaKo:"홈페이지 보기",websiteCtaEn:"View Homepage",
     snsUrl:null,
     socialLinks:[
       {label:"Instagram",url:"https://www.instagram.com/boxdkitchen_uva/",icon:"assets/instagram.svg"},
       {label:"Threads",url:"https://www.threads.com/@boxdkitchen_uva",icon:"assets/threads.svg"}
     ],
     logo:"assets/ads/boxd-kitchen/logo.png",
-    spotlightImage:"assets/ads/boxd-kitchen/flyer-2-1.png",
+    // No spotlightImage override: the Business Spotlight card (web + app) now falls
+    // back to the official black-background logo above, not a flyer image.
+    // flyerLayout:"grid" renders all 3 flyers side by side (no single-image
+    // carousel/arrows) in the detail view -- see openBusinessFlyer() in script.js.
+    flyerLayout:"grid",
     flyers:["assets/ads/boxd-kitchen/flyer-1-1.png","assets/ads/boxd-kitchen/flyer-2-1.png","assets/ads/boxd-kitchen/flyer-4-1.png"],
     appTitleKo:"BOX'D KITCHEN",appTitleEn:"BOX'D KITCHEN",
     appTextKo:"신선한 지중해식 보울 & 케이터링",appTextEn:"Fresh Mediterranean Bowls & Catering",

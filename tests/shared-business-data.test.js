@@ -34,14 +34,14 @@ test('region counts retain 5 NEW YORK, 1 TEXAS and add 1 VIRGINIA', () => {
 });
 
 test('every business has a structured phone field (phoneKo/phoneEn), not just phone text buried in copy', () => {
+  // boxd-kitchen was the one exception (no phone supplied at the time) until the
+  // Business Spotlight PC-card round added its real, verified number.
   businesses.forEach(b => {
-    if(b.id === 'boxd-kitchen'){
-      assert.equal(b.phoneKo, null);assert.equal(b.phoneEn, null);assert.equal(b.phoneHref, null);
-      return; // No phone number was supplied; never invent one.
-    }
     assert.ok(b.phoneKo && b.phoneKo.length, `${b.id} missing phoneKo`);
     assert.ok(b.phoneEn && b.phoneEn.length, `${b.id} missing phoneEn`);
   });
+  assert.equal(byId('boxd-kitchen').phoneKo, '434-202-2749');
+  assert.equal(byId('boxd-kitchen').phoneHref, '+14342022749');
 });
 
 test('Google Maps policy is preserved: mapUrl only where Production had one, no address-search fallback', () => {

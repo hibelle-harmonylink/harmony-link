@@ -101,7 +101,9 @@ test('current admin metadata RPC remains untouched while business spotlight stay
     'https://www.google.com/maps/place/%EC%9E%A5%EC%88%98%EB%8D%B0%EC%9D%B4%EC%BC%80%EC%96%B4+JANGSU+Adult+Day+Care/@40.7692212,-73.8210753,17z/data=!3m1!4b1!4m6!3m5!1s0x89c261d50904e783:0x524c9bbcbcc5da1e!8m2!3d40.7692172!4d-73.8185004!16s%2Fg%2F11lll_thly?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D',
     'https://www.google.com/maps/place/DMS+Care+Training+Center/@33.0008059,-96.8869749,17z/data=!3m1!4b1!4m6!3m5!1s0x864c25005c81bf67:0x1ff6428391587d36!8m2!3d33.0008014!4d-96.8844!16s%2Fg%2F11lddvd23w?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D'
   ]) assert.ok(businessesData.includes(`mapUrl:"${mapUrl}"`));
-  assert.match(homepageScript, /const \{region,item,categoryKo,categoryEn,locationKo,locationEn,address,mapUrl\}=business/);
+  // id/phoneHref were added to this destructure for BOX'D's explicit tel: link
+  // (Business Spotlight PC-card round); every other field is unchanged.
+  assert.match(homepageScript, /const \{id,region,item,categoryKo,categoryEn,locationKo,locationEn,address,mapUrl,phoneHref\}=business/);
   assert.match(homepageScript, /address\?\(mapUrl\?`<a class="business-address" href="\$\{mapUrl\}" target="_blank" rel="noopener noreferrer">\$\{address\}<\/a>`/);
   assert.doesNotMatch(homepageScript, /encodeURIComponent\(mapQuery\|\|address\)/);
   assert.match(homepageScript, /class="business-address"[\s\S]*?target="_blank" rel="noopener noreferrer"/);
