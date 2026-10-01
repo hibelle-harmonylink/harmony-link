@@ -1460,6 +1460,7 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
 #partner-center .partner-resource-group.premium-resource{border-color:#d8e4f0!important;background:#fff!important}
 #partner-center .partner-resource-toggle{min-height:56px!important;padding:8px 10px!important;gap:10px!important;grid-template-columns:28px minmax(0,1fr) auto!important;border:0!important;border-radius:8px!important;background:#fff!important;box-shadow:none!important}
 #partner-center .partner-resource-toggle:hover,#partner-center .partner-resource-toggle:focus-visible{background:#f7fbff!important;outline:2px solid #75aee4!important;outline-offset:-2px!important}
+#partner-center .partner-resource-static,#partner-center .partner-resource-static:hover{background:#fff!important;outline:0!important;cursor:default!important}
 #partner-center .resource-number{align-self:center!important;color:#8ba0b7!important;font-size:11px!important;font-weight:700!important}
 #partner-center .partner-resource-summary{display:flex!important;align-items:baseline!important;gap:12px!important;min-width:0!important}
 #partner-center .partner-resource-toggle h3{flex:0 0 auto!important;margin:0!important;color:#123a63!important;font-size:16px!important;line-height:1.2!important;font-weight:700!important;white-space:nowrap!important}
@@ -1528,6 +1529,7 @@ body>footer{background:linear-gradient(165deg,#0d4a9e,#082c67)!important;border-
 @media(max-width:760px){#partner-center .ai-consulting-resource .partner-resource-items{padding:12px!important}.ai-consulting-services{grid-template-columns:1fr}.ai-consulting-services h4{max-width:none}.ai-consulting-services article>p,.ai-consulting-services article>strong{min-height:0}}
 
 .event-online-link{color:inherit;text-decoration:none}.event-online-link:hover,.event-online-link:focus-visible{text-decoration:underline}
+.event-time-zone-list{display:grid!important;gap:2px!important;font-size:11.5px!important;line-height:1.35!important}.event-time-zone-row{display:grid;grid-template-columns:58px minmax(0,1fr);gap:5px}.event-time-zone-row b,.event-time-zone-row em{font:inherit;font-style:normal}.event-time-zone-row b{font-weight:800}
 
 /* Partner resource library: grade-differentiated grid + larger type.
    FREE/BASIC/PREMIUM now show exactly 2/6/12 cards (script.js), so the

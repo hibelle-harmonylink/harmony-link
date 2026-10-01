@@ -1345,6 +1345,7 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
 #events .dms-workshop-card .event-info dd{font-size:13px!important}
 #events .event-grid>.event-card.dms-workshop-card:not([hidden]) .event-info dl{margin:6px 0 8px!important;padding:6px 0!important}
 #events .event-grid>.event-card.dms-workshop-card:not([hidden]) .event-info dl div{margin:0!important;line-height:1.6!important}
+#events .dms-workshop-card .event-info dd.event-time-zone-list{font-size:11.5px!important;line-height:1.35!important}
 #events .past-events{margin-top:18px!important}
 #events .past-events-head{margin-bottom:0!important}
 #events .past-events-disclosure>.past-events-toggle{margin:-38px 0 12px auto!important}
