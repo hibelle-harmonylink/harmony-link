@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="us-admissions.css?v=20261001-1">
+  <link rel="stylesheet" href="us-admissions.css?v=20261001-2">
 </head>
 <body>
   <header class="admissions-header">
@@ -31,30 +31,23 @@
     <section class="admissions-shell admissions-section">
       <div class="section-title"><span>현재 제공 정보</span><h2>진학 분야를 선택하세요</h2></div>
       <!-- 진학(Admissions) hub: extensible card grid. Each card is one admissions
-           path. "featured" = live content with an in-page anchor link; "pending"
-           = path is planned but not yet written up, shown as a plain non-linking
-           <article> (no click handler, so it cannot 404). To add a new path later,
-           add another .admissions-card and, once content exists, promote it to
-           featured/available following the dental card's pattern below (status
-           label + link to its own independent guide page, e.g. us-admissions/dental.html,
-           rather than an in-page #hash anchor). -->
-      <div class="admissions-grid">
+           path. "featured" = live content with a link to its own independent guide
+           page (e.g. us-admissions/dental.html), never an in-page #hash anchor;
+           "pending" = path is planned but not yet written up, shown as a plain
+           non-linking <article> (no click handler, so it cannot 404). To add a new
+           path later, add another .admissions-card following the dental card's
+           pattern -- and once a second real card exists, drop admissions-grid-single
+           below (that modifier only caps the lone card's width while it's alone). -->
+      <div class="admissions-grid admissions-grid-single">
         <article class="admissions-card featured">
           <span class="status">정보 제공중</span><div class="card-icon">🦷</div>
           <h3>치과대학 진학</h3><p>Pre-Dental부터 DAT, ADEA AADSAS, 인터뷰까지 준비 흐름을 한눈에 확인하세요.</p>
           <a href="us-admissions/dental.html">치대 준비 가이드 보기 →</a>
         </article>
-        <!-- Future: U.S. Navy application path. Planned structure once content is
-             ready: 지원 대상, 기본 자격요건, 리크루터 연락, 서류 준비, 신체검사/심사,
-             장교/부사관 구분, 훈련 과정, 일정, 공식 참고자료 링크. -->
-        <article class="admissions-card pending"><span class="status">준비중</span><div class="card-icon">⚓</div><h3>미 해군 지원</h3><p>미 해군 지원 정보는 준비 중입니다.</p></article>
-        <!-- HPSP (Health Professions Scholarship Program) used to sit here as its
-             own pending top-level path, at the same level as "치과대학 진학"/"미
-             해군 지원". HPSP is a scholarship that funds dental/medical school in
-             exchange for service, so it is a sub-topic of the dental guide rather
-             than a parallel admissions path -- it now lives in the Scholarship ·
-             HPSP section of us-admissions/dental.html instead, to avoid showing
-             the same HPSP content in two places. -->
+        <!-- "미 해군 지원" (pending) and HPSP (now in the dental guide's Scholarship
+             section) used to also sit in this grid. The Navy admissions path itself
+             is not written up anywhere else in the repository -- this only removes
+             its hub listing, it does not delete a Navy content page that exists. -->
       </div>
     </section>
   </main>
