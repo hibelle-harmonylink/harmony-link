@@ -23,20 +23,21 @@ test('consulting detail limits the free benefit to Business Check and labels pai
   assert.doesNotMatch(resourceBlock, /전체 무료|무제한 무료|모든 서비스 무료/);
 });
 
-test('consulting detail stays internal, omits the consultation format, and keeps contact information', () => {
+test('consulting detail stays internal and removes the consultant contact panel', () => {
   assert.doesNotMatch(resourceBlock, /상담 방식|Consultation format|Google Meet/);
-  assert.match(resourceBlock, /Sally Park/);
-  assert.match(resourceBlock, /929-603-0052/);
-  assert.match(resourceBlock, /hibelle@hibelleconsulting\.com/);
-  assert.match(resourceBlock, /www\.hibelleharmony\.com/);
+  assert.doesNotMatch(resourceBlock, /Sally Park|AI Business Consultant|HIBELLE CONSULTING/);
+  assert.doesNotMatch(resourceBlock, /929-603-0052|hibelle@hibelleconsulting\.com|www\.hibelleharmony\.com/);
+  assert.doesNotMatch(resourceBlock, /ai-consulting-contact/);
   assert.doesNotMatch(resourceBlock, /data-business-spotlight-index|data-business-flyer-open/);
 });
 
 test('consulting detail has desktop and mobile layouts without fixed horizontal sizing', () => {
   assert.match(css, /\.ai-consulting-services\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
   assert.match(css, /@media\(max-width:760px\)\{[\s\S]*?\.ai-consulting-services\{grid-template-columns:1fr\}/);
-  assert.match(css, /overflow-wrap:anywhere/);
   assert.doesNotMatch(css, /\.ai-consulting-(?:detail|services|contact)\{[^}]*width:\d+px/);
   assert.match(css, /\.ai-consulting-services h4\{[^}]*max-width:15ch[^}]*word-break:keep-all/);
-  assert.match(css, /\.ai-consulting-contact\{display:grid;grid-template-columns:/);
+  assert.match(css, /\.ai-consulting-services article\.ai-consulting-service-featured\{[^}]*border-color:[^}]*background:#eef7ff/);
+  assert.match(css, /\.ai-consulting-services article>strong\{[^}]*color:#9f2525/);
+  assert.match(css, /small\.premium-free\{[^}]*border-radius:999px[^}]*background:#0b5fc2[^}]*color:#fff/);
+  assert.doesNotMatch(css, /\.ai-consulting-contact/);
 });

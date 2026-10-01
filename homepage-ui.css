@@ -1339,10 +1339,12 @@ body>footer .footer-top .logo-name small{color:#d4af37!important}
    gap above the button. Widening the dt/dd columns and row rhythm both
    gives the value column (esp. the NY/TX time string) more breathing room
    and closes that gap to match sibling cards' spacing. */
-#events .dms-workshop-card .event-info dl{display:flex!important;flex-direction:column!important;gap:14px!important}
+#events .dms-workshop-card .event-info dl{display:flex!important;flex-direction:column!important;gap:14px!important;margin:6px 0 8px!important;padding:6px 0!important}
 #events .dms-workshop-card .event-info dl div{grid-template-columns:42px 1fr!important;margin:0!important;line-height:1.6!important}
 #events .dms-workshop-card .event-info dt{font-size:10px!important}
 #events .dms-workshop-card .event-info dd{font-size:13px!important}
+#events .event-grid>.event-card.dms-workshop-card:not([hidden]) .event-info dl{margin:6px 0 8px!important;padding:6px 0!important}
+#events .event-grid>.event-card.dms-workshop-card:not([hidden]) .event-info dl div{margin:0!important;line-height:1.6!important}
 #events .past-events{margin-top:18px!important}
 #events .past-events-head{margin-bottom:0!important}
 #events .past-events-disclosure>.past-events-toggle{margin:-38px 0 12px auto!important}
