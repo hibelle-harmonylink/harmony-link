@@ -50,7 +50,7 @@ test('partner resource details use the restored uniform grid at every breakpoint
 });
 
 test('partner resource titles remain concise one-line labels without changing their actions', () => {
-  assert.match(script, /title:'AI 비즈니스 컨설팅',copy:'PREMIUM 회원 무료'/);
+  assert.match(script, /title:'AI 비즈니스 컨설팅',copy:'AI Business Check 무료'/);
   assert.match(script, /AI Business Check/);
   assert.match(script, /AI Business Blueprint/);
   assert.match(script, /AI Business Build/);
