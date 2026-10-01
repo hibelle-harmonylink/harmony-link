@@ -9,10 +9,10 @@ const sandbox = { window: {} };
 vm.runInNewContext(source, sandbox);
 const byId = id => sandbox.window.HARMONY_LINK_EVENTS.find(event => event.id === id);
 
-test('partner resource rows reserve the same number, text, and action tracks', () => {
-  assert.match(css, /#partner-center \.partner-resource-toggle\{[\s\S]*?grid-template-columns:28px minmax\(0,1fr\) 64px!important/);
-  assert.match(css, /#partner-center \.partner-resource-summary\{[\s\S]*?grid-template-columns:220px minmax\(0,1fr\)!important/);
-  assert.match(css, /#partner-center \.partner-resource-static::after\{[\s\S]*?width:64px/);
+test('partner resources use compact cards without reserving a fake static action', () => {
+  assert.match(css, /#partner-center \.partner-resource-toggle\{[\s\S]*?grid-template-areas:"number number" "summary summary"!important/);
+  assert.match(css, /#partner-center \.partner-resource-summary\{[\s\S]*?grid-template-columns:minmax\(0,1fr\)!important/);
+  assert.match(css, /#partner-center \.partner-resource-static::after\{content:none!important\}/);
 });
 
 test('event meta uses one readable label/value rhythm and keeps three AI time rows', () => {

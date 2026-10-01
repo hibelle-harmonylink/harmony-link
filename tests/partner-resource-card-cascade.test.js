@@ -5,6 +5,7 @@ const test = require('node:test');
 
 const root = path.resolve(__dirname, '..');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
+const homepageCss = fs.readFileSync(path.join(root, 'homepage-ui.css'), 'utf8');
 const script = fs.readFileSync(path.join(root, 'script.js'), 'utf8');
 const auth = fs.readFileSync(path.join(root, 'auth.js'), 'utf8');
 const resourceBlock = script.slice(script.indexOf('const partnerResourceSections'), script.indexOf("document.querySelectorAll('#events"));
@@ -59,4 +60,20 @@ test('partner resource titles remain concise one-line labels without changing th
   assert.match(script, /AI Business Check/);
   assert.match(script, /AI Business Blueprint/);
   assert.match(script, /AI Business Build/);
+});
+
+test('partner benefits use a compact three-two-one column card grid', () => {
+  assert.match(homepageCss, /#partner-center \.partner-resource-library,[\s\S]*?#partner-center \.partner-resource-library\[data-count="12"\]\{[\s\S]*?grid-template-columns:repeat\(3,minmax\(0,1fr\)\)!important;[\s\S]*?gap:10px!important;/);
+  assert.match(homepageCss, /#partner-center \.partner-resource-toggle\{[\s\S]*?height:127px!important;[\s\S]*?padding:12px 14px!important;/);
+  assert.match(homepageCss, /#partner-center \.partner-resource-group\[hidden\]\{display:none!important\}/);
+  assert.match(homepageCss, /@media\(max-width:980px\) and \(min-width:641px\)\{[\s\S]*?#partner-center \.partner-resource-library\[data-count="12"\]\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)!important\}/);
+  assert.match(homepageCss, /@media\(max-width:640px\)\{[\s\S]*?#partner-center \.partner-resource-library\[data-count="12"\]\{grid-template-columns:minmax\(0,1fr\)!important/);
+});
+
+test('compact cards keep readable copy and reserve actions only for actionable resources', () => {
+  assert.match(homepageCss, /#partner-center \.partner-resource-toggle h3\{[\s\S]*?font-weight:800!important;[\s\S]*?white-space:normal!important;/);
+  assert.match(homepageCss, /#partner-center \.partner-resource-toggle p\{[\s\S]*?font-size:12px!important;[\s\S]*?white-space:normal!important;[\s\S]*?overflow:visible!important;/);
+  assert.match(homepageCss, /#partner-center \.partner-resource-action\{[\s\S]*?height:32px!important;[\s\S]*?border-radius:999px!important;/);
+  assert.match(homepageCss, /#partner-center \.partner-resource-static::after\{content:none!important\}/);
+  assert.match(script, /const hasAction=Boolean\(section\.consulting\|\|section\.items\.some\(item=>item\[1\]\)\);/);
 });
