@@ -24,11 +24,11 @@ const todayKey = () => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
-test('canonical event data has exactly the 7 Production events with unique stable IDs, in Production order', () => {
-  assert.equal(events.length, 7);
+test('canonical event data has exactly the 10 Production events with unique stable IDs, in Production order', () => {
+  assert.equal(events.length, 10);
   const ids = events.map(e => e.id);
-  assert.deepEqual(ids, ['messiah', 'hole19-tournament', 'free-music-class', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
-  assert.equal(new Set(ids).size, 7);
+  assert.deepEqual(ids, ['messiah', 'hole19-tournament', 'free-music-class', 'lina-market-ai-growth', 'roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
+  assert.equal(new Set(ids).size, 10);
 });
 
 test('upcoming/past split is date-driven (dateEnd vs today), not a static field, so the automatic migration keeps working', () => {
@@ -43,12 +43,12 @@ test('upcoming/past split is date-driven (dateEnd vs today), not a static field,
   const today = todayKey();
   const upcoming = events.filter(e => e.dateEnd >= today);
   const past = events.filter(e => e.dateEnd < today);
-  assert.equal(upcoming.length, 3);
-  assert.equal(past.length, 4);
-  assert.deepEqual(upcoming.map(e => e.id), ['messiah', 'hole19-tournament', 'free-music-class']);
+  assert.equal(upcoming.length, 4);
+  assert.equal(past.length, 6);
+  assert.deepEqual(upcoming.map(e => e.id), ['messiah', 'hole19-tournament', 'free-music-class', 'lina-market-ai-growth']);
   // Past events sort most-recently-ended first, matching script.js's existing sort.
   const pastSorted = [...past].sort((a, b) => b.dateEnd.localeCompare(a.dateEnd)).map(e => e.id);
-  assert.deepEqual(pastSorted, ['dms-ai-automation-workshop', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar']);
+  assert.deepEqual(pastSorted, ['roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'dms-ai-automation-workshop', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar']);
 });
 
 test('Korean/English fields exist for every event (title/description/badge)', () => {
@@ -61,7 +61,7 @@ test('Korean/English fields exist for every event (title/description/badge)', ()
 
 test('flyerKo/flyerEn are preserved per event, with no invented English flyer where Production only has one asset', () => {
   const withSeparateEnFlyer = ['messiah', 'hole19-tournament', 'free-music-class'];
-  const withSharedFlyer = ['ai-business-automation', 'one-day-class', 'finance-ai-seminar'];
+  const withSharedFlyer = ['lina-market-ai-growth', 'roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar'];
   withSeparateEnFlyer.forEach(id => {
     const e = byId(id);
     assert.ok(e.flyerKo && e.flyerEn, `${id} missing flyerKo/flyerEn`);
@@ -73,11 +73,14 @@ test('flyerKo/flyerEn are preserved per event, with no invented English flyer wh
   });
 });
 
-test('detailUrl policy matches Production exactly: 4 events link to a dedicated page, 3 rely on the flyer/lightbox fallback', () => {
+test('detailUrl policy keeps four dedicated pages and uses the flyer/lightbox fallback for the other six events', () => {
   assert.equal(byId('messiah').detailUrl, 'special-event-messiah.html');
   assert.equal(byId('hole19-tournament').detailUrl, 'special-event-hole19.html');
   assert.equal(byId('free-music-class').detailUrl, 'special-event-music-class.html');
   assert.equal(byId('ai-business-automation').detailUrl, null);
+  assert.equal(byId('lina-market-ai-growth').detailUrl, null);
+  assert.equal(byId('roxpkg-build-a-box-ai-automation').detailUrl, null);
+  assert.equal(byId('boxd-kitchen-youtube-interview').detailUrl, null);
   assert.equal(byId('one-day-class').detailUrl, null);
   assert.equal(byId('finance-ai-seminar').detailUrl, null);
   assert.equal(byId('dms-ai-automation-workshop').detailUrl, 'special-event-dms-ai-workshop.html');
@@ -90,7 +93,7 @@ test('the one known web/app title wording difference (free-music-class) is prese
   assert.equal(e.appTitleKo, '3개월 무료 음악 클래스');
   assert.equal(e.appTitleEn, 'Three-Month Free Music Class');
   // Every other event has no override (web and app titles already matched).
-  ['messiah', 'hole19-tournament', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop'].forEach(id => {
+  ['messiah', 'hole19-tournament', 'lina-market-ai-growth', 'roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop'].forEach(id => {
     const other = byId(id);
     assert.equal(other.appTitleKo, null, `${id} should not need a title override`);
     assert.equal(other.appTitleEn, null, `${id} should not need a title override`);
@@ -105,7 +108,7 @@ test('app-specific fields (appTextKo/appTextEn/appImage/appBadgeDark) are preser
   });
   // Only finance-ai-seminar uses the app's dark badge variant.
   assert.equal(byId('finance-ai-seminar').appBadgeDark, true);
-  ['messiah', 'hole19-tournament', 'free-music-class', 'ai-business-automation', 'one-day-class', 'dms-ai-automation-workshop'].forEach(id => {
+  ['messiah', 'hole19-tournament', 'free-music-class', 'lina-market-ai-growth', 'roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'ai-business-automation', 'one-day-class', 'dms-ai-automation-workshop'].forEach(id => {
     assert.equal(byId(id).appBadgeDark, false);
   });
 });

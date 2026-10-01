@@ -71,8 +71,8 @@ test('app Business Spotlight includes the original six plus BOX\'D KITCHEN from 
   assert.doesNotMatch(sharedContent, /AALEAC/);
 });
 
-test('app events include the current Production 3 upcoming + 3 past classes', () => {
-  // As of the Phase 2 web/app data unification, all 6 events (including messiah, which
+test('app events include all current canonical upcoming and past classes', () => {
+  // As of the Phase 2 web/app data unification, all events (including messiah, which
   // used to be hardcoded separately in app.js) moved out of app.js/shared-content.js
   // and into the canonical shared/data/events.js that both script.js and app/app.js
   // read (see tests/shared-event-data.test.js for full field-level coverage). This
@@ -83,15 +83,18 @@ test('app events include the current Production 3 upcoming + 3 past classes', ()
   assert.match(eventsData, /flyerKo:"assets\/events\/ai-business-automation-free-class-20260911\.webp"/);
   assert.match(eventsData, /id:"messiah"[\s\S]*?titleKo:"미란멜로디와 함께하는 헨델의 메시아"/);
   assert.match(eventsData, /dateStart:"2026-12-09",dateEnd:"2026-12-13"/);
-  // shared-content.js no longer carries any of the 6 events.
+  // shared-content.js no longer carries any canonical events.
   assert.doesNotMatch(sharedContent, /events:\s*\[/);
   const ids = [...eventsData.matchAll(/id:"([a-z0-9-]+)"/g)].map(m => m[1]);
-  assert.deepEqual(ids, ['messiah', 'hole19-tournament', 'free-music-class', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
+  assert.deepEqual(ids, ['messiah', 'hole19-tournament', 'free-music-class', 'lina-market-ai-growth', 'roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
 });
 
 test('stable service worker v104 precaches the Phase 3 Programs canonical file in the refreshed app cache', () => {
   assert.match(serviceWorker, /const CACHE="harmony-link-app-v105"/);
   assert.match(serviceWorker, /"\.\.\/assets\/events\/ai-business-automation-free-class-20260911\.webp"/);
+  assert.match(serviceWorker, /"\.\.\/assets\/events\/lina-market-ai-growth-20261003\.jpg"/);
+  assert.match(serviceWorker, /"\.\.\/assets\/events\/roxpkg-build-a-box-ai-automation-20260928\.jpg"/);
+  assert.match(serviceWorker, /"\.\.\/assets\/events\/boxd-kitchen-youtube-interview-20260926\.jpg"/);
   assert.match(serviceWorker, /"\.\.\/assets\/images\/dms-care-logo\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/home\/harmony-community-learning\.png"/);
   assert.match(serviceWorker, /"\.\.\/shared\/data\/events\.js\?v=1"/);

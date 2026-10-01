@@ -105,7 +105,7 @@ test('Business/Events canonical data are untouched by the title/CTA edits', () =
   const businessCount = (businessesData.match(/id:"[a-z0-9-]+"/g) || []).length;
   assert.equal(businessCount, 7);
   const eventIds = [...eventsData.matchAll(/id:"([a-z0-9-]+)"/g)].map(m => m[1]);
-  assert.deepEqual(eventIds, ['messiah', 'hole19-tournament', 'free-music-class', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
+  assert.deepEqual(eventIds, ['messiah', 'hole19-tournament', 'free-music-class', 'lina-market-ai-growth', 'roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
 });
 
 test('Bottom nav (5 items) and hamburger are untouched; Quick Access has 6 tiles reusing the existing data-go/anchor/data-scroll pattern', () => {

@@ -23,8 +23,8 @@ test('consulting detail limits the free benefit to Business Check and labels pai
   assert.doesNotMatch(resourceBlock, /전체 무료|무제한 무료|모든 서비스 무료/);
 });
 
-test('consulting detail stays internal and includes format and contact information', () => {
-  assert.match(resourceBlock, /Google Meet/);
+test('consulting detail stays internal, omits the consultation format, and keeps contact information', () => {
+  assert.doesNotMatch(resourceBlock, /상담 방식|Consultation format|Google Meet/);
   assert.match(resourceBlock, /Sally Park/);
   assert.match(resourceBlock, /929-603-0052/);
   assert.match(resourceBlock, /hibelle@hibelleconsulting\.com/);
@@ -37,4 +37,6 @@ test('consulting detail has desktop and mobile layouts without fixed horizontal 
   assert.match(css, /@media\(max-width:760px\)\{[\s\S]*?\.ai-consulting-services\{grid-template-columns:1fr\}/);
   assert.match(css, /overflow-wrap:anywhere/);
   assert.doesNotMatch(css, /\.ai-consulting-(?:detail|services|contact)\{[^}]*width:\d+px/);
+  assert.match(css, /\.ai-consulting-services h4\{[^}]*max-width:15ch[^}]*word-break:keep-all/);
+  assert.match(css, /\.ai-consulting-contact\{display:grid;grid-template-columns:/);
 });
