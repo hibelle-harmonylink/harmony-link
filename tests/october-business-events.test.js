@@ -31,7 +31,7 @@ test('LINA MARKET stays date-driven and carries the confirmed schedule and secur
   assert.match(event.detailRowsHtml, /NY 오후 8:00 \/ LA 오후 5:00/);
   assert.match(event.detailRowsHtml, /https:\/\/meet\.google\.com\/nfa-ukyo-hou/);
   assert.match(event.detailRowsHtml, /target="_blank" rel="noopener noreferrer"/);
-  assert.match(event.detailRowsHtml, /data-ko="온라인"[^>]*>온라인<\/a>/);
+  assert.match(event.detailRowsHtml, /data-ko="온라인 \(Google Meet\)"[^>]*>온라인 \(Google Meet\)<\/a>/);
   assert.doesNotMatch(JSON.stringify(event), /"status":/);
   assert.match(webScript, /'lina-market-ai-growth'[\s\S]*?'roxpkg-build-a-box-ai-automation'[\s\S]*?'boxd-kitchen-youtube-interview'[\s\S]*?'ai-business-automation'[\s\S]*?'dms-workshop-card'/);
 });
@@ -43,9 +43,9 @@ test('ROXPKG and boxd are past events with DMS-style date, time, and location ro
     assert.match(event.detailRowsHtml, /data-ko="일정"/);
     assert.match(event.detailRowsHtml, /data-ko="시간"/);
     assert.match(event.detailRowsHtml, /data-ko="장소"/);
-    assert.match(event.detailRowsHtml, /data-ko="온라인"[^>]*>온라인<\//);
+    assert.match(event.detailRowsHtml, /data-ko="온라인 \(Google Meet\)"[^>]*>온라인 \(Google Meet\)<\//);
     assert.equal((event.detailRowsHtml.match(/<div><dt /g) || []).length, 3);
-    assert.doesNotMatch(event.detailRowsHtml, /온라인 \(Google Meet\)|온라인 ↗/);
+    assert.doesNotMatch(event.detailRowsHtml, /온라인 ↗/);
   }
   assert.match(rox.detailRowsHtml, /NY 오후 10:30 \/ CA 오후 7:30/);
   assert.match(rox.detailRowsHtml, /https:\/\/meet\.google\.com\/fmb-fvrz-xuv/);
@@ -59,8 +59,10 @@ test('existing AI automation event keeps its content while using the DMS informa
   assert.equal(event.descriptionKo, '비즈니스 사업자를 위한 실전 AI 업무자동화 무료 특강');
   assert.equal(event.flyerKo, 'assets/events/ai-business-automation-free-class-20260911.webp');
   assert.match(event.detailRowsHtml, /data-ko="일정"[\s\S]*data-ko="시간"[\s\S]*data-ko="장소"/);
-  assert.match(event.detailRowsHtml, /미국 동부 오후 10:00 \/ 미국 서부 오후 7:00 \/ 한국 9월 12일 오전 11:00/);
-  assert.match(event.detailRowsHtml, /data-ko="온라인"[^>]*>온라인<\/dd>/);
+  assert.match(event.detailRowsHtml, /event-time-zone-list/);
+  assert.match(event.detailRowsHtml, /미국 동부[\s\S]*오후 10:00[\s\S]*미국 서부[\s\S]*오후 7:00[\s\S]*한국[\s\S]*9월 12일 오전 11:00/);
+  assert.equal((event.detailRowsHtml.match(/event-time-zone-row/g) || []).length, 3);
+  assert.match(event.detailRowsHtml, /data-ko="온라인 \(Google Meet\)"[^>]*>온라인 \(Google Meet\)<\/dd>/);
   assert.equal((event.detailRowsHtml.match(/<div><dt /g) || []).length, 3);
-  assert.doesNotMatch(event.detailRowsHtml, /온라인 \(Google Meet\)|온라인 ↗/);
+  assert.doesNotMatch(event.detailRowsHtml, /온라인 ↗/);
 });

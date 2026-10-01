@@ -28,14 +28,19 @@ test('partner center keeps the established cumulative access sets closed until a
   assert.match(resourceBlock, /tier:0[\s\S]*?tier:0[\s\S]*?tier:20[\s\S]*?tier:20[\s\S]*?tier:20[\s\S]*?tier:20[\s\S]*?tier:50[\s\S]*?tier:50[\s\S]*?tier:50[\s\S]*?tier:50[\s\S]*?tier:50[\s\S]*?tier:50/);
 });
 
-test('the actual resource groups restore one-click open and one-open-at-a-time details', () => {
+test('only resource groups with real content render one-click open details', () => {
+  assert.match(script, /const hasAction=Boolean\(section\.consulting\|\|section\.items\.some\(item=>item\[1\]\)\);/);
+  assert.match(script, /hasAction\?`<button type="button" class="partner-resource-toggle"/);
+  assert.match(script, /partner-resource-toggle partner-resource-static/);
+  assert.match(script, /const details=hasAction\?/);
   assert.match(script, /class="partner-resource-items" id="partnerResource\$\{index\}" hidden/);
   assert.doesNotMatch(resourceBlock, /partner-resource-panel/);
   assert.doesNotMatch(resourceBlock, /partner-resource-detail-toggle/);
   assert.match(script, /const closeResource = button =>/);
-  assert.match(script, /downloads\.querySelectorAll\('\.partner-resource-toggle'\)\.forEach\(other=>\{if\(other!==button\)closeResource\(other\);\}\);/);
+  assert.match(script, /downloads\.querySelectorAll\('button\.partner-resource-toggle'\)\.forEach\(other=>\{if\(other!==button\)closeResource\(other\);\}\);/);
   assert.match(script, /textContent=currentLanguage==='en'\?\(open\?'Close':'Open'\):\(open\?'닫기':'열기'\)/);
-  assert.match(script, /downloads\.querySelectorAll\('\.partner-resource-toggle'\)\.forEach\(closeResource\);/);
+  assert.match(script, /downloads\.querySelectorAll\('button\.partner-resource-toggle'\)\.forEach\(closeResource\);/);
+  assert.match(resourceBlock, /consulting:true[\s\S]*?AI 비즈니스 컨설팅/);
 });
 
 test('partner resource details use the restored uniform grid at every breakpoint', () => {
