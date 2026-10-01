@@ -97,7 +97,9 @@ test('mobile business cards use native snapping, fixed equal sizes, one-line des
 
 test('event period buttons render real upcoming/past events, retain DMS past detail, and return without history writes', () => {
   const h = harness();
-  assert.equal(cards(h.node('#upcomingEventsList').innerHTML).length, 3);
+  // The harness freezes today at 2026-09-24: the Sep. 26/28 and Oct. 3 additions
+  // are still upcoming here, while DMS and the older three are already past.
+  assert.equal(cards(h.node('#upcomingEventsList').innerHTML).length, 6);
   assert.equal(cards(h.node('#pastEventsList').innerHTML).length, 4);
   assert.match(h.node('#pastEventsList').innerHTML, /DMS 실무자를 위한 AI 업무 자동화 특강/);
   assert.match(h.node('#pastEventsList').innerHTML, /href="\.\.\/special-event-dms-ai-workshop\.html"/);

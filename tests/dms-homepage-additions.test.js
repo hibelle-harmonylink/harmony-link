@@ -43,12 +43,14 @@ test('the free-music-class event card also uses 일정 instead of 일시 (scoped
   assert.doesNotMatch(musicEntry, /data-ko=\\"일시\\"/);
 });
 
-test('other event cards keep their existing 일시/장소/문의 labels untouched (only the 2 requested events were relabeled)', () => {
-  ['ai-business-automation', 'one-day-class', 'finance-ai-seminar'].forEach(id => {
+test('unrelated legacy event cards keep their existing 일시 labels while AI automation adopts the requested DMS hierarchy', () => {
+  ['one-day-class', 'finance-ai-seminar'].forEach(id => {
     const entry = eventsData.match(new RegExp(`\\{id:"${id}"[\\s\\S]*?appBadgeDark:(?:true|false)\\}`))?.[0] || '';
     assert.ok(entry, `could not locate the ${id} event entry`);
     assert.match(entry, /data-ko=\\"일시\\"/, `${id} should still say 일시`);
   });
+  const aiEntry = eventsData.match(/\{id:"ai-business-automation"[\s\S]*?appBadgeDark:false\}/)?.[0] || '';
+  assert.match(aiEntry, /data-ko=\\"일정\\"[\s\S]*data-ko=\\"시간\\"[\s\S]*data-ko=\\"장소\\"/);
 });
 
 test('DMS workshop reuses the existing event card renderer/data pipeline -- no dedicated DMS event UI was added', () => {
