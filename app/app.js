@@ -535,7 +535,8 @@ function openImageLightbox(src,alt,action,business){
     business.mapUrl&&{label:language==="ko"?"지도 보기":"View Map",url:business.mapUrl}
   ].filter(Boolean);
   const linkButton=link=>`<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.icon?`<img src="/${link.icon}" alt="">`:""}${link.label}</a>`;
-  const snsMarkup=snsList.length?`<nav class="app-contact-social" aria-label="${name} social links">${snsList.map(linkButton).join("")}</nav>`:"";
+  const snsButton=link=>`<a class="app-contact-social-link app-contact-social-link--${link.label.toLowerCase()}" href="${link.url}" target="_blank" rel="noopener noreferrer"><img src="/${link.icon}" alt="">${link.label}</a>`;
+  const snsMarkup=snsList.length?`<nav class="app-contact-social" aria-label="${name} social links">${snsList.map(snsButton).join("")}</nav>`:"";
   // Phone+map render as a matched 2-column grid; a single button (phone-only
   // or map-only, e.g. Yura Kim/OrganicOne) keeps its own natural width instead.
   const contactMarkup=contactList.length?`<div class="business-contact-actions${contactList.length>1?" has-two":""}">${contactList.map(linkButton).join("")}</div>`:"";

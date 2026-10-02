@@ -90,8 +90,9 @@ test('app events include all current canonical upcoming and past classes', () =>
 });
 
 test('stable service worker v104 precaches current shared data and Coway artwork in the refreshed app cache', () => {
-  assert.match(serviceWorker, /const CACHE="harmony-link-app-v106"/);
+  assert.match(serviceWorker, /const CACHE="harmony-link-app-v107"/);
   assert.match(serviceWorker, /"\.\.\/assets\/ads\/coway\/coway-banner-16x9\.png"/);
+  assert.match(serviceWorker, /"\.\.\/assets\/ads\/coway\/coway-logo\.jpg"/);
   assert.match(serviceWorker, /"\.\.\/assets\/events\/ai-business-automation-free-class-20260911\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/events\/lina-market-ai-growth-20261003\.jpg"/);
   assert.match(serviceWorker, /"\.\.\/assets\/events\/roxpkg-build-a-box-ai-automation-20260928\.jpg"/);
@@ -101,8 +102,8 @@ test('stable service worker v104 precaches current shared data and Coway artwork
   assert.match(serviceWorker, /"\.\.\/shared\/data\/events\.js\?v=1"/);
   assert.match(serviceWorker, /"\.\.\/shared\/data\/programs\.js\?v=1"/);
   assert.match(serviceWorker, /"\.\/app\.css\?v=65"/);
-  assert.match(serviceWorker, /"\.\/overrides\.css\?v=103"/);
-  assert.match(serviceWorker, /"\.\/app\.js\?v=104"/);
+  assert.match(serviceWorker, /"\.\/overrides\.css\?v=104"/);
+  assert.match(serviceWorker, /"\.\/app\.js\?v=105"/);
   // Network-first remains; fallback is now scoped to the refreshed app cache.
   assert.match(serviceWorker, /fetch\(event\.request,\{cache:"no-store"\}\)/);
   assert.match(appScript, /register\("service-worker-v104\.js",\{updateViaCache:"none"\}\)/);

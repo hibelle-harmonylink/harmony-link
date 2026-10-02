@@ -136,7 +136,7 @@ test('app BOX\'D detail shows all 3 flyers stacked (never the single-image picke
   for(const social of boxd.socialLinks)assert.ok(html.includes(`href="${social.url}" target="_blank" rel="noopener noreferrer"`));
   assert.ok(html.includes(`href="tel:${boxd.phoneHref}"`));
   assert.ok(html.includes(`href="${boxd.mapUrl}"`));
-  assert.equal((html.match(/<a href=/g)||[]).length,4);
+  assert.equal((html.match(/<a(?: class="[^"]+")? href=/g)||[]).length,4);
   assert.match(html,/<div class="business-contact-actions has-two">/);
   vm.runInContext('openImageLightbox("event.png","Event")',context);
   assert.equal(node('#lightboxBusinessInfo').hidden,true);assert.equal(node('#lightboxBusinessInfo').innerHTML,'');
@@ -158,7 +158,7 @@ test('website keeps its existing detail renderer while adapting optional shared 
   assert.match(web,/image: business\.spotlightImage \|\| business\.logo/);
   assert.match(web,/socialLinks: business\.socialLinks \|\| \[\]/);
   assert.match(web,/business\.socialLinks\.map\(link=>/);
-  assert.match(web,/class="business-flyer-sns" href="\$\{link\.url\}" target="_blank" rel="noopener noreferrer"/);
+  assert.match(web,/class="business-flyer-sns business-flyer-sns--\$\{link\.label\.toLowerCase\(\)\}" href="\$\{link\.url\}" target="_blank" rel="noopener noreferrer"/);
   assert.match(web,/websiteLabelKo=business\.websiteCtaKo\|\|'홈페이지 보기'/);
   assert.match(web,/id:'va',labelKo:'VA',labelEn:'VA'/);
   assert.match(read('styles.css'),/\.business-flyer-info>img\{[^}]*background:#000;object-fit:contain/);
