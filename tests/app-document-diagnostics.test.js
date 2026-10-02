@@ -41,7 +41,7 @@ test('current HTML declares a non-visible shell marker; diagnostics do not chang
   assert.equal((page.match(/2026-09-26-1/g) || []).length, 1);
   assert.doesNotMatch(diagnostics, /innerHTML|textContent|createElement|appendChild|\.style\b|classList|fetch\(|sendBeacon|XMLHttpRequest|console\.|\.reload\(|pushState\(|replaceState\(|\.assign\(|\.register\(|\.unregister\(|caches\./);
   const worker = read('app/service-worker-v104.js');
-  assert.match(worker, /const CACHE="harmony-link-app-v107"/);
+  assert.match(worker, /const CACHE="harmony-link-app-v108"/);
   assert.match(worker, /cache:"reload"/);
   assert.match(worker, /cache:"no-store"/);
   const h = harness();

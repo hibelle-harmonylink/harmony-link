@@ -76,7 +76,7 @@ test('DMS Care Training Center matches the specified Production values exactly',
   assert.equal(dms.address, '1933 E Frankford Rd. Suite 165, Carrollton, TX 75007');
   assert.equal(dms.websiteUrl, 'https://dmscare.org/ko');
   assert.equal(dms.region, 'tx');
-  assert.equal(dms.snsUrl, null);
+  assert.equal(dms.snsUrl, 'https://www.instagram.com/dmscaretrainingcenter/');
   assert.match(dms.mapUrl, /DMS\+Care\+Training\+Center/);
 });
 
@@ -176,10 +176,10 @@ test('no Business Spotlight phone/address/URL values are hardcoded a second time
 
 test('root and app service workers precache the new canonical data file with a matching version', () => {
   const rootSw = read('service-worker.js');
-  assert.match(rootSw, /'\/shared\/data\/businesses\.js\?v=3'/);
+  assert.match(rootSw, /'\/shared\/data\/businesses\.js\?v=4'/);
   const appSw = read('app/service-worker-v104.js');
-  assert.match(appSw, /"\.\.\/shared\/data\/businesses\.js\?v=3"/);
-  assert.match(appSw, /const CACHE="harmony-link-app-v107"/);
+  assert.match(appSw, /"\.\.\/shared\/data\/businesses\.js\?v=4"/);
+  assert.match(appSw, /const CACHE="harmony-link-app-v108"/);
   // Old SW versions are kept on disk, not deleted.
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v98.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v97.js')), true);

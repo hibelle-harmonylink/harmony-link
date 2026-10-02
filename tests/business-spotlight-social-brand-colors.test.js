@@ -18,6 +18,7 @@ test('all existing Instagram and Threads destinations remain unchanged', () => {
   assert.deepEqual(social, [
     ['organic-one','Instagram','https://www.instagram.com/organicone_/','assets/instagram.svg'],
     ['hole19','Instagram','https://www.instagram.com/hole19_golflounge/','assets/instagram.svg'],
+    ['dms-care','Instagram','https://www.instagram.com/dmscaretrainingcenter/','assets/instagram.svg'],
     ['boxd-kitchen','Instagram','https://www.instagram.com/boxdkitchen_uva/','assets/instagram.svg'],
     ['boxd-kitchen','Threads','https://www.threads.com/@boxdkitchen_uva','assets/threads.svg'],
     ['coway','Instagram','https://www.instagram.com/coway.usa.ny/','assets/instagram.svg'],
@@ -47,6 +48,6 @@ test('app detail uses the same brand colors while phone and map remain blue in t
 
 test('installed app precaches both the Coway card logo and preserved detail flyer', () => {
   const worker = read('app/service-worker-v104.js');
-  assert.match(worker, /"\.\.\/assets\/ads\/coway\/coway-logo\.jpg"/);
+  assert.match(worker, /"\.\.\/assets\/ads\/coway\/coway-logo\.png"/);
   assert.match(worker, /"\.\.\/assets\/ads\/coway\/coway-banner-16x9\.png"/);
 });

@@ -33,25 +33,29 @@ test('Coway is the eighth NY business with the exact approved contact and locati
 });
 
 test('Coway uses the supplied logo for cards and keeps the single approved 16:9 flyer for detail', () => {
-  const logo = 'assets/ads/coway/coway-logo.jpg';
+  const logo = 'assets/ads/coway/coway-logo.png';
   const flyer = 'assets/ads/coway/coway-banner-16x9.png';
   assert.equal(coway.logo, logo);
   assert.equal(coway.spotlightImage, logo);
   assert.equal(coway.appLogo, `/${logo}`);
   assert.deepEqual(coway.flyers, [flyer]);
-  assert.deepEqual(fs.readdirSync(path.join(root, 'assets/ads/coway')).sort(), ['coway-banner-16x9.png','coway-logo.jpg']);
+  assert.deepEqual(fs.readdirSync(path.join(root, 'assets/ads/coway')).sort(), ['coway-banner-16x9.png','coway-logo.png']);
   const logoBytes = fs.readFileSync(path.join(root, logo));
-  assert.equal(crypto.createHash('sha256').update(logoBytes).digest('hex'), '4340e367f3ebf1f8344237e65134e992477a9c37df873b9af83735a090ab0726');
-  assert.equal(logoBytes.length, 99848);
+  assert.equal(crypto.createHash('sha256').update(logoBytes).digest('hex'), 'c58f1b58574b18a94c6238adfbbd10d5211655e734ca6d21b4f21c0b98643d76');
+  assert.equal(logoBytes.length, 48828);
+  assert.deepEqual([...logoBytes.subarray(0, 8)], [137,80,78,71,13,10,26,10]);
+  assert.equal(logoBytes.readUInt32BE(16), 500);
+  assert.equal(logoBytes.readUInt32BE(20), 500);
+  assert.equal(logoBytes[25], 6, 'PNG must use RGBA color type with an alpha channel');
   const flyerBytes = fs.readFileSync(path.join(root, flyer));
   assert.equal(crypto.createHash('sha256').update(flyerBytes).digest('hex'), '2c6d52b79846c61681c8ec35285ddae89aa8c7f5500823da13bc0bc5ded14b51');
   assert.equal(flyerBytes.readUInt32BE(16), 1672);
   assert.equal(flyerBytes.readUInt32BE(20), 941);
 });
 
-test('the original seven canonical business objects remain byte-for-byte unchanged', () => {
+test('the seven pre-Coway canonical business objects change only through the approved DMS Instagram field', () => {
   const digest = crypto.createHash('sha256').update(JSON.stringify(businesses.slice(0, 7))).digest('hex');
-  assert.equal(digest, 'b33bd4676486c078dd4697be1cf3d896a1644c69802adaf86e79b4d93b84dff6');
+  assert.equal(digest, '4c3fd6b6f61cb9a459c04987a3c3fc809c3c5db755ffd4d7f3f842ad24b9535e');
 });
 
 test('existing region filtering includes Coway only in ALL and NY', () => {
