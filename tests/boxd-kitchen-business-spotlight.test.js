@@ -25,8 +25,8 @@ function render(language='ko') {
 
 test('BOXD remains seventh and Coway is appended without reordering the original businesses', () => {
   assert.deepEqual(businesses.map(b=>b.id), ['yura-kim','organic-one','hole19','aaleac','jangsu-daycare','dms-care','boxd-kitchen','coway']);
-  // JSON hash captured from clean main 5ef4959, including every original field and order.
-  assert.equal(hash(JSON.stringify(businesses.slice(0,6))), '9cef8e790cec1a12d78d41a7711801acdb1d68d796aeef92ef6afcb393c14cc0');
+  // Includes every original field and order plus DMS's approved Instagram URL.
+  assert.equal(hash(JSON.stringify(businesses.slice(0,6))), '65bf2a2334e3952f44930eeb046ae184179bb4c5bd30bcfe4c651b9a6c324bda');
 });
 
 test('original six app cards keep identical data, links, phone and order -- now wrapped in the same tappable detail button BOX\'D already used (Business Spotlight mobile-detail unification round)', () => {

@@ -62,6 +62,7 @@ test('current admin metadata RPC remains untouched while business spotlight stay
   assert.match(businessesData, /nameKo:"DMS Care Training Center",nameEn:"DMS Care Training Center"/);
   assert.match(businessesData, /logo:"assets\/images\/dms-care-logo\.webp"/);
   assert.match(businessesData, /websiteUrl:"https:\/\/dmscare\.org\/ko"/);
+  assert.match(businessesData, /snsUrl:"https:\/\/www\.instagram\.com\/dmscaretrainingcenter\/"/);
   assert.doesNotMatch(businessesData, /instagram\.com\/dmscarekorea/);
   assert.match(businessesData, /phoneHref:"\+14696056035"/);
   assert.match(businessesData, /categoryKo:"미국 의료 직업 학교"/);
