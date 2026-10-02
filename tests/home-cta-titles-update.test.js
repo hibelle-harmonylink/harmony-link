@@ -103,7 +103,7 @@ test('Business/Events canonical data are untouched by the title/CTA edits', () =
   assert.doesNotMatch(businessesData, /hero-cta-row|<h2 data-ko="Business Spotlight"|data-ko="교육 프로그램" data-en="Education Programs"/);
   assert.doesNotMatch(eventsData, /hero-cta-row|<h2 data-ko="Business Spotlight"|data-ko="교육 프로그램" data-en="Education Programs"/);
   const businessCount = (businessesData.match(/id:"[a-z0-9-]+"/g) || []).length;
-  assert.equal(businessCount, 7);
+  assert.equal(businessCount, 8);
   const eventIds = [...eventsData.matchAll(/id:"([a-z0-9-]+)"/g)].map(m => m[1]);
   assert.deepEqual(eventIds, ['messiah', 'hole19-tournament', 'free-music-class', 'lina-market-ai-growth', 'roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
 });

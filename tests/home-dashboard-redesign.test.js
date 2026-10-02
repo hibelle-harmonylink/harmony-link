@@ -113,7 +113,7 @@ test('Business/Events canonical schemas are untouched by the HOME redesign', () 
   assert.doesNotMatch(businessesData, /quick-access|hero-dashboard/);
   assert.doesNotMatch(eventsData, /quick-access|hero-dashboard/);
   const businessCount = (businessesData.match(/id:"[a-z0-9-]+"/g) || []).length;
-  assert.equal(businessCount, 7);
+  assert.equal(businessCount, 8);
   const eventIds = [...eventsData.matchAll(/id:"([a-z0-9-]+)"/g)].map(m => m[1]);
   assert.deepEqual(eventIds, ['messiah', 'hole19-tournament', 'free-music-class', 'lina-market-ai-growth', 'roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
 });
@@ -131,7 +131,7 @@ test('stable worker registration refreshes the app cache without changing the cu
   assert.match(appPage, /app\.js\?v=104/);
   assert.match(appScript, /register\("service-worker-v104\.js"/);
   const sw104 = read('app/service-worker-v104.js');
-  assert.match(sw104, /const CACHE="harmony-link-app-v105"/);
+  assert.match(sw104, /const CACHE="harmony-link-app-v106"/);
   assert.match(sw104, /"\.\/overrides\.css\?v=103"/);
   assert.match(sw104, /"\.\/app\.js\?v=104"/);
 });

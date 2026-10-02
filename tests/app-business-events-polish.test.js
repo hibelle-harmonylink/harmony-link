@@ -47,7 +47,7 @@ function cards(html) { return html.match(/<article\b[\s\S]*?<\/article>/g) || []
 test('business spotlight renders every canonical business exactly once without mutating shared data', () => {
   const h = harness();
   const rendered = cards(h.node('#partnerPrograms').innerHTML);
-  assert.equal(rendered.length, 7);
+  assert.equal(rendered.length, 8);
   h.context.window.HARMONY_LINK_BUSINESSES.forEach((business, i) => {
     assert.ok(rendered[i].includes(`data-business-id="${business.id}"`));
     assert.ok(rendered[i].includes(business.appTextKo.replace(/<br\s*\/?\s*>/gi, ' ')));

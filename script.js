@@ -1533,12 +1533,12 @@ function renderBusinessSpotlights(selectedRegion=selectedBusinessRegion) {
       const summary=currentLanguage==='en'?(item.summaryEn||item.copyEn):(item.summaryKo||item.copy);
       const contact=currentLanguage==='en'?item.contactEn:item.contactKo;
       const regionLabel=businessRegions.find(candidate=>candidate.id===region)?.labelKo||region.toUpperCase();
-      // BOX'D's single canonical number links to the exact tel: target from its data
+      // Businesses with an explicitly selected single-number path link to the exact tel: target from their data
       // (phoneHref) instead of going through renderBusinessPhone()'s regex-based
       // auto-link -- businesses like Jangsu Daycare display two numbers in one
       // string, where that regex (correctly) links each one separately, so this
       // explicit-href path only applies where a business has exactly one number.
-      const contactMarkup=id==='boxd-kitchen'&&phoneHref&&contact?`<p class="business-contact"><a class="business-phone-link" href="tel:${phoneHref}">${contact}</a></p>`:`<p class="business-contact">${renderBusinessPhone(contact)}</p>`;
+      const contactMarkup=(id==='boxd-kitchen'||id==='coway')&&phoneHref&&contact?`<p class="business-contact"><a class="business-phone-link" href="tel:${phoneHref}">${contact}</a></p>`:`<p class="business-contact">${renderBusinessPhone(contact)}</p>`;
       const displayLocation=currentLanguage==='en'?locationEn:locationKo;
       const addressMarkup=address?(mapUrl?`<a class="business-address" href="${mapUrl}" target="_blank" rel="noopener noreferrer">${address}</a>`:`<p class="business-address" data-ko="${address}" data-en="${address}">${address}</p>`):`<p class="business-address" data-ko="${locationKo}" data-en="${locationEn}">${displayLocation}</p>`;
       return `<article class="business-spotlight-card" tabindex="0" role="button" data-business-spotlight-index="${index}" aria-label="${name} ${currentLanguage==='en'?'advertising details':'광고 상세 보기'}"><span class="business-state-badge">${regionLabel}</span><div class="business-spotlight-logo"><img src="${item.image}" alt="${name} logo"></div><div class="business-spotlight-copy"><p class="business-category" data-ko="${categoryKo}" data-en="${categoryEn}">${currentLanguage==='en'?categoryEn:categoryKo}</p><h3>${name}</h3><p class="business-summary">${summary}</p>${contactMarkup}${addressMarkup}<div class="business-detail-actions"><button type="button" class="business-detail-link" data-business-flyer-open><span data-ko="자세히 보기" data-en="View details">${currentLanguage==='en'?'View details':'자세히 보기'}</span> <b aria-hidden="true">→</b></button></div></div></article>`;

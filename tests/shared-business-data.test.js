@@ -20,15 +20,15 @@ const loadBusinesses = () => {
 const businesses = loadBusinesses();
 const byId = id => businesses.find(b => b.id === id);
 
-test('canonical business data retains the original six and appends the seventh with unique stable IDs', () => {
-  assert.equal(businesses.length, 7);
+test('canonical business data retains the original seven and appends Coway eighth with unique stable IDs', () => {
+  assert.equal(businesses.length, 8);
   const ids = businesses.map(b => b.id);
-  assert.deepEqual(ids, ['yura-kim', 'organic-one', 'hole19', 'aaleac', 'jangsu-daycare', 'dms-care', 'boxd-kitchen']);
-  assert.equal(new Set(ids).size, 7);
+  assert.deepEqual(ids, ['yura-kim', 'organic-one', 'hole19', 'aaleac', 'jangsu-daycare', 'dms-care', 'boxd-kitchen', 'coway']);
+  assert.equal(new Set(ids).size, 8);
 });
 
-test('region counts retain 5 NEW YORK, 1 TEXAS and add 1 VIRGINIA', () => {
-  assert.equal(businesses.filter(b => b.region === 'ny').length, 5);
+test('region counts retain existing businesses and add Coway as the sixth NEW YORK listing', () => {
+  assert.equal(businesses.filter(b => b.region === 'ny').length, 6);
   assert.equal(businesses.filter(b => b.region === 'tx').length, 1);
   assert.equal(businesses.filter(b => b.region === 'va').length, 1);
 });
@@ -176,10 +176,10 @@ test('no Business Spotlight phone/address/URL values are hardcoded a second time
 
 test('root and app service workers precache the new canonical data file with a matching version', () => {
   const rootSw = read('service-worker.js');
-  assert.match(rootSw, /'\/shared\/data\/businesses\.js\?v=1'/);
-  const appSw = read('app/service-worker-v99.js');
-  assert.match(appSw, /"\.\.\/shared\/data\/businesses\.js\?v=1"/);
-  assert.match(appSw, /const CACHE="harmony-link-app-v99"/);
+  assert.match(rootSw, /'\/shared\/data\/businesses\.js\?v=2'/);
+  const appSw = read('app/service-worker-v104.js');
+  assert.match(appSw, /"\.\.\/shared\/data\/businesses\.js\?v=2"/);
+  assert.match(appSw, /const CACHE="harmony-link-app-v106"/);
   // Old SW versions are kept on disk, not deleted.
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v98.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v97.js')), true);
