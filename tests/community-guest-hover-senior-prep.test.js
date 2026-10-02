@@ -92,7 +92,7 @@ test('the learning and services heading is updated while business phone display 
   // auto-link for its phone display -- only BOX'D (one canonical number) has an
   // explicit tel:${phoneHref} branch ahead of it (Business Spotlight PC-card
   // round), which does not change this fallback path for anyone else.
-  assert.match(homepageScript, /const contactMarkup=id==='boxd-kitchen'&&phoneHref&&contact\?`<p class="business-contact"><a class="business-phone-link" href="tel:\$\{phoneHref\}">\$\{contact\}<\/a><\/p>`:`<p class="business-contact">\$\{renderBusinessPhone\(contact\)\}<\/p>`/);
+  assert.match(homepageScript, /const contactMarkup=\(id==='boxd-kitchen'\|\|id==='coway'\)&&phoneHref&&contact\?`<p class="business-contact"><a class="business-phone-link" href="tel:\$\{phoneHref\}">\$\{contact\}<\/a><\/p>`:`<p class="business-contact">\$\{renderBusinessPhone\(contact\)\}<\/p>`/);
   assert.match(homepageScript, /event\.target\.closest\('a,button'\)/);
   // The actual phone numbers now live in the canonical shared/data/businesses.js that
   // script.js reads, rather than as literals in script.js itself.

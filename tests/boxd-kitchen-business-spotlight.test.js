@@ -10,7 +10,7 @@ const hash = value => crypto.createHash('sha256').update(value).digest('hex');
 const sandbox = {window: {}};
 vm.runInNewContext(read('shared/data/businesses.js'), sandbox);
 const businesses = JSON.parse(JSON.stringify(sandbox.window.HARMONY_LINK_BUSINESSES));
-const boxd = businesses.at(-1);
+const boxd = businesses.find(business => business.id === 'boxd-kitchen');
 const app = read('app/app.js');
 const web = read('script.js');
 function source(name) {
@@ -23,8 +23,8 @@ function render(language='ko') {
   return node.innerHTML.match(/<article\b[\s\S]*?<\/article>/g);
 }
 
-test('BOXD is appended seventh; all six original canonical objects are byte-for-byte preserved', () => {
-  assert.deepEqual(businesses.map(b=>b.id), ['yura-kim','organic-one','hole19','aaleac','jangsu-daycare','dms-care','boxd-kitchen']);
+test('BOXD remains seventh and Coway is appended without reordering the original businesses', () => {
+  assert.deepEqual(businesses.map(b=>b.id), ['yura-kim','organic-one','hole19','aaleac','jangsu-daycare','dms-care','boxd-kitchen','coway']);
   // JSON hash captured from clean main 5ef4959, including every original field and order.
   assert.equal(hash(JSON.stringify(businesses.slice(0,6))), '9cef8e790cec1a12d78d41a7711801acdb1d68d796aeef92ef6afcb393c14cc0');
 });
@@ -88,9 +88,9 @@ test('all four authorized PNG originals exist unmodified and no substitute/gener
   assert.equal(boxd.flyers.length,3);
 });
 
-test('both languages render seventh card using the official black logo (not a flyer) and Toast CTA in a safe new tab', () => {
+test('both languages keep BOX\'D as the seventh card using the official black logo (not a flyer) and Toast CTA in a safe new tab', () => {
   for(const language of ['ko','en']) {
-    const cards=render(language);assert.equal(cards.length,7);
+    const cards=render(language);assert.equal(cards.length,8);
     assert.match(cards[6],/data-business-id="boxd-kitchen"/);
     assert.ok(cards[6].includes('/'+boxd.logo));
     assert.ok(!cards[6].includes('/'+boxd.flyers[0]) && !cards[6].includes('/'+boxd.flyers[1]) && !cards[6].includes('/'+boxd.flyers[2]), 'the card image must be the logo, never a flyer');

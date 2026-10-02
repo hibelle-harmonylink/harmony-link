@@ -42,7 +42,7 @@ test('shared-content.js accurately describes its own scope', () => {
   assert.match(sharedContent, /mirrored from the public website/);
 });
 
-test('app Business Spotlight includes the original six plus BOX\'D KITCHEN from canonical shared data', () => {
+test('app Business Spotlight includes the original seven plus Coway from canonical shared data', () => {
   // As of the Phase 1 web/app data unification, the 6 businesses moved out of
   // shared-content.js's promotions[] and into the canonical shared/data/businesses.js
   // that both script.js and app/app.js read (see tests/shared-business-data.test.js
@@ -50,7 +50,7 @@ test('app Business Spotlight includes the original six plus BOX\'D KITCHEN from 
   // values this test originally asserted, just from their new home.
   const advertising = (businessesData.match(/kind:"advertising"/g) || []).length;
   const community = (businessesData.match(/kind:"community"/g) || []).length;
-  assert.equal(advertising + community, 7);
+  assert.equal(advertising + community, 8);
   // DMS matches the exact Production fields from script.js's former dmsCareBusiness / businessSpotlights.
   assert.match(businessesData, /nameKo:"DMS Care Training Center",nameEn:"DMS Care Training Center"/);
   assert.match(businessesData, /미국 의료 직업 학교/);
@@ -89,8 +89,9 @@ test('app events include all current canonical upcoming and past classes', () =>
   assert.deepEqual(ids, ['messiah', 'hole19-tournament', 'free-music-class', 'lina-market-ai-growth', 'roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
 });
 
-test('stable service worker v104 precaches the Phase 3 Programs canonical file in the refreshed app cache', () => {
-  assert.match(serviceWorker, /const CACHE="harmony-link-app-v105"/);
+test('stable service worker v104 precaches current shared data and Coway artwork in the refreshed app cache', () => {
+  assert.match(serviceWorker, /const CACHE="harmony-link-app-v106"/);
+  assert.match(serviceWorker, /"\.\.\/assets\/ads\/coway\/coway-banner-16x9\.png"/);
   assert.match(serviceWorker, /"\.\.\/assets\/events\/ai-business-automation-free-class-20260911\.webp"/);
   assert.match(serviceWorker, /"\.\.\/assets\/events\/lina-market-ai-growth-20261003\.jpg"/);
   assert.match(serviceWorker, /"\.\.\/assets\/events\/roxpkg-build-a-box-ai-automation-20260928\.jpg"/);
