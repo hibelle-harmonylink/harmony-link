@@ -1020,6 +1020,9 @@ html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-si
 #partnerPrograms{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;min-width:0}
 #partnerPrograms .app-partner-card{display:flex!important;height:264px;min-height:0!important}
 #partnerPrograms .app-partner-logo{height:106px!important;flex:0 0 106px!important;padding:12px}
+#partnerPrograms .app-partner-logo.logo-display-wide img{transform:scale(2.2)}
+#partnerPrograms .app-partner-card.logo-display-wide .app-partner-copy h3{height:21px;min-height:21px!important}
+#partnerPrograms .app-partner-card.logo-display-wide .app-partner-copy p{display:block!important;height:auto!important;min-height:0!important;flex-shrink:0;overflow:visible!important;white-space:normal!important;overflow-wrap:anywhere;text-overflow:clip;-webkit-line-clamp:unset!important}
 #partnerPrograms .app-partner-logo.yura-mini-logo:before{width:58px;height:58px;flex-shrink:0}
 #partnerPrograms .app-partner-copy{padding:10px!important;min-height:0}
 #partnerPrograms .app-partner-copy h3{height:42px;min-height:42px!important;margin:0 0 5px;font-size:16px;line-height:21px;overflow:hidden}

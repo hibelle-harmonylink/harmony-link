@@ -156,7 +156,7 @@ test('root and app service workers precache the new canonical programs file with
   assert.match(rootSw, /'\/shared\/data\/programs\.js\?v=1'/);
   const appSw = read('app/service-worker-v104.js');
   assert.match(appSw, /"\.\.\/shared\/data\/programs\.js\?v=1"/);
-  assert.match(appSw, /const CACHE="harmony-link-app-v108"/);
+  assert.match(appSw, /const CACHE="harmony-link-app-v109"/);
   // Old SW versions are kept on disk, not deleted.
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v103.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v102.js')), true);

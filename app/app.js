@@ -252,8 +252,9 @@ function renderPartners(){
     // Every business card opens its own detail view now (image + whichever links
     // it actually has), not just BOX'D -- see openImageLightbox()'s business
     // branch below for the generalized "only show what's in the data" link list.
-    const media=`<button type="button" class="app-partner-logo${isYura?" yura-mini-logo":""} app-partner-details-open" data-business-detail="${business.id}" aria-label="${language==="ko"?business.nameKo+" 상세 보기":business.nameEn+" details"}">${imageMarkup}</button>`;
-    return `<article class="app-partner-card" data-business-id="${business.id}">${media}<div class="app-partner-copy"><h3>${title}</h3><p>${details}</p><a href="${url}" target="_blank" rel="noopener noreferrer">${action}</a></div></article>`;
+    const logoDisplay=business.logoDisplay?` logo-display-${business.logoDisplay}`:"";
+    const media=`<button type="button" class="app-partner-logo${isYura?" yura-mini-logo":""}${logoDisplay} app-partner-details-open" data-business-detail="${business.id}" aria-label="${language==="ko"?business.nameKo+" 상세 보기":business.nameEn+" details"}">${imageMarkup}</button>`;
+    return `<article class="app-partner-card${logoDisplay}" data-business-id="${business.id}">${media}<div class="app-partner-copy"><h3>${title}</h3><p>${details}</p><a href="${url}" target="_blank" rel="noopener noreferrer">${action}</a></div></article>`;
   }).join("");
 }
 function eventCard(item){

@@ -62,10 +62,10 @@ window.HARMONY_LINK_BUSINESSES = [
     appLogo:"/assets/ads/boxd-kitchen/logo.png",
     appCtaKo:"업체 바로가기",appCtaEn:"Visit Business",appCtaField:"websiteUrl"}
   ,{id:"coway",kind:"advertising",region:"ny",
-    nameKo:"코웨이",nameEn:"Coway",
+    nameKo:"Coway",nameEn:"Coway",
     categoryKo:"워터케어 · 생활가전",categoryEn:"Water Care & Home Appliances",
-    summaryKo:"깨끗한 물과 더 건강한 생활을 위한 코웨이 제품을 만나보세요.",summaryEn:"Discover Coway products for cleaner water and healthier living.",
-    copyKo:"깨끗한 물과 더 건강한 생활을 위한 코웨이 제품을 만나보세요.",copyEn:"Discover Coway products for cleaner water and healthier living.",
+    summaryKo:"깨끗한 물, 건강한 생활을 위한 코웨이",summaryEn:"Discover Coway products for cleaner water and healthier living.",
+    copyKo:"깨끗한 물, 건강한 생활을 위한 코웨이",copyEn:"Discover Coway products for cleaner water and healthier living.",
     phoneKo:"917-628-6139",phoneEn:"917-628-6139",phoneHref:"+19176286139",
     address:"336 N Broadway Unit 6, Jericho, NY 11753 (H Mart Jericho 내)",locationKo:"336 N Broadway Unit 6, Jericho, NY 11753 (H Mart Jericho 내)",locationEn:"336 N Broadway Unit 6, Jericho, NY 11753 (Inside H Mart Jericho)",
     mapUrl:"https://www.google.com/maps/place/H+Mart+Jericho/@40.7808989,-73.5472529,15z/data=!3m1!5s0x89c281170fb0b027:0xb0258b9f81734aaf!4m10!1m2!2m1!1sh+mart!3m6!1s0x89c28117086812b5:0x4dfa1287747efb04!8m2!3d40.7808964!4d-73.5337761!15sCgZoIG1hcnQiA4gBAVoIIgZoIG1hcnSSARRrb3JlYW5fZ3JvY2VyeV9zdG9yZeABAA!16s%2Fg%2F1tpn3hb1?hl=ko&entry=ttu&g_ep=EgoyMDI2MDkyOS4wIKXMDSoASAFQAw%3D%3D",
@@ -76,10 +76,10 @@ window.HARMONY_LINK_BUSINESSES = [
       {label:"Threads",url:"https://www.threads.com/@coway.usa.ny",icon:"assets/threads.svg"}
     ],
     logo:"assets/ads/coway/coway-logo.png",
-    spotlightImage:"assets/ads/coway/coway-logo.png",
+    spotlightImage:"assets/ads/coway/coway-logo.png",logoDisplay:"wide",
     flyers:["assets/ads/coway/coway-banner-16x9.png"],
-    appTitleKo:"코웨이",appTitleEn:"Coway",
-    appTextKo:"깨끗한 물과 더 건강한 생활을 위한 코웨이 제품을 만나보세요.",appTextEn:"Discover Coway products for cleaner water and healthier living.",
+    appTitleKo:"Coway",appTitleEn:"Coway",
+    appTextKo:"깨끗한 물, 건강한 생활을 위한 코웨이",appTextEn:"Discover Coway products for cleaner water and healthier living.",
     appBadgeKo:"비즈니스 스포트라이트",appBadgeEn:"BUSINESS SPOTLIGHT",
     appLogo:"/assets/ads/coway/coway-logo.png",
     appCtaKo:"업체 바로가기",appCtaEn:"Visit Business",appCtaField:"websiteUrl"}
