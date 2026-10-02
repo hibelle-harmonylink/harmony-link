@@ -176,10 +176,10 @@ test('no Business Spotlight phone/address/URL values are hardcoded a second time
 
 test('root and app service workers precache the new canonical data file with a matching version', () => {
   const rootSw = read('service-worker.js');
-  assert.match(rootSw, /'\/shared\/data\/businesses\.js\?v=2'/);
+  assert.match(rootSw, /'\/shared\/data\/businesses\.js\?v=3'/);
   const appSw = read('app/service-worker-v104.js');
-  assert.match(appSw, /"\.\.\/shared\/data\/businesses\.js\?v=2"/);
-  assert.match(appSw, /const CACHE="harmony-link-app-v106"/);
+  assert.match(appSw, /"\.\.\/shared\/data\/businesses\.js\?v=3"/);
+  assert.match(appSw, /const CACHE="harmony-link-app-v107"/);
   // Old SW versions are kept on disk, not deleted.
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v98.js')), true);
   assert.equal(fs.existsSync(path.join(root, 'app', 'service-worker-v97.js')), true);

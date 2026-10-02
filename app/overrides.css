@@ -1071,15 +1071,16 @@ html[lang="en"] .hero-dashboard .hero-cta-row .app-hero-secondary-action{font-si
 #lightboxBusinessInfo .business-detail-logo{width:76px;height:58px;flex:0 0 76px;object-fit:contain;background:#000;border-radius:4px;box-shadow:none}
 #lightboxBusinessInfo h2{margin:0 0 4px;font-size:18px}
 #lightboxBusinessInfo p{margin:3px 0;font-size:13px;overflow-wrap:anywhere}
-/* All mobile detail CTAs (SNS row + phone/map row) share one button look --
-   Harmony Link's existing app primary blue (#0b54c2, already used by
-   .app-specialty-link/.event-detail-link/etc.) with white text, so no CTA
-   looks like a lesser/different button regardless of which row it's in.
-   2-3 SNS CTAs wrap naturally onto one row when they fit; 4-5 wrap onto a
-   second row instead of shrinking font/padding to force one line. */
+/* Mobile detail CTAs share dimensions, while SNS buttons use their recognizable
+   brand colors and phone/map retain Harmony Link's primary blue. 2-3 SNS CTAs
+   wrap naturally instead of shrinking font/padding to force one line. */
 #lightboxBusinessInfo .app-contact-social{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0;padding:0}
 #lightboxBusinessInfo .app-contact-social a,#lightboxBusinessInfo .business-contact-actions a{display:inline-flex;flex:1 1 auto;min-width:112px;align-items:center;justify-content:center;gap:5px;min-height:44px;padding:6px 10px;border:0;border-radius:12px;background:#0b54c2;color:#fff;font-size:13.5px;font-weight:800;white-space:nowrap}
 #lightboxBusinessInfo .app-contact-social a:hover,#lightboxBusinessInfo .business-contact-actions a:hover{background:#094aac}
+#lightboxBusinessInfo .app-contact-social .app-contact-social-link--instagram{background:#e1306c;color:#fff}
+#lightboxBusinessInfo .app-contact-social .app-contact-social-link--instagram:hover,#lightboxBusinessInfo .app-contact-social .app-contact-social-link--instagram:focus-visible{background:#c72a60;color:#fff}
+#lightboxBusinessInfo .app-contact-social .app-contact-social-link--threads{background:#000;color:#fff}
+#lightboxBusinessInfo .app-contact-social .app-contact-social-link--threads:hover,#lightboxBusinessInfo .app-contact-social .app-contact-social-link--threads:focus-visible{background:#1b1b1b;color:#fff}
 #lightboxBusinessInfo .app-contact-social a:focus-visible,#lightboxBusinessInfo .business-contact-actions a:focus-visible{outline:3px solid #7fb2ec;outline-offset:2px}
 #lightboxBusinessInfo .app-contact-social img,#lightboxBusinessInfo .business-contact-actions img{width:16px;height:16px;flex:0 0 auto;box-shadow:none;border-radius:0}
 /* Phone + map: identical width/height 2-column grid when both exist; a single

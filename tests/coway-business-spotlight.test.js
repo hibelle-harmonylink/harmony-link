@@ -28,21 +28,25 @@ test('Coway is the eighth NY business with the exact approved contact and locati
     {label:'Instagram',url:'https://www.instagram.com/coway.usa.ny/'},
     {label:'Threads',url:'https://www.threads.com/@coway.usa.ny'}
   ]);
-  assert.equal(coway.address, 'H Mart Jericho 내');
+  assert.equal(coway.address, '336 N Broadway Unit 6, Jericho, NY 11753 (H Mart Jericho 내)');
   assert.equal(coway.mapUrl, mapUrl);
 });
 
-test('Coway uses the single approved 16:9 PNG everywhere without a carousel or extra asset', () => {
-  const asset = 'assets/ads/coway/coway-banner-16x9.png';
-  assert.equal(coway.logo, asset);
-  assert.equal(coway.spotlightImage, asset);
-  assert.equal(coway.appLogo, `/${asset}`);
-  assert.deepEqual(coway.flyers, [asset]);
-  assert.deepEqual(fs.readdirSync(path.join(root, 'assets/ads/coway')), ['coway-banner-16x9.png']);
-  const bytes = fs.readFileSync(path.join(root, asset));
-  assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'), '2c6d52b79846c61681c8ec35285ddae89aa8c7f5500823da13bc0bc5ded14b51');
-  assert.equal(bytes.readUInt32BE(16), 1672);
-  assert.equal(bytes.readUInt32BE(20), 941);
+test('Coway uses the supplied logo for cards and keeps the single approved 16:9 flyer for detail', () => {
+  const logo = 'assets/ads/coway/coway-logo.jpg';
+  const flyer = 'assets/ads/coway/coway-banner-16x9.png';
+  assert.equal(coway.logo, logo);
+  assert.equal(coway.spotlightImage, logo);
+  assert.equal(coway.appLogo, `/${logo}`);
+  assert.deepEqual(coway.flyers, [flyer]);
+  assert.deepEqual(fs.readdirSync(path.join(root, 'assets/ads/coway')).sort(), ['coway-banner-16x9.png','coway-logo.jpg']);
+  const logoBytes = fs.readFileSync(path.join(root, logo));
+  assert.equal(crypto.createHash('sha256').update(logoBytes).digest('hex'), '4340e367f3ebf1f8344237e65134e992477a9c37df873b9af83735a090ab0726');
+  assert.equal(logoBytes.length, 99848);
+  const flyerBytes = fs.readFileSync(path.join(root, flyer));
+  assert.equal(crypto.createHash('sha256').update(flyerBytes).digest('hex'), '2c6d52b79846c61681c8ec35285ddae89aa8c7f5500823da13bc0bc5ded14b51');
+  assert.equal(flyerBytes.readUInt32BE(16), 1672);
+  assert.equal(flyerBytes.readUInt32BE(20), 941);
 });
 
 test('the original seven canonical business objects remain byte-for-byte unchanged', () => {
@@ -64,6 +68,7 @@ test('web and app reuse existing detail components with no Coway-only carousel',
   assert.match(web, /navigation\.hidden=flyers\.length<2/);
   assert.match(web, /\(id==='boxd-kitchen'\|\|id==='coway'\)&&phoneHref&&contact/);
   assert.match(app, /business\.flyers\.map\(\(image,index\)=>/);
+  assert.match(app, /business\.spotlightImage\?"\/"\+business\.spotlightImage:item\.image/);
   assert.match(app, /business\.phoneHref&&\{label:language==="ko"\?"전화하기":"Call",url:`tel:\$\{business\.phoneHref\}`\}/);
   assert.match(app, /business\.mapUrl&&\{label:language==="ko"\?"지도 보기":"View Map",url:business\.mapUrl\}/);
   assert.doesNotMatch(web, /coway-carousel|coway.*previous|coway.*next/i);
