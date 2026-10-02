@@ -1456,6 +1456,7 @@ const businessSpotlights = (window.HARMONY_LINK_BUSINESSES || []).map(business =
     contactKo: business.phoneKo ? `전화 ${business.phoneKo}` : '',
     contactEn: business.phoneEn ? `Phone ${business.phoneEn}` : '',
     image: business.spotlightImage || business.logo,
+    logoDisplay: business.logoDisplay || '',
     brokerUrl: business.websiteUrl || ''
   },
   categoryKo: business.categoryKo,
@@ -1541,7 +1542,8 @@ function renderBusinessSpotlights(selectedRegion=selectedBusinessRegion) {
       const contactMarkup=(id==='boxd-kitchen'||id==='coway')&&phoneHref&&contact?`<p class="business-contact"><a class="business-phone-link" href="tel:${phoneHref}">${contact}</a></p>`:`<p class="business-contact">${renderBusinessPhone(contact)}</p>`;
       const displayLocation=currentLanguage==='en'?locationEn:locationKo;
       const addressMarkup=address?(mapUrl?`<a class="business-address" href="${mapUrl}" target="_blank" rel="noopener noreferrer">${address}</a>`:`<p class="business-address" data-ko="${address}" data-en="${address}">${address}</p>`):`<p class="business-address" data-ko="${locationKo}" data-en="${locationEn}">${displayLocation}</p>`;
-      return `<article class="business-spotlight-card" tabindex="0" role="button" data-business-spotlight-index="${index}" aria-label="${name} ${currentLanguage==='en'?'advertising details':'광고 상세 보기'}"><span class="business-state-badge">${regionLabel}</span><div class="business-spotlight-logo"><img src="${item.image}" alt="${name} logo"></div><div class="business-spotlight-copy"><p class="business-category" data-ko="${categoryKo}" data-en="${categoryEn}">${currentLanguage==='en'?categoryEn:categoryKo}</p><h3>${name}</h3><p class="business-summary">${summary}</p>${contactMarkup}${addressMarkup}<div class="business-detail-actions"><button type="button" class="business-detail-link" data-business-flyer-open><span data-ko="자세히 보기" data-en="View details">${currentLanguage==='en'?'View details':'자세히 보기'}</span> <b aria-hidden="true">→</b></button></div></div></article>`;
+      const logoDisplay=item.logoDisplay?` logo-display-${item.logoDisplay}`:'';
+      return `<article class="business-spotlight-card${logoDisplay}" tabindex="0" role="button" data-business-spotlight-index="${index}" data-business-id="${id}" aria-label="${name} ${currentLanguage==='en'?'advertising details':'광고 상세 보기'}"><span class="business-state-badge">${regionLabel}</span><div class="business-spotlight-logo"><img src="${item.image}" alt="${name} logo"></div><div class="business-spotlight-copy"><p class="business-category" data-ko="${categoryKo}" data-en="${categoryEn}">${currentLanguage==='en'?categoryEn:categoryKo}</p><h3>${name}</h3><p class="business-summary">${summary}</p>${contactMarkup}${addressMarkup}<div class="business-detail-actions"><button type="button" class="business-detail-link" data-business-flyer-open><span data-ko="자세히 보기" data-en="View details">${currentLanguage==='en'?'View details':'자세히 보기'}</span> <b aria-hidden="true">→</b></button></div></div></article>`;
     }).join('');
     grid.querySelectorAll('.business-spotlight-card').forEach(card=>{
       const business=businesses[Number(card.dataset.businessSpotlightIndex)];

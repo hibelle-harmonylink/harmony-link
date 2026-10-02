@@ -18,8 +18,12 @@ test('Coway is the eighth NY business with the exact approved contact and locati
   assert.deepEqual(businesses.map(item => item.id), ['yura-kim','organic-one','hole19','aaleac','jangsu-daycare','dms-care','boxd-kitchen','coway']);
   assert.equal(coway.id, 'coway');
   assert.equal(coway.region, 'ny');
-  assert.equal(coway.nameKo, '코웨이');
+  assert.equal(coway.nameKo, 'Coway');
   assert.equal(coway.nameEn, 'Coway');
+  assert.equal(coway.appTitleKo, 'Coway');
+  assert.equal(coway.summaryKo, '깨끗한 물, 건강한 생활을 위한 코웨이');
+  assert.equal(coway.copyKo, coway.summaryKo);
+  assert.equal(coway.appTextKo, coway.summaryKo);
   assert.equal(coway.websiteUrl, 'https://www.cowayunited.com/');
   assert.equal(coway.phoneKo, '917-628-6139');
   assert.equal(`tel:${coway.phoneHref}`, 'tel:+19176286139');
@@ -38,6 +42,7 @@ test('Coway uses the supplied logo for cards and keeps the single approved 16:9 
   assert.equal(coway.logo, logo);
   assert.equal(coway.spotlightImage, logo);
   assert.equal(coway.appLogo, `/${logo}`);
+  assert.equal(coway.logoDisplay, 'wide');
   assert.deepEqual(coway.flyers, [flyer]);
   assert.deepEqual(fs.readdirSync(path.join(root, 'assets/ads/coway')).sort(), ['coway-banner-16x9.png','coway-logo.png']);
   const logoBytes = fs.readFileSync(path.join(root, logo));
@@ -68,7 +73,9 @@ test('existing region filtering includes Coway only in ALL and NY', () => {
 
 test('web and app reuse existing detail components with no Coway-only carousel', () => {
   const web = read('script.js');
+  const webCss = read('styles.css');
   const app = read('app/app.js');
+  const appCss = read('app/overrides.css');
   assert.match(web, /navigation\.hidden=flyers\.length<2/);
   assert.match(web, /\(id==='boxd-kitchen'\|\|id==='coway'\)&&phoneHref&&contact/);
   assert.match(app, /business\.flyers\.map\(\(image,index\)=>/);
@@ -77,4 +84,13 @@ test('web and app reuse existing detail components with no Coway-only carousel',
   assert.match(app, /business\.mapUrl&&\{label:language==="ko"\?"지도 보기":"View Map",url:business\.mapUrl\}/);
   assert.doesNotMatch(web, /coway-carousel|coway.*previous|coway.*next/i);
   assert.doesNotMatch(app, /coway-carousel|coway.*previous|coway.*next/i);
+  assert.match(web, /item\.logoDisplay\?\` logo-display-\$\{item\.logoDisplay\}\`/);
+  assert.match(web, /logoDisplay: business\.logoDisplay \|\| ''/);
+  assert.match(app, /business\.logoDisplay\?\` logo-display-\$\{business\.logoDisplay\}\`/);
+  assert.match(webCss, /\.business-spotlight-card\.logo-display-wide \.business-spotlight-logo img\{transform:scale\(1\.42\)\}/);
+  assert.match(webCss, /\.business-spotlight-card\.logo-display-wide \.business-summary\{height:auto;overflow:visible;white-space:normal;text-overflow:clip\}/);
+  assert.match(webCss, /@media\(max-width:760px\)\{\.business-spotlight-card\.logo-display-wide \.business-summary\{margin:1px 0;font-size:12px;line-height:1\.45\}\}/);
+  assert.match(appCss, /#partnerPrograms \.app-partner-logo\.logo-display-wide img\{transform:scale\(2\.2\)\}/);
+  assert.match(appCss, /#partnerPrograms \.app-partner-card\.logo-display-wide \.app-partner-copy h3\{height:21px;min-height:21px!important\}/);
+  assert.match(appCss, /#partnerPrograms \.app-partner-card\.logo-display-wide \.app-partner-copy p\{display:block!important;height:auto!important;min-height:0!important;flex-shrink:0;overflow:visible!important;white-space:normal!important;overflow-wrap:anywhere;text-overflow:clip;-webkit-line-clamp:unset!important\}/);
 });
