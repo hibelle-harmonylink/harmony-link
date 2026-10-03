@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Validation only: no production secrets, environments, or deployment permissions.
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Tests, syntax, and whitespace
+    if: github.event_name != 'push' || github.event.deleted == false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out source and full history
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js LTS
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          package-manager-cache: false
+
+      - name: Check changed-line whitespace
+        env:
+          CI_EVENT: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+          PUSH_AFTER_SHA: ${{ github.event.after }}
+        run: |
+          case "$CI_EVENT" in
+            pull_request)
+              base="$PR_BASE_SHA"
+              head="$PR_HEAD_SHA"
+              ;;
+            push)
+              base="$PUSH_BEFORE_SHA"
+              head="$PUSH_AFTER_SHA"
+              ;;
+            *) echo "Unsupported CI event: $CI_EVENT" >&2; exit 1 ;;
+          esac
+
+          for sha in "$base" "$head"; do
+            if [[ ! "$sha" =~ ^[0-9a-f]{40}$ ]]; then
+              echo "Missing or invalid event commit SHA" >&2
+              exit 1
+            fi
+          done
+
+          zero=0000000000000000000000000000000000000000
+          for sha in "$base" "$head"; do
+            if [[ "$sha" != "$zero" ]]; then
+              # Full history covers normal PRs/pushes. Recover an old push tip
+              # explicitly if it is no longer reachable from a fetched branch.
+              git cat-file -e "${sha}^{commit}" 2>/dev/null || git fetch --no-tags origin "$sha"
+              git cat-file -e "${sha}^{commit}"
+            fi
+          done
+
+          if [[ "$CI_EVENT" == pull_request ]]; then
+            echo "Checking PR changes: $base...$head"
+            git diff --check "$base...$head"
+          elif [[ "$base" == "$zero" ]]; then
+            # A newly created main branch has no before commit.
+            empty_tree="$(git hash-object -t tree /dev/null)"
+            echo "Checking initial push: $empty_tree..$head"
+            git diff --check "$empty_tree" "$head"
+          else
+            echo "Checking pushed changes: $base..$head"
+            git diff --check "$base" "$head"
+          fi
+
+      - name: Check JavaScript syntax without executing browser code
+        run: |
+          mapfile -d '' -t files < <(git ls-files -z -- '*.js' '*.mjs' '*.cjs')
+          if (( ${#files[@]} == 0 )); then
+            echo "No tracked JavaScript files found" >&2
+            exit 1
+          fi
+          for file in "${files[@]}"; do
+            node --check "$file"
+          done
+          echo "Syntax checked ${#files[@]} JavaScript files"
+
+      - name: Run all local tests
+        run: |
+          # Tests use built-in Node modules and local source/VM doubles;
+          # no dependency install or production service credentials are needed.
+          mapfile -d '' -t files < <(git ls-files -z -- 'tests/*.test.js')
+          if (( ${#files[@]} == 0 )); then
+            echo "No tracked test files found" >&2
+            exit 1
+          fi
+          node --version
+          node --test --test-reporter=tap "${files[@]}"
