@@ -24,11 +24,11 @@ const todayKey = () => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
-test('canonical event data has exactly the 10 Production events with unique stable IDs, in Production order', () => {
-  assert.equal(events.length, 10);
+test('canonical event data has exactly the 11 Production events with unique stable IDs, in Production order', () => {
+  assert.equal(events.length, 11);
   const ids = events.map(e => e.id);
-  assert.deepEqual(ids, ['messiah', 'hole19-tournament', 'free-music-class', 'lina-market-ai-growth', 'roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
-  assert.equal(new Set(ids).size, 10);
+  assert.deepEqual(ids, ['messiah', 'hole19-tournament', 'free-music-class', 'lina-market-ai-growth', 'roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop', 'ai-beginner-60min']);
+  assert.equal(new Set(ids).size, 11);
 });
 
 test('upcoming/past split is date-driven (dateEnd vs today), not a static field, so the automatic migration keeps working', () => {
@@ -44,11 +44,11 @@ test('upcoming/past split is date-driven (dateEnd vs today), not a static field,
   const upcoming = events.filter(e => e.dateEnd >= today);
   const past = events.filter(e => e.dateEnd < today);
   assert.equal(upcoming.length, 4);
-  assert.equal(past.length, 6);
+  assert.equal(past.length, 7);
   assert.deepEqual(upcoming.map(e => e.id), ['messiah', 'hole19-tournament', 'free-music-class', 'lina-market-ai-growth']);
   // Past events sort most-recently-ended first, matching script.js's existing sort.
   const pastSorted = [...past].sort((a, b) => b.dateEnd.localeCompare(a.dateEnd)).map(e => e.id);
-  assert.deepEqual(pastSorted, ['roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'dms-ai-automation-workshop', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar']);
+  assert.deepEqual(pastSorted, ['ai-beginner-60min', 'roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'dms-ai-automation-workshop', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar']);
 });
 
 test('Korean/English fields exist for every event (title/description/badge)', () => {

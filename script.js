@@ -784,7 +784,7 @@ if (!window.HARMONY_LINK_EVENTS) {
   console.warn('[events] shared/data/events.js did not load; the events grid will be empty.');
 }
 function eventToWebHtml(event) {
-  const dmsLayoutEventIds = new Set(['lina-market-ai-growth', 'roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'ai-business-automation']);
+  const dmsLayoutEventIds = new Set(['lina-market-ai-growth', 'roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'ai-business-automation', 'ai-beginner-60min']);
   const cardClass = ['event-card', event.cardClass, dmsLayoutEventIds.has(event.id) ? 'dms-workshop-card' : '', 'reveal', event.revealDelay].filter(Boolean).join(' ');
   const hasSeparateEnFlyer = event.flyerEn && event.flyerEn !== event.flyerKo;
   const posterLangAttrs = hasSeparateEnFlyer ? ` data-ko-href="${event.flyerKo}" data-en-href="${event.flyerEn}"` : '';

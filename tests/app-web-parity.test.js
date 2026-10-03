@@ -86,7 +86,7 @@ test('app events include all current canonical upcoming and past classes', () =>
   // shared-content.js no longer carries any canonical events.
   assert.doesNotMatch(sharedContent, /events:\s*\[/);
   const ids = [...eventsData.matchAll(/id:"([a-z0-9-]+)"/g)].map(m => m[1]);
-  assert.deepEqual(ids, ['messiah', 'hole19-tournament', 'free-music-class', 'lina-market-ai-growth', 'roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop']);
+  assert.deepEqual(ids, ['messiah', 'hole19-tournament', 'free-music-class', 'lina-market-ai-growth', 'roxpkg-build-a-box-ai-automation', 'boxd-kitchen-youtube-interview', 'ai-business-automation', 'one-day-class', 'finance-ai-seminar', 'dms-ai-automation-workshop', 'ai-beginner-60min']);
 });
 
 test('stable service worker v104 precaches current shared data and Coway artwork in the refreshed app cache', () => {
