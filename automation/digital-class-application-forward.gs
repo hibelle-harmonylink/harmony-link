@@ -13,6 +13,12 @@
  * findMemberRow_ performs that match); a name-only match is never made, a
  * mismatched/unknown email is skipped and logged, and no new member account,
  * row, or 회원번호 is ever created from a Form submission.
+ *
+ * This file also applies left-alignment formatting only (never a value
+ * change) to the response sheet: automatically to each new Form submission's
+ * row via the same onFormSubmit trigger, and on demand to the whole sheet
+ * via the "응답 전체 왼쪽 정렬" admin menu item. Alignment and roster sync are
+ * independent of each other -- one failing never blocks the other.
  */
 const DIGITAL_CLASS_CONFIG = {
   // Same /exec URL as auth.js's signupAutomationUrl and the other bridges'
@@ -33,6 +39,7 @@ function onOpen() {
     .createMenu('Harmony Link 자동화')
     .addItem('1. 회원명단 연동 주소 저장', 'saveDigitalClassRosterWebappUrl')
     .addItem('2. 신규 제출 연동 시작', 'installDigitalClassApplicationTrigger')
+    .addItem('응답 전체 왼쪽 정렬', 'alignAllDigitalClassResponsesLeft')
     .addItem('설정 상태 확인', 'showDigitalClassApplicationStatus')
     .addToUi();
 }
@@ -76,15 +83,57 @@ function installDigitalClassApplicationTrigger() {
   ui.alert('디지털 클래스 신청서 연동이 시작되었습니다. 새 신청부터 자동 반영됩니다.');
 }
 
+// Menu-triggered, one-time formatting pass over whichever sheet this script
+// is bound to -- always the active sheet, never a hardcoded name or ID -- and
+// always its actual data range (SpreadsheetApp.Range.getDataRange()), never a
+// hardcoded row/column count. Only horizontal alignment is changed; no cell
+// value is read or written, so every existing response (timestamp, name,
+// email, phone, birth date, application content) is left byte-for-byte
+// unchanged.
+function alignAllDigitalClassResponsesLeft() {
+  const ui = SpreadsheetApp.getUi();
+  const sheet = SpreadsheetApp.getActiveSheet();
+  const range = sheet.getDataRange();
+  if (range.getNumRows() < 1 || range.getNumColumns() < 1) {
+    ui.alert('정렬할 데이터가 없습니다.');
+    return;
+  }
+  range.setHorizontalAlignment('left');
+  ui.alert('응답 시트 전체가 왼쪽 정렬되었습니다.');
+}
+
 // Google Form submit handler. Never raises past this function -- a failure
 // here must not interrupt the applicant's own Form submission experience.
+// Alignment and roster sync are wrapped in their own try/catch so that
+// either one failing never prevents the other from running.
 function forwardDigitalClassApplication(event) {
   if (!event || !event.namedValues) throw new Error('Form submit event is required.');
+  try {
+    alignDigitalClassResponseRowLeft_(event);
+  } catch (error) {
+    console.error('Response row left-alignment failed for digital class application:', String(error && error.message ? error.message : error));
+  }
   try {
     forwardDigitalClassApplicationToRoster_(event.namedValues);
   } catch (error) {
     console.error('Member roster sync failed for digital class application:', String(error && error.message ? error.message : error));
   }
+}
+
+// Left-aligns only the newly submitted response row, across every currently
+// used column of its own sheet. event.range.getSheet() and
+// event.range.getRow() come straight from the real onFormSubmit event --
+// no sheet ID and no row number is ever hardcoded here. The column count
+// comes from that same sheet's own getLastColumn(), not a hardcoded width,
+// so it stays correct even if columns are added later. Only alignment
+// formatting is touched -- no value is read or written.
+function alignDigitalClassResponseRowLeft_(event) {
+  if (!event || !event.range) return;
+  const sheet = event.range.getSheet();
+  const row = event.range.getRow();
+  const lastColumn = sheet.getLastColumn();
+  if (!row || lastColumn < 1) return;
+  sheet.getRange(row, 1, 1, lastColumn).setHorizontalAlignment('left');
 }
 
 // Forwards only the fields the applicant actually answered (real submitted
