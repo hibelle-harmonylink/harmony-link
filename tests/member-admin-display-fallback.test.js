@@ -35,6 +35,6 @@ test('admin asset query keys and page version advance together', () => {
   assert.equal(version.version, '20260916-29');
   assert.match(adminHtml, /const pageVersion = '20260916-19'/);
   assert.match(adminHtml, /admin\.css\?v=20260917-4/);
-  assert.match(adminHtml, /admin\.js\?v=20260917-4/);
+  assert.match(adminHtml, /admin\.js\?v=20260917-5/);
   assert.match(adminHtml, /회원유형 · 멤버십 · 계정 상태 · 기능 권한을 각각 관리합니다\./);
 });
