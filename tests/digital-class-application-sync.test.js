@@ -25,6 +25,15 @@ function extractConst(name, closer) {
   assert.ok(match, `could not extract const ${name} from member-signup.gs`);
   return match[0];
 }
+// Same extraction, but against this bridge file itself -- used to scope an
+// assertion to one specific function's body instead of the whole file, so a
+// later, unrelated function added elsewhere in the bridge (e.g. the
+// Korean-name sync feature) cannot produce a false positive here.
+function extractBridgeFunction(name) {
+  const match = bridge.match(new RegExp(`function ${name}\\([^)]*\\)\\s*\\{[\\s\\S]*?\\n\\}`));
+  assert.ok(match, `could not extract ${name} from digital-class-application-forward.gs`);
+  return match[0];
+}
 
 // Builds a real, isolated execution of registerMember_ and its direct
 // dependencies (findMemberRow_, isSupplementalApplication_, applicationValue_,
@@ -125,7 +134,13 @@ test('the bridge uses the exact confirmed response-sheet headers, not guessed ke
 // reimplement matching logic itself.
 test('email matching is delegated to the existing case-insensitive exact-match roster lookup', () => {
   assert.match(memberSignup, /text_\(row\[map\.email - 1\]\)\.toLowerCase\(\) === email\.toLowerCase\(\)/);
-  assert.doesNotMatch(bridge, /toLowerCase/);
+  // Scoped to the roster-webapp-forwarding function itself: it must not
+  // reimplement email matching (member-signup.gs's own findMemberRow_ does
+  // that). The separate, user-approved verified-Korean-name feature reads
+  // the roster directly and necessarily does its own case-insensitive
+  // comparison elsewhere in this file -- that is intentional and covered by
+  // tests/digital-class-korean-name-sync.test.js, not this assertion.
+  assert.doesNotMatch(extractBridgeFunction('forwardDigitalClassApplicationToRoster_'), /toLowerCase/);
 });
 
 // 5. Name-only matching is never performed by this bridge.
@@ -142,7 +157,13 @@ test('an email that matches no existing member is skipped and logged, not treate
 
 // 7. No account is ever created from a Form submission by this bridge.
 test('the bridge never creates a Harmony Link account or roster row itself', () => {
-  assert.doesNotMatch(bridge, /appendRow|SpreadsheetApp\.openById|getSheetByName/);
+  // Scoped to the roster-webapp-forwarding function: it must never append a
+  // row or open a spreadsheet itself (member-signup.gs's own webapp is the
+  // sole writer there). SpreadsheetApp.openById/getSheetByName legitimately
+  // appear elsewhere in this file for the separate, user-approved
+  // verified-Korean-name READ-ONLY roster lookup, which never appends a row
+  // or creates an account either -- covered by its own dedicated test file.
+  assert.doesNotMatch(extractBridgeFunction('forwardDigitalClassApplicationToRoster_'), /appendRow|SpreadsheetApp\.openById|getSheetByName/);
   assert.doesNotMatch(bridge, /createUser|signUp|auth\.admin/);
 });
 
@@ -191,7 +212,15 @@ test('no specific member (by name, email, or member number) is hardcoded in the 
 
 // 14. No automatic backfill of the historic responses is wired into this file.
 test('the bridge never reprocesses historic responses -- only installs a forward-looking onFormSubmit trigger', () => {
-  assert.doesNotMatch(bridge, /resync|getLastRow\(\)|getRange\(2,/i);
+  // Scoped to the roster-application-sync path and the trigger installer:
+  // neither one may automatically resync historic responses to the roster
+  // webapp. The separate "관리용 한글 이름 동기화" menu action also reads
+  // getLastRow() over existing responses, but it is a distinct,
+  // explicitly admin-triggered feature that only ever writes its own
+  // managed column -- never the roster webapp sync -- and is covered by its
+  // own dedicated test file.
+  assert.doesNotMatch(extractBridgeFunction('forwardDigitalClassApplicationToRoster_'), /resync|getLastRow\(\)|getRange\(2,/i);
+  assert.doesNotMatch(extractBridgeFunction('installDigitalClassApplicationTrigger'), /resync|getLastRow\(\)|getRange\(2,/i);
   assert.match(bridge, /function installDigitalClassApplicationTrigger\(\)/);
   assert.match(bridge, /\.onFormSubmit\(\)/);
 });
