@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const BUILD = '20260917-4';
+  const BUILD = '20260917-5';
   console.log(`[admin] admin.js loaded — build ${BUILD}`);
   // Visible without opening devtools -- if this text is missing, blank, or
   // shows an older build number than the one just shipped, the browser (or
@@ -166,10 +166,14 @@
   // The admin account's stored display_name is a leftover site-brand
   // placeholder ("Harmony Link") from setup, not this admin's own name.
   // The database value is left untouched -- only what's rendered changes.
+  // admin_list_members() returns display_name and oauth_name as two
+  // distinct columns (the RPC no longer blends the OAuth provider's name
+  // into display_name itself), so a real, admin-confirmed display_name is
+  // never confused with the OAuth account name used only as a last resort.
   const fallbackMemberName = member => {
     const raw = (member.display_name || '').trim();
     if (member.is_admin && raw === 'Harmony Link') return '하이벨';
-    return raw || (member.email || '').split('@')[0] || '이름 없음';
+    return raw || (member.oauth_name || '').trim() || (member.email || '').split('@')[0] || '이름 없음';
   };
   // Identity metadata is optional for people who have finished site signup
   // but have not submitted an application yet.  Never leave those rows
@@ -177,8 +181,10 @@
   const memberNickname = member => String(member.nickname || '').trim() || fallbackMemberName(member);
   const memberFullName = member => String(member.full_name || '').trim() || fallbackMemberName(member);
   // A person's public/admin-facing name is not a business nickname.  Keep
-  // the administrator-confirmed profile name first, then the application
-  // name for legacy rows that have no display_name yet.
+  // the administrator-confirmed profile name first, then the
+  // application-verified full_name, then the OAuth account name, then
+  // email (fallbackMemberName covers the last two). Never transliterates
+  // an English name into Korean -- only a verified source wins.
   const memberPersonName = member => {
     const raw = String(member.display_name || '').trim();
     if (member.is_admin && raw === 'Harmony Link') return '하이벨';
