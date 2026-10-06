@@ -141,19 +141,13 @@ test('the admin menu exposes the new bulk-align item wired to the real function 
 });
 
 test('alignment code never reads or writes a cell value -- only horizontal alignment formatting', () => {
-  const alignmentSection = bridge.slice(
-    bridge.indexOf('function alignAllDigitalClassResponsesLeft'),
-    bridge.indexOf('function digitalClassAnswer_')
-  );
+  const alignmentSection = extractFunction('alignAllDigitalClassResponsesLeft');
   assert.doesNotMatch(alignmentSection, /setValue|setValues|appendRow|deleteRow|clearContent|insertRow|getValue\(|getValues\(/);
   assert.match(alignmentSection, /setHorizontalAlignment\('left'\)/);
 });
 
 test('row-level alignment never hardcodes a sheet name/ID or a row number', () => {
-  const rowAlignFn = bridge.slice(
-    bridge.indexOf('function alignDigitalClassResponseRowLeft_'),
-    bridge.indexOf('function forwardDigitalClassApplicationToRoster_')
-  );
+  const rowAlignFn = extractFunction('alignDigitalClassResponseRowLeft_');
   assert.doesNotMatch(rowAlignFn, /getSheetByName\(|openById\(/);
   assert.match(rowAlignFn, /event\.range\.getSheet\(\)/);
   assert.match(rowAlignFn, /event\.range\.getRow\(\)/);
@@ -164,10 +158,7 @@ test('row-level alignment never hardcodes a sheet name/ID or a row number', () =
 });
 
 test('bulk alignment never hardcodes a sheet name/ID or a fixed range string', () => {
-  const bulkAlignFn = bridge.slice(
-    bridge.indexOf('function alignAllDigitalClassResponsesLeft'),
-    bridge.indexOf('function forwardDigitalClassApplication(')
-  );
+  const bulkAlignFn = extractFunction('alignAllDigitalClassResponsesLeft');
   assert.doesNotMatch(bulkAlignFn, /getSheetByName\(|openById\(/);
   assert.doesNotMatch(bulkAlignFn, /getRange\(['"]/); // no "A1:Z99"-style literal range
   assert.match(bulkAlignFn, /getActiveSheet\(\)/);
@@ -181,9 +172,15 @@ test('this feature adds no new onFormSubmit trigger -- exactly one ScriptApp.new
 });
 
 test('alignment and roster sync are independently wrapped so neither can block the other', () => {
-  const handler = bridge.slice(bridge.indexOf('function forwardDigitalClassApplication('), bridge.indexOf('function alignDigitalClassResponseRowLeft_'));
+  const handler = extractFunction('forwardDigitalClassApplication');
   const tryBlocks = handler.match(/try \{/g) || [];
-  assert.equal(tryBlocks.length, 2, 'alignment and roster sync must each have their own try/catch');
+  // Exactly three independent concerns, each in its own try/catch: new-row
+  // left alignment, verified-Korean-name sync, and roster application sync
+  // (application_completed). The Korean-name concern has its own dedicated
+  // test file, but this count is the fixed contract for this handler.
+  assert.equal(tryBlocks.length, 3, 'alignment, Korean-name sync, and roster sync must each have their own try/catch');
+  assert.match(handler, /alignDigitalClassResponseRowLeft_\(event\)/);
+  assert.match(handler, /forwardDigitalClassApplicationToRoster_\(event\.namedValues\)/);
 });
 
 test('no specific member (by name, email, or member number) is hardcoded anywhere in this file', () => {

@@ -19,11 +19,27 @@
  * row via the same onFormSubmit trigger, and on demand to the whole sheet
  * via the "응답 전체 왼쪽 정렬" admin menu item. Alignment and roster sync are
  * independent of each other -- one failing never blocks the other.
+ *
+ * It also fills a management-only "관리용 한글 이름" column from the 회원가입
+ * 명단 Spreadsheet's own "이름" column, read directly (server-side, inside
+ * this Apps Script project only -- never through a new public endpoint and
+ * never through member-signup.gs, which this feature does not modify) by
+ * exact, case-insensitive email match against that roster's own "이메일"
+ * column. Only a roster name that actually contains Hangul is ever written;
+ * an English-only roster name, an unmatched email, or an unreachable roster
+ * connection all leave the cell untouched. This never reads or writes any
+ * other roster field (회원번호/UUID/전화/멤버십/role 등), and is independent
+ * of alignment and roster application sync -- any one failing never blocks
+ * the other two.
  */
 const DIGITAL_CLASS_CONFIG = {
   // Same /exec URL as auth.js's signupAutomationUrl and the other bridges'
   // saved MEMBER_ROSTER_WEBAPP_URL property.
-  rosterWebappUrlKey: 'MEMBER_ROSTER_WEBAPP_URL'
+  rosterWebappUrlKey: 'MEMBER_ROSTER_WEBAPP_URL',
+  // A separate, admin-entered Script Property -- never a hardcoded or
+  // guessed Spreadsheet ID -- pointing at the 회원가입 명단 Spreadsheet itself,
+  // read directly and only for the verified-Korean-name lookup below.
+  rosterSpreadsheetIdKey: 'MEMBER_ROSTER_SPREADSHEET_ID'
 };
 
 // Exact, confirmed response-sheet headers (not guessed keywords).
@@ -34,12 +50,33 @@ const DIGITAL_CLASS_HEADERS = {
   enrolledSubject: '11.수강 신청반'
 };
 
+// The management-only column this feature owns on the response sheet.
+// Reused if already present; appended once, at the end, only if missing.
+const DIGITAL_CLASS_MANAGED_HEADERS = {
+  verifiedKoreanName: '관리용 한글 이름'
+};
+
+// The 회원가입 명단 Spreadsheet's own tab name and the two column headers
+// this feature reads -- matched by header text at runtime, never by a
+// hardcoded column index, so a future column reorder in that roster cannot
+// silently misread the wrong field. Deliberately not the "한글 이름"/"영문
+// 이름" split from member-signup.gs's own HEADERS constant: that split is a
+// not-yet-migrated future schema. The live roster's real, current name
+// column is simply "이름".
+const MEMBER_ROSTER_SHEET_NAME = '회원가입 명단';
+const MEMBER_ROSTER_HEADERS = {
+  name: '이름',
+  email: '이메일'
+};
+
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('Harmony Link 자동화')
     .addItem('1. 회원명단 연동 주소 저장', 'saveDigitalClassRosterWebappUrl')
     .addItem('2. 신규 제출 연동 시작', 'installDigitalClassApplicationTrigger')
     .addItem('응답 전체 왼쪽 정렬', 'alignAllDigitalClassResponsesLeft')
+    .addItem('회원명단 시트 연결', 'saveMemberRosterSpreadsheetId')
+    .addItem('관리용 한글 이름 동기화', 'syncDigitalClassVerifiedKoreanNames')
     .addItem('설정 상태 확인', 'showDigitalClassApplicationStatus')
     .addToUi();
 }
@@ -56,6 +93,36 @@ function saveDigitalClassRosterWebappUrl() {
   if (!url) return ui.alert('연동 주소를 입력해 주세요.');
   PropertiesService.getScriptProperties().setProperty(DIGITAL_CLASS_CONFIG.rosterWebappUrlKey, url);
   ui.alert('회원명단 연동 주소가 저장되었습니다.');
+}
+
+// Stores only the 회원가입 명단 Spreadsheet's own ID -- extracted from a pasted
+// URL or accepted as a bare ID -- as a Script Property. This is a separate
+// property from MEMBER_ROSTER_WEBAPP_URL: it is read directly, server-side,
+// by this script to look up a verified Korean name; it is never sent
+// anywhere and never exposed through any endpoint.
+function saveMemberRosterSpreadsheetId() {
+  const ui = SpreadsheetApp.getUi();
+  const response = ui.prompt(
+    '회원명단 시트 연결',
+    '회원가입 명단 Spreadsheet의 URL 또는 ID를 입력하세요.',
+    ui.ButtonSet.OK_CANCEL
+  );
+  if (response.getSelectedButton() !== ui.Button.OK) return;
+  const id = extractSpreadsheetId_(response.getResponseText());
+  if (!id) return ui.alert('올바른 Spreadsheet URL 또는 ID를 입력해 주세요.');
+  PropertiesService.getScriptProperties().setProperty(DIGITAL_CLASS_CONFIG.rosterSpreadsheetIdKey, id);
+  ui.alert('회원명단 시트가 연결되었습니다.');
+}
+
+// Accepts a full Google Sheets URL (any trailing path/query/hash) or a bare
+// Spreadsheet ID. Never guesses or invents an ID; an unrecognized input
+// returns '' so the caller can reject it.
+function extractSpreadsheetId_(input) {
+  const value = trimmed_(input);
+  if (!value) return '';
+  const urlMatch = value.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+  if (urlMatch) return urlMatch[1];
+  return /^[a-zA-Z0-9-_]+$/.test(value) ? value : '';
 }
 
 function showDigitalClassApplicationStatus() {
@@ -104,14 +171,20 @@ function alignAllDigitalClassResponsesLeft() {
 
 // Google Form submit handler. Never raises past this function -- a failure
 // here must not interrupt the applicant's own Form submission experience.
-// Alignment and roster sync are wrapped in their own try/catch so that
-// either one failing never prevents the other from running.
+// Alignment, verified-Korean-name sync, and roster application sync are each
+// wrapped in their own try/catch so that any one of the three failing never
+// prevents the other two from running.
 function forwardDigitalClassApplication(event) {
   if (!event || !event.namedValues) throw new Error('Form submit event is required.');
   try {
     alignDigitalClassResponseRowLeft_(event);
   } catch (error) {
     console.error('Response row left-alignment failed for digital class application:', String(error && error.message ? error.message : error));
+  }
+  try {
+    syncDigitalClassVerifiedKoreanNameForSubmission_(event);
+  } catch (error) {
+    console.error('Verified Korean name sync failed for digital class application:', String(error && error.message ? error.message : error));
   }
   try {
     forwardDigitalClassApplicationToRoster_(event.namedValues);
@@ -134,6 +207,147 @@ function alignDigitalClassResponseRowLeft_(event) {
   const lastColumn = sheet.getLastColumn();
   if (!row || lastColumn < 1) return;
   sheet.getRange(row, 1, 1, lastColumn).setHorizontalAlignment('left');
+}
+
+// Writes the verified Korean name for exactly the one newly submitted row,
+// using the same event.range.getSheet()/getRow() the alignment helper uses
+// -- no row number is ever hardcoded here either. A missing/misconfigured
+// roster connection, an unmatched email, or an English-only roster name all
+// leave this row's managed cell untouched; only a real exact-email match
+// whose roster name contains Hangul is ever written.
+function syncDigitalClassVerifiedKoreanNameForSubmission_(event) {
+  if (!event || !event.range) return;
+  const sheet = event.range.getSheet();
+  const row = event.range.getRow();
+  if (!row) return;
+  const email = digitalClassAnswer_(event.namedValues, DIGITAL_CLASS_HEADERS.email);
+  if (!email) return;
+  syncVerifiedKoreanNameForRow_(sheet, row, email);
+}
+
+// Menu-triggered, admin-run-only pass over every existing response row.
+// Writes to the managed "관리용 한글 이름" column alone -- every other
+// response cell (timestamp, 4.이름, email, phone, birth date, application
+// content, etc.) is only ever read here, never written, and no row is ever
+// deleted, reordered, or sorted.
+function syncDigitalClassVerifiedKoreanNames() {
+  const ui = SpreadsheetApp.getUi();
+  const sheet = SpreadsheetApp.getActiveSheet();
+  const lastRow = sheet.getLastRow();
+  const lastColumn = sheet.getLastColumn();
+  if (lastRow < 2 || lastColumn < 1) {
+    ui.alert('동기화할 응답이 없습니다.');
+    return;
+  }
+  let nameByEmail;
+  try {
+    nameByEmail = buildRosterVerifiedKoreanNameMap_();
+  } catch (error) {
+    ui.alert('회원명단 시트를 읽지 못했습니다: ' + (error && error.message ? error.message : error));
+    return;
+  }
+  const headers = sheet.getRange(1, 1, 1, lastColumn).getDisplayValues()[0];
+  const emailColumn = headerColumn_(headers, DIGITAL_CLASS_HEADERS.email);
+  if (!emailColumn) {
+    ui.alert('응답 시트에서 "' + DIGITAL_CLASS_HEADERS.email + '" 헤더를 찾지 못했습니다.');
+    return;
+  }
+  const managedColumn = ensureManagedKoreanNameColumn_(sheet);
+  const emails = sheet.getRange(2, emailColumn, lastRow - 1, 1).getDisplayValues();
+  let matched = 0;
+  emails.forEach(function (cell, offset) {
+    const email = trimmed_(cell[0]).toLowerCase();
+    const verifiedName = email ? nameByEmail[email] : '';
+    if (!verifiedName) return;
+    sheet.getRange(offset + 2, managedColumn).setValue(verifiedName);
+    matched += 1;
+  });
+  ui.alert('관리용 한글 이름 동기화가 완료되었습니다. 매칭됨: ' + matched + '건.');
+}
+
+// Writes one row's verified Korean name, looking it up fresh for this one
+// email. Only ever sets a value when a real match with a Hangul-containing
+// roster name is found; otherwise this is a no-op, leaving the managed cell
+// exactly as it was.
+function syncVerifiedKoreanNameForRow_(sheet, row, email) {
+  const verifiedName = lookupVerifiedKoreanName_(email);
+  if (!verifiedName) return;
+  const column = ensureManagedKoreanNameColumn_(sheet);
+  sheet.getRange(row, column).setValue(verifiedName);
+}
+
+// Finds the existing "관리용 한글 이름" column by header text (reused if
+// already present) or appends it once, at the end of the sheet's current
+// used columns. Never creates a duplicate, and never touches any other
+// header or any data cell.
+function ensureManagedKoreanNameColumn_(sheet) {
+  const lastColumn = sheet.getLastColumn();
+  const headers = lastColumn ? sheet.getRange(1, 1, 1, lastColumn).getDisplayValues()[0] : [];
+  const existing = headerColumn_(headers, DIGITAL_CLASS_MANAGED_HEADERS.verifiedKoreanName);
+  if (existing) return existing;
+  const column = lastColumn + 1;
+  sheet.getRange(1, column).setValue(DIGITAL_CLASS_MANAGED_HEADERS.verifiedKoreanName);
+  return column;
+}
+
+// Looks up exactly one email's verified Korean name. Returns '' for every
+// protective case: no roster connection configured, an unreadable/invalid
+// roster, no exact-email match, or a matched name with no Hangul in it.
+function lookupVerifiedKoreanName_(email) {
+  const normalized = trimmed_(email).toLowerCase();
+  if (!normalized) return '';
+  const nameByEmail = buildRosterVerifiedKoreanNameMap_();
+  return nameByEmail[normalized] || '';
+}
+
+// Opens the 회원가입 명단 Spreadsheet strictly by the admin-configured Script
+// Property ID (never a hardcoded or guessed ID), reads only its "이름" and
+// "이메일" columns -- located at runtime by header text, never a hardcoded
+// column index -- and returns a { lowercased email: verified Korean name }
+// map containing only emails whose roster name actually contains Hangul.
+// No other roster column (회원번호/UUID/전화/멤버십/role 등) is ever read.
+// This never writes to the roster Spreadsheet and never logs its contents.
+function buildRosterVerifiedKoreanNameMap_() {
+  const spreadsheetId = PropertiesService.getScriptProperties().getProperty(DIGITAL_CLASS_CONFIG.rosterSpreadsheetIdKey);
+  if (!spreadsheetId) throw new Error('회원명단 시트가 아직 연결되지 않았습니다. "회원명단 시트 연결" 메뉴를 먼저 실행하세요.');
+  const book = SpreadsheetApp.openById(spreadsheetId);
+  const sheet = book.getSheetByName(MEMBER_ROSTER_SHEET_NAME);
+  if (!sheet) throw new Error('연결된 시트에서 "' + MEMBER_ROSTER_SHEET_NAME + '" 탭을 찾지 못했습니다.');
+  const lastColumn = sheet.getLastColumn();
+  const lastRow = sheet.getLastRow();
+  const map = {};
+  if (lastColumn < 1 || lastRow < 2) return map;
+  const headers = sheet.getRange(1, 1, 1, lastColumn).getDisplayValues()[0];
+  const nameColumn = headerColumn_(headers, MEMBER_ROSTER_HEADERS.name);
+  const emailColumn = headerColumn_(headers, MEMBER_ROSTER_HEADERS.email);
+  if (!nameColumn || !emailColumn) {
+    throw new Error('회원명단 시트에서 "' + MEMBER_ROSTER_HEADERS.name + '" 또는 "' + MEMBER_ROSTER_HEADERS.email + '" 헤더를 찾지 못했습니다.');
+  }
+  const rows = sheet.getRange(2, 1, lastRow - 1, lastColumn).getDisplayValues();
+  rows.forEach(function (row) {
+    const email = trimmed_(row[emailColumn - 1]).toLowerCase();
+    if (!email) return;
+    const name = trimmed_(row[nameColumn - 1]);
+    if (containsHangul_(name)) map[email] = name;
+  });
+  return map;
+}
+
+// First-occurrence header lookup by exact text match. Returns 0 (falsy)
+// when not found, matching this file's existing 1-based column convention.
+function headerColumn_(headers, headerName) {
+  const index = headers.findIndex(function (header) { return trimmed_(header) === headerName; });
+  return index < 0 ? 0 : index + 1;
+}
+
+// A verified Korean name must contain at least one actual Hangul syllable.
+// An English-only romanized value never passes.
+function containsHangul_(value) {
+  return /[가-힣]/.test(String(value || ''));
+}
+
+function trimmed_(value) {
+  return String(value || '').trim();
 }
 
 // Forwards only the fields the applicant actually answered (real submitted
