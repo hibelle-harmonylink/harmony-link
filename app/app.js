@@ -675,6 +675,43 @@ function showAppAuthFlow(mode){
   $("[data-app-auth-step='flow']").hidden=false;
   renderAppAuthCopy();
 }
+// Mirrors auth.js's ensureMemberRosterRegistration: the App surface shares
+// the same Supabase auth users as the website, but never loads auth.js, so
+// without this call a member who only ever signs in through the installed
+// App (home-screen PWA) would never get a member_admin_metadata row -- the
+// admin member list would show their 회원번호 as "—" forever, even though
+// their account and application are otherwise complete.
+const APP_SIGNUP_AUTOMATION_URL="https://script.google.com/macros/s/AKfycbx8j1IVjbeUrKvPyHkww_V1fHG8qBeY3KBO4ZWpscXAOiIDTZ6efMCuogQWP5QfRbxq/exec";
+async function ensureAppMemberRosterRegistration(user){
+  if(!user?.id||!user?.email)return;
+  const requestKey=`harmony-member-number-requested:${user.id}`;
+  if(sessionStorage.getItem(requestKey))return;
+  sessionStorage.setItem(requestKey,"pending");
+  const metadata=user.user_metadata||{};
+  const provider=user.app_metadata?.provider||"";
+  const memberType=appSignupType==="partner"?"파트너":"수강생";
+  const record=new FormData();
+  record.set("기록 유형","회원가입");
+  record.set("회원 ID",user.id);
+  record.set("가입 시각",user.created_at||new Date().toISOString());
+  record.set("닉네임",metadata.nickname||"");
+  record.set("이름",provider==="google"?(metadata.full_name||metadata.name||""):"");
+  record.set("display_name","");
+  record.set("표시 이름",metadata.full_name||metadata.name||metadata.nickname||user.email.split("@")[0]);
+  record.set("이메일",user.email);
+  record.set("가입 방식",provider||"social");
+  record.set("회원 유형",memberType);
+  record.set("파트너 등급","");
+  record.set("회원 구분",memberType);
+  record.set("가입 경로","Harmony Link 앱");
+  try{
+    await fetch(APP_SIGNUP_AUTOMATION_URL,{method:"POST",mode:"no-cors",body:record});
+    sessionStorage.setItem(requestKey,"sent");
+  }catch(error){
+    sessionStorage.removeItem(requestKey);
+    console.error("Member-number registration could not be requested.",error);
+  }
+}
 async function completePendingSignup(session){
   const pending=localStorage.getItem("harmonyPendingAppSignupType");
   if(!session?.user||!['student','partner'].includes(pending))return;
@@ -701,8 +738,9 @@ async function initAppAuth(){
   const {data}=await appAuthClient.auth.getSession();
   appAuthSession=data.session;
   await completePendingSignup(appAuthSession);
+  await ensureAppMemberRosterRegistration(appAuthSession?.user);
   setAppSignedIn(Boolean(appAuthSession?.user));
-  appAuthClient.auth.onAuthStateChange((_event,session)=>{appAuthSession=session;setAppSignedIn(Boolean(session?.user));window.setTimeout(()=>completePendingSignup(session),0)});
+  appAuthClient.auth.onAuthStateChange((_event,session)=>{appAuthSession=session;setAppSignedIn(Boolean(session?.user));window.setTimeout(()=>{completePendingSignup(session);ensureAppMemberRosterRegistration(session?.user)},0)});
 }
 $("#appAuthButton").addEventListener("click",async()=>{
   if(appAuthSession?.user&&appAuthClient){await appAuthClient.auth.signOut();return}

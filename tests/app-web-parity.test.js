@@ -103,7 +103,7 @@ test('stable service worker v104 precaches current shared data and Coway artwork
   assert.match(serviceWorker, /"\.\.\/shared\/data\/programs\.js\?v=1"/);
   assert.match(serviceWorker, /"\.\/app\.css\?v=65"/);
   assert.match(serviceWorker, /"\.\/overrides\.css\?v=105"/);
-  assert.match(serviceWorker, /"\.\/app\.js\?v=106"/);
+  assert.match(serviceWorker, /"\.\/app\.js\?v=107"/);
   // Network-first remains; fallback is now scoped to the refreshed app cache.
   assert.match(serviceWorker, /fetch\(event\.request,\{cache:"no-store"\}\)/);
   assert.match(appScript, /register\("service-worker-v104\.js",\{updateViaCache:"none"\}\)/);
