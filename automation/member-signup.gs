@@ -994,6 +994,65 @@ function runPhoneFormatBackfill() {
   return backfillPhoneFormats_();
 }
 
+// Recovery path for an Auth/member_profiles account whose roster
+// registration never completed -- no 회원가입 명단 row, no
+// member_admin_metadata row, no member_number. An administrator fills in
+// MISSING_ROSTER_MEMBERS below (left empty here; no specific member is ever
+// named in this file) with real member_id/email pairs confirmed from
+// Supabase, then runs this function from the Apps Script editor's function
+// picker -- exactly like runPhoneFormatBackfill above, never from an
+// automatic trigger. It calls registerMember_ completely unmodified, so the
+// one existing registration contract is reused rather than reimplemented:
+// an existing Sheet row is found and reused by UUID or email first, and
+// nextMemberNumber_ -- the sole source of a HL-YY-NNN value -- is only
+// ever consulted when no such row exists. Running this twice for the same
+// member_id/email is therefore safe: the second run finds the row the
+// first run created and issues no new number.
+const MISSING_ROSTER_MEMBERS = [
+  // { memberId: 'auth-user-uuid-confirmed-in-supabase', email: 'member@example.com' },
+];
+
+function reconcileMissingRosterMembers() {
+  if (!MISSING_ROSTER_MEMBERS.length) {
+    Logger.log('MISSING_ROSTER_MEMBERS가 비어 있습니다. 재등록할 회원을 추가한 뒤 다시 실행하세요.');
+    return [];
+  }
+  return MISSING_ROSTER_MEMBERS.map(function (entry) {
+    return reconcileOneMissingRosterMember_(entry.memberId, entry.email, entry.verifiedKoreanName);
+  });
+}
+
+// Never guesses a Korean name: verifiedKoreanName is recorded only when the
+// administrator supplies one that has already been confirmed by email/UUID
+// elsewhere (회원가입 명단, 신청서 응답, 등); omitted, the row's display name
+// stays blank exactly like a normal first-time signup.
+function reconcileOneMissingRosterMember_(memberId, email, verifiedKoreanName) {
+  if (!memberId || !email) {
+    const skipped = { memberId: memberId, email: email, ok: false, error: '회원 ID와 이메일이 모두 필요합니다.' };
+    Logger.log(JSON.stringify(skipped));
+    return skipped;
+  }
+  const values = {
+    '회원 ID': memberId,
+    '이메일': email,
+    '가입 시각': new Date().toISOString(),
+    '가입 방식': 'reconciliation',
+    '회원 유형': '수강생',
+    '가입 경로': '누락 회원 재등록'
+  };
+  if (verifiedKoreanName) values['한글 이름'] = verifiedKoreanName;
+  try {
+    const response = JSON.parse(registerMember_(values).getContent());
+    const outcome = Object.assign({ memberId: memberId, email: email }, response);
+    Logger.log(JSON.stringify(outcome));
+    return outcome;
+  } catch (error) {
+    const failure = { memberId: memberId, email: email, ok: false, error: String(error && error.message ? error.message : error) };
+    Logger.log(JSON.stringify(failure));
+    return failure;
+  }
+}
+
 function rosterRecord_(columns, values) {
   const width = columnWidth_(columns);
   const record = Array(width).fill('');

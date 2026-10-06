@@ -8,7 +8,7 @@ const admin = fs.readFileSync(path.join(root, 'admin.js'), 'utf8');
 const applicationSync = fs.readFileSync(path.join(root, 'supabase/migrations/202609130004_member_application_completion.sql'), 'utf8');
 
 test('member-list person name prioritizes display_name, then full_name, without treating nickname as a name fallback', () => {
-  assert.match(admin, /const memberPersonName = member => String\(member\.display_name \|\| ''\)\.trim\(\) \|\| String\(member\.full_name \|\| ''\)\.trim\(\) \|\| fallbackMemberName\(member\)/);
+  assert.match(admin, /const memberPersonName = member => \{\s*const raw = String\(member\.display_name \|\| ''\)\.trim\(\);\s*if \(member\.is_admin && raw === 'Harmony Link'\) return '하이벨';\s*return raw \|\| String\(member\.full_name \|\| ''\)\.trim\(\) \|\| fallbackMemberName\(member\);\s*\};/);
   assert.match(admin, /\['이름', escapeHtml\(memberPersonName\(member\)\)/);
   const fallback = admin.slice(admin.indexOf('const fallbackMemberName'), admin.indexOf('const memberNickname'));
   assert.doesNotMatch(fallback, /nickname/);
@@ -33,5 +33,5 @@ test('partner application resync still cannot modify member_profiles.display_nam
 
 
 test('admin placeholder display name renders as 하이벨 in the list person-name helper', () => {
-  assert.match(source, /const memberPersonName = member => \{[\s\S]*member\.is_admin && raw === 'Harmony Link'\) return '하이벨'/);
+  assert.match(admin, /const memberPersonName = member => \{[\s\S]*member\.is_admin && raw === 'Harmony Link'\) return '하이벨'/);
 });
