@@ -81,7 +81,7 @@ test('roster schema makes member numbers bold and aligns roster columns consiste
 });
 
 test('admin name list policy remains display name then full name then email prefix, never nickname', () => {
-  assert.match(admin, /const memberPersonName = member => String\(member\.display_name \|\| ''\)\.trim\(\) \|\| String\(member\.full_name \|\| ''\)\.trim\(\) \|\| fallbackMemberName\(member\)/);
+  assert.match(admin, /const memberPersonName = member => \{\s*const raw = String\(member\.display_name \|\| ''\)\.trim\(\);\s*if \(member\.is_admin && raw === 'Harmony Link'\) return '하이벨';\s*return raw \|\| String\(member\.full_name \|\| ''\)\.trim\(\) \|\| fallbackMemberName\(member\);\s*\};/);
   assert.match(admin, /\['이름', escapeHtml\(memberPersonName\(member\)\)/);
   assert.match(admin, /member\.nickname \|\| ''\} \$\{member\.full_name \|\| ''\} \$\{member\.display_name \|\| ''\} \$\{member\.email \|\| ''\}/);
 });

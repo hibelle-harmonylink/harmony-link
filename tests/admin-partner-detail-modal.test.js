@@ -65,10 +65,17 @@ test('회원번호 stays a read-only chip; 닉네임/이름/연락처/회원유�
   assert.doesNotMatch(detail, /readonlyField\('계정상태'/);
 });
 
-test('member-number-pending (검정→빨강) status color rule is unchanged: black is the default/completed state, red is only application_completed === false', () => {
-  assert.match(adminJs, /const memberNumberClass = member => member\.member_number && member\.application_completed === false\s*\n\s*\? 'member-number member-number-pending'\s*\n\s*: 'member-number';/);
+// Corrected status-color policy: black now requires an explicit
+// application_completed === true. false, null, and undefined (including a
+// historic row that predates this column) all read as "not yet complete"
+// (red) -- a NULL no longer passes as if the application were already done.
+// A member with no member_number at all gets its own distinct, non-alarming
+// "needs reconciliation" treatment instead of either color.
+test('member-number status color rule: true is black, everything else with a number is red, no number is its own missing state', () => {
+  assert.match(adminJs, /const memberNumberClass = member => \{\s*if \(!member\.member_number\) return 'member-number member-number-missing';\s*return member\.application_completed === true \? 'member-number' : 'member-number member-number-pending';\s*\};/);
   assert.match(adminCss, /\.member-number\{display:inline-block;color:#111827;/);
   assert.match(adminCss, /\.member-number\.member-number-pending\{color:#dc2626\}/);
+  assert.match(adminCss, /\.member-number\.member-number-missing\{color:#9aa8b8;font-style:italic/);
 });
 
 test('detail dialog is a 3-group compact grid (기본 정보 / 회원·파트너 정보 / 지역·권한) instead of a read-only summary followed by a separately-scrolling edit form', () => {

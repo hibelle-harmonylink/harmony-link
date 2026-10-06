@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const BUILD = '20260917-3';
+  const BUILD = '20260917-4';
   console.log(`[admin] admin.js loaded — build ${BUILD}`);
   // Visible without opening devtools -- if this text is missing, blank, or
   // shows an older build number than the one just shipped, the browser (or
@@ -189,9 +189,17 @@
   // separate for its own field; otherwise a successful display_name save is
   // hidden again as soon as the detail dialog is reopened.
   const resolveDisplayName = member => memberPersonName(member);
-  const memberNumberClass = member => member.member_number && member.application_completed === false
-    ? 'member-number member-number-pending'
-    : 'member-number';
+  // A member with no number yet needs its own neutral "needs reconciliation"
+  // treatment -- it is neither the pending-application (red) nor the
+  // completed-application (black) state, since there is no number for either
+  // state to describe. Once a number exists, only an explicit
+  // application_completed === true is black; false, null, and undefined all
+  // read as "not yet complete" (red) -- a historic NULL is no longer treated
+  // as if it were already done.
+  const memberNumberClass = member => {
+    if (!member.member_number) return 'member-number member-number-missing';
+    return member.application_completed === true ? 'member-number' : 'member-number member-number-pending';
+  };
   const escapeHtml = value => String(value || '').replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
   const normalizeServiceAreas = values => {
     const seen = new Set();
@@ -314,7 +322,7 @@
         ['회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(memberNumber)}</span>`],
         ['닉네임', escapeHtml(memberNickname(member))],
         ['이름', escapeHtml(memberPersonName(member)) + (member.access_migration_review ? '<span class="member-review">검토 필요</span>' : '')],
-        ['이메일', escapeHtml(member.email || '이메일 없음')],
+        ['이메일', `<span title="${escapeHtml(member.email || '이메일 없음')}">${escapeHtml(member.email || '이메일 없음')}</span>`],
         ['연락처', escapeHtml(formatPhone(member.phone))],
         ['회원유형', typeBadge(member)],
         // Admin's membership column value (backfilled to 'free') is not a
