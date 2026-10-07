@@ -83,7 +83,9 @@ test('only partners receive a compact region summary and management action', () 
   assert.match(admin, /class="partner-region partner-metadata" hidden/);
   assert.match(admin, /id="detailManagePartnerRegion"/);
   assert.match(admin, /manageRegionButton\.addEventListener\('click', openRegionManager\)/);
-  assert.match(css, /\.partner-region-actions\{display:flex;justify-content:flex-end/);
+  // The manage button sits inline in the compact one-line row rather than
+  // a separate actions sub-block.
+  assert.match(css, /\.member-region-manage\{min-height:30px/);
 });
 
 test('region manager is a separate modal and uses only the existing region RPC', () => {

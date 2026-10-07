@@ -60,8 +60,8 @@ test('reapplies Sheet G/H/I colors from the current display values', () => {
   assert.match(appsScript, /applyRosterDisplayStyles_\(sheet, 2, Math\.max\(sheet\.getLastRow\(\) - 1, 0\), columns\)/);
 });
 
-test('detail dialog uses the compact historical width with a bounded information scroll surface', () => {
-  assert.match(adminCss, /\.member-dialog\{width:min\(780px,calc\(100% - 28px\)\);max-height:90vh;overflow:hidden\}/);
+test('detail dialog uses the compact dialog width with a bounded information scroll surface', () => {
+  assert.match(adminCss, /\.member-dialog\{width:min\(860px,calc\(100% - 28px\)\);max-height:90vh;overflow:hidden\}/);
   assert.match(adminCss, /\.member-detail\{display:flex;flex-direction:column;min-height:0;overflow:hidden;gap:\d+px\}/);
   assert.match(adminCss, /\.member-detail-groups\{min-height:0;overflow-y:auto;overflow-x:hidden;align-content:start\}/);
   assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-groups\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);

@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const BUILD = '20260917-5';
+  const BUILD = '20260917-6';
   console.log(`[admin] admin.js loaded — build ${BUILD}`);
   // Visible without opening devtools -- if this text is missing, blank, or
   // shows an older build number than the one just shipped, the browser (or
@@ -180,6 +180,13 @@
   // anonymous in the admin UI: use the existing display name, then email.
   const memberNickname = member => String(member.nickname || '').trim() || fallbackMemberName(member);
   const memberFullName = member => String(member.full_name || '').trim() || fallbackMemberName(member);
+  // Detail-dialog display only: a full_name that carries a trailing
+  // credential suffix ("Example Name, MSN, RN") shows only the name part
+  // before the first comma so the compact 기본 정보 row stays one line. The
+  // stored full_name -- used for search, the RPC save payload, and
+  // everywhere else -- is read via memberFullName(member) above and is
+  // never touched here.
+  const memberFullNameDisplay = member => memberFullName(member).split(',')[0].trim();
   // A person's public/admin-facing name is not a business nickname.  Keep
   // the administrator-confirmed profile name first, then the
   // application-verified full_name, then the OAuth account name, then
@@ -475,10 +482,16 @@
     if (data?.error) throw new Error(data.error);
   };
 
+  // Access calculation is untouched (access.getFeatureAccess); only the
+  // markup changed -- a compact one-line 사용 가능/사용 제한 count row with
+  // the full allowed/denied lists tucked behind a native <details> toggle
+  // instead of two always-open boxes.
   const featureHtml = member => {
     const features = access.getFeatureAccess(member);
+    const allowedCount = features.filter(item => item.allowed).length;
+    const deniedCount = features.length - allowedCount;
     const renderList = allowed => features.filter(item => item.allowed === allowed).map(item => `<li class="feature-${item.feature}">${item.label}</li>`).join('') || '<li>없음</li>';
-    return `<div class="feature-columns"><section class="feature-box allowed"><h3>이용 가능한 기능</h3><ul>${renderList(true)}</ul></section><section class="feature-box denied"><h3>이용 불가능한 기능</h3><ul>${renderList(false)}</ul></section></div>`;
+    return `<div class="feature-summary"><span class="feature-summary-label">기능 권한</span><span class="feature-count allowed">사용 가능 <b>${allowedCount}</b></span><span class="feature-count denied">사용 제한 <b>${deniedCount}</b></span><details class="feature-details"><summary>자세히 보기</summary><div class="feature-columns"><section class="feature-box allowed"><h3>이용 가능한 기능</h3><ul>${renderList(true)}</ul></section><section class="feature-box denied"><h3>이용 불가능한 기능</h3><ul>${renderList(false)}</ul></section></div></details></div>`;
   };
 
   const partnerRegionSummary = region => {
@@ -508,12 +521,22 @@
     // the internal scrollbar on common desktop viewports (1366x768+).
     const readonlyField = (label, valueHtml, truncate = false) => `<div class="member-readonly member-system-field${truncate ? ' member-readonly-truncate' : ''}"><span>${label}<em>자동 관리</em></span><strong${truncate ? ` title="${escapeHtml(member.email || '')}"` : ''}>${valueHtml}</strong></div>`;
     const syncedReadonlyField = (label, value) => `<div class="member-readonly member-synced-field" title="신청서 자동연동 · 신청서 재동기화로 갱신됩니다"><span>${label}<em>신청서 자동연동</em></span><strong>${escapeHtml(value || '—')}</strong></div>`;
-    const basicInfoFields = `<section class="member-group"><h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시</small></h3><div class="member-group-grid">${readonlyField('회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>`)}${readonlyField('이메일', escapeHtml(member.email || ''), true)}${readonlyField('가입일', formatDate(member.created_at))}<label class="${manualFieldClass}" title="일반 수정 · 사업체명 또는 활동명">닉네임/업체명<input id="detailNickname" type="text" maxlength="80" autocomplete="nickname"${editableDisabled}></label>${syncedReadonlyField('영문 이름', memberFullName(member))}${syncedReadonlyField('연락처', formatPhone(member.phone ?? ''))}</div></section>`;
+    // 강의과목 is the one synced field whose content routinely runs several
+    // sentences long. Clamp it to two lines and tuck the full text behind a
+    // native <details> toggle instead of letting it set the dialog's height.
+    const syncedClampField = (label, value) => {
+      const text = String(value || '').trim();
+      return `<div class="member-readonly member-synced-field member-clamp-field" title="신청서 자동연동 · 신청서 재동기화로 갱신됩니다"><span>${label}<em>신청서 자동연동</em></span><strong class="member-clamp-value">${escapeHtml(text || '—')}</strong>${text ? `<details class="member-clamp-details"><summary>전체 보기</summary><div class="member-clamp-full">${escapeHtml(text)}</div></details>` : ''}</div>`;
+    };
+    const basicInfoFields = `<section class="member-group member-group--info"><h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시</small></h3><div class="member-group-grid">${readonlyField('회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>`)}${readonlyField('가입일', formatDate(member.created_at))}${readonlyField('이메일', escapeHtml(member.email || ''), true)}<label class="${manualFieldClass}" title="일반 수정 · 사업체명 또는 활동명">닉네임/업체명<input id="detailNickname" type="text" maxlength="80" autocomplete="nickname"${editableDisabled}></label>${syncedReadonlyField('영문 이름', memberFullNameDisplay(member))}${syncedReadonlyField('연락처', formatPhone(member.phone ?? ''))}</div></section>`;
     const protectedNotice = withdrawn || protectedAccount ? `<div class="member-protected-copy">${withdrawn ? '탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다.' : '관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.'}</div>` : '';
     const accessInputs = withdrawn || protectedAccount ? '' : `<label class="member-name-field ${directFieldClass}" title="관리자 직접 관리 · 신청서 재동기화로 변경되지 않음">한글 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label>`;
-    const roleMetadataInputs = `<div class="partner-metadata">${syncedReadonlyField('전문분야', member.specialty)}</div><div class="partner-metadata">${syncedReadonlyField('강의과목', member.teaching_subjects)}</div><div class="student-metadata">${syncedReadonlyField('수강과목', member.enrolled_subject)}</div><div class="student-metadata">${syncedReadonlyField('담당강사', member.assigned_instructor)}</div>`;
+    const roleMetadataInputs = `<div class="partner-metadata">${syncedReadonlyField('전문분야', member.specialty)}</div><div class="partner-metadata">${syncedClampField('강의과목', member.teaching_subjects)}</div><div class="student-metadata">${syncedReadonlyField('수강과목', member.enrolled_subject)}</div><div class="student-metadata">${syncedReadonlyField('담당강사', member.assigned_instructor)}</div>`;
     const roleInfoFields = `<section class="member-group"><h3>회원·파트너 정보 <small class="member-editable-note">관리 설정 · 자동연동 정보</small></h3>${protectedNotice}<div class="member-group-grid">${accessInputs}${roleMetadataInputs}</div></section>`;
-    const partnerRegionFields = `<section class="partner-region partner-metadata" hidden aria-labelledby="detailPartnerRegionTitle"><div class="partner-region-heading"><div><h3 id="detailPartnerRegionTitle">활동 지역</h3><p id="detailPartnerRegionSummary">지역 정보를 불러오는 중…</p><p id="detailPartnerRegionServices" class="partner-region-services" hidden></p></div><span class="partner-region-note">파트너 전용</span></div><div class="partner-region-actions"><button id="detailManagePartnerRegion" type="button" class="member-region-manage">지역정보 관리</button></div></section>`;
+    // Compact one-line region row (활동 지역 | value | manage button) instead
+    // of a separate heading/paragraph/badge block. Still only shown for
+    // partners via the existing .partner-metadata hidden toggle.
+    const partnerRegionFields = `<div class="partner-region partner-metadata" hidden><span class="partner-region-label">활동 지역</span><span class="partner-region-value"><span id="detailPartnerRegionSummary">지역 정보를 불러오는 중…</span><span id="detailPartnerRegionServices" class="partner-region-services" hidden></span></span><button id="detailManagePartnerRegion" type="button" class="member-region-manage">지역정보 관리</button></div>`;
     const regionAccessFields = `<section class="member-group"><h3>지역·권한</h3><div class="member-region-access-row">${partnerRegionFields}<div id="detailFeatures">${withdrawn ? '' : featureHtml(member)}</div></div></section>`;
     const feedback = '<p class="member-save-feedback" id="detailSaveFeedback" role="status" aria-live="polite"></p>';
     const actions = withdrawn
@@ -532,7 +555,9 @@
     let partnerRegion = normalizePartnerRegion();
     const renderPartnerRegion = region => {
       partnerRegion = normalizePartnerRegion(region);
-      regionSummary.textContent = `지역: ${partnerRegionSummary(partnerRegion)}`;
+      // The compact one-line row already prints its own "활동 지역" label
+      // (see partnerRegionFields), so this no longer repeats a "지역:" prefix.
+      regionSummary.textContent = partnerRegionSummary(partnerRegion);
       const detail = [
         partnerRegion.city || partnerRegion.service_area.length ? '방문 가능' : '',
         partnerRegion.online_available ? '온라인 수업 가능' : '',

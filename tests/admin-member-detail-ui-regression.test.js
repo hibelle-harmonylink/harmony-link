@@ -9,7 +9,7 @@ const adminCss = fs.readFileSync(path.join(root, 'admin.css'), 'utf8');
 const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
 
 test('desktop and mobile member dialogs cap their height and scroll only the information groups', () => {
-  assert.match(adminCss, /\.member-dialog\{width:min\(780px,calc\(100% - 28px\)\);max-height:90vh;overflow:hidden\}/);
+  assert.match(adminCss, /\.member-dialog\{width:min\(860px,calc\(100% - 28px\)\);max-height:90vh;overflow:hidden\}/);
   assert.match(adminCss, /\.member-detail-groups\{min-height:0;overflow-y:auto;overflow-x:hidden;align-content:start\}/);
   assert.doesNotMatch(adminCss, /\.member-dialog\{max-height:none\}/);
   assert.match(adminCss, /@media\(max-width:680px\)\{\s*\.member-dialog\{width:calc\(100% - 18px\);max-height:90vh;overflow:hidden\}/);
@@ -37,23 +37,23 @@ test('editable and system-managed member fields are visually distinct without ma
 });
 
 test('partner region and feature text wrap at word boundaries without clipping their contents', () => {
-  assert.match(detail, /regionSummary\.textContent = `지역: \$\{partnerRegionSummary\(partnerRegion\)\}`;/);
+  // The compact one-line row no longer repeats a "지역:" label prefix in
+  // the JS-set text (the HTML row already prints its own 활동 지역 label).
+  assert.match(detail, /regionSummary\.textContent = partnerRegionSummary\(partnerRegion\);/);
   assert.match(detail, /regionServices\.textContent = detail \? `수업 범위: \$\{detail\}` : '';/);
-  assert.match(adminCss, /\.partner-region-services\{white-space:normal;word-break:keep-all;overflow-wrap:break-word;/);
-  assert.match(adminCss, /\.feature-box li\{min-width:0;max-width:100%;white-space:normal;word-break:keep-all;overflow-wrap:break-word\}/);
+  assert.match(adminCss, /\.partner-region-services\{white-space:normal;word-break:keep-all;overflow-wrap:break-word\}/);
+  assert.match(adminCss, /\.feature-box li\{min-width:0;white-space:normal;word-break:keep-all;overflow-wrap:break-word\}/);
 });
 
-test('equal desktop lower boxes use readable full-width list items and grow inside the information scroll surface', () => {
-  assert.match(adminCss, /\.member-region-access-row \.partner-region\{display:grid;flex:none;min-width:0;max-width:100%;min-height:144px;padding:10px 7px/);
-  assert.match(adminCss, /\.member-region-access-row \.partner-region-heading,.member-region-access-row \.partner-region-heading>div,.member-region-access-row \.partner-region-actions\{min-width:0;max-width:100%;box-sizing:border-box\}/);
-  assert.match(adminCss, /\.member-region-access-row \.feature-box\{min-width:0;max-width:100%;min-height:144px;padding:8px 14px/);
-  assert.match(adminCss, /\.feature-box ul\{min-width:0;max-width:100%;grid-template-columns:minmax\(0,1fr\)/);
-  assert.match(adminCss, /\.feature-box \.feature-learning\{grid-column:1\/-1\}/);
+test('활동 지역 and 기능 권한 are compact one-line rows instead of fixed-height boxes', () => {
+  assert.match(adminCss, /\.partner-region\{display:flex;align-items:center;flex-wrap:wrap;/);
+  assert.doesNotMatch(adminCss, /min-height:144px/);
+  assert.doesNotMatch(adminJs, /partner-region-heading/);
   assert.match(adminJs, /<li class="feature-\$\{item\.feature\}">\$\{item\.label\}<\/li>/);
 });
 
 test('partner/student metadata exclusivity preserves the synchronized display path', () => {
   assert.match(detail, /showRoleMetadata\(withdrawn \? 'student' : \(member\.is_admin \? 'admin' : member\.user_type\)\);/);
   assert.match(detail, /syncedReadonlyField\('전문분야', member\.specialty\)/);
-  assert.match(detail, /syncedReadonlyField\('강의과목', member\.teaching_subjects\)/);
+  assert.match(detail, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
 });

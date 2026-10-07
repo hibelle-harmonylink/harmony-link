@@ -7,8 +7,14 @@ const css = read('admin.css');
 const js = read('admin.js');
 const html = read('admin.html');
 
-test('recovered member dialog uses the historical 780px envelope, not a wider redesign', () => {
-  assert.match(css, /\.member-dialog\{width:min\(780px,calc\(100% - 28px\)\);max-height:90vh;overflow:hidden\}/);
+// 2026-10: compact redesign of the member detail dialog -- fitting a
+// partner account with a long full_name, 강의과목, and an active region on
+// a 1366x768 laptop without an internal scrollbar. The dialog widened
+// slightly (780px -> 860px) to use horizontal space instead of shrinking
+// fonts; 활동 지역 and 기능 권한 became slim one-line rows instead of
+// fixed-height boxes; 강의과목 clamps to two lines behind "전체 보기".
+test('the dialog widened to use horizontal space instead of shrinking', () => {
+  assert.match(css, /\.member-dialog\{width:min\(860px,calc\(100% - 28px\)\);max-height:90vh;overflow:hidden\}/);
   assert.doesNotMatch(css, /\.member-dialog\{max-height:none\}/);
 });
 
@@ -22,27 +28,49 @@ test('dialog header, identity, and actions remain outside the shrinking informat
 
 test('both basic and role controls use two readable tracks without a wasted name row', () => {
   assert.match(css, /\.member-detail-groups\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
-  assert.match(css, /\.member-group-grid\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\);gap:8px 12px\}/);
+  assert.match(css, /\.member-group-grid\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\);gap:4px 10px\}/);
   assert.match(css, /\.member-group-grid>\.member-name-field\{grid-column:auto\}/);
 });
 
 test('long partner/student synchronized descriptions span the entire group instead of a control track', () => {
   assert.match(css, /\.member-group-grid>\.partner-metadata,\.member-group-grid>\.student-metadata\{grid-column:1\/-1\}/);
   assert.match(css, /\.member-group-grid>\.partner-metadata strong,\.member-group-grid>\.student-metadata strong\{word-break:keep-all;overflow-wrap:break-word\}/);
-  assert.match(js, /syncedReadonlyField\('강의과목', member\.teaching_subjects\)/);
+  assert.match(js, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
   assert.match(js, /syncedReadonlyField\('전문분야', member\.specialty\)/);
 });
 
-test('lower region and access panels keep equal tracks and allow readable list wrapping', () => {
-  assert.match(css, /\.member-region-access-row\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
-  assert.match(css, /\.member-region-access-row \.feature-box ul\{min-width:0;max-width:100%;grid-template-columns:minmax\(0,1fr\)/);
-  assert.match(css, /\.member-region-access-row \.feature-box li\{[^}]*white-space:normal;word-break:keep-all;overflow-wrap:break-word\}/);
-  assert.doesNotMatch(css, /\.member-region-access-row \.feature-box\{[^}]*;height:144px/);
+test('강의과목 clamps to two lines with the full text behind a 전체 보기 toggle', () => {
+  assert.match(js, /const syncedClampField = \(label, value\) => \{/);
+  // .member-synced-field strong{display:block} (an existing, unrelated
+  // rule) has the exact same specificity as a bare .member-clamp-value
+  // class and sits later in the file, so it silently wins and the clamp
+  // never applies unless the clamp selector matches .member-synced-field
+  // too (found by actually rendering this in a browser, not just regex).
+  assert.match(css, /\.member-synced-field strong\.member-clamp-value\{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden\}/);
+  assert.match(js, /<details class="member-clamp-details"><summary>전체 보기<\/summary>/);
 });
 
-test('non-partner region stays hidden and does not leave an empty third column', () => {
-  assert.match(css, /\.member-region-access-row \.partner-region\[hidden\]\{display:none\}/);
-  assert.match(css, /\.member-region-access-row:has\(>\.partner-region\[hidden\]\)\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)\}/);
+test('기본 정보 rows hide the synced-field source badge visually (title tooltip keeps it discoverable) so 영문 이름/연락처 are not squeezed into an early ellipsis', () => {
+  assert.match(css, /\.member-group--info \.member-synced-field>span em\{display:none\}/);
+  // The outer div still carries the explanatory title (syncedReadonlyField
+  // always sets it), so nothing is actually lost -- only hidden from the
+  // compact row's limited width.
+  assert.match(js, /syncedReadonlyField = \(label, value\) => `<div class="member-readonly member-synced-field" title="신청서 자동연동/);
+});
+
+test('활동 지역 and 기능 권한 are compact one-line rows, not fixed-height boxes', () => {
+  assert.match(css, /\.member-region-access-row\{display:grid;gap:8px\}/);
+  assert.doesNotMatch(css, /min-height:144px/);
+  assert.match(js, /const featureHtml = member => \{/);
+  assert.match(js, /class="feature-summary"/);
+  assert.match(js, /사용 가능 <b>\$\{allowedCount\}<\/b>/);
+  assert.match(js, /사용 제한 <b>\$\{deniedCount\}<\/b>/);
+});
+
+test('non-partner region stays hidden via the existing .partner-metadata toggle', () => {
+  assert.match(css, /\.partner-region\[hidden\]\{display:none\}/);
+  assert.match(js, /class="partner-region partner-metadata" hidden/);
+  assert.match(js, /field\.hidden = selectedType !== 'partner'/);
 });
 
 test('existing close, type/membership/status preview, resend, and save handlers remain connected', () => {
@@ -55,7 +83,11 @@ test('existing close, type/membership/status preview, resend, and save handlers 
 });
 
 test('layout recovery keeps existing identity sources, save RPC, and readback verification', () => {
-  assert.match(js, /syncedReadonlyField\('영문 이름', memberFullName\(member\)\)/);
+  // 영문 이름 renders through a display-only truncation helper (credential
+  // suffix after the first comma hidden from view); the save payload below
+  // still sends memberFullName(member) verbatim, untouched by that helper.
+  assert.match(js, /syncedReadonlyField\('영문 이름', memberFullNameDisplay\(member\)\)/);
+  assert.match(js, /const memberFullNameDisplay = member => memberFullName\(member\)\.split\(','\)\[0\]\.trim\(\)/);
   assert.match(js, /id="detailNickname"/);
   assert.match(js, /admin_update_member_name/);
   assert.match(js, /p_display_name: nextName/);
