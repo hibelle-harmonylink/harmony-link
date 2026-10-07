@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const BUILD = '20260917-7';
+  const BUILD = '20260917-8';
   console.log(`[admin] admin.js loaded — build ${BUILD}`);
   // Visible without opening devtools -- if this text is missing, blank, or
   // shows an older build number than the one just shipped, the browser (or
@@ -561,8 +561,13 @@
     // used to appear twice (닉네임/이름/연락처/회원유형/멤버십/계정상태) now
     // renders exactly once, as its live input/select, which is what removed
     // the internal scrollbar on common desktop viewports (1366x768+).
-    const readonlyField = (label, valueHtml, truncate = false) => `<div class="member-readonly member-system-field${truncate ? ' member-readonly-truncate' : ''}"><span>${label}<em>자동 관리</em></span><strong${truncate ? ` title="${escapeHtml(member.email || '')}"` : ''}>${valueHtml}</strong></div>`;
+    const readonlyField = (label, valueHtml, truncate = false, full = false) => `<div class="member-readonly member-system-field${truncate ? ' member-readonly-truncate' : ''}${full ? ' member-field-full' : ''}"><span>${label}<em>자동 관리</em></span><strong${truncate ? ` title="${escapeHtml(member.email || '')}"` : ''}>${valueHtml}</strong></div>`;
     const syncedReadonlyField = (label, value) => `<div class="member-readonly member-synced-field" title="신청서 자동연동 · 신청서 재동기화로 갱신됩니다"><span>${label}<em>신청서 자동연동</em></span><strong>${escapeHtml(value || '—')}</strong></div>`;
+    // Value-only variant for cards whose own <h3> already names the field
+    // (전문분야/수강과목 below) -- avoids repeating the label a second time.
+    // The "자동연동" badge is dropped from view but stays on the title
+    // attribute, same as the em-hiding rule already used in 기본 정보 rows.
+    const syncedValueOnly = value => `<p class="member-synced-value" title="신청서 자동연동 · 신청서 재동기화로 갱신됩니다">${escapeHtml(value || '—')}</p>`;
     // 강의과목 is the one synced field whose content routinely runs several
     // sentences long. Clamp it to two lines; "전체 보기" opens the shared
     // overlay dialog (wired once, by delegation, in the module-level click
@@ -571,31 +576,42 @@
       const text = String(value || '').trim();
       return `<div class="member-readonly member-synced-field member-clamp-field" title="신청서 자동연동 · 신청서 재동기화로 갱신됩니다"><span>${label}<em>신청서 자동연동</em></span><strong class="member-clamp-value">${escapeHtml(text || '—')}</strong>${text ? `<button type="button" class="member-clamp-trigger">전체 보기</button>` : ''}</div>`;
     };
-    const basicInfoFields = `<section class="member-group member-group--info"><h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시</small></h3><div class="member-group-grid">${readonlyField('회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>`)}${readonlyField('가입일', formatDate(member.created_at))}${readonlyField('이메일', escapeHtml(member.email || ''), true)}<label class="${manualFieldClass}" title="일반 수정 · 사업체명 또는 활동명">닉네임/업체명<input id="detailNickname" type="text" maxlength="80" autocomplete="nickname"${editableDisabled}></label>${syncedReadonlyField('영문 이름', memberFullNameDisplay(member))}${syncedReadonlyField('연락처', formatPhone(member.phone ?? ''))}</div></section>`;
+    // 이메일/닉네임 now span the full card width (member-field-full) instead
+    // of sharing a half-width column with 영문 이름/연락처 -- that was what
+    // truncated a normal-length email to an ellipsis. 회원번호/가입일 stay a
+    // 2-col row above it; 영문 이름/연락처 stay a 2-col row below it.
+    const basicInfoFields = `<section class="member-group member-group--info"><h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시</small></h3><div class="member-group-grid">${readonlyField('회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>`)}${readonlyField('가입일', formatDate(member.created_at))}${readonlyField('이메일', escapeHtml(member.email || ''), false, true)}<label class="${manualFieldClass} member-field-full" title="일반 수정 · 사업체명 또는 활동명">닉네임/업체명<input id="detailNickname" type="text" maxlength="80" autocomplete="nickname"${editableDisabled}></label>${syncedReadonlyField('영문 이름', memberFullNameDisplay(member))}${syncedReadonlyField('연락처', formatPhone(member.phone ?? ''))}</div></section>`;
     const protectedNotice = withdrawn || protectedAccount ? `<div class="member-protected-copy">${withdrawn ? '탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다.' : '관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.'}</div>` : '';
     const accessInputs = withdrawn || protectedAccount ? '' : `<label class="member-name-field ${directFieldClass}" title="관리자 직접 관리 · 신청서 재동기화로 변경되지 않음">한글 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label>`;
-    const roleMetadataInputs = `<div class="partner-metadata">${syncedReadonlyField('전문분야', member.specialty)}</div><div class="partner-metadata">${syncedClampField('강의과목', member.teaching_subjects)}</div><div class="student-metadata">${syncedReadonlyField('수강과목', member.enrolled_subject)}</div><div class="student-metadata">${syncedReadonlyField('담당강사', member.assigned_instructor)}</div>`;
-    const roleInfoFields = `<section class="member-group"><h3>회원·파트너 정보 <small class="member-editable-note">관리 설정 · 자동연동 정보</small></h3>${protectedNotice}<div class="member-group-grid">${accessInputs}${roleMetadataInputs}</div></section>`;
+    // 전문분야/강의과목 (and their student counterparts) moved out of this
+    // card entirely -- see specialtyFields/subjectsRow below -- so this card
+    // now holds only the live setting controls, no synced/자동연동 fields.
+    const roleInfoFields = `<section class="member-group member-group--role"><h3>회원·파트너 정보 <small class="member-editable-note">관리 설정</small></h3>${protectedNotice}<div class="member-group-grid">${accessInputs}</div></section>`;
     // Compact vertical region card (활동 지역 row, 수업 범위 row, manage
-    // button) instead of a separate heading/paragraph/badge block. Lives in
-    // the left column right under 기본 정보 -- it used to sit in its own
-    // full-width section at the bottom, which is what left 기본 정보's
-    // shorter card looking mostly empty next to 회원·파트너 정보. Still only
-    // shown for partners via the existing .partner-metadata hidden toggle.
+    // button) instead of a separate heading/paragraph/badge block. Paired
+    // with specialtyFields in the same explicit grid row below -- CSS
+    // grid's default row stretch equalizes their height natively (no
+    // min-height hack needed). Still only shown for partners via the
+    // existing .partner-metadata hidden toggle.
     const partnerRegionFields = `<section class="member-group member-group--region partner-metadata" hidden><h3>지역·권한</h3><div class="member-region-compact"><div class="member-region-row"><span>활동 지역</span><strong id="detailPartnerRegionSummary">지역 정보를 불러오는 중…</strong></div><div class="member-region-row" id="detailPartnerRegionServicesRow" hidden><span>수업 범위</span><strong id="detailPartnerRegionServices"></strong></div></div><div class="member-region-actions"><button id="detailManagePartnerRegion" type="button" class="member-region-manage">지역정보 관리</button></div></section>`;
-    // Two explicit columns (not grid auto-placement) so 기본 정보 + 지역·권한
-    // stack on the left and 회원·파트너 정보 stands alone on the right,
-    // matching their actual content heights instead of each card reserving
-    // the taller row's height. 기능 권한 is a standalone full-width row
-    // below both columns, not nested inside either card.
-    const columns = `<div class="member-detail-columns"><div class="member-detail-col-left">${basicInfoFields}${partnerRegionFields}</div><div class="member-detail-col-right">${roleInfoFields}</div></div>`;
+    // 전문분야(파트너)/수강과목(수강생) as its own compact card, sitting in
+    // the same grid row as 지역·권한 for equal height. Each toggle wrapper
+    // carries its own <h3> (rather than one static title) so the label is
+    // never wrong for the account's actual type.
+    const specialtyFields = `<section class="member-group member-group--specialty"><div class="partner-metadata"><h3>전문분야</h3>${syncedValueOnly(member.specialty)}</div><div class="student-metadata" hidden><h3>수강과목</h3>${syncedValueOnly(member.enrolled_subject)}</div></section>`;
+    // 강의과목(파트너)/담당강사(수강생) moved out of the narrow right column
+    // into its own full-width row below both card rows -- it used to be
+    // squeezed into half the dialog's width, which is what forced it down
+    // to an uncomfortably narrow two-line clamp.
+    const subjectsRow = `<div class="member-subjects-row"><div class="partner-metadata">${syncedClampField('강의과목', member.teaching_subjects)}</div><div class="student-metadata" hidden>${syncedReadonlyField('담당강사', member.assigned_instructor)}</div></div>`;
+    const grid = `<div class="member-detail-grid">${basicInfoFields}${roleInfoFields}${partnerRegionFields}${specialtyFields}${subjectsRow}</div>`;
     const featureRow = `<div class="member-feature-row" id="detailFeatures">${withdrawn ? '' : featureHtml(member)}</div>`;
     const feedback = '<p class="member-save-feedback" id="detailSaveFeedback" role="status" aria-live="polite"></p>';
     const actions = withdrawn
       ? `<div class="member-detail-actions">${feedback}<button type="button" class="btn member-save-disabled" id="detailSave" disabled>변경 불가</button></div>`
       : protectedAccount ? ''
         : `<div class="member-detail-actions">${feedback}<button type="button" class="btn member-resend">안내메일 다시 보내기</button><button type="button" class="btn btn-primary" id="detailSave">변경 저장</button></div>`;
-    detail.innerHTML = `<div class="member-detail-summary"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(member.email || '')}</span>${typeBadge(member)}${member.is_admin ? '' : membershipBadge(member)}${badge(STATUS_LABELS[member.account_status], member.account_status)}</div><div class="member-detail-groups">${columns}${featureRow}</div>${actions}`;
+    detail.innerHTML = `<div class="member-detail-summary"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(member.email || '')}</span>${typeBadge(member)}${member.is_admin ? '' : membershipBadge(member)}${badge(STATUS_LABELS[member.account_status], member.account_status)}</div><div class="member-detail-groups">${grid}${featureRow}</div>${actions}`;
     const nameInput = detail.querySelector('#detailName');
     const nicknameInput = detail.querySelector('#detailNickname');
     const type = detail.querySelector('#detailType');

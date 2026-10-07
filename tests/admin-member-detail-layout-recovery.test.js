@@ -27,16 +27,18 @@ test('dialog header, identity, and actions remain outside the shrinking informat
 });
 
 test('both basic and role controls use two readable tracks without a wasted name row', () => {
-  assert.match(css, /\.member-detail-columns\{grid-template-columns:46fr 54fr\}/);
+  assert.match(css, /\.member-detail-grid\{grid-template-columns:1fr 1fr\}/);
   assert.match(css, /\.member-group-grid\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\);gap:4px 10px\}/);
   assert.match(css, /\.member-group-grid>\.member-name-field\{grid-column:auto\}/);
 });
 
-test('long partner/student synchronized descriptions span the entire group instead of a control track', () => {
-  assert.match(css, /\.member-group-grid>\.partner-metadata,\.member-group-grid>\.student-metadata\{grid-column:1\/-1\}/);
-  assert.match(css, /\.member-group-grid>\.partner-metadata strong,\.member-group-grid>\.student-metadata strong\{word-break:keep-all;overflow-wrap:break-word\}/);
+test('강의과목/담당강사 span the entire subjects row instead of a half-width control track', () => {
+  assert.match(css, /\.member-detail-grid>\.member-subjects-row\{grid-column:1\/-1;grid-row:3\}/);
+  assert.match(css, /\.member-subjects-row \.partner-metadata strong,\.member-subjects-row \.student-metadata strong\{word-break:keep-all;overflow-wrap:break-word\}/);
   assert.match(js, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
-  assert.match(js, /syncedReadonlyField\('전문분야', member\.specialty\)/);
+  // 전문분야/수강과목 moved into their own compact card with the label on a
+  // dedicated <h3> -- syncedValueOnly renders the display-only value.
+  assert.match(js, /<h3>전문분야<\/h3>\$\{syncedValueOnly\(member\.specialty\)\}/);
 });
 
 test('강의과목 clamps to two lines with the full text opening in a separate overlay popup', () => {

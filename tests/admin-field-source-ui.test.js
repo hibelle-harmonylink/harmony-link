@@ -19,7 +19,12 @@ test('only the Korean public-name field uses the administrator-direct source sty
 });
 
 test('application-synced metadata fields are display-only and retain their canonical sync sources', () => {
-  ['영문 이름', '연락처', '전문분야', '수강과목', '담당강사'].forEach(label => assert.match(admin, new RegExp(String.raw`syncedReadonlyField\('${label}'`)));
+  ['영문 이름', '연락처', '담당강사'].forEach(label => assert.match(admin, new RegExp(String.raw`syncedReadonlyField\('${label}'`)));
+  // 전문분야/수강과목 now live in their own compact card with the label on
+  // a dedicated <h3> instead of inline -- syncedValueOnly renders the value
+  // alone (still display-only, same canonical member.specialty/enrolled_subject source).
+  assert.match(admin, /<h3>전문분야<\/h3>\$\{syncedValueOnly\(member\.specialty\)\}/);
+  assert.match(admin, /<h3>수강과목<\/h3>\$\{syncedValueOnly\(member\.enrolled_subject\)\}/);
   // 강의과목 is the one synced field long enough to need the two-line clamp
   // + 전체 보기 toggle instead of the plain read-only row.
   assert.match(admin, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
@@ -33,7 +38,7 @@ test('application-synced metadata fields are display-only and retain their canon
 });
 
 test('nickname remains an ordinary administrator-editable field because partner form forwarding has no nickname payload', () => {
-  assert.match(admin, /\$\{manualFieldClass\}" title="일반 수정 · 사업체명 또는 활동명">닉네임\/업체명<input id="detailNickname"/);
+  assert.match(admin, /\$\{manualFieldClass\} member-field-full" title="일반 수정 · 사업체명 또는 활동명">닉네임\/업체명<input id="detailNickname"/);
   const forward = partnerForm.slice(partnerForm.indexOf('function forwardApplicationToRoster_'), partnerForm.indexOf('function resyncExistingApplications'));
   assert.doesNotMatch(forward, /['"]닉네임['"]\s*:/);
   assert.match(css, /\.field-source-manual>input\{border:1px solid #c8d8ea/);

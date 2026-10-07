@@ -64,6 +64,6 @@ test('detail dialog uses the compact dialog width with a bounded information scr
   assert.match(adminCss, /\.member-dialog\{width:min\(860px,calc\(100% - 28px\)\);max-height:90vh;overflow:hidden\}/);
   assert.match(adminCss, /\.member-detail\{display:flex;flex-direction:column;min-height:0;overflow:hidden;gap:\d+px\}/);
   assert.match(adminCss, /\.member-detail-groups\{min-height:0;overflow-y:auto;overflow-x:hidden;align-content:start\}/);
-  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-columns\{grid-template-columns:46fr 54fr\}/);
+  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-grid\{grid-template-columns:1fr 1fr\}/);
   assert.match(adminCss, /\.partner-region-dialog\{width:min\(640px,calc\(100vw - 32px\)\);max-height:80vh/);
 });
