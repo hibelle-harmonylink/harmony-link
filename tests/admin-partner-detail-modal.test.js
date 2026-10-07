@@ -36,9 +36,9 @@ test('existing member numbers are preserved on repeat registration, never reissu
 
 test('detail modal reads synchronized metadata from the canonical RPC row without editable controls', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
-  assert.match(detail, /syncedValueOnly\(member\.specialty\)/);
+  assert.match(detail, /syncedReadonlyField\('전문분야', member\.specialty\)/);
   assert.match(detail, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
-  assert.match(detail, /syncedValueOnly\(member\.enrolled_subject\)/);
+  assert.match(detail, /syncedReadonlyField\('수강과목', member\.enrolled_subject\)/);
   assert.match(detail, /syncedReadonlyField\('담당강사', member\.assigned_instructor\)/);
   assert.doesNotMatch(detail, /id="detailSpecialty"|id="detailTeachingSubjects"|id="detailEnrolledSubject"|id="detailAssignedInstructor"/);
 });
@@ -78,30 +78,33 @@ test('member-number status color rule: true is black, everything else with a num
   assert.match(adminCss, /\.member-number\.member-number-missing\{color:#9aa8b8;font-style:italic/);
 });
 
-test('detail dialog is a dashboard-style 2x3 grid (기본정보|회원정보, 지역·권한|전문분야, 강의과목 full-width) with 기능 권한 as a standalone row below it', () => {
+test('detail dialog is a consolidated 2-card grid (기본정보 absorbs 지역·권한, 회원정보 absorbs 전문분야) with 강의과목/기능권한 as standalone rows below it', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
   assert.match(detail, /<h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시<\/small><\/h3>/);
   assert.match(detail, /<h3>회원·파트너 정보 <small class="member-editable-note">관리 설정<\/small><\/h3>/);
-  assert.match(detail, /<h3>지역·권한<\/h3>/);
-  // All five cards/rows assemble into one explicit grid; 기능 권한 is a
-  // standalone row appended after it, not nested inside any card.
-  assert.match(detail, /const grid = `<div class="member-detail-grid">\$\{basicInfoFields\}\$\{roleInfoFields\}\$\{partnerRegionFields\}\$\{specialtyFields\}\$\{subjectsRow\}<\/div>`;/);
+  // No more standalone 지역·권한/전문분야 cards or titles.
+  assert.doesNotMatch(detail, /<h3>지역·권한<\/h3>/);
+  assert.doesNotMatch(detail, /member-group--region|member-group--specialty/);
+  // Just two cards + the subjects row assemble into one explicit grid;
+  // 기능 권한 is a standalone row appended after it, not nested in any card.
+  assert.match(detail, /const grid = `<div class="member-detail-grid">\$\{basicInfoFields\}\$\{roleInfoFields\}\$\{subjectsRow\}<\/div>`;/);
   assert.match(detail, /const featureRow = `<div class="member-feature-row" id="detailFeatures">/);
   assert.match(detail, /class="member-detail-groups">\$\{grid\}\$\{featureRow\}/);
   assert.match(adminCss, /\.member-detail-grid\{display:grid;gap:8px\}/);
   assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-grid\{grid-template-columns:1fr 1fr\}/);
-  // Explicit placement guards against a hidden 지역·권한 (student accounts)
-  // shifting 전문분야 into the wrong column.
+  // Explicit placement: 기본정보/회원정보 share row 1 (native grid stretch
+  // equalizes their height); 강의과목 is a standalone full-width row 2.
   assert.match(adminCss, /\.member-detail-grid>\.member-group--info\{grid-column:1;grid-row:1\}/);
   assert.match(adminCss, /\.member-detail-grid>\.member-group--role\{grid-column:2;grid-row:1\}/);
-  assert.match(adminCss, /\.member-detail-grid>\.member-group--region\{grid-column:1;grid-row:2\}/);
-  assert.match(adminCss, /\.member-detail-grid>\.member-group--specialty\{grid-column:2;grid-row:2\}/);
-  assert.match(adminCss, /\.member-detail-grid>\.member-subjects-row\{grid-column:1\/-1;grid-row:3\}/);
+  assert.match(adminCss, /\.member-detail-grid>\.member-subjects-row\{grid-column:1\/-1;grid-row:2\}/);
 });
 
-test('활동 지역 and 기능 권한 stack as compact one-line rows instead of equal fixed-height boxes', () => {
-  assert.match(adminCss, /\.member-region-row\{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12px\}/);
-  assert.match(adminCss, /\.member-group--region\{padding:10px 12px\}/);
+test('활동 지역/전문분야 integrate into their parent cards as plain rows instead of separate equal-height boxes', () => {
+  // 활동 지역 renders as a plain .member-readonly row (no dedicated
+  // .member-region-row box style); 지역정보 관리 keeps its own compact
+  // wrapper + action-row styling.
+  assert.match(adminCss, /\.member-region-compact\{display:grid;gap:3px\}/);
+  assert.match(adminCss, /\.member-region-actions\{display:flex;justify-content:flex-end;margin-top:6px\}/);
   assert.match(adminCss, /\.feature-summary\{display:flex;align-items:center;flex-wrap:wrap;/);
   assert.doesNotMatch(adminCss, /min-height:144px/);
 });

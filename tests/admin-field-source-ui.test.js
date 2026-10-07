@@ -20,11 +20,11 @@ test('only the Korean public-name field uses the administrator-direct source sty
 
 test('application-synced metadata fields are display-only and retain their canonical sync sources', () => {
   ['영문 이름', '연락처', '담당강사'].forEach(label => assert.match(admin, new RegExp(String.raw`syncedReadonlyField\('${label}'`)));
-  // 전문분야/수강과목 now live in their own compact card with the label on
-  // a dedicated <h3> instead of inline -- syncedValueOnly renders the value
-  // alone (still display-only, same canonical member.specialty/enrolled_subject source).
-  assert.match(admin, /<h3>전문분야<\/h3>\$\{syncedValueOnly\(member\.specialty\)\}/);
-  assert.match(admin, /<h3>수강과목<\/h3>\$\{syncedValueOnly\(member\.enrolled_subject\)\}/);
+  // 전문분야/수강과목 now render as the last item inside 회원·파트너 정보's
+  // own grid (no separate card), via the same syncedReadonlyField helper,
+  // still display-only and sourced from the same canonical member fields.
+  assert.match(admin, /syncedReadonlyField\('전문분야', member\.specialty\)/);
+  assert.match(admin, /syncedReadonlyField\('수강과목', member\.enrolled_subject\)/);
   // 강의과목 is the one synced field long enough to need the two-line clamp
   // + 전체 보기 toggle instead of the plain read-only row.
   assert.match(admin, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
@@ -37,11 +37,21 @@ test('application-synced metadata fields are display-only and retain their canon
   assert.match(applicationSync, /full_name = coalesce/);
 });
 
-test('nickname remains an ordinary administrator-editable field because partner form forwarding has no nickname payload', () => {
-  assert.match(admin, /\$\{manualFieldClass\} member-field-full" title="일반 수정 · 사업체명 또는 활동명">닉네임\/업체명<input id="detailNickname"/);
+test('nickname is editable inline (label + input on one row) and the save payload reads the live input value', () => {
+  // The input renders inline with its label inside the same compact row
+  // style as every other 기본정보 field (not the old stacked <label>text
+  // above input</label> layout), pre-filled with the member's current
+  // stored nickname.
+  assert.match(admin, /const nicknameField = `<div class="member-readonly member-field-full \$\{manualFieldClass\}" title="일반 수정 · 사업체명 또는 활동명"><span>닉네임\/업체명<\/span><input id="detailNickname" type="text" maxlength="80" autocomplete="nickname" value="\$\{escapeHtml\(memberNickname\(member\)\)\}"\$\{editableDisabled\}><\/div>`;/);
+  // Both save call sites must read the live input's value, so an edited
+  // nickname is what actually gets saved (leaving it untouched sends the
+  // same pre-filled value back, which is a no-op for updateMember's own
+  // metadataChanged check).
+  assert.match(admin, /updateMember\(raw, nameInput\.value, type\.value, membership\.value, status\.value, \{ nickname: nicknameInput\.value \}, partnerRegion, partnerRegion\)/);
+  assert.match(admin, /updateMember\(raw, name, member\.user_type, member\.membership, member\.account_status, \{ nickname: nicknameInput\.value \}, partnerRegion, partnerRegion\)/);
+  assert.match(css, /\.field-source-manual>input\{border:1px solid #c8d8ea/);
   const forward = partnerForm.slice(partnerForm.indexOf('function forwardApplicationToRoster_'), partnerForm.indexOf('function resyncExistingApplications'));
   assert.doesNotMatch(forward, /['"]닉네임['"]\s*:/);
-  assert.match(css, /\.field-source-manual>input\{border:1px solid #c8d8ea/);
 });
 
 test('operational settings and automatic system fields remain visually and functionally distinct', () => {

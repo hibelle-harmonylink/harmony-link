@@ -43,12 +43,15 @@ test('partner region and feature text wrap at word boundaries without clipping t
   assert.match(detail, /regionSummary\.textContent = partnerRegionSummary\(partnerRegion\);/);
   assert.match(detail, /regionServices\.textContent = detail;/);
   assert.match(detail, /regionServicesRow\.hidden = !detail;/);
-  assert.match(adminCss, /\.member-region-row strong\{flex:1 1 auto;min-width:0;text-align:right;font-weight:700;color:var\(--admin-ink\);overflow-wrap:anywhere\}/);
+  // 활동 지역/수업 범위 now use the same .member-group--info .member-readonly
+  // treatment as every other 기본정보 field (no dedicated .member-region-row
+  // box style any more); member-field-full is what keeps 수업 범위's longer
+  // text from being clipped with an ellipsis.
+  assert.match(adminCss, /\.member-group--info \.member-readonly\.member-field-full strong\{overflow:visible;text-overflow:clip\}/);
   assert.match(adminCss, /\.feature-box li\{min-width:0;white-space:normal;word-break:keep-all;overflow-wrap:break-word\}/);
 });
 
 test('활동 지역 and 기능 권한 are compact one-line rows instead of fixed-height boxes', () => {
-  assert.match(adminCss, /\.member-region-row\{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12px\}/);
   assert.doesNotMatch(adminCss, /min-height:144px/);
   assert.doesNotMatch(adminJs, /partner-region-heading/);
   assert.match(adminJs, /<li class="feature-\$\{item\.feature\}">\$\{item\.label\}<\/li>/);
@@ -56,6 +59,6 @@ test('활동 지역 and 기능 권한 are compact one-line rows instead of fixed
 
 test('partner/student metadata exclusivity preserves the synchronized display path', () => {
   assert.match(detail, /showRoleMetadata\(withdrawn \? 'student' : \(member\.is_admin \? 'admin' : member\.user_type\)\);/);
-  assert.match(detail, /syncedValueOnly\(member\.specialty\)/);
+  assert.match(detail, /syncedReadonlyField\('전문분야', member\.specialty\)/);
   assert.match(detail, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
 });

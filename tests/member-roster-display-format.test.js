@@ -57,15 +57,13 @@ test('public phone-backfill runner only delegates to the private opt-in helper',
 
 test('admin form keeps synchronized application fields display-only while retaining direct and settings controls', () => {
   const detail = admin.slice(admin.indexOf('const openDetail = raw =>'), admin.indexOf('const resendNotification ='));
-  ['영문 이름', '연락처', '담당강사'].forEach(label => assert.match(detail, new RegExp(`syncedReadonlyField\\('${label}'`)));
-  // 전문분야/수강과목 are display-only via syncedValueOnly (label on a
-  // dedicated <h3> instead), not syncedReadonlyField.
-  assert.match(detail, /syncedValueOnly\(member\.specialty\)/);
-  assert.match(detail, /syncedValueOnly\(member\.enrolled_subject\)/);
+  ['영문 이름', '연락처', '담당강사', '전문분야', '수강과목'].forEach(label => assert.match(detail, new RegExp(`syncedReadonlyField\\('${label}'`)));
   assert.match(detail, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
+  // 닉네임/업체명 is directly editable (its own <input>), unlike the
+  // display-only synced fields above.
   ['detailFullName', 'detailPhone', 'detailSpecialty', 'detailTeachingSubjects', 'detailEnrolledSubject', 'detailAssignedInstructor'].forEach(id => assert.doesNotMatch(detail, new RegExp(`id="${id}"`)));
-  assert.match(detail, /id="detailName"/);
   assert.match(detail, /id="detailNickname"/);
+  assert.match(detail, /id="detailName"/);
   assert.match(detail, /id="detailType"/);
   assert.match(detail, /id="detailMembership"/);
   assert.match(detail, /id="detailStatus"/);
