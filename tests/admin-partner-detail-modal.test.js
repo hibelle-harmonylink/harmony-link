@@ -37,7 +37,7 @@ test('existing member numbers are preserved on repeat registration, never reissu
 test('detail modal reads synchronized metadata from the canonical RPC row without editable controls', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
   assert.match(detail, /syncedReadonlyField\('전문분야', member\.specialty\)/);
-  assert.match(detail, /syncedReadonlyField\('강의과목', member\.teaching_subjects\)/);
+  assert.match(detail, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
   assert.match(detail, /syncedReadonlyField\('수강과목', member\.enrolled_subject\)/);
   assert.match(detail, /syncedReadonlyField\('담당강사', member\.assigned_instructor\)/);
   assert.doesNotMatch(detail, /id="detailSpecialty"|id="detailTeachingSubjects"|id="detailEnrolledSubject"|id="detailAssignedInstructor"/);
@@ -90,10 +90,11 @@ test('detail dialog is a 3-group compact grid (기본 정보 / 회원·파트너
   assert.match(adminCss, /\.member-detail-groups>\.member-group:nth-child\(3\)\{grid-column:1\/-1\}/);
 });
 
-test('활동 지역, allowed features, and denied features use equal desktop tracks', () => {
-  assert.match(adminCss, /\.member-region-access-row\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\);gap:10px;align-items:stretch\}/);
-  assert.match(adminCss, /#detailFeatures,\.feature-columns\{display:contents\}/);
-  assert.match(adminCss, /\.member-region-access-row \.partner-region\{display:grid;flex:none;min-width:0;max-width:100%;min-height:144px;padding:10px 7px;box-sizing:border-box\}/);
+test('활동 지역 and 기능 권한 stack as compact one-line rows instead of equal fixed-height boxes', () => {
+  assert.match(adminCss, /\.member-region-access-row\{display:grid;gap:8px\}/);
+  assert.match(adminCss, /\.partner-region\{display:flex;align-items:center;flex-wrap:wrap;/);
+  assert.match(adminCss, /\.feature-summary\{display:flex;align-items:center;flex-wrap:wrap;/);
+  assert.doesNotMatch(adminCss, /min-height:144px/);
 });
 
 test('every grid/flex child and every group-grid input/select shrinks to fit instead of forcing the dialog to scroll horizontally', () => {

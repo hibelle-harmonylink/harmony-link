@@ -57,7 +57,8 @@ test('public phone-backfill runner only delegates to the private opt-in helper',
 
 test('admin form keeps synchronized application fields display-only while retaining direct and settings controls', () => {
   const detail = admin.slice(admin.indexOf('const openDetail = raw =>'), admin.indexOf('const resendNotification ='));
-  ['영문 이름', '연락처', '전문분야', '강의과목', '수강과목', '담당강사'].forEach(label => assert.match(detail, new RegExp(`syncedReadonlyField\\('${label}'`)));
+  ['영문 이름', '연락처', '전문분야', '수강과목', '담당강사'].forEach(label => assert.match(detail, new RegExp(`syncedReadonlyField\\('${label}'`)));
+  assert.match(detail, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
   ['detailFullName', 'detailPhone', 'detailSpecialty', 'detailTeachingSubjects', 'detailEnrolledSubject', 'detailAssignedInstructor'].forEach(id => assert.doesNotMatch(detail, new RegExp(`id="${id}"`)));
   assert.match(detail, /id="detailName"/);
   assert.match(detail, /id="detailNickname"/);

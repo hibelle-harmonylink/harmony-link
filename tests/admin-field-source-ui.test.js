@@ -19,7 +19,10 @@ test('only the Korean public-name field uses the administrator-direct source sty
 });
 
 test('application-synced metadata fields are display-only and retain their canonical sync sources', () => {
-  ['영문 이름', '연락처', '전문분야', '강의과목', '수강과목', '담당강사'].forEach(label => assert.match(admin, new RegExp(String.raw`syncedReadonlyField\('${label}'`)));
+  ['영문 이름', '연락처', '전문분야', '수강과목', '담당강사'].forEach(label => assert.match(admin, new RegExp(String.raw`syncedReadonlyField\('${label}'`)));
+  // 강의과목 is the one synced field long enough to need the two-line clamp
+  // + 전체 보기 toggle instead of the plain read-only row.
+  assert.match(admin, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
   ['detailFullName', 'detailPhone', 'detailSpecialty', 'detailTeachingSubjects', 'detailEnrolledSubject', 'detailAssignedInstructor'].forEach(id => assert.doesNotMatch(admin, new RegExp(String.raw`id="${id}"`)));
   assert.match(css, /\.member-synced-field\{min-width:0;border:1px solid #d5e0ea/);
   assert.match(partnerForm, /'연락처': phone/);

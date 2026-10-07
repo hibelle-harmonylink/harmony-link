@@ -29,10 +29,49 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .member-group-grid{display:grid;grid-template-columns:1fr;gap:12px}.member-group-grid label{display:grid;gap:6px;font-size:11px;font-weight:800;color:#49627f}.member-group-grid label[hidden]{display:none!important}.member-group-grid select{min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px}
 .member-readonly{display:grid;gap:4px;min-width:0}.member-readonly span{font-size:11px;font-weight:800;color:#49627f}.member-readonly strong{font-size:13px;font-weight:700;color:var(--admin-ink);white-space:normal;overflow-wrap:anywhere}
 .member-readonly-truncate strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;min-width:0}
-.feature-columns{display:grid;grid-template-columns:1fr 1fr;gap:12px}.feature-box{border:1px solid var(--admin-line);border-radius:14px;padding:15px}.feature-box h3{margin:0 0 10px;font-size:13px}.feature-box ul{list-style:none;padding:0;margin:0;display:grid;gap:7px;font-size:11px}.feature-box.allowed li::before{content:'✓';color:#168153;font-weight:900;margin-right:7px}.feature-box.denied li::before{content:'—';color:#a54755;font-weight:900;margin-right:7px}
+/* Compact 기능 권한 summary: a one-line 사용 가능/사용 제한 count row, with
+   the full allowed/denied lists tucked behind a native <details> toggle
+   instead of two always-open boxes (access.getFeatureAccess is unchanged --
+   only this rendering shell is new). */
+.feature-summary{display:flex;align-items:center;flex-wrap:wrap;gap:5px 10px;padding:8px 10px;border:1px solid var(--admin-line);border-radius:10px;background:#fbfdff;font-size:12px;min-width:0}
+.feature-summary-label{font-size:11px;font-weight:800;color:#49627f}
+.feature-count{font-weight:800}
+.feature-count.allowed{color:#168153}.feature-count.allowed b{font-size:13px}
+.feature-count.denied{color:#a54755}.feature-count.denied b{font-size:13px}
+.feature-details{flex:1 1 100%;min-width:0}
+.feature-details>summary{cursor:pointer;color:#0c5eb7;font-size:11px;font-weight:850;list-style:none}
+.feature-details>summary::-webkit-details-marker{display:none}
+.feature-details[open]{margin-top:2px}
+.feature-columns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.feature-box{border:1px solid var(--admin-line);border-radius:10px;padding:9px 12px}
+.feature-box h3{margin:0 0 6px;font-size:12px}
+.feature-box ul{list-style:none;padding:0;margin:0;display:grid;gap:5px;font-size:11px}
+.feature-box li{min-width:0;white-space:normal;word-break:keep-all;overflow-wrap:break-word}
+/* 활동 지역 and 기능 권한 are now two slim one-line rows, not boxes, so they
+   simply stack with a small gap instead of sharing fixed-height tracks. */
+.member-region-access-row{display:grid;gap:8px}
+.feature-box.allowed li::before{content:'✓';color:#168153;font-weight:900;margin-right:7px}
+.feature-box.denied li::before{content:'—';color:#a54755;font-weight:900;margin-right:7px}
+/* 강의과목 clamps to two lines with the full text behind "전체 보기". */
+/* .member-synced-field strong{display:block} (below, same file) is more
+   specific than a bare .member-clamp-value class and would silence the
+   clamp, so this selector matches it exactly plus the clamp class to win. */
+.member-synced-field strong.member-clamp-value{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.member-clamp-details{margin-top:3px}
+.member-clamp-details>summary{cursor:pointer;color:#0c5eb7;font-size:10px;font-weight:850;list-style:none}
+.member-clamp-details>summary::-webkit-details-marker{display:none}
+.member-clamp-full{margin-top:4px;padding:8px;border:1px solid #d5e0ea;border-radius:8px;background:#fff;font-size:12px;line-height:1.4;overflow-wrap:anywhere}
 .member-detail-actions{display:flex;justify-content:flex-end;gap:9px}.member-detail-actions button{min-height:42px}.member-protected-copy{padding:12px;border-radius:10px;background:#e8f2ff;color:#175694;font-size:11px;font-weight:800}
 .member-group-grid input{min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px;color:var(--admin-ink);font:inherit}.member-save-feedback{min-height:0;font-size:13px;font-weight:800;text-align:center}.member-save-feedback.success{padding:11px;border:1px solid #9bd6b1;border-radius:10px;background:#eaf8ef;color:#176944}.member-save-feedback.error{padding:11px;border:1px solid #f0b5bf;border-radius:10px;background:#fff0f2;color:#a82d41}
-.partner-region{display:grid;gap:14px;padding:16px;border:1px solid #c8dff3;border-radius:14px;background:#f8fbff}.partner-region[hidden]{display:none}.partner-region-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.partner-region h3,.partner-region h4{margin:0;color:var(--admin-navy)}.partner-region h3{font-size:15px}.partner-region h4{font-size:12px}.partner-region-heading p,.partner-service-area p{margin:4px 0 0;color:#59718c;font-size:11px}.partner-region-note{flex:0 0 auto;border-radius:999px;background:#e8f2ff;color:#175694;padding:4px 7px;font-size:10px;font-weight:800}.partner-region-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.partner-region-grid label{display:grid;gap:6px;color:#49627f;font-size:11px;font-weight:800}.partner-region-grid input,.partner-region-grid select,.partner-service-area-controls input{box-sizing:border-box;min-width:0;min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px;color:var(--admin-ink);font:inherit}.partner-region-grid select:disabled{background:#edf3fa;color:#72849a}.partner-service-area{display:grid;gap:10px}.partner-service-area-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.member-region-add{border:1px solid #90b8df;border-radius:10px;background:#fff;color:#0c5eb7;padding:8px 11px;font:inherit;font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer}.partner-service-area-chips{display:flex;flex-wrap:wrap;gap:7px;min-height:0}.partner-service-area-chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:#e8f2ff;color:#175694;padding:5px 7px 5px 9px;font-size:11px;font-weight:800;max-width:100%;overflow-wrap:anywhere}.partner-service-area-chip button{width:18px;height:18px;border:0;border-radius:50%;background:#c8dff3;color:#174f91;font:inherit;font-size:15px;line-height:1;cursor:pointer}.partner-region-options{display:flex;flex-wrap:wrap;gap:10px}.partner-region-switch{display:inline-flex;align-items:center;gap:8px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:10px 12px;color:#365672;font-size:12px;font-weight:800;cursor:pointer}.partner-region-switch input{width:17px;height:17px;accent-color:#0b5fc2}.partner-region-save{display:flex;align-items:center;justify-content:flex-end;gap:12px;min-height:42px}.partner-region-save p{margin:0;color:#176944;font-size:12px;font-weight:800}.partner-region-save p.error{color:#a82d41}.partner-region-save p.success{color:#176944}.partner-region-save button{min-height:42px;white-space:nowrap}.partner-region-save button:disabled{cursor:not-allowed;opacity:.58}
+/* Compact one-line 활동 지역 row (label | value | manage button) replacing
+   the old heading/paragraph/badge card. Only shown for partners via the
+   existing .partner-metadata hidden toggle. */
+.partner-region{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;padding:7px 10px;border:1px solid #c8dff3;border-radius:10px;background:#f8fbff;min-width:0}
+.partner-region[hidden]{display:none}
+.partner-region-label{flex:0 0 auto;font-size:11px;font-weight:800;color:#49627f}
+.partner-region-value{flex:1 1 auto;min-width:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;font-size:12px;font-weight:700;color:var(--admin-ink)}
+.partner-service-area p{margin:4px 0 0;color:#59718c;font-size:11px}
+.partner-region-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.partner-region-grid label{display:grid;gap:6px;color:#49627f;font-size:11px;font-weight:800}.partner-region-grid input,.partner-region-grid select,.partner-service-area-controls input{box-sizing:border-box;min-width:0;min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px;color:var(--admin-ink);font:inherit}.partner-region-grid select:disabled{background:#edf3fa;color:#72849a}.partner-service-area{display:grid;gap:10px}.partner-service-area-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.member-region-add{border:1px solid #90b8df;border-radius:10px;background:#fff;color:#0c5eb7;padding:8px 11px;font:inherit;font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer}.partner-service-area-chips{display:flex;flex-wrap:wrap;gap:7px;min-height:0}.partner-service-area-chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:#e8f2ff;color:#175694;padding:5px 7px 5px 9px;font-size:11px;font-weight:800;max-width:100%;overflow-wrap:anywhere}.partner-service-area-chip button{width:18px;height:18px;border:0;border-radius:50%;background:#c8dff3;color:#174f91;font:inherit;font-size:15px;line-height:1;cursor:pointer}.partner-region-options{display:flex;flex-wrap:wrap;gap:10px}.partner-region-switch{display:inline-flex;align-items:center;gap:8px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:10px 12px;color:#365672;font-size:12px;font-weight:800;cursor:pointer}.partner-region-switch input{width:17px;height:17px;accent-color:#0b5fc2}.partner-region-save{display:flex;align-items:center;justify-content:flex-end;gap:12px;min-height:42px}.partner-region-save p{margin:0;color:#176944;font-size:12px;font-weight:800}.partner-region-save p.error{color:#a82d41}.partner-region-save p.success{color:#176944}.partner-region-save button{min-height:42px;white-space:nowrap}.partner-region-save button:disabled{cursor:not-allowed;opacity:.58}
 @media(max-width:1000px){.admin-toolbar{grid-template-columns:1fr 1fr}.admin-toolbar label:first-child{grid-column:1/3}}
 @media(max-width:680px){.admin-summary{grid-template-columns:1fr 1fr}.admin-toolbar,.feature-columns,.partner-region-grid{grid-template-columns:1fr}.member-group-grid{grid-template-columns:minmax(0,1fr)}.admin-toolbar label:first-child{grid-column:auto}.member-table-wrap{border-radius:13px}.member-table{min-width:0}.member-table thead{display:none}.member-table,.member-table tbody,.member-table tr,.member-table td{display:block}.member-table tr{padding:14px;border-top:1px solid var(--admin-line)}.member-table tr:first-child{border-top:0}.member-table td{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border:0;text-align:right}.member-table td::before{content:attr(data-label);font-weight:800;color:#73849a;text-align:left}.member-table td:last-child{padding-top:10px}.member-detail{padding:17px}.member-dialog-head{padding:17px}.member-detail-actions{flex-direction:column}.member-detail-actions button{width:100%}.partner-region{padding:14px}.partner-service-area-controls{grid-template-columns:1fr}.member-region-add{min-height:42px}.partner-region-options{display:grid;grid-template-columns:1fr}.partner-region-switch{min-width:0}.partner-region-save{display:grid;grid-template-columns:1fr}.partner-region-save p{min-height:0}.partner-region-save button{width:100%;min-height:46px}}
 .admin-page main{padding-top:34px}.admin-title-row h1{font-size:36px}.admin-title-row>div>p:last-child{font-size:13px}.admin-summary{grid-template-columns:repeat(5,minmax(105px,138px));justify-content:start;gap:9px;margin:24px 0 18px}.admin-summary article{padding:12px 14px;border-radius:13px}.admin-summary span{font-size:12px;font-weight:700}.admin-summary strong{font-size:24px}.admin-toolbar label>span,.member-actions label>span{font-size:12px}.admin-toolbar input,.admin-toolbar select,.member-actions select{font-size:13px}.admin-message{font-size:13px}.member-email{font-size:17px}.member-id{font-size:10px}.member-role-badge{font-size:11px}.member-dates dt{font-size:10px;font-weight:700}.member-dates dd{font-size:12px}.member-actions .member-save,.member-status-button{font-size:12px}.member-protected-copy{font-size:12px}.admin-header nav a,.admin-header nav button{font-size:13px}@media(max-width:680px){.admin-title-row h1{font-size:27px}.admin-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.admin-summary article{padding:11px}.admin-summary span{font-size:11px}.admin-summary strong{font-size:22px}.member-email{font-size:16px}.member-dates dt{font-size:10px}.member-dates dd{font-size:12px}}
@@ -275,10 +314,10 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
    separately-scrolling edit form that repeated most of the same fields.
    Restore the 780px / 90vh envelope used by the compact dialog in #276.
    Only the information groups scroll; the summary, X, and actions stay visible. */
-.member-dialog{width:min(780px,calc(100% - 28px));max-height:90vh;overflow:hidden}
+.member-dialog{width:min(860px,calc(100% - 28px));max-height:90vh;overflow:hidden}
 .member-dialog[open]{display:flex;flex-direction:column}
 .member-dialog-head{flex-shrink:0}
-.member-detail{display:flex;flex-direction:column;min-height:0;overflow:hidden;gap:10px}
+.member-detail{display:flex;flex-direction:column;min-height:0;overflow:hidden;gap:8px}
 .member-detail-summary,.member-detail-actions{flex-shrink:0}
 .member-detail-groups{min-height:0;overflow-y:auto;overflow-x:hidden;align-content:start}
 /* Old edit-form spans must not create implicit narrow tracks on mobile. */
@@ -287,10 +326,10 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 /* .eyebrow carries a 22px bottom margin sized for full-page hero
    sections site-wide -- inside this compact dialog header it was most
    of the "too much top padding" the header appeared to have. */
-.member-dialog-head{padding:12px 22px}
-.member-dialog-head .eyebrow{margin:0 0 2px}
-.member-dialog-head h2{font-size:19px;margin:0}
-.member-detail-summary .member-badge{font-size:11px;padding:5px 10px}
+.member-dialog-head{padding:9px 20px}
+.member-dialog-head .eyebrow{margin:0 0 1px;font-size:10px}
+.member-dialog-head h2{font-size:17px;margin:0}
+.member-detail-summary .member-badge{font-size:10px;padding:4px 9px}
 /* Keeps its own light-blue accent background (an info notice, not a
    plain field box) but matches the same border-radius/padding rhythm. */
 .member-protected-copy{border-radius:12px;padding:12px 16px;font-size:12px;line-height:1.5}
@@ -301,46 +340,47 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .member-save-feedback.success strong{font-size:13px;line-height:1.25}
 .member-save-feedback.success span{font-size:11px;font-weight:700;overflow-wrap:anywhere}
 .member-save-disabled,.member-detail-actions .member-save-disabled:disabled{background:#e5e7eb!important;border:1px solid #cbd5e1!important;color:#64748b!important;cursor:not-allowed!important;opacity:1!important}
-.partner-region{gap:9px;padding:12px 14px}
-.partner-region-heading{align-items:center}.partner-region-heading p{margin-top:3px;font-size:12px;font-weight:750}.partner-region-services{color:#59718c!important;font-size:11px!important;font-weight:650!important;line-height:1.45}
-.partner-region-actions{display:flex;justify-content:flex-end}.member-region-manage{min-height:34px;border:1px solid #90b8df;border-radius:9px;background:#fff;color:#0c5eb7;padding:7px 11px;font:inherit;font-size:11px;font-weight:850;white-space:nowrap;cursor:pointer}
+.partner-region-services{color:#59718c;font-size:11px;font-weight:650}
+.member-region-manage{min-height:30px;border:1px solid #90b8df;border-radius:9px;background:#fff;color:#0c5eb7;padding:5px 10px;font:inherit;font-size:11px;font-weight:850;white-space:nowrap;cursor:pointer}
 .partner-region-dialog{width:min(640px,calc(100vw - 32px));max-height:80vh;box-sizing:border-box;border:0;border-radius:16px;padding:0;color:var(--admin-ink);box-shadow:0 24px 80px rgba(3,25,57,.3);overflow:hidden}.partner-region-dialog::backdrop{background:rgba(5,25,50,.62);backdrop-filter:blur(3px)}.partner-region-dialog-shell{display:grid;max-height:80vh}.partner-region-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;border-bottom:1px solid var(--admin-line)}.partner-region-dialog-head .eyebrow{margin:0 0 3px}.partner-region-dialog-head h2{margin:0;color:var(--admin-navy);font-size:18px}.partner-region-dialog-head button{display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:50%;background:#edf4fb;color:var(--admin-navy);font-size:20px;line-height:1;cursor:pointer}.partner-region-dialog-body{display:grid;gap:12px;max-height:calc(80vh - 83px);overflow-y:auto;padding:15px 18px 17px}.partner-region-member{margin:0;color:var(--admin-navy);font-size:14px;font-weight:850}.partner-region-dialog-body .partner-region-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.partner-region-dialog-body .partner-region-city{grid-column:1/-1}.partner-region-dialog-body .partner-region-grid label{gap:5px}.partner-region-dialog-body .partner-region-grid input,.partner-region-dialog-body .partner-region-grid select,.partner-region-dialog-body .partner-service-area-controls input{min-height:38px;padding:7px 9px}.partner-region-dialog-body .partner-service-area{gap:8px}.partner-region-dialog-body .partner-service-area h3{margin:0;color:var(--admin-navy);font-size:12px}.partner-region-dialog-body .partner-region-options{gap:8px}.partner-region-dialog-body .partner-region-switch{padding:8px 10px}.partner-region-dialog-actions{display:flex;justify-content:flex-end;gap:8px;padding-top:2px}.partner-region-dialog-actions .btn{min-height:34px;padding:7px 13px;font-size:12px}.partner-region-feedback{min-height:0;margin:0;color:#a82d41;font-size:12px;font-weight:800}.admin-toast{position:fixed;left:50%;bottom:24px;z-index:60;max-width:calc(100vw - 32px);transform:translateX(-50%);border:1px solid #9bd6b1;border-radius:10px;background:#eaf8ef;color:#176944;padding:10px 14px;font-size:13px;font-weight:850;box-shadow:0 10px 26px rgba(3,25,57,.2)}.admin-toast.error{border-color:#f0b5bf;background:#fff0f2;color:#a82d41}
 @media(min-width:681px){
-  .member-detail{padding:14px 26px 18px}
+  .member-detail{padding:8px 22px 12px}
   /* Identity line: name (left, own natural width) -- email (center,
      grows to fill the middle since it's the only flexible item, so
      text-align:center lands it in the middle of that space) -- role/
      membership/status badges (pushed to the right edge because the
      email already absorbed the slack between them). */
-  .member-detail-summary{display:flex;align-items:center;flex-wrap:nowrap;gap:14px}
-  .member-detail-summary strong{width:auto;flex:0 1 auto;font-size:20px;font-weight:900;color:var(--admin-navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .member-detail-summary strong + span{flex:1 1 auto;min-width:0;text-align:center;font-size:14px;font-weight:700;color:var(--admin-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .member-detail-summary{display:flex;align-items:center;flex-wrap:nowrap;gap:12px}
+  .member-detail-summary strong{width:auto;flex:0 1 auto;font-size:18px;font-weight:900;color:var(--admin-navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .member-detail-summary strong + span{flex:1 1 auto;min-width:0;text-align:center;font-size:13px;font-weight:700;color:var(--admin-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .member-detail-summary .member-badge{flex:0 0 auto}
   /* 기본 정보 and 회원·파트너 정보 sit side by side; 지역·권한 (which holds
-     both the partner region block and the feature-access lists, so it runs
-     longer) spans the full width beneath them. */
-  .member-detail-groups{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;align-items:start}
+     both the compact 활동 지역 row and the 기능 권한 summary row) spans the
+     full width beneath them. */
+  .member-detail-groups{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:start}
   .member-detail-groups>.member-group:nth-child(3){grid-column:1/-1}
-  .member-group{padding:10px 14px}
-  .member-group h3{font-size:12px;margin-bottom:8px}
-  .member-group-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px}
-  .member-group-grid label{font-size:11px;gap:4px}
-  .member-group-grid select,.member-group-grid input{font-size:12.5px;font-weight:600;min-height:32px;padding:5px 8px}
+  .member-group{padding:7px 11px}
+  .member-group h3{font-size:12px;margin-bottom:5px}
+  .member-group-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 10px}
+  .member-group-grid label{font-size:11px;gap:3px}
+  .member-group-grid select,.member-group-grid input{font-size:12.5px;font-weight:600;min-height:30px;padding:4px 8px}
   .member-readonly span{font-size:10px}
   .member-readonly strong{font-size:12px}
-  /* 활동 지역 and 기능 access sit side by side (flexbox, not grid, so that
-     when 활동 지역 is [hidden] for a non-partner member #detailFeatures still
-     naturally fills the full row instead of leaving an empty fixed track). */
-  .member-region-access-row{display:flex;gap:14px;align-items:flex-start}
-  .member-region-access-row .partner-region{flex:0 0 300px;max-width:300px;margin:0}
-  #detailFeatures{flex:1 1 auto;min-width:0}
-  /* Feature access set apart with a divider; each allowed/denied list
-     wraps into two columns so a long list doesn't run tall down the page. */
-  .feature-box{padding:10px 14px}
-  .feature-box h3{font-size:13px;font-weight:800;color:var(--admin-navy);margin:0 0 6px}
-  .feature-box ul{display:grid;grid-template-columns:1fr 1fr;font-size:11.5px;font-weight:600;color:#233045;gap:5px 12px;line-height:1.35}
-  .member-detail-actions{border-top:1px solid var(--admin-line);padding-top:10px}
-  .member-detail-actions .btn{min-height:34px;padding:7px 15px;font-size:13px}
+  /* 기본 정보: compact inline label:value rows instead of each field
+     stacking its label above the value -- the real space saving here, not
+     a font-size cut. The six fields fall into a 2-col x 3-row block via
+     the existing .member-group-grid 2-column track. */
+  .member-group--info .member-readonly{display:flex;align-items:baseline;gap:6px;min-width:0}
+  .member-group--info .member-readonly span{flex:0 0 auto;white-space:nowrap}
+  .member-group--info .member-readonly strong{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .member-group--info .member-synced-field{border:0;background:transparent;padding:0}
+  /* The "신청서 자동연동" badge text is still available on hover (the
+     synced-field wrapper's own title attribute) -- hiding it here is what
+     actually gives 영문 이름/연락처 enough room to show their value instead
+     of truncating almost immediately. */
+  .member-group--info .member-synced-field>span em{display:none}
+  .member-detail-actions{border-top:1px solid var(--admin-line);padding-top:7px}
+  .member-detail-actions .btn{min-height:32px;padding:6px 13px;font-size:12.5px}
 }
 @media(max-width:680px){
   .member-dialog{width:calc(100% - 18px);max-height:90vh;overflow:hidden}
@@ -349,7 +389,7 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   .member-dialog-head{padding:17px}
   .member-detail-actions{flex-direction:column}
   .member-detail-actions button{width:100%}
-  .partner-region{padding:14px}
+  .partner-region{padding:9px 12px}
   .partner-region-dialog{width:calc(100vw - 24px);max-height:calc(100vh - 24px)}.partner-region-dialog-shell{max-height:calc(100vh - 24px)}.partner-region-dialog-head{padding:13px 14px}.partner-region-dialog-body{max-height:calc(100vh - 80px);padding:14px}.partner-region-dialog-body .partner-region-grid{grid-template-columns:1fr}.partner-region-dialog-body .partner-region-city{grid-column:auto}.partner-region-dialog-body .partner-service-area-controls{grid-template-columns:1fr}.partner-region-dialog-actions .btn{min-height:42px;flex:1}.admin-toast{bottom:14px;width:calc(100vw - 28px);text-align:center}
   .partner-service-area-controls{grid-template-columns:1fr}
   .member-region-add{min-height:42px}
@@ -563,21 +603,12 @@ body.admin-page{overflow-x:hidden}
   .member-detail-actions{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:9px;min-height:36px}
   .member-save-feedback{display:block;min-height:15px;max-height:15px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:left}
   .member-save-feedback.success,.member-save-feedback.error,.member-save-feedback.pending{display:block;padding:0;border:0;background:transparent}
-  /* Region, allowed features, and denied features have equal desktop tracks. */
-  .member-region-access-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:stretch}
-  .member-region-access-row .partner-region{display:grid;flex:none;min-width:0;max-width:100%;min-height:144px;padding:10px 7px;box-sizing:border-box}
-  .member-region-access-row .partner-region[hidden]{display:none}
-  .member-region-access-row:has(>.partner-region[hidden]){grid-template-columns:repeat(2,minmax(0,1fr))}
-  .member-region-access-row .partner-region-heading,.member-region-access-row .partner-region-heading>div,.member-region-access-row .partner-region-actions{min-width:0;max-width:100%;box-sizing:border-box}
-  .member-region-access-row .partner-region-heading{display:block;position:relative;width:100%}
-  .member-region-access-row .partner-region-heading>div,.member-region-access-row .partner-region-actions{width:100%}
-  .member-region-access-row .partner-region-note{position:absolute;top:0;right:0}
-  #detailFeatures,.feature-columns{display:contents}
-  .member-region-access-row .feature-box{min-width:0;max-width:100%;min-height:144px;padding:8px 14px;box-sizing:border-box}
-  .member-region-access-row .feature-box ul{min-width:0;max-width:100%;grid-template-columns:minmax(0,1fr);gap:3px 8px;font-size:12px}
-  .member-region-access-row .feature-box li{min-width:0;max-width:100%;white-space:normal;word-break:keep-all;overflow-wrap:break-word}
-  .feature-box .feature-learning{grid-column:1/-1}
-  .partner-region-services{white-space:normal;word-break:keep-all;overflow-wrap:break-word;font-size:11px!important}
+  /* 활동 지역 and 기능 권한 are now two slim one-line rows (not boxes), so
+     they simply stack with a small gap instead of sharing fixed-height
+     tracks. */
+  .member-region-access-row{gap:6px}
+  .partner-region-services{white-space:normal;word-break:keep-all;overflow-wrap:break-word}
+  .member-group--info .member-synced-field strong{margin-top:0}
 }
 
 /* Keep labels readable without changing their source badges or field values. */

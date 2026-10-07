@@ -14,7 +14,9 @@ const metadataMigration = read('supabase/migrations/202609130002_member_identity
 
 test('admin member detail labels make the three independent name sources explicit', () => {
   assert.match(admin, /title="일반 수정 · 사업체명 또는 활동명">닉네임\/업체명<input id="detailNickname"/);
-  assert.match(admin, /syncedReadonlyField\('영문 이름', memberFullName\(member\)\)/);
+  // Detail-dialog display only -- the full_name value saved via the RPC
+  // (p_full_name: memberFullName(member), checked below) is unaffected.
+  assert.match(admin, /syncedReadonlyField\('영문 이름', memberFullNameDisplay\(member\)\)/);
   assert.match(admin, /title="관리자 직접 관리 · 신청서 재동기화로 변경되지 않음">한글 이름<input id="detailName"/);
 });
 

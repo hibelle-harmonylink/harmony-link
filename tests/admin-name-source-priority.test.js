@@ -119,7 +119,8 @@ test('no English-to-Korean transliteration table or guessing logic was added any
   assert.doesNotMatch(admin, /['"]Tae ?Hwa[^'"]*['"]\s*:\s*['"][가-힣]/i);
 });
 
-test('admin.js and admin.html asset versions advance together for this change', () => {
-  assert.match(admin, /const BUILD = '20260917-5';/);
-  assert.match(html, /admin\.js\?v=20260917-5/);
+test('admin.js and admin.html asset versions advance together', () => {
+  const buildMatch = admin.match(/const BUILD = '(20260917-\d+)';/);
+  assert.ok(buildMatch, 'admin.js BUILD constant not found');
+  assert.match(html, new RegExp(`admin\\.js\\?v=${buildMatch[1]}`));
 });
