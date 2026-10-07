@@ -40,7 +40,12 @@ test('renders contact as a single synchronized read-only value, not an editable 
 test('withdrawn members are fully read-only and cannot submit a save action', () => {
   assert.match(adminJs, /탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다/);
   assert.match(adminJs, /member-save-disabled[^]*?disabled>변경 불가/);
-  assert.match(adminJs, /if \(withdrawn && nicknameInput\) nicknameInput\.disabled = true/);
+  // 닉네임/업체명 input is baked disabled via editableDisabled for a
+  // withdrawn/protected account (editable = !withdrawn && !protectedAccount),
+  // same gating as every other editable control -- no separate JS line
+  // needed to disable it after the fact.
+  assert.match(adminJs, /const editableDisabled = editable \? '' : ' disabled aria-disabled="true"'/);
+  assert.match(adminJs, /<input id="detailNickname" type="text" maxlength="80" autocomplete="nickname" value="\$\{escapeHtml\(memberNickname\(member\)\)\}"\$\{editableDisabled\}>/);
   assert.match(adminJs, /else if \(!protectedAccount && !withdrawn\)/);
   assert.match(adminCss, /cursor:not-allowed/);
 });

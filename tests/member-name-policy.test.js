@@ -13,7 +13,10 @@ const applicationMigration = read('supabase/migrations/202609130004_member_appli
 const metadataMigration = read('supabase/migrations/202609130002_member_identity_metadata.sql');
 
 test('admin member detail labels make the three independent name sources explicit', () => {
-  assert.match(admin, /title="일반 수정 · 사업체명 또는 활동명">닉네임\/업체명<input id="detailNickname"/);
+  // 닉네임/업체명 is directly editable here (title reflects that it is an
+  // ordinary manual field, not application-synced), distinct from 영문 이름
+  // (application-synced, read-only) and 한글 이름 (the direct-source field).
+  assert.match(admin, /title="일반 수정 · 사업체명 또는 활동명"><span>닉네임\/업체명<\/span><input id="detailNickname"/);
   // Detail-dialog display only -- the full_name value saved via the RPC
   // (p_full_name: memberFullName(member), checked below) is unaffected.
   assert.match(admin, /syncedReadonlyField\('영문 이름', memberFullNameDisplay\(member\)\)/);

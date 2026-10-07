@@ -33,12 +33,12 @@ test('both basic and role controls use two readable tracks without a wasted name
 });
 
 test('강의과목/담당강사 span the entire subjects row instead of a half-width control track', () => {
-  assert.match(css, /\.member-detail-grid>\.member-subjects-row\{grid-column:1\/-1;grid-row:3\}/);
+  assert.match(css, /\.member-detail-grid>\.member-subjects-row\{grid-column:1\/-1;grid-row:2\}/);
   assert.match(css, /\.member-subjects-row \.partner-metadata strong,\.member-subjects-row \.student-metadata strong\{word-break:keep-all;overflow-wrap:break-word\}/);
   assert.match(js, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
-  // 전문분야/수강과목 moved into their own compact card with the label on a
-  // dedicated <h3> -- syncedValueOnly renders the display-only value.
-  assert.match(js, /<h3>전문분야<\/h3>\$\{syncedValueOnly\(member\.specialty\)\}/);
+  // 전문분야/수강과목 now render as the last item inside 회원·파트너 정보's
+  // own grid, via the same syncedReadonlyField helper used everywhere else.
+  assert.match(js, /syncedReadonlyField\('전문분야', member\.specialty\)/);
 });
 
 test('강의과목 clamps to two lines with the full text opening in a separate overlay popup', () => {
@@ -60,11 +60,12 @@ test('기본 정보 rows hide the synced-field source badge visually (title tool
   // The outer div still carries the explanatory title (syncedReadonlyField
   // always sets it), so nothing is actually lost -- only hidden from the
   // compact row's limited width.
-  assert.match(js, /syncedReadonlyField = \(label, value\) => `<div class="member-readonly member-synced-field" title="신청서 자동연동/);
+  assert.match(js, /syncedReadonlyField = \(label, value, full = false, title = '신청서 자동연동/);
 });
 
 test('활동 지역 and 기능 권한 are compact one-line rows, not fixed-height boxes', () => {
-  assert.match(css, /\.member-region-row\{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12px\}/);
+  // 활동 지역/수업 범위 now render as plain .member-readonly rows inside
+  // 기본 정보's own grid (no separate .member-region-row box style).
   assert.doesNotMatch(css, /min-height:144px/);
   assert.match(js, /const featureHtml = member => \{/);
   assert.match(js, /class="feature-summary"/);
@@ -73,7 +74,7 @@ test('활동 지역 and 기능 권한 are compact one-line rows, not fixed-heigh
 });
 
 test('non-partner region stays hidden via the existing .partner-metadata toggle', () => {
-  assert.match(js, /class="member-group member-group--region partner-metadata" hidden/);
+  assert.match(js, /class="member-region-compact member-field-full member-field-break partner-metadata" hidden/);
   assert.match(js, /field\.hidden = selectedType !== 'partner'/);
 });
 
@@ -92,7 +93,10 @@ test('layout recovery keeps existing identity sources, save RPC, and readback ve
   // still sends memberFullName(member) verbatim, untouched by that helper.
   assert.match(js, /syncedReadonlyField\('영문 이름', memberFullNameDisplay\(member\)\)/);
   assert.match(js, /const memberFullNameDisplay = member => memberFullName\(member\)\.split\(','\)\[0\]\.trim\(\)/);
+  // 닉네임/업체명 is editable again -- its input exists and the save
+  // handler reads its live value.
   assert.match(js, /id="detailNickname"/);
+  assert.match(js, /nickname: nicknameInput\.value/);
   assert.match(js, /admin_update_member_name/);
   assert.match(js, /p_display_name: nextName/);
   assert.match(js, /freshMember\.display_name[^\n]*nextName/);

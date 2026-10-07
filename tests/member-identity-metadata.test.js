@@ -25,7 +25,10 @@ test('admin roster keeps the nickname column separate while rendering the public
   assert.match(admin, /\['닉네임', escapeHtml\(memberNickname\(member\)\)\]/);
   assert.match(admin, /\['이름', escapeHtml\(memberPersonName\(member\)\)/);
   assert.match(admin, /member\.nickname \|\| ''} \$\{member\.full_name/);
+  // 닉네임/업체명 is editable in the detail modal, pre-filled from
+  // memberNickname(member), distinct from 영문 이름 (application-synced).
   assert.match(admin, /id="detailNickname"/);
+  assert.match(admin, /value="\$\{escapeHtml\(memberNickname\(member\)\)\}"/);
   assert.match(admin, /syncedReadonlyField\('영문 이름', memberFullNameDisplay\(member\)\)/);
   assert.doesNotMatch(admin, /id="detailFullName"/);
 });

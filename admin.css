@@ -56,23 +56,25 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .member-info-text{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.5;color:var(--admin-ink)}
 .member-detail-actions{display:flex;justify-content:flex-end;gap:9px}.member-detail-actions button{min-height:42px}.member-protected-copy{padding:12px;border-radius:10px;background:#e8f2ff;color:#175694;font-size:11px;font-weight:800}
 .member-group-grid input{min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px;color:var(--admin-ink);font:inherit}.member-save-feedback{min-height:0;font-size:13px;font-weight:800;text-align:center}.member-save-feedback.success{padding:11px;border:1px solid #9bd6b1;border-radius:10px;background:#eaf8ef;color:#176944}.member-save-feedback.error{padding:11px;border:1px solid #f0b5bf;border-radius:10px;background:#fff0f2;color:#a82d41}
-/* Compact vertical 지역·권한 card (활동 지역 row, 수업 범위 row, manage
-   button) living in the left column right under 기본 정보, instead of a
-   separate full-width section at the bottom. Only shown for partners via
-   the existing .partner-metadata hidden toggle (now on the whole card). */
-.member-group--region{padding:10px 12px}
-.member-group--region h3{margin-bottom:6px}
+/* 활동 지역/수업 범위/지역정보 관리 now live inside 기본 정보's own grid
+   (no separate 지역·권한 card/title) -- 활동지역/수업범위 render as plain
+   .member-readonly rows, same look as every other 기본정보 field. Only
+   shown for partners via the existing .partner-metadata hidden toggle;
+   수업 범위's own independent hidden flag (collapses when there is no
+   sub-detail text) still lives on that one row, nested one level deeper. */
 .member-region-compact{display:grid;gap:3px}
-.member-region-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12px}
-.member-region-row span{flex:0 0 auto;font-size:11px;font-weight:800;color:#49627f}
-.member-region-row strong{flex:1 1 auto;min-width:0;text-align:right;font-weight:700;color:var(--admin-ink);overflow-wrap:anywhere}
+/* .member-region-compact{display:grid} has the same specificity as a bare
+   [hidden] UA-stylesheet rule, so without this it would silently stay
+   visible for non-partner accounts (found by actually rendering this in a
+   browser, not just regex -- same bug class as .member-group-grid label[hidden]
+   above). */
+.member-region-compact[hidden]{display:none}
 .member-region-actions{display:flex;justify-content:flex-end;margin-top:6px}
-/* 전문분야/수강과목 card -- paired with 지역·권한 in the same grid row so
-   both share identical padding/border-radius/visual weight; CSS grid's
-   row stretch equalizes their height automatically. Each toggle wrapper
-   carries its own <h3>, so the title is never wrong for the account type. */
-.member-group--specialty{padding:10px 12px}
-.member-synced-value{margin:0;color:#42586f;font-size:13px;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
+/* 전문분야/수강과목 now render as the last item inside 회원·파트너 정보's own
+   grid (no separate card) -- same reasoning. */
+/* A little extra separation above a field group that reads as its own
+   sub-topic (활동 지역 block, 전문분야/수강과목) without a nested box/border. */
+.member-field-break{margin-top:4px}
 /* 강의과목/담당강사 full-width row below both card rows -- the synced-field
    itself already has a border/background, so no extra card chrome here. */
 .member-subjects-row{min-width:0}
@@ -371,15 +373,13 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   .member-detail-summary strong{width:auto;flex:0 1 auto;font-size:18px;font-weight:900;color:var(--admin-navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .member-detail-summary strong + span{flex:1 1 auto;min-width:0;text-align:center;font-size:13px;font-weight:700;color:var(--admin-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .member-detail-summary .member-badge{flex:0 0 auto}
-  /* Explicit 2-col x 3-row placement, independent of DOM/hidden-toggle
-     order, so a hidden 지역·권한 (student accounts) can never shift
-     전문분야/수강과목 into the wrong column. */
+  /* 기본 정보 | 회원·파트너 정보 share one grid row (default align-items:
+     stretch equalizes their height natively); 강의과목 is a standalone
+     full-width row below both. */
   .member-detail-grid{grid-template-columns:1fr 1fr}
   .member-detail-grid>.member-group--info{grid-column:1;grid-row:1}
   .member-detail-grid>.member-group--role{grid-column:2;grid-row:1}
-  .member-detail-grid>.member-group--region{grid-column:1;grid-row:2}
-  .member-detail-grid>.member-group--specialty{grid-column:2;grid-row:2}
-  .member-detail-grid>.member-subjects-row{grid-column:1/-1;grid-row:3}
+  .member-detail-grid>.member-subjects-row{grid-column:1/-1;grid-row:2}
   .member-group{padding:7px 11px}
   .member-group h3{font-size:12px;margin-bottom:5px}
   .member-group-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 10px}
@@ -398,12 +398,25 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
      spans the full card width (member-field-full), so there is ample room
      to show it on one line without truncating. */
   .member-group--info .member-readonly.member-field-full strong{overflow:visible;text-overflow:clip}
+  /* 닉네임/업체명 is an <input>, not a <strong>, in this same inline row --
+     flex-fill it the same way so the label stays compact on the left and
+     the box doesn't force the row (or the card) any taller than the other
+     rows around it. */
+  .member-group--info .member-readonly input{flex:1 1 auto;min-width:0;height:auto;margin:0}
   .member-group--info .member-synced-field{border:0;background:transparent;padding:0}
   /* The "신청서 자동연동" badge text is still available on hover (the
      synced-field wrapper's own title attribute) -- hiding it here is what
      actually gives 영문 이름/연락처 enough room to show their value instead
      of truncating almost immediately. */
   .member-group--info .member-synced-field>span em{display:none}
+  /* 전문분야/수강과목 (now the last item inside 회원·파트너 정보, not a
+     separate card) gets the same flat, badge-hidden treatment as every
+     synced field in 기본 정보, for a visually identical card style on
+     both sides. Its label still stacks above the value (unlike 기본
+     정보's inline rows) to match the two-line "전문분야 / 자격증·직업교육"
+     presentation. */
+  .member-group--role .member-synced-field{border:0;background:transparent;padding:0}
+  .member-group--role .member-synced-field>span em{display:none}
   .member-detail-actions{border-top:1px solid var(--admin-line);padding-top:7px}
   .member-detail-actions .btn{min-height:32px;padding:6px 13px;font-size:12.5px}
 }
