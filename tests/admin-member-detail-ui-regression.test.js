@@ -56,6 +56,6 @@ test('활동 지역 and 기능 권한 are compact one-line rows instead of fixed
 
 test('partner/student metadata exclusivity preserves the synchronized display path', () => {
   assert.match(detail, /showRoleMetadata\(withdrawn \? 'student' : \(member\.is_admin \? 'admin' : member\.user_type\)\);/);
-  assert.match(detail, /syncedReadonlyField\('전문분야', member\.specialty\)/);
+  assert.match(detail, /syncedValueOnly\(member\.specialty\)/);
   assert.match(detail, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
 });

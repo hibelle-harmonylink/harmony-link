@@ -36,9 +36,9 @@ test('existing member numbers are preserved on repeat registration, never reissu
 
 test('detail modal reads synchronized metadata from the canonical RPC row without editable controls', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
-  assert.match(detail, /syncedReadonlyField\('전문분야', member\.specialty\)/);
+  assert.match(detail, /syncedValueOnly\(member\.specialty\)/);
   assert.match(detail, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
-  assert.match(detail, /syncedReadonlyField\('수강과목', member\.enrolled_subject\)/);
+  assert.match(detail, /syncedValueOnly\(member\.enrolled_subject\)/);
   assert.match(detail, /syncedReadonlyField\('담당강사', member\.assigned_instructor\)/);
   assert.doesNotMatch(detail, /id="detailSpecialty"|id="detailTeachingSubjects"|id="detailEnrolledSubject"|id="detailAssignedInstructor"/);
 });
@@ -78,20 +78,25 @@ test('member-number status color rule: true is black, everything else with a num
   assert.match(adminCss, /\.member-number\.member-number-missing\{color:#9aa8b8;font-style:italic/);
 });
 
-test('detail dialog is a dashboard-style left/right column layout (기본 정보 + 지역·권한 on the left, 회원·파트너 정보 on the right) with 기능 권한 as a standalone full-width row', () => {
+test('detail dialog is a dashboard-style 2x3 grid (기본정보|회원정보, 지역·권한|전문분야, 강의과목 full-width) with 기능 권한 as a standalone row below it', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
   assert.match(detail, /<h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시<\/small><\/h3>/);
-  assert.match(detail, /<h3>회원·파트너 정보 <small class="member-editable-note">관리 설정 · 자동연동 정보<\/small><\/h3>/);
+  assert.match(detail, /<h3>회원·파트너 정보 <small class="member-editable-note">관리 설정<\/small><\/h3>/);
   assert.match(detail, /<h3>지역·권한<\/h3>/);
-  // 기본정보 and 지역·권한 both live inside the left column; 회원·파트너정보
-  // alone fills the right column; 기능 권한 is a standalone row below both,
-  // not nested inside either card.
-  assert.match(detail, /const columns = `<div class="member-detail-columns"><div class="member-detail-col-left">\$\{basicInfoFields\}\$\{partnerRegionFields\}<\/div><div class="member-detail-col-right">\$\{roleInfoFields\}<\/div><\/div>`;/);
+  // All five cards/rows assemble into one explicit grid; 기능 권한 is a
+  // standalone row appended after it, not nested inside any card.
+  assert.match(detail, /const grid = `<div class="member-detail-grid">\$\{basicInfoFields\}\$\{roleInfoFields\}\$\{partnerRegionFields\}\$\{specialtyFields\}\$\{subjectsRow\}<\/div>`;/);
   assert.match(detail, /const featureRow = `<div class="member-feature-row" id="detailFeatures">/);
-  assert.match(detail, /class="member-detail-groups">\$\{columns\}\$\{featureRow\}/);
-  assert.match(adminCss, /\.member-detail-columns\{display:grid;gap:8px\}/);
-  assert.match(adminCss, /\.member-detail-col-left,\.member-detail-col-right\{display:grid;gap:8px;min-width:0;align-content:start\}/);
-  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-columns\{grid-template-columns:46fr 54fr\}/);
+  assert.match(detail, /class="member-detail-groups">\$\{grid\}\$\{featureRow\}/);
+  assert.match(adminCss, /\.member-detail-grid\{display:grid;gap:8px\}/);
+  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-grid\{grid-template-columns:1fr 1fr\}/);
+  // Explicit placement guards against a hidden 지역·권한 (student accounts)
+  // shifting 전문분야 into the wrong column.
+  assert.match(adminCss, /\.member-detail-grid>\.member-group--info\{grid-column:1;grid-row:1\}/);
+  assert.match(adminCss, /\.member-detail-grid>\.member-group--role\{grid-column:2;grid-row:1\}/);
+  assert.match(adminCss, /\.member-detail-grid>\.member-group--region\{grid-column:1;grid-row:2\}/);
+  assert.match(adminCss, /\.member-detail-grid>\.member-group--specialty\{grid-column:2;grid-row:2\}/);
+  assert.match(adminCss, /\.member-detail-grid>\.member-subjects-row\{grid-column:1\/-1;grid-row:3\}/);
 });
 
 test('활동 지역 and 기능 권한 stack as compact one-line rows instead of equal fixed-height boxes', () => {
@@ -106,8 +111,9 @@ test('every grid/flex child and every group-grid input/select shrinks to fit ins
   assert.match(adminCss, /@media\(min-width:681px\)\{\s*\n\s*\.member-detail>\*,/);
 });
 
-test('a long email in 기본 정보 truncates with an ellipsis (and a title tooltip) instead of wrapping across several lines and pushing the layout taller', () => {
+test('이메일 shows the full address on one line (no ellipsis) by spanning the full card width', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
-  assert.match(detail, /readonlyField\('이메일', escapeHtml\(member\.email \|\| ''\), true\)/);
-  assert.match(adminCss, /\.member-readonly-truncate strong\{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;min-width:0\}/);
+  assert.match(detail, /readonlyField\('이메일', escapeHtml\(member\.email \|\| ''\), false, true\)/);
+  assert.match(adminCss, /\.member-group-grid>\.member-field-full\{grid-column:1\/-1\}/);
+  assert.match(adminCss, /\.member-group--info \.member-readonly\.member-field-full strong\{overflow:visible;text-overflow:clip\}/);
 });

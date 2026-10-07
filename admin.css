@@ -67,6 +67,15 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .member-region-row span{flex:0 0 auto;font-size:11px;font-weight:800;color:#49627f}
 .member-region-row strong{flex:1 1 auto;min-width:0;text-align:right;font-weight:700;color:var(--admin-ink);overflow-wrap:anywhere}
 .member-region-actions{display:flex;justify-content:flex-end;margin-top:6px}
+/* 전문분야/수강과목 card -- paired with 지역·권한 in the same grid row so
+   both share identical padding/border-radius/visual weight; CSS grid's
+   row stretch equalizes their height automatically. Each toggle wrapper
+   carries its own <h3>, so the title is never wrong for the account type. */
+.member-group--specialty{padding:10px 12px}
+.member-synced-value{margin:0;color:#42586f;font-size:13px;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
+/* 강의과목/담당강사 full-width row below both card rows -- the synced-field
+   itself already has a border/background, so no extra card chrome here. */
+.member-subjects-row{min-width:0}
 .partner-service-area p{margin:4px 0 0;color:#59718c;font-size:11px}
 .partner-region-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.partner-region-grid label{display:grid;gap:6px;color:#49627f;font-size:11px;font-weight:800}.partner-region-grid input,.partner-region-grid select,.partner-service-area-controls input{box-sizing:border-box;min-width:0;min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px;color:var(--admin-ink);font:inherit}.partner-region-grid select:disabled{background:#edf3fa;color:#72849a}.partner-service-area{display:grid;gap:10px}.partner-service-area-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.member-region-add{border:1px solid #90b8df;border-radius:10px;background:#fff;color:#0c5eb7;padding:8px 11px;font:inherit;font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer}.partner-service-area-chips{display:flex;flex-wrap:wrap;gap:7px;min-height:0}.partner-service-area-chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:#e8f2ff;color:#175694;padding:5px 7px 5px 9px;font-size:11px;font-weight:800;max-width:100%;overflow-wrap:anywhere}.partner-service-area-chip button{width:18px;height:18px;border:0;border-radius:50%;background:#c8dff3;color:#174f91;font:inherit;font-size:15px;line-height:1;cursor:pointer}.partner-region-options{display:flex;flex-wrap:wrap;gap:10px}.partner-region-switch{display:inline-flex;align-items:center;gap:8px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:10px 12px;color:#365672;font-size:12px;font-weight:800;cursor:pointer}.partner-region-switch input{width:17px;height:17px;accent-color:#0b5fc2}.partner-region-save{display:flex;align-items:center;justify-content:flex-end;gap:12px;min-height:42px}.partner-region-save p{margin:0;color:#176944;font-size:12px;font-weight:800}.partner-region-save p.error{color:#a82d41}.partner-region-save p.success{color:#176944}.partner-region-save button{min-height:42px;white-space:nowrap}.partner-region-save button:disabled{cursor:not-allowed;opacity:.58}
 @media(max-width:1000px){.admin-toolbar{grid-template-columns:1fr 1fr}.admin-toolbar label:first-child{grid-column:1/3}}
@@ -305,12 +314,14 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   .member-table td::before{flex:0 0 76px;white-space:nowrap;word-break:keep-all}
 }
 
-/* 2026-10: member detail dialog -- a dashboard-style layout. Left column:
-   기본 정보 then 지역·권한 (closing the empty space the 지역·권한 full-width
-   section used to leave beneath a short left column). Right column:
-   회원·파트너 정보 / 전문분야 / 강의과목. 기능 권한 is a standalone full-width
-   row below both columns. 강의과목 전체보기 and 기능권한 자세히보기 never grow
-   this dialog -- they open the shared .member-info-dialog overlay instead.
+/* 2026-10: member detail dialog -- a dashboard-style layout, two explicit
+   grid rows of matched card pairs instead of two independently-stacked
+   columns: row 1 is 기본 정보 | 회원·파트너 정보, row 2 is 지역·권한 |
+   전문분야 (CSS grid's default row stretch equalizes each pair's height
+   natively, no min-height needed), row 3 is 강의과목 as a single full-width
+   row. 기능 권한 is a standalone full-width row below the grid. 강의과목
+   전체보기 and 기능권한 자세히보기 never grow this dialog -- they open the
+   shared .member-info-dialog overlay instead.
    Restore the 780px / 90vh envelope used by the compact dialog in #276.
    Only the information groups scroll; the summary, X, and actions stay visible. */
 .member-dialog{width:min(860px,calc(100% - 28px));max-height:90vh;overflow:hidden}
@@ -319,12 +330,11 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .member-detail{display:flex;flex-direction:column;min-height:0;overflow:hidden;gap:8px}
 .member-detail-summary,.member-detail-actions{flex-shrink:0}
 .member-detail-groups{min-height:0;overflow-y:auto;overflow-x:hidden;align-content:start}
-.member-detail-columns{display:grid;gap:8px}
-.member-detail-col-left,.member-detail-col-right{display:grid;gap:8px;min-width:0;align-content:start}
+.member-detail-grid{display:grid;gap:8px}
 .member-feature-row{margin-top:8px}
 /* Old edit-form spans must not create implicit narrow tracks on mobile. */
 .member-group-grid>.member-name-field{grid-column:auto}
-.member-group-grid>.partner-metadata,.member-group-grid>.student-metadata{grid-column:1/-1}
+.member-group-grid>.member-field-full{grid-column:1/-1}
 /* .eyebrow carries a 22px bottom margin sized for full-page hero
    sections site-wide -- inside this compact dialog header it was most
    of the "too much top padding" the header appeared to have. */
@@ -361,9 +371,15 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   .member-detail-summary strong{width:auto;flex:0 1 auto;font-size:18px;font-weight:900;color:var(--admin-navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .member-detail-summary strong + span{flex:1 1 auto;min-width:0;text-align:center;font-size:13px;font-weight:700;color:var(--admin-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .member-detail-summary .member-badge{flex:0 0 auto}
-  /* Left column (기본정보 + 지역·권한) vs. right column (회원·파트너정보 +
-     전문분야 + 강의과목) at roughly 46/54. */
-  .member-detail-columns{grid-template-columns:46fr 54fr}
+  /* Explicit 2-col x 3-row placement, independent of DOM/hidden-toggle
+     order, so a hidden 지역·권한 (student accounts) can never shift
+     전문분야/수강과목 into the wrong column. */
+  .member-detail-grid{grid-template-columns:1fr 1fr}
+  .member-detail-grid>.member-group--info{grid-column:1;grid-row:1}
+  .member-detail-grid>.member-group--role{grid-column:2;grid-row:1}
+  .member-detail-grid>.member-group--region{grid-column:1;grid-row:2}
+  .member-detail-grid>.member-group--specialty{grid-column:2;grid-row:2}
+  .member-detail-grid>.member-subjects-row{grid-column:1/-1;grid-row:3}
   .member-group{padding:7px 11px}
   .member-group h3{font-size:12px;margin-bottom:5px}
   .member-group-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 10px}
@@ -378,6 +394,10 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
   .member-group--info .member-readonly{display:flex;align-items:baseline;gap:6px;min-width:0}
   .member-group--info .member-readonly span{flex:0 0 auto;white-space:nowrap}
   .member-group--info .member-readonly strong{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* 이메일 is a management identifier and must never ellipsis -- it now
+     spans the full card width (member-field-full), so there is ample room
+     to show it on one line without truncating. */
+  .member-group--info .member-readonly.member-field-full strong{overflow:visible;text-overflow:clip}
   .member-group--info .member-synced-field{border:0;background:transparent;padding:0}
   /* The "신청서 자동연동" badge text is still available on hover (the
      synced-field wrapper's own title attribute) -- hiding it here is what
@@ -616,4 +636,4 @@ body.admin-page{overflow-x:hidden}
 /* Keep labels readable without changing their source badges or field values. */
 .member-synced-field>span,.member-system-field>span{flex-wrap:wrap}
 .member-synced-field em,.member-system-field em{white-space:nowrap}
-.member-group-grid>.partner-metadata strong,.member-group-grid>.student-metadata strong{word-break:keep-all;overflow-wrap:break-word}
+.member-subjects-row .partner-metadata strong,.member-subjects-row .student-metadata strong{word-break:keep-all;overflow-wrap:break-word}
