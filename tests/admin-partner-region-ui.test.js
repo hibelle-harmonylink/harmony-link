@@ -10,7 +10,7 @@ const adminHtml = fs.readFileSync(path.join(root, 'admin.html'), 'utf8');
 const readerMigration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '202609170002_admin_partner_region_reader.sql'), 'utf8');
 
 test('activity region is a compact, partner-only summary in the member detail', () => {
-  assert.match(admin, /class="partner-region partner-metadata" hidden/);
+  assert.match(admin, /class="member-group member-group--region partner-metadata" hidden/);
   assert.match(admin, /활동 지역/);
   assert.match(admin, /id="detailPartnerRegionSummary"/);
   assert.match(admin, /id="detailPartnerRegionServices"/);
@@ -80,7 +80,7 @@ test('the independent region manager has responsive, non-overflowing fields', ()
 });
 
 test('only partners receive a compact region summary and management action', () => {
-  assert.match(admin, /class="partner-region partner-metadata" hidden/);
+  assert.match(admin, /class="member-group member-group--region partner-metadata" hidden/);
   assert.match(admin, /id="detailManagePartnerRegion"/);
   assert.match(admin, /manageRegionButton\.addEventListener\('click', openRegionManager\)/);
   // The manage button sits inline in the compact one-line row rather than

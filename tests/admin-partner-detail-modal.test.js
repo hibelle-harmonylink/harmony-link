@@ -78,21 +78,25 @@ test('member-number status color rule: true is black, everything else with a num
   assert.match(adminCss, /\.member-number\.member-number-missing\{color:#9aa8b8;font-style:italic/);
 });
 
-test('detail dialog is a 3-group compact grid (기본 정보 / 회원·파트너 정보 / 지역·권한) instead of a read-only summary followed by a separately-scrolling edit form', () => {
+test('detail dialog is a dashboard-style left/right column layout (기본 정보 + 지역·권한 on the left, 회원·파트너 정보 on the right) with 기능 권한 as a standalone full-width row', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
   assert.match(detail, /<h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시<\/small><\/h3>/);
   assert.match(detail, /<h3>회원·파트너 정보 <small class="member-editable-note">관리 설정 · 자동연동 정보<\/small><\/h3>/);
   assert.match(detail, /<h3>지역·권한<\/h3>/);
-  assert.match(detail, /class="member-detail-groups"/);
-  assert.match(adminCss, /\.member-detail-groups\{display:grid;gap:14px\}/);
-  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-groups\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\);gap:\d+px;align-items:start\}/);
-  // 지역·권한 is the 3rd group and spans the full width beneath the other two.
-  assert.match(adminCss, /\.member-detail-groups>\.member-group:nth-child\(3\)\{grid-column:1\/-1\}/);
+  // 기본정보 and 지역·권한 both live inside the left column; 회원·파트너정보
+  // alone fills the right column; 기능 권한 is a standalone row below both,
+  // not nested inside either card.
+  assert.match(detail, /const columns = `<div class="member-detail-columns"><div class="member-detail-col-left">\$\{basicInfoFields\}\$\{partnerRegionFields\}<\/div><div class="member-detail-col-right">\$\{roleInfoFields\}<\/div><\/div>`;/);
+  assert.match(detail, /const featureRow = `<div class="member-feature-row" id="detailFeatures">/);
+  assert.match(detail, /class="member-detail-groups">\$\{columns\}\$\{featureRow\}/);
+  assert.match(adminCss, /\.member-detail-columns\{display:grid;gap:8px\}/);
+  assert.match(adminCss, /\.member-detail-col-left,\.member-detail-col-right\{display:grid;gap:8px;min-width:0;align-content:start\}/);
+  assert.match(adminCss, /@media\(min-width:681px\)\{[\s\S]*?\.member-detail-columns\{grid-template-columns:46fr 54fr\}/);
 });
 
 test('활동 지역 and 기능 권한 stack as compact one-line rows instead of equal fixed-height boxes', () => {
-  assert.match(adminCss, /\.member-region-access-row\{display:grid;gap:8px\}/);
-  assert.match(adminCss, /\.partner-region\{display:flex;align-items:center;flex-wrap:wrap;/);
+  assert.match(adminCss, /\.member-region-row\{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12px\}/);
+  assert.match(adminCss, /\.member-group--region\{padding:10px 12px\}/);
   assert.match(adminCss, /\.feature-summary\{display:flex;align-items:center;flex-wrap:wrap;/);
   assert.doesNotMatch(adminCss, /min-height:144px/);
 });

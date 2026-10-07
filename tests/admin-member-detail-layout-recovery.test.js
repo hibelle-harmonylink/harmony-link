@@ -27,7 +27,7 @@ test('dialog header, identity, and actions remain outside the shrinking informat
 });
 
 test('both basic and role controls use two readable tracks without a wasted name row', () => {
-  assert.match(css, /\.member-detail-groups\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
+  assert.match(css, /\.member-detail-columns\{grid-template-columns:46fr 54fr\}/);
   assert.match(css, /\.member-group-grid\{grid-template-columns:repeat\(2,minmax\(0,1fr\)\);gap:4px 10px\}/);
   assert.match(css, /\.member-group-grid>\.member-name-field\{grid-column:auto\}/);
 });
@@ -39,7 +39,7 @@ test('long partner/student synchronized descriptions span the entire group inste
   assert.match(js, /syncedReadonlyField\('전문분야', member\.specialty\)/);
 });
 
-test('강의과목 clamps to two lines with the full text behind a 전체 보기 toggle', () => {
+test('강의과목 clamps to two lines with the full text opening in a separate overlay popup', () => {
   assert.match(js, /const syncedClampField = \(label, value\) => \{/);
   // .member-synced-field strong{display:block} (an existing, unrelated
   // rule) has the exact same specificity as a bare .member-clamp-value
@@ -47,7 +47,10 @@ test('강의과목 clamps to two lines with the full text behind a 전체 보기
   // never applies unless the clamp selector matches .member-synced-field
   // too (found by actually rendering this in a browser, not just regex).
   assert.match(css, /\.member-synced-field strong\.member-clamp-value\{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden\}/);
-  assert.match(js, /<details class="member-clamp-details"><summary>전체 보기<\/summary>/);
+  // "전체 보기" no longer expands inline (<details>) -- it opens the shared
+  // overlay dialog, so the main detail dialog's size never changes.
+  assert.match(js, /<button type="button" class="member-clamp-trigger">전체 보기<\/button>/);
+  assert.match(js, /openInfoDialog\('강의과목 전체보기', `<p class="member-info-text">\$\{escapeHtml\(text\)\}<\/p>`\)/);
 });
 
 test('기본 정보 rows hide the synced-field source badge visually (title tooltip keeps it discoverable) so 영문 이름/연락처 are not squeezed into an early ellipsis', () => {
@@ -59,7 +62,7 @@ test('기본 정보 rows hide the synced-field source badge visually (title tool
 });
 
 test('활동 지역 and 기능 권한 are compact one-line rows, not fixed-height boxes', () => {
-  assert.match(css, /\.member-region-access-row\{display:grid;gap:8px\}/);
+  assert.match(css, /\.member-region-row\{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12px\}/);
   assert.doesNotMatch(css, /min-height:144px/);
   assert.match(js, /const featureHtml = member => \{/);
   assert.match(js, /class="feature-summary"/);
@@ -68,8 +71,7 @@ test('활동 지역 and 기능 권한 are compact one-line rows, not fixed-heigh
 });
 
 test('non-partner region stays hidden via the existing .partner-metadata toggle', () => {
-  assert.match(css, /\.partner-region\[hidden\]\{display:none\}/);
-  assert.match(js, /class="partner-region partner-metadata" hidden/);
+  assert.match(js, /class="member-group member-group--region partner-metadata" hidden/);
   assert.match(js, /field\.hidden = selectedType !== 'partner'/);
 });
 

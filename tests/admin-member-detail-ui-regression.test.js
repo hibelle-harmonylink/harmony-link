@@ -37,16 +37,18 @@ test('editable and system-managed member fields are visually distinct without ma
 });
 
 test('partner region and feature text wrap at word boundaries without clipping their contents', () => {
-  // The compact one-line row no longer repeats a "지역:" label prefix in
-  // the JS-set text (the HTML row already prints its own 활동 지역 label).
+  // The compact one-line rows no longer repeat "지역:"/"수업 범위:" label
+  // prefixes in the JS-set text (the static markup already prints its own
+  // 활동 지역 / 수업 범위 labels).
   assert.match(detail, /regionSummary\.textContent = partnerRegionSummary\(partnerRegion\);/);
-  assert.match(detail, /regionServices\.textContent = detail \? `수업 범위: \$\{detail\}` : '';/);
-  assert.match(adminCss, /\.partner-region-services\{white-space:normal;word-break:keep-all;overflow-wrap:break-word\}/);
+  assert.match(detail, /regionServices\.textContent = detail;/);
+  assert.match(detail, /regionServicesRow\.hidden = !detail;/);
+  assert.match(adminCss, /\.member-region-row strong\{flex:1 1 auto;min-width:0;text-align:right;font-weight:700;color:var\(--admin-ink\);overflow-wrap:anywhere\}/);
   assert.match(adminCss, /\.feature-box li\{min-width:0;white-space:normal;word-break:keep-all;overflow-wrap:break-word\}/);
 });
 
 test('활동 지역 and 기능 권한 are compact one-line rows instead of fixed-height boxes', () => {
-  assert.match(adminCss, /\.partner-region\{display:flex;align-items:center;flex-wrap:wrap;/);
+  assert.match(adminCss, /\.member-region-row\{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12px\}/);
   assert.doesNotMatch(adminCss, /min-height:144px/);
   assert.doesNotMatch(adminJs, /partner-region-heading/);
   assert.match(adminJs, /<li class="feature-\$\{item\.feature\}">\$\{item\.label\}<\/li>/);
