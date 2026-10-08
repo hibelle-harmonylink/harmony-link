@@ -100,11 +100,13 @@ test('detail dialog is a consolidated 2-card grid (기본정보 absorbs 지역·
 });
 
 test('활동 지역/전문분야 integrate into their parent cards as plain rows instead of separate equal-height boxes', () => {
-  // 활동 지역 renders as a plain .member-readonly row (no dedicated
-  // .member-region-row box style); 지역정보 관리 keeps its own compact
-  // wrapper + action-row styling.
-  assert.match(adminCss, /\.member-region-compact\{display:grid;gap:3px\}/);
-  assert.match(adminCss, /\.member-region-actions\{display:flex;justify-content:flex-end;margin-top:6px\}/);
+  // 활동 지역/수업 범위 render as plain .member-readonly rows inside 기본
+  // 정보's own grid (no dedicated .member-region-compact/.member-region-row
+  // box style any more); 지역정보 관리 shares the 수업 범위 row and wraps
+  // onto its own line instead of overlapping when space is tight.
+  assert.doesNotMatch(adminCss, /\.member-region-compact\{/);
+  assert.doesNotMatch(adminCss, /\.member-region-actions\{/);
+  assert.match(adminCss, /\.member-region-combined\{flex-wrap:wrap;row-gap:4px\}/);
   assert.match(adminCss, /\.feature-summary\{display:flex;align-items:center;flex-wrap:wrap;/);
   assert.doesNotMatch(adminCss, /min-height:144px/);
 });
@@ -114,9 +116,8 @@ test('every grid/flex child and every group-grid input/select shrinks to fit ins
   assert.match(adminCss, /@media\(min-width:681px\)\{\s*\n\s*\.member-detail>\*,/);
 });
 
-test('이메일 shows the full address on one line (no ellipsis) by spanning the full card width', () => {
+test('이메일 shows the full address with no ellipsis, wrapping instead of truncating within its half-width column', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
-  assert.match(detail, /readonlyField\('이메일', escapeHtml\(member\.email \|\| ''\), false, true\)/);
-  assert.match(adminCss, /\.member-group-grid>\.member-field-full\{grid-column:1\/-1\}/);
-  assert.match(adminCss, /\.member-group--info \.member-readonly\.member-field-full strong\{overflow:visible;text-overflow:clip\}/);
+  assert.match(detail, /readonlyField\('이메일', escapeHtml\(member\.email \|\| ''\)\)/);
+  assert.match(adminCss, /\.member-group--info \.member-readonly strong\{flex:1 1 auto;min-width:0;overflow-wrap:anywhere\}/);
 });

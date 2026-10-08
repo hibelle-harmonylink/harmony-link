@@ -10,13 +10,28 @@ const adminHtml = fs.readFileSync(path.join(root, 'admin.html'), 'utf8');
 const readerMigration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '202609170002_admin_partner_region_reader.sql'), 'utf8');
 
 test('activity region is a compact, partner-only summary in the member detail', () => {
-  assert.match(admin, /class="member-region-compact member-field-full member-field-break partner-metadata" hidden/);
+  // 활동 지역/수업 범위 now render as two plain .member-readonly rows inside
+  // 기본 정보's own grid (no separate .member-region-compact box).
+  assert.match(admin, /class="member-readonly partner-metadata" hidden/);
+  assert.match(admin, /class="member-readonly member-region-combined partner-metadata" hidden/);
   assert.match(admin, /활동 지역/);
   assert.match(admin, /id="detailPartnerRegionSummary"/);
   assert.match(admin, /id="detailPartnerRegionServices"/);
   assert.match(admin, /id="detailManagePartnerRegion"[^>]*>지역정보 관리/);
   assert.doesNotMatch(admin, /id="detailCountryCode"/);
   assert.match(admin, /field\.hidden = selectedType !== 'partner'/);
+});
+
+test('hidden .member-readonly rows (활동 지역/수업 범위 for non-partners) actually disappear, not just carry the hidden attribute', () => {
+  // .member-readonly{display:grid} (base) and .member-group--info
+  // .member-readonly{display:flex} (desktop) both have the same or higher
+  // specificity than the UA [hidden]{display:none} default and sit later in
+  // the cascade, so either one would silently win and keep a hidden row
+  // visible -- the same bug class as .member-region-compact[hidden] and
+  // .member-group-grid label[hidden] elsewhere in this file (found by
+  // actually rendering a student account in a browser, not just regex).
+  assert.match(css, /\.member-readonly\[hidden\]\{display:none\}/);
+  assert.match(css, /\.member-group--info \.member-readonly\[hidden\]\{display:none\}/);
 });
 
 test('region choices use extensible country and state data with current US, New York, and Texas choices', () => {
@@ -80,12 +95,13 @@ test('the independent region manager has responsive, non-overflowing fields', ()
 });
 
 test('only partners receive a compact region summary and management action', () => {
-  assert.match(admin, /class="member-region-compact member-field-full member-field-break partner-metadata" hidden/);
+  assert.match(admin, /class="member-readonly member-region-combined partner-metadata" hidden/);
   assert.match(admin, /id="detailManagePartnerRegion"/);
   assert.match(admin, /manageRegionButton\.addEventListener\('click', openRegionManager\)/);
-  // The manage button sits inline in the compact one-line row rather than
-  // a separate actions sub-block.
+  // The manage button sits inline in the 수업 범위 row rather than a
+  // separate actions sub-block, wrapping onto its own line when tight.
   assert.match(css, /\.member-region-manage\{min-height:30px/);
+  assert.match(css, /\.member-region-combined\{flex-wrap:wrap;row-gap:4px\}/);
 });
 
 test('region manager is a separate modal and uses only the existing region RPC', () => {

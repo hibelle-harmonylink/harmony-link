@@ -37,19 +37,18 @@ test('application-synced metadata fields are display-only and retain their canon
   assert.match(applicationSync, /full_name = coalesce/);
 });
 
-test('nickname is editable inline (label + input on one row) and the save payload reads the live input value', () => {
-  // The input renders inline with its label inside the same compact row
-  // style as every other 기본정보 field (not the old stacked <label>text
-  // above input</label> layout), pre-filled with the member's current
-  // stored nickname.
-  assert.match(admin, /const nicknameField = `<div class="member-readonly member-field-full \$\{manualFieldClass\}" title="일반 수정 · 사업체명 또는 활동명"><span>닉네임\/업체명<\/span><input id="detailNickname" type="text" maxlength="80" autocomplete="nickname" value="\$\{escapeHtml\(memberNickname\(member\)\)\}"\$\{editableDisabled\}><\/div>`;/);
-  // Both save call sites must read the live input's value, so an edited
-  // nickname is what actually gets saved (leaving it untouched sends the
-  // same pre-filled value back, which is a no-op for updateMember's own
-  // metadataChanged check).
-  assert.match(admin, /updateMember\(raw, nameInput\.value, type\.value, membership\.value, status\.value, \{ nickname: nicknameInput\.value \}, partnerRegion, partnerRegion\)/);
-  assert.match(admin, /updateMember\(raw, name, member\.user_type, member\.membership, member\.account_status, \{ nickname: nicknameInput\.value \}, partnerRegion, partnerRegion\)/);
-  assert.match(css, /\.field-source-manual>input\{border:1px solid #c8d8ea/);
+test('nickname is read-only plain text (no input) and the save payload always sends the stored value back unchanged', () => {
+  // No more <input id="detailNickname"> -- syncedReadonlyField renders it
+  // inline with its label, same compact row style as every other 기본정보
+  // field, with an accurate (non-synced) title/badge since nickname is not
+  // application-sourced.
+  assert.doesNotMatch(admin, /id="detailNickname"/);
+  assert.match(admin, /syncedReadonlyField\('닉네임\/업체명', memberNickname\(member\), '관리자 설정값 · 이 화면에서는 읽기 전용입니다', '읽기 전용'\)/);
+  // Both save call sites must pass the member's own current nickname back,
+  // never a live input's value -- removing the input can never blank out
+  // or drop the stored nickname.
+  assert.match(admin, /updateMember\(raw, nameInput\.value, type\.value, membership\.value, status\.value, \{ nickname: memberNickname\(member\) \}, partnerRegion, partnerRegion\)/);
+  assert.match(admin, /updateMember\(raw, name, member\.user_type, member\.membership, member\.account_status, \{ nickname: memberNickname\(member\) \}, partnerRegion, partnerRegion\)/);
   const forward = partnerForm.slice(partnerForm.indexOf('function forwardApplicationToRoster_'), partnerForm.indexOf('function resyncExistingApplications'));
   assert.doesNotMatch(forward, /['"]닉네임['"]\s*:/);
 });
