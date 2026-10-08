@@ -41,13 +41,16 @@ test('partner region and feature text wrap at word boundaries without clipping t
   // prefixes in the JS-set text (the static markup already prints its own
   // 활동 지역 / 수업 범위 labels).
   assert.match(detail, /regionSummary\.textContent = partnerRegionSummary\(partnerRegion\);/);
-  assert.match(detail, /regionServices\.textContent = detail;/);
-  assert.match(detail, /regionServicesRow\.hidden = !detail;/);
+  assert.match(detail, /regionServices\.textContent = detail \|\| '—';/);
+  // 수업 범위 and the 지역정보 관리 button now always share one row (no
+  // independent hide-on-empty any more, since hiding would also hide the
+  // button).
+  assert.doesNotMatch(detail, /regionServicesRow\.hidden/);
   // 활동 지역/수업 범위 now use the same .member-group--info .member-readonly
   // treatment as every other 기본정보 field (no dedicated .member-region-row
-  // box style any more); member-field-full is what keeps 수업 범위's longer
-  // text from being clipped with an ellipsis.
-  assert.match(adminCss, /\.member-group--info \.member-readonly\.member-field-full strong\{overflow:visible;text-overflow:clip\}/);
+  // box style any more); overflow-wrap:anywhere is what keeps 수업 범위's
+  // longer text from being clipped with an ellipsis.
+  assert.match(adminCss, /\.member-group--info \.member-readonly strong\{flex:1 1 auto;min-width:0;overflow-wrap:anywhere\}/);
   assert.match(adminCss, /\.feature-box li\{min-width:0;white-space:normal;word-break:keep-all;overflow-wrap:break-word\}/);
 });
 

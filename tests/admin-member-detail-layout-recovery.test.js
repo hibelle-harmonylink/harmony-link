@@ -60,7 +60,7 @@ test('기본 정보 rows hide the synced-field source badge visually (title tool
   // The outer div still carries the explanatory title (syncedReadonlyField
   // always sets it), so nothing is actually lost -- only hidden from the
   // compact row's limited width.
-  assert.match(js, /syncedReadonlyField = \(label, value, full = false, title = '신청서 자동연동/);
+  assert.match(js, /syncedReadonlyField = \(label, value, title = '신청서 자동연동/);
 });
 
 test('활동 지역 and 기능 권한 are compact one-line rows, not fixed-height boxes', () => {
@@ -74,7 +74,7 @@ test('활동 지역 and 기능 권한 are compact one-line rows, not fixed-heigh
 });
 
 test('non-partner region stays hidden via the existing .partner-metadata toggle', () => {
-  assert.match(js, /class="member-region-compact member-field-full member-field-break partner-metadata" hidden/);
+  assert.match(js, /class="member-readonly partner-metadata" hidden/);
   assert.match(js, /field\.hidden = selectedType !== 'partner'/);
 });
 
@@ -93,10 +93,10 @@ test('layout recovery keeps existing identity sources, save RPC, and readback ve
   // still sends memberFullName(member) verbatim, untouched by that helper.
   assert.match(js, /syncedReadonlyField\('영문 이름', memberFullNameDisplay\(member\)\)/);
   assert.match(js, /const memberFullNameDisplay = member => memberFullName\(member\)\.split\(','\)\[0\]\.trim\(\)/);
-  // 닉네임/업체명 is editable again -- its input exists and the save
-  // handler reads its live value.
-  assert.match(js, /id="detailNickname"/);
-  assert.match(js, /nickname: nicknameInput\.value/);
+  // 닉네임/업체명 is read-only plain text again -- no input, and the save
+  // handler always sends the member's own stored value back unchanged.
+  assert.doesNotMatch(js, /id="detailNickname"/);
+  assert.match(js, /nickname: memberNickname\(member\)/);
   assert.match(js, /admin_update_member_name/);
   assert.match(js, /p_display_name: nextName/);
   assert.match(js, /freshMember\.display_name[^\n]*nextName/);

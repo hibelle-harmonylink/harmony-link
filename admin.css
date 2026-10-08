@@ -28,7 +28,14 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .member-group h3{margin:0 0 12px;font-size:13px;font-weight:900;color:var(--admin-navy)}
 .member-group-grid{display:grid;grid-template-columns:1fr;gap:12px}.member-group-grid label{display:grid;gap:6px;font-size:11px;font-weight:800;color:#49627f}.member-group-grid label[hidden]{display:none!important}.member-group-grid select{min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px}
 .member-readonly{display:grid;gap:4px;min-width:0}.member-readonly span{font-size:11px;font-weight:800;color:#49627f}.member-readonly strong{font-size:13px;font-weight:700;color:var(--admin-ink);white-space:normal;overflow-wrap:anywhere}
-.member-readonly-truncate strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;min-width:0}
+/* .member-readonly{display:grid} has the same specificity as the UA [hidden]
+   default and sits later in the cascade, so it silently wins -- a hidden
+   .partner-metadata/.student-metadata row (활동 지역/수업 범위 for a
+   non-partner, 수강과목 for a non-student) would stay visible without this
+   override (found by actually rendering a student account in a browser, not
+   just regex -- the same bug class as .member-region-compact[hidden] and
+   .member-group-grid label[hidden] elsewhere in this file). */
+.member-readonly[hidden]{display:none}
 /* Compact 기능 권한 summary: a one-line 사용 가능/사용 제한 count row.
    "자세히 보기" opens the shared member-info-dialog overlay (wired by
    delegation in admin.js) instead of expanding inline -- the main detail
@@ -56,25 +63,19 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .member-info-text{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.5;color:var(--admin-ink)}
 .member-detail-actions{display:flex;justify-content:flex-end;gap:9px}.member-detail-actions button{min-height:42px}.member-protected-copy{padding:12px;border-radius:10px;background:#e8f2ff;color:#175694;font-size:11px;font-weight:800}
 .member-group-grid input{min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px;color:var(--admin-ink);font:inherit}.member-save-feedback{min-height:0;font-size:13px;font-weight:800;text-align:center}.member-save-feedback.success{padding:11px;border:1px solid #9bd6b1;border-radius:10px;background:#eaf8ef;color:#176944}.member-save-feedback.error{padding:11px;border:1px solid #f0b5bf;border-radius:10px;background:#fff0f2;color:#a82d41}
-/* 활동 지역/수업 범위/지역정보 관리 now live inside 기본 정보's own grid
-   (no separate 지역·권한 card/title) -- 활동지역/수업범위 render as plain
-   .member-readonly rows, same look as every other 기본정보 field. Only
-   shown for partners via the existing .partner-metadata hidden toggle;
-   수업 범위's own independent hidden flag (collapses when there is no
-   sub-detail text) still lives on that one row, nested one level deeper. */
-.member-region-compact{display:grid;gap:3px}
-/* .member-region-compact{display:grid} has the same specificity as a bare
-   [hidden] UA-stylesheet rule, so without this it would silently stay
-   visible for non-partner accounts (found by actually rendering this in a
-   browser, not just regex -- same bug class as .member-group-grid label[hidden]
-   above). */
-.member-region-compact[hidden]{display:none}
-.member-region-actions{display:flex;justify-content:flex-end;margin-top:6px}
-/* 전문분야/수강과목 now render as the last item inside 회원·파트너 정보's own
-   grid (no separate card) -- same reasoning. */
-/* A little extra separation above a field group that reads as its own
-   sub-topic (활동 지역 block, 전문분야/수강과목) without a nested box/border. */
+/* 활동 지역/수업 범위/지역정보 관리 now live inside 기본 정보's own 2-col
+   grid as two plain half-width .member-readonly rows (활동 지역 left,
+   수업 범위 + 지역정보 관리 right) -- no separate 지역·권한 card/title, no
+   wrapping "compact" block any more. Only shown for partners via the
+   existing .partner-metadata hidden toggle on each row. */
+/* 전문분야/수강과목 render as the last item inside 회원·파트너 정보's own
+   grid (no separate card). A little extra separation above it reads as
+   its own sub-topic without a nested box/border. */
 .member-field-break{margin-top:4px}
+/* 수업 범위 text and the 지역정보 관리 button share one row; flex-wrap lets
+   the button drop to its own line instead of overlapping the text when
+   the column is too narrow for both. */
+.member-region-combined{flex-wrap:wrap;row-gap:4px}
 /* 강의과목/담당강사 full-width row below both card rows -- the synced-field
    itself already has a border/background, so no extra card chrome here. */
 .member-subjects-row{min-width:0}
@@ -392,17 +393,16 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
      a font-size cut. The six fields fall into a 2-col x 3-row block via
      the existing .member-group-grid 2-column track. */
   .member-group--info .member-readonly{display:flex;align-items:baseline;gap:6px;min-width:0}
+  /* Higher-specificity desktop counterpart to the base .member-readonly[hidden]
+     override above -- .member-group--info .member-readonly{display:flex} would
+     otherwise outrank it here. */
+  .member-group--info .member-readonly[hidden]{display:none}
   .member-group--info .member-readonly span{flex:0 0 auto;white-space:nowrap}
-  .member-group--info .member-readonly strong{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  /* 이메일 is a management identifier and must never ellipsis -- it now
-     spans the full card width (member-field-full), so there is ample room
-     to show it on one line without truncating. */
-  .member-group--info .member-readonly.member-field-full strong{overflow:visible;text-overflow:clip}
-  /* 닉네임/업체명 is an <input>, not a <strong>, in this same inline row --
-     flex-fill it the same way so the label stays compact on the left and
-     the box doesn't force the row (or the card) any taller than the other
-     rows around it. */
-  .member-group--info .member-readonly input{flex:1 1 auto;min-width:0;height:auto;margin:0}
+  /* 이메일/수업 범위 are the two fields long enough to not always fit a
+     half-width column -- wrap instead of an ellipsis (no 말줄임) so nothing
+     is ever cut off; short values never reach the wrap width anyway. */
+  .member-group--info .member-readonly strong{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+  .member-group--info .member-readonly.member-region-combined .member-region-manage{margin-left:auto}
   .member-group--info .member-synced-field{border:0;background:transparent;padding:0}
   /* The "신청서 자동연동" badge text is still available on hover (the
      synced-field wrapper's own title attribute) -- hiding it here is what

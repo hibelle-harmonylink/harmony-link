@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const BUILD = '20260917-10';
+  const BUILD = '20260917-11';
   console.log(`[admin] admin.js loaded — build ${BUILD}`);
   // Visible without opening devtools -- if this text is missing, blank, or
   // shows an older build number than the one just shipped, the browser (or
@@ -550,9 +550,7 @@
     const editable = !withdrawn && !protectedAccount;
     const editableClass = editable ? ' admin-editable-field' : '';
     const directFieldClass = `field-source-direct${editableClass}`;
-    const manualFieldClass = `field-source-manual${editableClass}`;
     const settingFieldClass = `field-source-setting${editableClass}`;
-    const editableDisabled = editable ? '' : ' disabled aria-disabled="true"';
     detail.className = 'member-detail';
     // Compact one-screen layout (2026-09): three labeled groups instead of a
     // read-only summary list followed by a separately-scrolling edit form
@@ -561,12 +559,11 @@
     // used to appear twice (닉네임/이름/연락처/회원유형/멤버십/계정상태) now
     // renders exactly once, as its live input/select, which is what removed
     // the internal scrollbar on common desktop viewports (1366x768+).
-    const readonlyField = (label, valueHtml, truncate = false, full = false) => `<div class="member-readonly member-system-field${truncate ? ' member-readonly-truncate' : ''}${full ? ' member-field-full' : ''}"><span>${label}<em>자동 관리</em></span><strong${truncate ? ` title="${escapeHtml(member.email || '')}"` : ''}>${valueHtml}</strong></div>`;
-    // full spans the full card width instead of sharing a half-width column.
+    const readonlyField = (label, valueHtml) => `<div class="member-readonly member-system-field"><span>${label}<em>자동 관리</em></span><strong>${valueHtml}</strong></div>`;
     // title/badge default to the 신청서 자동연동 source; 닉네임/업체명 below
     // passes its own (it is an administrator-set field, not synced from an
-    // application, even though it now renders with this same read-only look).
-    const syncedReadonlyField = (label, value, full = false, title = '신청서 자동연동 · 신청서 재동기화로 갱신됩니다', badge = '신청서 자동연동') => `<div class="member-readonly member-synced-field${full ? ' member-field-full' : ''}" title="${title}"><span>${label}<em>${badge}</em></span><strong>${escapeHtml(value || '—')}</strong></div>`;
+    // application, even though it renders with this same read-only look).
+    const syncedReadonlyField = (label, value, title = '신청서 자동연동 · 신청서 재동기화로 갱신됩니다', badge = '신청서 자동연동') => `<div class="member-readonly member-synced-field" title="${title}"><span>${label}<em>${badge}</em></span><strong>${escapeHtml(value || '—')}</strong></div>`;
     // 강의과목 is the one synced field whose content routinely runs several
     // sentences long. Clamp it to two lines; "전체 보기" opens the shared
     // overlay dialog (wired once, by delegation, in the module-level click
@@ -575,22 +572,16 @@
       const text = String(value || '').trim();
       return `<div class="member-readonly member-synced-field member-clamp-field" title="신청서 자동연동 · 신청서 재동기화로 갱신됩니다"><span>${label}<em>신청서 자동연동</em></span><strong class="member-clamp-value">${escapeHtml(text || '—')}</strong>${text ? `<button type="button" class="member-clamp-trigger">전체 보기</button>` : ''}</div>`;
     };
-    // 닉네임/업체명 is editable again, but inline (label + input on one row,
-    // same as every other 기본정보 field) instead of the old stacked
-    // <label>text above input</label> layout -- that's what let it reuse
-    // .member-group--info's compact row styling without growing the card.
-    // The input's initial value is the member's current stored nickname;
-    // the save handlers below read nicknameInput.value directly, so an
-    // edited value is what actually gets sent, and leaving it untouched
-    // sends the same stored value back (no accidental blanking either way).
-    const nicknameField = `<div class="member-readonly member-field-full ${manualFieldClass}" title="일반 수정 · 사업체명 또는 활동명"><span>닉네임/업체명</span><input id="detailNickname" type="text" maxlength="80" autocomplete="nickname" value="${escapeHtml(memberNickname(member))}"${editableDisabled}></div>`;
-    // 활동 지역/수업 범위/지역정보 관리 move in here from the old standalone
-    // 지역·권한 card -- that card used to leave a tall empty gap under 기본
-    // 정보 whenever 회원·파트너 정보 had more content. Still partner-only via
-    // the existing .partner-metadata hidden toggle; the inner 수업 범위 row
-    // keeps its own independent hidden flag (collapses only when there is no
-    // sub-detail text), exactly as it did inside the old standalone card.
-    const basicInfoFields = `<section class="member-group member-group--info"><h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시</small></h3><div class="member-group-grid">${readonlyField('회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>`)}${readonlyField('가입일', formatDate(member.created_at))}${readonlyField('이메일', escapeHtml(member.email || ''), false, true)}${nicknameField}${syncedReadonlyField('영문 이름', memberFullNameDisplay(member))}${syncedReadonlyField('연락처', formatPhone(member.phone ?? ''))}<div class="member-region-compact member-field-full member-field-break partner-metadata" hidden><div class="member-readonly member-field-full"><span>활동 지역</span><strong id="detailPartnerRegionSummary">지역 정보를 불러오는 중…</strong></div><div class="member-readonly member-field-full" id="detailPartnerRegionServicesRow" hidden><span>수업 범위</span><strong id="detailPartnerRegionServices"></strong></div><div class="member-region-actions"><button id="detailManagePartnerRegion" type="button" class="member-region-manage">지역정보 관리</button></div></div></div></section>`;
+    // 기본 정보 is exactly 4 rows of two half-width fields each: 회원번호|가입일,
+    // 이메일|연락처, 닉네임/업체명|영문 이름, 활동 지역|수업 범위(+지역정보 관리).
+    // 닉네임/업체명 is read-only here, same plain-text look as 영문 이름 (no
+    // input) -- the save handlers below always send memberNickname(member)
+    // back verbatim, so there is no live input value to lose by removing it.
+    // Long values (이메일, 수업 범위) wrap instead of truncating with an
+    // ellipsis; 수업 범위 and the 지역정보 관리 button share one flex row that
+    // wraps the button onto its own line rather than overlapping the text
+    // when space is tight.
+    const basicInfoFields = `<section class="member-group member-group--info"><h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시</small></h3><div class="member-group-grid">${readonlyField('회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>`)}${readonlyField('가입일', formatDate(member.created_at))}${readonlyField('이메일', escapeHtml(member.email || ''))}${syncedReadonlyField('연락처', formatPhone(member.phone ?? ''))}${syncedReadonlyField('닉네임/업체명', memberNickname(member), '관리자 설정값 · 이 화면에서는 읽기 전용입니다', '읽기 전용')}${syncedReadonlyField('영문 이름', memberFullNameDisplay(member))}<div class="member-readonly partner-metadata" hidden><span>활동 지역</span><strong id="detailPartnerRegionSummary">지역 정보를 불러오는 중…</strong></div><div class="member-readonly member-region-combined partner-metadata" hidden><span>수업 범위</span><strong id="detailPartnerRegionServices"></strong><button id="detailManagePartnerRegion" type="button" class="member-region-manage">지역정보 관리</button></div></div></section>`;
     const protectedNotice = withdrawn || protectedAccount ? `<div class="member-protected-copy">${withdrawn ? '탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다.' : '관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.'}</div>` : '';
     const accessInputs = withdrawn || protectedAccount ? '' : `<label class="member-name-field ${directFieldClass}" title="관리자 직접 관리 · 신청서 재동기화로 변경되지 않음">한글 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label>`;
     // 전문분야/수강과목 move in here from the old standalone 전문분야 card --
@@ -611,27 +602,27 @@
         : `<div class="member-detail-actions">${feedback}<button type="button" class="btn member-resend">안내메일 다시 보내기</button><button type="button" class="btn btn-primary" id="detailSave">변경 저장</button></div>`;
     detail.innerHTML = `<div class="member-detail-summary"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(member.email || '')}</span>${typeBadge(member)}${member.is_admin ? '' : membershipBadge(member)}${badge(STATUS_LABELS[member.account_status], member.account_status)}</div><div class="member-detail-groups">${grid}${featureRow}</div>${actions}`;
     const nameInput = detail.querySelector('#detailName');
-    const nicknameInput = detail.querySelector('#detailNickname');
     const type = detail.querySelector('#detailType');
     const membership = detail.querySelector('#detailMembership');
     const status = detail.querySelector('#detailStatus');
     const regionSummary = detail.querySelector('#detailPartnerRegionSummary');
-    const regionServicesRow = detail.querySelector('#detailPartnerRegionServicesRow');
     const regionServices = detail.querySelector('#detailPartnerRegionServices');
     const manageRegionButton = detail.querySelector('#detailManagePartnerRegion');
     let partnerRegion = normalizePartnerRegion();
     const renderPartnerRegion = region => {
       partnerRegion = normalizePartnerRegion(region);
       // Each row prints its own static label (활동 지역 / 수업 범위) in the
-      // markup above, so the JS-set text is the value only.
+      // markup above, so the JS-set text is the value only. 수업 범위 and the
+      // 지역정보 관리 button always share one row now, so an empty detail
+      // falls back to a dash instead of hiding the row (which would also
+      // hide the button).
       regionSummary.textContent = partnerRegionSummary(partnerRegion);
       const detail = [
         partnerRegion.city || partnerRegion.service_area.length ? '방문 가능' : '',
         partnerRegion.online_available ? '온라인 수업 가능' : '',
         partnerRegion.nationwide_available ? '미국 전역 가능' : ''
       ].filter(Boolean).join(' · ');
-      regionServices.textContent = detail;
-      regionServicesRow.hidden = !detail;
+      regionServices.textContent = detail || '—';
     };
     const readPartnerRegion = async () => {
       const { data, error } = await client.rpc('admin_get_partner_region', { p_member_id: member.id });
@@ -733,10 +724,13 @@
       };
       [type, membership, status].forEach(select => select.addEventListener('change', preview));
       type.addEventListener('change', () => showRoleMetadata(type.value));
-      detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, nameInput.value, type.value, membership.value, status.value, { nickname: nicknameInput.value }, partnerRegion, partnerRegion));
+      // 닉네임/업체명 has no input in this modal (read-only) -- always send
+      // the member's current stored value back unchanged, so this save
+      // action can never blank it out or drop it.
+      detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, nameInput.value, type.value, membership.value, status.value, { nickname: memberNickname(member) }, partnerRegion, partnerRegion));
       detail.querySelector('.member-resend').addEventListener('click', event => resendNotification(raw, event.currentTarget));
     } else if (!protectedAccount && !withdrawn) {
-      detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, name, member.user_type, member.membership, member.account_status, { nickname: nicknameInput.value }, partnerRegion, partnerRegion));
+      detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, name, member.user_type, member.membership, member.account_status, { nickname: memberNickname(member) }, partnerRegion, partnerRegion));
     }
     if (!withdrawn && member.user_type === 'partner') {
       readPartnerRegion().then(renderPartnerRegion).catch(() => { regionSummary.textContent = '지역 정보를 불러오지 못했습니다.'; });
