@@ -55,27 +55,29 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .feature-box li{min-width:0;white-space:normal;word-break:keep-all;overflow-wrap:break-word}
 .feature-box.allowed li::before{content:'✓';color:#168153;font-weight:900;margin-right:7px}
 .feature-box.denied li::before{content:'—';color:#a54755;font-weight:900;margin-right:7px}
-/* 강의과목 clamps to two lines in the main dialog; "전체 보기" opens the same
-   shared overlay with the full original text (member.teaching_subjects is
-   never modified -- this is a display-only popup). */
-.member-synced-field strong.member-clamp-value{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* 강의과목 clamps to up to four lines in the main dialog (shorter text never
+   reaches that height, so short entries don't leave a large empty box);
+   "전체 보기" opens the same shared overlay with the full original text
+   (member.teaching_subjects is never modified -- this is a display-only
+   popup). */
+.member-synced-field strong.member-clamp-value{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .member-clamp-trigger{margin-top:3px;display:block;border:0;background:transparent;color:#0c5eb7;font:inherit;font-size:10px;font-weight:850;cursor:pointer;padding:0}
 .member-info-text{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.5;color:var(--admin-ink)}
 .member-detail-actions{display:flex;justify-content:flex-end;gap:9px}.member-detail-actions button{min-height:42px}.member-protected-copy{padding:12px;border-radius:10px;background:#e8f2ff;color:#175694;font-size:11px;font-weight:800}
 .member-group-grid input{min-height:43px;border:1px solid #c8d8ea;border-radius:10px;background:#fff;padding:9px;color:var(--admin-ink);font:inherit}.member-save-feedback{min-height:0;font-size:13px;font-weight:800;text-align:center}.member-save-feedback.success{padding:11px;border:1px solid #9bd6b1;border-radius:10px;background:#eaf8ef;color:#176944}.member-save-feedback.error{padding:11px;border:1px solid #f0b5bf;border-radius:10px;background:#fff0f2;color:#a82d41}
-/* 활동 지역/수업 범위/지역정보 관리 now live inside 기본 정보's own 2-col
-   grid as two plain half-width .member-readonly rows (활동 지역 left,
-   수업 범위 + 지역정보 관리 right) -- no separate 지역·권한 card/title, no
-   wrapping "compact" block any more. Only shown for partners via the
-   existing .partner-metadata hidden toggle on each row. */
-/* 전문분야/수강과목 render as the last item inside 회원·파트너 정보's own
-   grid (no separate card). A little extra separation above it reads as
-   its own sub-topic without a nested box/border. */
+/* 가입일 is the one 기본 정보 field that sits below the 2-col grid's two
+   rows instead of sharing a half-width column with another field -- a
+   little extra separation above it reads as its own line without a nested
+   box/border. */
 .member-field-break{margin-top:4px}
-/* 수업 범위 text and the 지역정보 관리 button share one row; flex-wrap lets
-   the button drop to its own line instead of overlapping the text when
-   the column is too narrow for both. */
-.member-region-combined{flex-wrap:wrap;row-gap:4px}
+/* 활동 지역/수업 범위/전문분야(파트너) and 수강과목(수강생) no longer have
+   their own grid row in either card -- they moved into the 지역정보 관리 /
+   수강 정보 보기 popups, reached through one bottom-right action button per
+   card. */
+.member-group-footer{display:flex;justify-content:flex-end;margin-top:8px}
+/* The read-only summary (활동 지역/수업 범위/전문분야) at the top of the
+   지역정보 관리 popup, above its existing edit form. */
+.partner-region-summary{display:grid;gap:4px;margin-bottom:2px}
 /* 강의과목/담당강사 full-width row below both card rows -- the synced-field
    itself already has a border/background, so no extra card chrome here. */
 .member-subjects-row{min-width:0}
@@ -365,14 +367,15 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
 .member-info-dialog{width:min(560px,calc(100vw - 32px));max-height:80vh;box-sizing:border-box;border:0;border-radius:16px;padding:0;color:var(--admin-ink);box-shadow:0 24px 80px rgba(3,25,57,.3);overflow:hidden}.member-info-dialog::backdrop{background:rgba(5,25,50,.62);backdrop-filter:blur(3px)}.member-info-dialog-shell{display:grid;max-height:80vh}.member-info-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 18px;border-bottom:1px solid var(--admin-line)}.member-info-dialog-head h2{margin:0;color:var(--admin-navy);font-size:16px}.member-info-dialog-head button{display:grid;place-items:center;width:30px;height:30px;border:0;border-radius:50%;background:#edf4fb;color:var(--admin-navy);font-size:20px;line-height:1;cursor:pointer}.member-info-dialog-body{display:grid;gap:12px;max-height:calc(80vh - 57px);overflow-y:auto;padding:15px 18px 17px}
 @media(min-width:681px){
   .member-detail{padding:8px 22px 12px}
-  /* Identity line: name (left, own natural width) -- email (center,
-     grows to fill the middle since it's the only flexible item, so
-     text-align:center lands it in the middle of that space) -- role/
-     membership/status badges (pushed to the right edge because the
-     email already absorbed the slack between them). */
-  .member-detail-summary{display:flex;align-items:center;flex-wrap:nowrap;gap:12px}
-  .member-detail-summary strong{width:auto;flex:0 1 auto;font-size:18px;font-weight:900;color:var(--admin-navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .member-detail-summary strong + span{flex:1 1 auto;min-width:0;text-align:center;font-size:13px;font-weight:700;color:var(--admin-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  /* Identity line is now a plain left-to-right sequence -- 한글 이름 →
+     회원번호 → 회원유형 배지 → 멤버십 배지 → 계정상태 배지 -- instead of the
+     old name/email/badges three-zone layout (이메일 no longer appears here
+     at all; it only shows once, in 기본 정보). The name is the one item
+     allowed to shrink with an ellipsis if the line gets tight; every other
+     item keeps its natural width. */
+  .member-detail-summary{display:flex;align-items:center;flex-wrap:nowrap;gap:10px}
+  .member-detail-summary strong{width:auto;flex:0 1 auto;min-width:0;font-size:18px;font-weight:900;color:var(--admin-navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .member-detail-summary strong + span{flex:0 0 auto;font-size:13px;font-weight:800;white-space:nowrap}
   .member-detail-summary .member-badge{flex:0 0 auto}
   /* 기본 정보 | 회원·파트너 정보 share one grid row (default align-items:
      stretch equalizes their height natively); 강의과목 is a standalone
@@ -402,21 +405,12 @@ body.admin-page{min-height:100vh;background:linear-gradient(145deg,#f4f9ff,#fff)
      half-width column -- wrap instead of an ellipsis (no 말줄임) so nothing
      is ever cut off; short values never reach the wrap width anyway. */
   .member-group--info .member-readonly strong{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
-  .member-group--info .member-readonly.member-region-combined .member-region-manage{margin-left:auto}
   .member-group--info .member-synced-field{border:0;background:transparent;padding:0}
   /* The "신청서 자동연동" badge text is still available on hover (the
      synced-field wrapper's own title attribute) -- hiding it here is what
      actually gives 영문 이름/연락처 enough room to show their value instead
      of truncating almost immediately. */
   .member-group--info .member-synced-field>span em{display:none}
-  /* 전문분야/수강과목 (now the last item inside 회원·파트너 정보, not a
-     separate card) gets the same flat, badge-hidden treatment as every
-     synced field in 기본 정보, for a visually identical card style on
-     both sides. Its label still stacks above the value (unlike 기본
-     정보's inline rows) to match the two-line "전문분야 / 자격증·직업교육"
-     presentation. */
-  .member-group--role .member-synced-field{border:0;background:transparent;padding:0}
-  .member-group--role .member-synced-field>span em{display:none}
   .member-detail-actions{border-top:1px solid var(--admin-line);padding-top:7px}
   .member-detail-actions .btn{min-height:32px;padding:6px 13px;font-size:12.5px}
 }
@@ -635,7 +629,7 @@ body.admin-page{overflow-x:hidden}
 .admin-editable-field.field-source-direct>input{border:2px solid #1a34ac!important;background:#f4f8ff!important}
 .field-source-manual>input{border:1px solid #c8d8ea!important;background:#f8fafc!important}
 .field-source-setting>select{border:1px solid #a9bfd6!important;background:#f8fbff!important}
-.member-system-field>span{display:flex;align-items:center;gap:5px}.member-system-field em{font-style:normal;color:#718198;font-size:9px;font-weight:750}
+.member-system-field>span{display:flex;align-items:center;gap:5px}
 .member-synced-field{min-width:0;border:1px solid #d5e0ea;border-radius:10px;background:#f4f7fa;padding:9px;box-sizing:border-box}.member-synced-field>span{display:flex;align-items:center;gap:5px;color:#61758b;font-size:11px;font-weight:800}.member-synced-field em{font-style:normal;color:#657b91;font-size:9px;font-weight:750}.member-synced-field strong{display:block;min-width:0;margin-top:5px;color:#42586f;font-size:13px;font-weight:700;line-height:1.35;overflow-wrap:anywhere}
 
 @media(min-width:681px){
@@ -648,5 +642,5 @@ body.admin-page{overflow-x:hidden}
 
 /* Keep labels readable without changing their source badges or field values. */
 .member-synced-field>span,.member-system-field>span{flex-wrap:wrap}
-.member-synced-field em,.member-system-field em{white-space:nowrap}
+.member-synced-field em{white-space:nowrap}
 .member-subjects-row .partner-metadata strong,.member-subjects-row .student-metadata strong{word-break:keep-all;overflow-wrap:break-word}

@@ -36,9 +36,12 @@ test('existing member numbers are preserved on repeat registration, never reissu
 
 test('detail modal reads synchronized metadata from the canonical RPC row without editable controls', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
-  assert.match(detail, /syncedReadonlyField\('전문분야', member\.specialty\)/);
+  // 전문분야/수강과목 are reached through the 지역정보 관리/수강 정보 보기
+  // popups (plain read-only text there); 담당강사 stays a syncedReadonlyField
+  // row in the full-width subjects row below both cards.
+  assert.match(detail, /<span>전문분야<\/span><strong>\$\{escapeHtml\(member\.specialty \|\| '—'\)\}<\/strong>/);
   assert.match(detail, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
-  assert.match(detail, /syncedReadonlyField\('수강과목', member\.enrolled_subject\)/);
+  assert.match(detail, /openInfoDialog\('수강 정보', `<p class="member-info-text">\$\{escapeHtml\(member\.enrolled_subject \|\| '—'\)\}<\/p>`\)/);
   assert.match(detail, /syncedReadonlyField\('담당강사', member\.assigned_instructor\)/);
   assert.doesNotMatch(detail, /id="detailSpecialty"|id="detailTeachingSubjects"|id="detailEnrolledSubject"|id="detailAssignedInstructor"/);
 });
@@ -54,7 +57,9 @@ test('partner-only and student-only metadata fields respect [hidden] instead of 
 
 test('회원번호 stays a read-only chip; 닉네임/이름/연락처/회원유형/멤버십/계정상태 each render exactly once as their live input/select (no duplicate read-only summary)', () => {
   const detail = adminJs.slice(adminJs.indexOf('const openDetail = raw =>'), adminJs.indexOf('const resendNotification ='));
-  assert.match(detail, /readonlyField\('회원번호'/);
+  // 회원번호 is now a read-only chip in the dialog header, not inside 기본
+  // 정보's grid.
+  assert.match(detail, /<span class="\$\{memberNumberClass\(member\)\}">\$\{escapeHtml\(member\.member_number \|\| '—'\)\}<\/span>/);
   assert.match(detail, /readonlyField\('이메일'/);
   assert.match(detail, /readonlyField\('가입일'/);
   assert.doesNotMatch(detail, /readonlyField\('닉네임'/);
@@ -99,14 +104,16 @@ test('detail dialog is a consolidated 2-card grid (기본정보 absorbs 지역·
   assert.match(adminCss, /\.member-detail-grid>\.member-subjects-row\{grid-column:1\/-1;grid-row:2\}/);
 });
 
-test('활동 지역/전문분야 integrate into their parent cards as plain rows instead of separate equal-height boxes', () => {
-  // 활동 지역/수업 범위 render as plain .member-readonly rows inside 기본
-  // 정보's own grid (no dedicated .member-region-compact/.member-region-row
-  // box style any more); 지역정보 관리 shares the 수업 범위 row and wraps
-  // onto its own line instead of overlapping when space is tight.
+test('활동 지역/전문분야 are reached through one popup instead of separate equal-height boxes in the main grid', () => {
+  // 활동 지역/수업 범위/전문분야 no longer render inside either card's grid
+  // at all (no .member-region-compact/.member-region-row/.member-region-combined
+  // box style needed any more) -- they live in the 지역정보 관리 popup,
+  // opened via one bottom-right button.
   assert.doesNotMatch(adminCss, /\.member-region-compact\{/);
   assert.doesNotMatch(adminCss, /\.member-region-actions\{/);
-  assert.match(adminCss, /\.member-region-combined\{flex-wrap:wrap;row-gap:4px\}/);
+  assert.doesNotMatch(adminCss, /\.member-region-combined\{/);
+  assert.match(adminCss, /\.member-group-footer\{display:flex;justify-content:flex-end/);
+  assert.match(adminCss, /\.partner-region-summary\{display:grid/);
   assert.match(adminCss, /\.feature-summary\{display:flex;align-items:center;flex-wrap:wrap;/);
   assert.doesNotMatch(adminCss, /min-height:144px/);
 });

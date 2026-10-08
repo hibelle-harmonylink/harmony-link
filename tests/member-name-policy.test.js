@@ -72,7 +72,9 @@ test('public community author names prioritize member_profiles.display_name', ()
 
 test('admin search retains display_name, full_name, and nickname while system fields stay automatic', () => {
   assert.match(admin, /member\.nickname \|\| ''\} \$\{member\.full_name \|\| ''\} \$\{member\.display_name \|\| ''\}/);
-  assert.match(admin, /readonlyField\('회원번호'/);
+  // 회원번호 is a read-only chip in the dialog header now, not a
+  // readonlyField row; 이메일/가입일 remain readonlyField rows.
+  assert.match(admin, /<span class="\$\{memberNumberClass\(member\)\}">\$\{escapeHtml\(member\.member_number \|\| '—'\)\}<\/span>/);
   assert.match(admin, /readonlyField\('이메일'/);
   assert.match(admin, /readonlyField\('가입일'/);
   assert.doesNotMatch(admin, /id="detailMemberNumber"/);

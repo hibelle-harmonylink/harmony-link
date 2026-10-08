@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const BUILD = '20260917-11';
+  const BUILD = '20260917-12';
   console.log(`[admin] admin.js loaded — build ${BUILD}`);
   // Visible without opening devtools -- if this text is missing, blank, or
   // shows an older build number than the one just shipped, the browser (or
@@ -211,11 +211,20 @@
     if (member.is_admin && raw === 'Harmony Link') return '하이벨';
     return raw || (member.oauth_name || '').trim() || (member.email || '').split('@')[0] || '이름 없음';
   };
-  // Identity metadata is optional for people who have finished site signup
-  // but have not submitted an application yet.  Never leave those rows
-  // anonymous in the admin UI: use the existing display name, then email.
-  const memberNickname = member => String(member.nickname || '').trim() || fallbackMemberName(member);
-  const memberFullName = member => String(member.full_name || '').trim() || fallbackMemberName(member);
+  // 닉네임/업체명 and 영문 이름 are each their own stored field -- never the
+  // same value as the Korean display_name/한글 이름. fallbackMemberName()
+  // exists so the roster/detail header always shows *some* name for a
+  // person (never blank); folding it into memberNickname/memberFullName as
+  // well used to silently copy a member's confirmed 한글 이름 into their
+  // 닉네임/업체명 and 영문 이름 fields whenever those were genuinely unset
+  // (e.g. 권태화, whose display_name is set but who has no separate
+  // nickname or verified English name on file) -- showing a Korean name
+  // mislabeled as an English name or a business nickname. Each field now
+  // reflects only its own real, stored value; a genuinely empty one reads
+  // as "—" wherever it is displayed (readonlyField/syncedReadonlyField's
+  // own `value || '—'` fallback), never a guessed or copied name.
+  const memberNickname = member => String(member.nickname || '').trim();
+  const memberFullName = member => String(member.full_name || '').trim();
   // Detail-dialog display only: a full_name that carries a trailing
   // credential suffix ("Example Name, MSN, RN") shows only the name part
   // before the first comma so the compact 기본 정보 row stays one line. The
@@ -369,7 +378,7 @@
       const memberNumber = member.member_number || '—';
       const cells = [
         ['회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(memberNumber)}</span>`],
-        ['닉네임', escapeHtml(memberNickname(member))],
+        ['닉네임', escapeHtml(memberNickname(member) || '—')],
         ['이름', escapeHtml(memberPersonName(member)) + (member.access_migration_review ? '<span class="member-review">검토 필요</span>' : '')],
         ['이메일', `<span title="${escapeHtml(member.email || '이메일 없음')}">${escapeHtml(member.email || '이메일 없음')}</span>`],
         ['연락처', escapeHtml(formatPhone(member.phone))],
@@ -554,12 +563,16 @@
     detail.className = 'member-detail';
     // Compact one-screen layout (2026-09): three labeled groups instead of a
     // read-only summary list followed by a separately-scrolling edit form
-    // repeating most of the same fields. 회원번호/이메일/가입일 have no
-    // editable counterpart and stay read-only chips; every other field that
-    // used to appear twice (닉네임/이름/연락처/회원유형/멤버십/계정상태) now
-    // renders exactly once, as its live input/select, which is what removed
-    // the internal scrollbar on common desktop viewports (1366x768+).
-    const readonlyField = (label, valueHtml) => `<div class="member-readonly member-system-field"><span>${label}<em>자동 관리</em></span><strong>${valueHtml}</strong></div>`;
+    // repeating most of the same fields. 가입일/이메일 have no editable
+    // counterpart and stay read-only chips; every other field that used to
+    // appear twice (닉네임/이름/연락처/회원유형/멤버십/계정상태) now renders
+    // exactly once, as its live input/select, which is what removed the
+    // internal scrollbar on common desktop viewports (1366x768+).
+    // The repeated "자동 관리" label next to every one of these read-only
+    // chips added noise without adding information (they are read-only
+    // either way -- removing the label text changes nothing about which
+    // fields are actually protected from editing).
+    const readonlyField = (label, valueHtml) => `<div class="member-readonly member-system-field"><span>${label}</span><strong>${valueHtml}</strong></div>`;
     // title/badge default to the 신청서 자동연동 source; 닉네임/업체명 below
     // passes its own (it is an administrator-set field, not synced from an
     // application, even though it renders with this same read-only look).
@@ -572,23 +585,23 @@
       const text = String(value || '').trim();
       return `<div class="member-readonly member-synced-field member-clamp-field" title="신청서 자동연동 · 신청서 재동기화로 갱신됩니다"><span>${label}<em>신청서 자동연동</em></span><strong class="member-clamp-value">${escapeHtml(text || '—')}</strong>${text ? `<button type="button" class="member-clamp-trigger">전체 보기</button>` : ''}</div>`;
     };
-    // 기본 정보 is exactly 4 rows of two half-width fields each: 회원번호|가입일,
-    // 이메일|연락처, 닉네임/업체명|영문 이름, 활동 지역|수업 범위(+지역정보 관리).
-    // 닉네임/업체명 is read-only here, same plain-text look as 영문 이름 (no
-    // input) -- the save handlers below always send memberNickname(member)
-    // back verbatim, so there is no live input value to lose by removing it.
-    // Long values (이메일, 수업 범위) wrap instead of truncating with an
-    // ellipsis; 수업 범위 and the 지역정보 관리 button share one flex row that
-    // wraps the button onto its own line rather than overlapping the text
-    // when space is tight.
-    const basicInfoFields = `<section class="member-group member-group--info"><h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시</small></h3><div class="member-group-grid">${readonlyField('회원번호', `<span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>`)}${readonlyField('가입일', formatDate(member.created_at))}${readonlyField('이메일', escapeHtml(member.email || ''))}${syncedReadonlyField('연락처', formatPhone(member.phone ?? ''))}${syncedReadonlyField('닉네임/업체명', memberNickname(member), '관리자 설정값 · 이 화면에서는 읽기 전용입니다', '읽기 전용')}${syncedReadonlyField('영문 이름', memberFullNameDisplay(member))}<div class="member-readonly partner-metadata" hidden><span>활동 지역</span><strong id="detailPartnerRegionSummary">지역 정보를 불러오는 중…</strong></div><div class="member-readonly member-region-combined partner-metadata" hidden><span>수업 범위</span><strong id="detailPartnerRegionServices"></strong><button id="detailManagePartnerRegion" type="button" class="member-region-manage">지역정보 관리</button></div></div></section>`;
+    // 기본 정보 is exactly 2 rows of two half-width fields plus a 가입일
+    // footer line: 이메일|연락처, 닉네임/업체명|영문 이름, then 가입일 alone
+    // below. 회원번호 moved up into the dialog header (next to the name) so
+    // it is never shown twice. 닉네임/업체명 is read-only here, same
+    // plain-text look as 영문 이름 (no input) -- the save handlers below
+    // always send memberNickname(member) back verbatim, so there is no live
+    // input value to lose by removing it. 이메일 wraps instead of truncating
+    // with an ellipsis. 활동 지역/수업 범위/전문분야 no longer live here at
+    // all -- they moved into the 지역정보 관리 popup below.
+    const basicInfoFields = `<section class="member-group member-group--info"><h3>기본 정보 <small class="member-editable-note">필드별 관리 source 표시</small></h3><div class="member-group-grid">${readonlyField('이메일', escapeHtml(member.email || ''))}${syncedReadonlyField('연락처', formatPhone(member.phone ?? ''))}${syncedReadonlyField('닉네임/업체명', memberNickname(member), '관리자 설정값 · 이 화면에서는 읽기 전용입니다', '읽기 전용')}${syncedReadonlyField('영문 이름', memberFullNameDisplay(member))}<div class="member-field-full member-field-break">${readonlyField('가입일', formatDate(member.created_at))}</div></div></section>`;
     const protectedNotice = withdrawn || protectedAccount ? `<div class="member-protected-copy">${withdrawn ? '탈퇴 회원은 권한·멤버십·계정상태 및 관리정보를 변경할 수 없습니다.' : '관리자 계정과 현재 로그인한 계정은 이 화면에서 변경할 수 없습니다.'}</div>` : '';
     const accessInputs = withdrawn || protectedAccount ? '' : `<label class="member-name-field ${directFieldClass}" title="관리자 직접 관리 · 신청서 재동기화로 변경되지 않음">한글 이름<input id="detailName" type="text" minlength="2" maxlength="50" autocomplete="off"></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">회원유형<select id="detailType"><option value="student">수강생</option><option value="partner">파트너</option></select></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">멤버십<select id="detailMembership"><option value="free">FREE</option><option value="basic">BASIC</option><option value="premium">PREMIUM</option></select></label><label class="${settingFieldClass}" title="관리 설정 · 플랫폼 운영값">계정 상태<select id="detailStatus"><option value="active">활성</option><option value="expiring">만료 예정</option><option value="expired">만료</option><option value="suspended">중지</option></select></label>`;
-    // 전문분야/수강과목 move in here from the old standalone 전문분야 card --
-    // integrated as the last item instead of its own box. Still read-only
-    // (synced from the application), still toggled by the existing
-    // .partner-metadata/.student-metadata hidden mechanism.
-    const roleInfoFields = `<section class="member-group member-group--role"><h3>회원·파트너 정보 <small class="member-editable-note">관리 설정</small></h3>${protectedNotice}<div class="member-group-grid">${accessInputs}<div class="member-field-full member-field-break partner-metadata">${syncedReadonlyField('전문분야', member.specialty)}</div><div class="member-field-full member-field-break student-metadata" hidden>${syncedReadonlyField('수강과목', member.enrolled_subject)}</div></div></section>`;
+    // 전문분야(파트너)/활동 지역/수업 범위 now live inside the 지역정보 관리
+    // popup instead of their own grid row here -- that popup is also the
+    // natural read-only summary spot for a student's 수강과목, so both
+    // roles get one bottom-right action button instead of a third grid row.
+    const roleInfoFields = `<section class="member-group member-group--role"><h3>회원·파트너 정보 <small class="member-editable-note">관리 설정</small></h3>${protectedNotice}<div class="member-group-grid">${accessInputs}</div><div class="member-group-footer"><button type="button" id="detailManagePartnerRegion" class="member-region-manage partner-metadata" hidden>지역정보 관리</button><button type="button" id="detailViewEnrollment" class="member-region-manage student-metadata" hidden>수강 정보 보기</button></div></section>`;
     // 강의과목(파트너)/담당강사(수강생) stay in their own full-width row below
     // both card rows -- it used to be squeezed into half the dialog's width,
     // which is what forced it down to an uncomfortably narrow two-line clamp.
@@ -600,38 +613,44 @@
       ? `<div class="member-detail-actions">${feedback}<button type="button" class="btn member-save-disabled" id="detailSave" disabled>변경 불가</button></div>`
       : protectedAccount ? ''
         : `<div class="member-detail-actions">${feedback}<button type="button" class="btn member-resend">안내메일 다시 보내기</button><button type="button" class="btn btn-primary" id="detailSave">변경 저장</button></div>`;
-    detail.innerHTML = `<div class="member-detail-summary"><strong>${escapeHtml(name)}</strong><span>${escapeHtml(member.email || '')}</span>${typeBadge(member)}${member.is_admin ? '' : membershipBadge(member)}${badge(STATUS_LABELS[member.account_status], member.account_status)}</div><div class="member-detail-groups">${grid}${featureRow}</div>${actions}`;
+    // Header: 한글 이름 | 회원번호 | 회원유형/멤버십/계정상태 배지. 이메일은
+    // 기본 정보에도 나오므로 더 이상 여기 중복 표시하지 않는다; 회원번호는
+    // 반대로 기본 정보에서 빠지고 여기 한 번만 나온다. 회원번호가 없는
+    // 회원은 발급하지 않고 memberNumberClass의 기존 missing/pending 표시를
+    // 그대로 재사용해 "—"를 보여준다.
+    detail.innerHTML = `<div class="member-detail-summary"><strong>${escapeHtml(name)}</strong><span class="${memberNumberClass(member)}">${escapeHtml(member.member_number || '—')}</span>${typeBadge(member)}${member.is_admin ? '' : membershipBadge(member)}${badge(STATUS_LABELS[member.account_status], member.account_status)}</div><div class="member-detail-groups">${grid}${featureRow}</div>${actions}`;
     const nameInput = detail.querySelector('#detailName');
     const type = detail.querySelector('#detailType');
     const membership = detail.querySelector('#detailMembership');
     const status = detail.querySelector('#detailStatus');
-    const regionSummary = detail.querySelector('#detailPartnerRegionSummary');
-    const regionServices = detail.querySelector('#detailPartnerRegionServices');
     const manageRegionButton = detail.querySelector('#detailManagePartnerRegion');
+    const enrollmentButton = detail.querySelector('#detailViewEnrollment');
     let partnerRegion = normalizePartnerRegion();
-    const renderPartnerRegion = region => {
-      partnerRegion = normalizePartnerRegion(region);
-      // Each row prints its own static label (활동 지역 / 수업 범위) in the
-      // markup above, so the JS-set text is the value only. 수업 범위 and the
-      // 지역정보 관리 button always share one row now, so an empty detail
-      // falls back to a dash instead of hiding the row (which would also
-      // hide the button).
-      regionSummary.textContent = partnerRegionSummary(partnerRegion);
-      const detail = [
-        partnerRegion.city || partnerRegion.service_area.length ? '방문 가능' : '',
-        partnerRegion.online_available ? '온라인 수업 가능' : '',
-        partnerRegion.nationwide_available ? '미국 전역 가능' : ''
-      ].filter(Boolean).join(' · ');
-      regionServices.textContent = detail || '—';
-    };
+    // 수업 범위's "방문 가능 / 온라인 수업 가능 / 미국 전역 가능" detail line
+    // used to render as its own DOM text node in the main grid; it is now
+    // computed fresh each time the 지역정보 관리 popup opens (see
+    // openRegionManager below). 방문 가능 지역(city/service_area)과 미국 전역
+    // 가능은 여기서도 서로 다른 구문으로 분리해 혼동하지 않는다.
+    const partnerRegionDetailText = region => [
+      region.city || region.service_area.length ? '방문 가능' : '',
+      region.online_available ? '온라인 수업 가능' : '',
+      region.nationwide_available ? '미국 전역 가능' : ''
+    ].filter(Boolean).join(' · ') || '—';
+    const renderPartnerRegion = region => { partnerRegion = normalizePartnerRegion(region); };
     const readPartnerRegion = async () => {
       const { data, error } = await client.rpc('admin_get_partner_region', { p_member_id: member.id });
       if (error) throw error;
       return Array.isArray(data) ? data[0] : data;
     };
+    // 활동 지역/실제 방문 가능 지역/온라인·미국 전역 가능 여부는 아래 edit
+    // 폼의 선택값 자체로 이미 보여주므로, 폼에 없는 유일한 필드인 전문분야만
+    // 요약으로 추가한다 (기존 지역정보 저장/관리 동작은 전혀 바뀌지 않는다).
+    // 방문 가능 지역과 미국 전역 가능 여부는 여기서도 분리된 두 줄로 유지해
+    // 서로 혼동하지 않는다.
     const openRegionManager = () => {
       if (withdrawn || protectedAccount || member.user_type !== 'partner') return;
-      regionDialogBody.innerHTML = `<p class="partner-region-member">${escapeHtml(name)}</p><div class="partner-region-grid"><label>국가<select id="regionCountryCode"><option value="">선택하세요</option>${COUNTRY_OPTIONS.map(country => `<option value="${country.code}">${country.name}</option>`).join('')}</select></label><label>주(State)<select id="regionStateCode"><option value="">선택하세요</option></select></label><label class="partner-region-city">도시<input id="regionCity" type="text" maxlength="120" autocomplete="address-level2" placeholder="예: Dallas"></label></div><div class="partner-service-area"><div><h3>서비스 가능 지역</h3><p>여러 지역을 추가할 수 있습니다.</p></div><div class="partner-service-area-controls"><input id="regionServiceAreaInput" type="text" maxlength="120" placeholder="예: Dallas–Fort Worth"><button id="regionAddServiceArea" type="button" class="member-region-add">+ 지역 추가</button></div><div id="regionServiceAreaChips" class="partner-service-area-chips" aria-live="polite"></div></div><div class="partner-region-options"><label class="partner-region-switch"><input id="regionOnlineAvailable" type="checkbox"><span>온라인 수업 가능</span></label><label class="partner-region-switch"><input id="regionNationwideAvailable" type="checkbox"><span>미국 전역 가능</span></label></div><p id="regionDialogFeedback" class="partner-region-feedback" role="status" aria-live="polite"></p><div class="partner-region-dialog-actions"><button id="regionDialogCancel" type="button" class="btn">취소</button><button id="regionDialogSave" type="button" class="btn btn-primary" disabled>저장</button></div>`;
+      const regionSummaryHtml = `<div class="partner-region-summary"><div class="member-readonly"><span>활동 지역</span><strong>${escapeHtml(partnerRegionSummary(partnerRegion))}</strong></div><div class="member-readonly"><span>수업 범위</span><strong>${escapeHtml(partnerRegionDetailText(partnerRegion))}</strong></div><div class="member-readonly"><span>전문분야</span><strong>${escapeHtml(member.specialty || '—')}</strong></div></div>`;
+      regionDialogBody.innerHTML = `<p class="partner-region-member">${escapeHtml(name)}</p>${regionSummaryHtml}<div class="partner-region-grid"><label>국가<select id="regionCountryCode"><option value="">선택하세요</option>${COUNTRY_OPTIONS.map(country => `<option value="${country.code}">${country.name}</option>`).join('')}</select></label><label>주(State)<select id="regionStateCode"><option value="">선택하세요</option></select></label><label class="partner-region-city">도시<input id="regionCity" type="text" maxlength="120" autocomplete="address-level2" placeholder="예: Dallas"></label></div><div class="partner-service-area"><div><h3>서비스 가능 지역</h3><p>여러 지역을 추가할 수 있습니다.</p></div><div class="partner-service-area-controls"><input id="regionServiceAreaInput" type="text" maxlength="120" placeholder="예: Dallas–Fort Worth"><button id="regionAddServiceArea" type="button" class="member-region-add">+ 지역 추가</button></div><div id="regionServiceAreaChips" class="partner-service-area-chips" aria-live="polite"></div></div><div class="partner-region-options"><label class="partner-region-switch"><input id="regionOnlineAvailable" type="checkbox"><span>온라인 수업 가능</span></label><label class="partner-region-switch"><input id="regionNationwideAvailable" type="checkbox"><span>미국 전역 가능</span></label></div><p id="regionDialogFeedback" class="partner-region-feedback" role="status" aria-live="polite"></p><div class="partner-region-dialog-actions"><button id="regionDialogCancel" type="button" class="btn">취소</button><button id="regionDialogSave" type="button" class="btn btn-primary" disabled>저장</button></div>`;
       const countryCode = regionDialogBody.querySelector('#regionCountryCode');
       const stateCode = regionDialogBody.querySelector('#regionStateCode');
       const city = regionDialogBody.querySelector('#regionCity');
@@ -733,10 +752,14 @@
       detail.querySelector('#detailSave').addEventListener('click', () => updateMember(raw, name, member.user_type, member.membership, member.account_status, { nickname: memberNickname(member) }, partnerRegion, partnerRegion));
     }
     if (!withdrawn && member.user_type === 'partner') {
-      readPartnerRegion().then(renderPartnerRegion).catch(() => { regionSummary.textContent = '지역 정보를 불러오지 못했습니다.'; });
+      // 지역 정보 로드가 실패해도 partnerRegion은 기본값(미등록)으로 남아
+      // 있고, 지역정보 관리 팝업을 열면 그 기본값 그대로의 요약이 보이므로
+      // 추측 데이터로 채워지지 않는다 -- 실패했다는 사실만 토스트로 알린다.
+      readPartnerRegion().then(renderPartnerRegion).catch(() => showToast('지역 정보를 불러오지 못했습니다.', true));
     } else {
       renderPartnerRegion();
     }
+    enrollmentButton.addEventListener('click', () => openInfoDialog('수강 정보', `<p class="member-info-text">${escapeHtml(member.enrolled_subject || '—')}</p>`));
     dialog.showModal();
   };
 

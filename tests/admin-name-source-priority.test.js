@@ -31,6 +31,40 @@ function extractMemberPersonName() {
   return context.memberPersonName;
 }
 
+// 2026-10 regression: memberNickname/memberFullName used to fall back to
+// fallbackMemberName(member) -- the same helper memberPersonName uses to
+// always show *some* name for a person -- whenever the member's own
+// nickname/full_name was empty. For a member with a confirmed display_name
+// but no separate nickname or verified English name (권태화's exact shape),
+// that silently copied the Korean display_name into both the 닉네임/업체명
+// and 영문 이름 fields. Each field must now read only its own stored value.
+function extractNicknameAndFullName() {
+  const match = admin.match(/const memberNickname = member => String\(member\.nickname \|\| ''\)\.trim\(\);\s*\n\s*const memberFullName = member => String\(member\.full_name \|\| ''\)\.trim\(\);/);
+  assert.ok(match, 'could not extract memberNickname/memberFullName from admin.js');
+  const context = {};
+  vm.createContext(context);
+  vm.runInContext(`${match[0]}\nthis.memberNickname = memberNickname;\nthis.memberFullName = memberFullName;`, context);
+  return { memberNickname: context.memberNickname, memberFullName: context.memberFullName };
+}
+
+test('REAL EXECUTION: 권태화-shaped member (confirmed 한글 이름, no separate nickname or verified English name) never leaks display_name into 닉네임/영문 이름', () => {
+  const { memberNickname, memberFullName } = extractNicknameAndFullName();
+  const member = { display_name: '권태화', nickname: '', full_name: '', oauth_name: 'Tae Hwa Kwon', email: 'kwontae@example.com' };
+  assert.equal(memberNickname(member), '');
+  assert.equal(memberFullName(member), '');
+  const memberPersonName = extractMemberPersonName();
+  // The header/한글 이름 still correctly shows 권태화 -- only the two
+  // separate fields must read as empty, not the person-name helper itself.
+  assert.equal(memberPersonName(member), '권태화');
+});
+
+test('REAL EXECUTION: a real, distinct nickname or full_name is still returned exactly as stored', () => {
+  const { memberNickname, memberFullName } = extractNicknameAndFullName();
+  const member = { display_name: '손성경', nickname: 'DMS Care', full_name: 'Christine Son' };
+  assert.equal(memberNickname(member), 'DMS Care');
+  assert.equal(memberFullName(member), 'Christine Son');
+});
+
 test('REAL EXECUTION: display_name wins over full_name and oauth_name when present', () => {
   const memberPersonName = extractMemberPersonName();
   assert.equal(
