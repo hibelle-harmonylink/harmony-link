@@ -11,8 +11,12 @@ const version = JSON.parse(fs.readFileSync(path.join(root, 'version.json'), 'utf
 
 test('member detail public-name display prioritizes display_name and then application metadata', () => {
   assert.match(adminJs, /const fallbackMemberName = member => \{/);
-  assert.match(adminJs, /const memberNickname = member => String\(member\.nickname \|\| ''\)\.trim\(\) \|\| fallbackMemberName\(member\)/);
-  assert.match(adminJs, /const memberFullName = member => String\(member\.full_name \|\| ''\)\.trim\(\) \|\| fallbackMemberName\(member\)/);
+  // 닉네임/영문 이름 are each their own stored field, with no fallback to
+  // fallbackMemberName() (a confirmed 한글 이름 must never leak into either
+  // field when they are genuinely unset -- see admin-list-name-display.test.js
+  // for the regression this guards).
+  assert.match(adminJs, /const memberNickname = member => String\(member\.nickname \|\| ''\)\.trim\(\);/);
+  assert.match(adminJs, /const memberFullName = member => String\(member\.full_name \|\| ''\)\.trim\(\);/);
   assert.match(adminJs, /const memberPersonName = member => \{\s*const raw = String\(member\.display_name \|\| ''\)\.trim\(\);\s*if \(member\.is_admin && raw === 'Harmony Link'\) return '하이벨';\s*return raw \|\| String\(member\.full_name \|\| ''\)\.trim\(\) \|\| fallbackMemberName\(member\);\s*\};/);
   assert.match(adminJs, /const resolveDisplayName = member => memberPersonName\(member\)/);
   // 닉네임/업체명 is read-only; its displayed value resolves through
@@ -36,7 +40,7 @@ test('production identity backfill migration remains a documented no-op', () => 
 test('admin asset query keys and page version advance together', () => {
   assert.equal(version.version, '20260916-29');
   assert.match(adminHtml, /const pageVersion = '20260916-19'/);
-  assert.match(adminHtml, /admin\.css\?v=20260917-11/);
-  assert.match(adminHtml, /admin\.js\?v=20260917-11/);
+  assert.match(adminHtml, /admin\.css\?v=20260917-12/);
+  assert.match(adminHtml, /admin\.js\?v=20260917-12/);
   assert.match(adminHtml, /회원유형 · 멤버십 · 계정 상태 · 기능 권한을 각각 관리합니다\./);
 });

@@ -10,8 +10,21 @@ const applicationSync = fs.readFileSync(path.join(root, 'supabase/migrations/202
 test('member-list person name prioritizes display_name, then full_name, without treating nickname as a name fallback', () => {
   assert.match(admin, /const memberPersonName = member => \{\s*const raw = String\(member\.display_name \|\| ''\)\.trim\(\);\s*if \(member\.is_admin && raw === 'Harmony Link'\) return '하이벨';\s*return raw \|\| String\(member\.full_name \|\| ''\)\.trim\(\) \|\| fallbackMemberName\(member\);\s*\};/);
   assert.match(admin, /\['이름', escapeHtml\(memberPersonName\(member\)\)/);
-  const fallback = admin.slice(admin.indexOf('const fallbackMemberName'), admin.indexOf('const memberNickname'));
-  assert.doesNotMatch(fallback, /nickname/);
+  // fallbackMemberName() itself must never read member.nickname as a source
+  // (checked on the function body alone, not surrounding comments, since
+  // comments legitimately mention memberNickname by name elsewhere).
+  const fallbackStart = admin.indexOf('const fallbackMemberName = member => {');
+  const fallbackEnd = admin.indexOf('\n  };', fallbackStart) + '\n  };'.length;
+  const fallbackBody = admin.slice(fallbackStart, fallbackEnd);
+  assert.doesNotMatch(fallbackBody, /\.nickname/);
+  // memberNickname/memberFullName must each be their own stored field only
+  // -- never falling back to fallbackMemberName() (that was the bug: an
+  // empty nickname/full_name used to silently borrow the person's Korean
+  // display_name instead of reading as genuinely empty).
+  assert.match(admin, /const memberNickname = member => String\(member\.nickname \|\| ''\)\.trim\(\);/);
+  assert.match(admin, /const memberFullName = member => String\(member\.full_name \|\| ''\)\.trim\(\);/);
+  assert.doesNotMatch(admin, /const memberNickname = member => String\(member\.nickname \|\| ''\)\.trim\(\) \|\| fallbackMemberName/);
+  assert.doesNotMatch(admin, /const memberFullName = member => String\(member\.full_name \|\| ''\)\.trim\(\) \|\| fallbackMemberName/);
 });
 
 test('list search continues to cover display_name, full_name, nickname, and email', () => {

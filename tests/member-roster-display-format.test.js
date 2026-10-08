@@ -57,7 +57,12 @@ test('public phone-backfill runner only delegates to the private opt-in helper',
 
 test('admin form keeps synchronized application fields display-only while retaining direct and settings controls', () => {
   const detail = admin.slice(admin.indexOf('const openDetail = raw =>'), admin.indexOf('const resendNotification ='));
-  ['영문 이름', '연락처', '담당강사', '전문분야', '수강과목'].forEach(label => assert.match(detail, new RegExp(`syncedReadonlyField\\('${label}'`)));
+  ['영문 이름', '연락처', '담당강사'].forEach(label => assert.match(detail, new RegExp(`syncedReadonlyField\\('${label}'`)));
+  // 전문분야/수강과목 moved into the 지역정보 관리/수강 정보 보기 popups
+  // (plain read-only text, not a syncedReadonlyField row any more), reached
+  // through one bottom-right action button per card.
+  assert.match(detail, /<span>전문분야<\/span><strong>\$\{escapeHtml\(member\.specialty \|\| '—'\)\}<\/strong>/);
+  assert.match(detail, /openInfoDialog\('수강 정보', `<p class="member-info-text">\$\{escapeHtml\(member\.enrolled_subject \|\| '—'\)\}<\/p>`\)/);
   assert.match(detail, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
   // 닉네임/업체명 is also read-only (no <input>), rendered the same way as
   // the display-only synced fields above, but with its own non-synced

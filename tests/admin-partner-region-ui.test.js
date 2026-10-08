@@ -9,15 +9,14 @@ const css = fs.readFileSync(path.join(root, 'admin.css'), 'utf8');
 const adminHtml = fs.readFileSync(path.join(root, 'admin.html'), 'utf8');
 const readerMigration = fs.readFileSync(path.join(root, 'supabase', 'migrations', '202609170002_admin_partner_region_reader.sql'), 'utf8');
 
-test('activity region is a compact, partner-only summary in the member detail', () => {
-  // 활동 지역/수업 범위 now render as two plain .member-readonly rows inside
-  // 기본 정보's own grid (no separate .member-region-compact box).
-  assert.match(admin, /class="member-readonly partner-metadata" hidden/);
-  assert.match(admin, /class="member-readonly member-region-combined partner-metadata" hidden/);
+test('activity region is a compact, partner-only summary reached through the 지역정보 관리 popup', () => {
+  // 활동 지역/수업 범위 no longer render as their own rows in the main
+  // grid at all -- they are computed fresh (partnerRegionSummary/
+  // partnerRegionDetailText) each time the 지역정보 관리 popup opens, and
+  // shown there alongside 전문분야.
   assert.match(admin, /활동 지역/);
-  assert.match(admin, /id="detailPartnerRegionSummary"/);
-  assert.match(admin, /id="detailPartnerRegionServices"/);
-  assert.match(admin, /id="detailManagePartnerRegion"[^>]*>지역정보 관리/);
+  assert.match(admin, /<span>수업 범위<\/span><strong>\$\{escapeHtml\(partnerRegionDetailText\(partnerRegion\)\)\}<\/strong>/);
+  assert.match(admin, /id="detailManagePartnerRegion" class="member-region-manage partner-metadata" hidden>지역정보 관리/);
   assert.doesNotMatch(admin, /id="detailCountryCode"/);
   assert.match(admin, /field\.hidden = selectedType !== 'partner'/);
 });
@@ -53,9 +52,9 @@ test('region manager preserves trimmed, de-duplicated, removable service-area ch
 
 test('region summary separates the location from the service-mode detail', () => {
   assert.match(admin, /지역 미등록/);
-  assert.match(admin, /partnerRegion\.city \|\| partnerRegion\.service_area\.length \? '방문 가능'/);
-  assert.match(admin, /partnerRegion\.online_available \? '온라인 수업 가능'/);
-  assert.match(admin, /partnerRegion\.nationwide_available \? '미국 전역 가능'/);
+  assert.match(admin, /region\.city \|\| region\.service_area\.length \? '방문 가능'/);
+  assert.match(admin, /region\.online_available \? '온라인 수업 가능'/);
+  assert.match(admin, /region\.nationwide_available \? '미국 전역 가능'/);
   assert.match(admin, /online_available: Boolean\(region\?\.online_available\)/);
   assert.match(admin, /nationwide_available: Boolean\(region\?\.nationwide_available\)/);
 });
@@ -95,13 +94,13 @@ test('the independent region manager has responsive, non-overflowing fields', ()
 });
 
 test('only partners receive a compact region summary and management action', () => {
-  assert.match(admin, /class="member-readonly member-region-combined partner-metadata" hidden/);
-  assert.match(admin, /id="detailManagePartnerRegion"/);
+  assert.match(admin, /id="detailManagePartnerRegion" class="member-region-manage partner-metadata" hidden/);
   assert.match(admin, /manageRegionButton\.addEventListener\('click', openRegionManager\)/);
-  // The manage button sits inline in the 수업 범위 row rather than a
-  // separate actions sub-block, wrapping onto its own line when tight.
+  // The manage button sits bottom-right in 회원·파트너 정보's own footer
+  // slot (shared with the student-only 수강 정보 보기 button), not inline
+  // in any grid row any more.
   assert.match(css, /\.member-region-manage\{min-height:30px/);
-  assert.match(css, /\.member-region-combined\{flex-wrap:wrap;row-gap:4px\}/);
+  assert.match(css, /\.member-group-footer\{display:flex;justify-content:flex-end/);
 });
 
 test('region manager is a separate modal and uses only the existing region RPC', () => {

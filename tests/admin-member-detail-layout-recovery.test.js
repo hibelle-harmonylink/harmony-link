@@ -36,9 +36,9 @@ test('강의과목/담당강사 span the entire subjects row instead of a half-w
   assert.match(css, /\.member-detail-grid>\.member-subjects-row\{grid-column:1\/-1;grid-row:2\}/);
   assert.match(css, /\.member-subjects-row \.partner-metadata strong,\.member-subjects-row \.student-metadata strong\{word-break:keep-all;overflow-wrap:break-word\}/);
   assert.match(js, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
-  // 전문분야/수강과목 now render as the last item inside 회원·파트너 정보's
-  // own grid, via the same syncedReadonlyField helper used everywhere else.
-  assert.match(js, /syncedReadonlyField\('전문분야', member\.specialty\)/);
+  // 전문분야 now renders as a read-only summary line inside the 지역정보
+  // 관리 popup instead of its own grid row.
+  assert.match(js, /<span>전문분야<\/span><strong>\$\{escapeHtml\(member\.specialty \|\| '—'\)\}<\/strong>/);
 });
 
 test('강의과목 clamps to two lines with the full text opening in a separate overlay popup', () => {
@@ -48,7 +48,7 @@ test('강의과목 clamps to two lines with the full text opening in a separate 
   // class and sits later in the file, so it silently wins and the clamp
   // never applies unless the clamp selector matches .member-synced-field
   // too (found by actually rendering this in a browser, not just regex).
-  assert.match(css, /\.member-synced-field strong\.member-clamp-value\{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden\}/);
+  assert.match(css, /\.member-synced-field strong\.member-clamp-value\{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden\}/);
   // "전체 보기" no longer expands inline (<details>) -- it opens the shared
   // overlay dialog, so the main detail dialog's size never changes.
   assert.match(js, /<button type="button" class="member-clamp-trigger">전체 보기<\/button>/);
@@ -74,7 +74,7 @@ test('활동 지역 and 기능 권한 are compact one-line rows, not fixed-heigh
 });
 
 test('non-partner region stays hidden via the existing .partner-metadata toggle', () => {
-  assert.match(js, /class="member-readonly partner-metadata" hidden/);
+  assert.match(js, /class="member-region-manage partner-metadata" hidden/);
   assert.match(js, /field\.hidden = selectedType !== 'partner'/);
 });
 

@@ -27,29 +27,25 @@ test('sending, success, and error feedback share one fixed-height desktop action
 
 test('editable and system-managed member fields are visually distinct without making member numbers editable', () => {
   assert.match(detail, /member-system-field/);
-  assert.match(detail, /readonlyField\('회원번호'/);
+  // 회원번호 is a read-only chip in the dialog header (next to the name),
+  // not a readonlyField row inside 기본 정보 any more; 이메일/가입일 remain.
+  assert.match(detail, /<span class="\$\{memberNumberClass\(member\)\}">\$\{escapeHtml\(member\.member_number \|\| '—'\)\}<\/span>/);
   assert.match(detail, /readonlyField\('이메일'/);
   assert.match(detail, /readonlyField\('가입일'/);
   assert.match(detail, /admin-editable-field/);
   assert.match(adminCss, /\.admin-editable-field\.field-source-direct>input\{border:2px solid #1a34ac!important;background:#f4f8ff!important\}/);
-  assert.match(adminCss, /\.member-system-field em\{font-style:normal;color:#718198/);
   assert.doesNotMatch(detail, /id="detailMemberNumber"/);
 });
 
 test('partner region and feature text wrap at word boundaries without clipping their contents', () => {
-  // The compact one-line rows no longer repeat "지역:"/"수업 범위:" label
-  // prefixes in the JS-set text (the static markup already prints its own
-  // 활동 지역 / 수업 범위 labels).
-  assert.match(detail, /regionSummary\.textContent = partnerRegionSummary\(partnerRegion\);/);
-  assert.match(detail, /regionServices\.textContent = detail \|\| '—';/);
-  // 수업 범위 and the 지역정보 관리 button now always share one row (no
-  // independent hide-on-empty any more, since hiding would also hide the
-  // button).
-  assert.doesNotMatch(detail, /regionServicesRow\.hidden/);
-  // 활동 지역/수업 범위 now use the same .member-group--info .member-readonly
-  // treatment as every other 기본정보 field (no dedicated .member-region-row
-  // box style any more); overflow-wrap:anywhere is what keeps 수업 범위's
-  // longer text from being clipped with an ellipsis.
+  // 활동 지역/수업 범위 no longer render as their own DOM text nodes in the
+  // main grid -- they moved into the 지역정보 관리 popup, computed fresh
+  // (via partnerRegionSummary/partnerRegionDetailText) each time it opens.
+  assert.match(detail, /const partnerRegionDetailText = region => \[/);
+  assert.match(detail, /partnerRegionSummary\(partnerRegion\)/);
+  assert.match(detail, /partnerRegionDetailText\(partnerRegion\)/);
+  // 기본 정보's remaining .member-readonly rows (이메일 등) still wrap
+  // instead of clipping with an ellipsis.
   assert.match(adminCss, /\.member-group--info \.member-readonly strong\{flex:1 1 auto;min-width:0;overflow-wrap:anywhere\}/);
   assert.match(adminCss, /\.feature-box li\{min-width:0;white-space:normal;word-break:keep-all;overflow-wrap:break-word\}/);
 });
@@ -62,6 +58,11 @@ test('활동 지역 and 기능 권한 are compact one-line rows instead of fixed
 
 test('partner/student metadata exclusivity preserves the synchronized display path', () => {
   assert.match(detail, /showRoleMetadata\(withdrawn \? 'student' : \(member\.is_admin \? 'admin' : member\.user_type\)\);/);
-  assert.match(detail, /syncedReadonlyField\('전문분야', member\.specialty\)/);
+  // 전문분야 (partner) now lives in the 지역정보 관리 popup summary instead
+  // of its own synced-field row; the 지역정보 관리/수강 정보 보기 buttons
+  // are still gated by the same .partner-metadata/.student-metadata toggle.
+  assert.match(detail, /<span>전문분야<\/span><strong>\$\{escapeHtml\(member\.specialty \|\| '—'\)\}<\/strong>/);
+  assert.match(detail, /id="detailManagePartnerRegion" class="member-region-manage partner-metadata" hidden/);
+  assert.match(detail, /id="detailViewEnrollment" class="member-region-manage student-metadata" hidden/);
   assert.match(detail, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
 });

@@ -22,7 +22,7 @@ test('backfills provider identities generically without embedded user data', () 
 });
 
 test('admin roster keeps the nickname column separate while rendering the public person-name policy', () => {
-  assert.match(admin, /\['닉네임', escapeHtml\(memberNickname\(member\)\)\]/);
+  assert.match(admin, /\['닉네임', escapeHtml\(memberNickname\(member\) \|\| '—'\)\]/);
   assert.match(admin, /\['이름', escapeHtml\(memberPersonName\(member\)\)/);
   assert.match(admin, /member\.nickname \|\| ''} \$\{member\.full_name/);
   // 닉네임/업체명 is read-only in the detail modal, rendered from

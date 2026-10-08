@@ -20,13 +20,16 @@ test('only the Korean public-name field uses the administrator-direct source sty
 
 test('application-synced metadata fields are display-only and retain their canonical sync sources', () => {
   ['영문 이름', '연락처', '담당강사'].forEach(label => assert.match(admin, new RegExp(String.raw`syncedReadonlyField\('${label}'`)));
-  // 전문분야/수강과목 now render as the last item inside 회원·파트너 정보's
-  // own grid (no separate card), via the same syncedReadonlyField helper,
-  // still display-only and sourced from the same canonical member fields.
-  assert.match(admin, /syncedReadonlyField\('전문분야', member\.specialty\)/);
-  assert.match(admin, /syncedReadonlyField\('수강과목', member\.enrolled_subject\)/);
-  // 강의과목 is the one synced field long enough to need the two-line clamp
-  // + 전체 보기 toggle instead of the plain read-only row.
+  // 전문분야 moved into the 지역정보 관리 popup's read-only summary (plain
+  // text, not a syncedReadonlyField row any more, since that popup already
+  // has its own edit-form styling); 수강과목 moved into the 수강 정보 보기
+  // popup. Both are still display-only and sourced from the same canonical
+  // member fields -- just reached through a button instead of their own
+  // grid row.
+  assert.match(admin, /<span>전문분야<\/span><strong>\$\{escapeHtml\(member\.specialty \|\| '—'\)\}<\/strong>/);
+  assert.match(admin, /openInfoDialog\('수강 정보', `<p class="member-info-text">\$\{escapeHtml\(member\.enrolled_subject \|\| '—'\)\}<\/p>`\)/);
+  // 강의과목 is the one synced field long enough to need the multi-line
+  // clamp + 전체 보기 toggle instead of the plain read-only row.
   assert.match(admin, /syncedClampField\('강의과목', member\.teaching_subjects\)/);
   ['detailFullName', 'detailPhone', 'detailSpecialty', 'detailTeachingSubjects', 'detailEnrolledSubject', 'detailAssignedInstructor'].forEach(id => assert.doesNotMatch(admin, new RegExp(String.raw`id="${id}"`)));
   assert.match(css, /\.member-synced-field\{min-width:0;border:1px solid #d5e0ea/);
@@ -56,7 +59,10 @@ test('nickname is read-only plain text (no input) and the save payload always se
 test('operational settings and automatic system fields remain visually and functionally distinct', () => {
   ['detailType', 'detailMembership', 'detailStatus'].forEach(id => assert.match(admin, new RegExp(String.raw`\$\{settingFieldClass\}"[^>]*>[^<]*<select id="${id}"`)));
   assert.match(css, /\.field-source-setting>select\{border:1px solid #a9bfd6/);
-  ['회원번호', '이메일', '가입일'].forEach(label => assert.match(admin, new RegExp(`readonlyField\\('${label}'`)));
+  // 회원번호 moved into the dialog header (next to the name); 이메일/가입일
+  // are the two readonlyField chips still inside 기본 정보.
+  ['이메일', '가입일'].forEach(label => assert.match(admin, new RegExp(`readonlyField\\('${label}'`)));
+  assert.match(admin, /<span class="\$\{memberNumberClass\(member\)\}">\$\{escapeHtml\(member\.member_number \|\| '—'\)\}<\/span>/);
   assert.match(admin, /admin_update_member_name', \{ p_member_id: member\.id, p_display_name: nextName \}/);
   assert.match(admin, /p_nickname: metadata\.nickname/);
   assert.match(admin, /p_full_name: memberFullName\(member\)/);
